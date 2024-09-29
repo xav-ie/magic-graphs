@@ -12,9 +12,20 @@ const graph = {
   1: [2, 4],
   2: [3],
   3: [],
-  4: [5],
+  4: [5, 7],
   5: [6],
-  6: []
+  6: [4],
+  7: [6],
+}
+
+const weightedGraph = {
+  1: [{ node: 2, weight: 4 }, { node: 4, weight: 2 }],
+  2: [{ node: 3, weight: 3 }],
+  3: [],
+  4: [{ node: 5, weight: 3 }, { node: 7, weight: 2 }],
+  5: [{ node: 6, weight: 1 }],
+  6: [{ node: 4, weight: 1 }],
+  7: [{ node: 6, weight: 1 }],
 }
 
 const trace = ref<any[]>([]);
@@ -43,15 +54,17 @@ const getReadOnlyRanges = (targetState: EditorState) => ([
 const userFn = useLocalStorage('userFn', 'return graph');
 const userFnError = ref('');
 
-const fn = computed(() => {
-  return new Function(argName, userFn.value);
-});
-
 const runner = () => {
+  const fn = new Function(argName,
+    userFn
+      .value
+      .split('\n')
+      .slice(1, -1)
+      .join('\n'))
   userFnError.value = '';
   trace.value = [];
   try {
-    fn.value(graphProxy);
+    fn(graphProxy);
   } catch (e) {
     if (e instanceof Error) {
       userFnError.value = `${e.name}: ${e.message}`;
@@ -68,7 +81,7 @@ const runner = () => {
       <button v-for="(val, key) in implementations" :key="key"
         class="bg-blue-600 px-10 py-2 font-bold text-xl rounded-full mb-2 hover:bg-blue-800"
         @click="userFn = `${userFuncSig}\n  ${val}\n}`">
-        {{ key.toUpperCase() }}
+        {{ key }}
       </button>
     </div>
     <h2 class="text-xl">
