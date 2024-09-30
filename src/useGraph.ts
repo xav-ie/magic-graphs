@@ -101,7 +101,7 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
 
     canvas.value.addEventListener('mousedown', (ev) => {
       const node = getNodeByCoordinates(ev.offsetX, ev.offsetY)
-      if (!node) return
+      if (!node) return focusedNodeId.value = null
       focusedNodeId.value = node.id
     })
 
@@ -110,6 +110,13 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
         removeNode(focusedNodeId.value)
       }
     })
+
+    setInterval(() => {
+      const ctx = canvas.value.getContext('2d')
+      if (ctx) {
+        draw(ctx)
+      }
+    }, 1000 / 60 /* 60fps */)
   })
 
   const addNode = (node: Partial<Node>) => {
@@ -157,20 +164,6 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
     edges.value = edges.value.filter(e => e.from !== edge.from || e.to !== edge.to)
   }
 
-  watch(nodes, () => {
-    const ctx = canvas.value.getContext('2d')
-    if (ctx) {
-      draw(ctx)
-    }
-  }, { deep: true })
-
-  watch(edges, () => {
-    const ctx = canvas.value.getContext('2d')
-    if (ctx) {
-      draw(ctx)
-    }
-  }, { deep: true })
-
   return {
     nodes,
     edges,
@@ -188,9 +181,11 @@ export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: Parti
 
   const graph = useGraph(canvas, options)
   const nodeBeingDragged = ref<Node | null>(null)
+  const startingCoordinatesOfDrag = ref<{ x: number, y: number } | null>(null)
 
   const beginDrag = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev;
+    startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
     const node = graph.getNodeByCoordinates(offsetX, offsetY);
     if (node) {
       nodeBeingDragged.value = node;
@@ -202,10 +197,12 @@ export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: Parti
   }
 
   const drag = (ev: MouseEvent) => {
-    if (!nodeBeingDragged.value) return
-    const { offsetX: x, offsetY: y } = ev
-    const { id } = nodeBeingDragged.value
-    graph.moveNode(id, x, y)
+    if (!nodeBeingDragged.value || !startingCoordinatesOfDrag.value) return
+    const { offsetX, offsetY } = ev;
+    const dx = offsetX - startingCoordinatesOfDrag.value.x;
+    const dy = offsetY - startingCoordinatesOfDrag.value.y;
+    graph.moveNode(nodeBeingDragged.value.id, nodeBeingDragged.value.x + dx, nodeBeingDragged.value.y + dy);
+    startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
   }
 
   onMounted(() => {
