@@ -33,26 +33,16 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
   tos.map(to => ({ from: Number(from), to: Number(to) }))
 );
 
-console.log('defaultNodes', defaultNodes);
-console.log('defaultEdges', defaultEdges);
-
 // @ts-expect-error - TS complains about the canvas ref type
-usePersistentDraggableGraph(canvas, 'graph', {
+useDraggableGraph(canvas, {
   nodes: defaultNodes,
   edges: defaultEdges,
-  onStructureChange: (nodes, edges) => {
-    // Convert the nodes and edges to a consumable graph
-    // must account for nodes that are not connected to any other node
-    console.log('structure change', nodes.map(node => node.id));
-    const newGraph: ConsumableGraph = {};
-    nodes.forEach(node => {
-      newGraph[node.id] = edges
+  onStructureChange: (nodes, edges) => emit('update:modelValue', nodes.reduce<ConsumableGraph>((acc, node) => {
+    acc[node.id] = edges
       .filter(edge => edge.from === node.id)
       .map(edge => edge.to);
-    });
-    console.log('newGraph', newGraph);
-    emit('update:modelValue', newGraph);
-  }
+    return acc;
+  }, {}))
 });
 </script>
 

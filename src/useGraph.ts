@@ -251,6 +251,7 @@ export const usePersistentDraggableGraph = (
 ) => {
   const graph = useDraggableGraph(canvas, options)
 
+  // TODO: load the nodes and edges in properly and not just by mem ref
   useLocalStorage(storageKey + '-nodes', graph.nodes)
   useLocalStorage(storageKey + '-edges', graph.edges)
 
