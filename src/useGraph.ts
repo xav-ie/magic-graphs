@@ -8,6 +8,7 @@ export type GraphOptions = Partial<{
   nodeBorderSize: number,
   nodeColor: string,
   nodeBorderColor: string,
+  nodeFocusBorderColor: string,
   nodeFocusColor: string,
   nodeText: (node: Node) => string,
   nodeTextSize: number,
@@ -43,7 +44,8 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     nodeBorderSize = 8,
     nodeColor = 'white',
     nodeBorderColor = 'black',
-    nodeFocusColor = 'blue',
+    nodeFocusBorderColor = 'blue',
+    nodeFocusColor = 'white',
     nodeText = (node: Node) => node.id.toString(),
     nodeTextSize = 24,
     nodeTextColor = 'black',
@@ -62,11 +64,12 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     // draw node
     ctx.beginPath()
     ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2)
-    ctx.fillStyle = nodeColor
+    const fillColor = node.id === focusedNodeId.value ? nodeFocusColor : nodeColor
+    ctx.fillStyle = fillColor
     ctx.fill()
 
     // draw border
-    const borderColor = node.id === focusedNodeId.value ? nodeFocusColor : nodeBorderColor
+    const borderColor = node.id === focusedNodeId.value ? nodeFocusBorderColor : nodeBorderColor
     ctx.strokeStyle = borderColor
     ctx.lineWidth = nodeBorderSize
     ctx.stroke()
@@ -259,3 +262,11 @@ export const usePersistentDraggableGraph = (
 
   return graph
 }
+
+export const useDarkDraggableGraph = (
+  canvas: Ref<HTMLCanvasElement>,
+  options: GraphOptions = {}
+) => useDraggableGraph(canvas, {
+  ...themes.dark,
+  ...options,
+})
