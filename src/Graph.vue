@@ -10,10 +10,10 @@ usePersistentDraggableGraph(canvas, 'graph', {
   edges: [{ from: 1, to: 2 }],
 })
 
-const padding = 50;
+const padding = 20;
 const { width, height } = useWindowSize();
 const canvasWidth = computed(() => width.value - padding * 2);
-const canvasHeight = computed(() => height.value - padding * 2);
+const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 </script>
 
 <template>
@@ -22,7 +22,7 @@ const canvasHeight = computed(() => height.value - padding * 2);
       :width="canvasWidth"
       :height="canvasHeight"
       ref="canvas"
-      class="bg-white"
+      class="bg-gray-600 rounded-xl"
     ></canvas>
   </div>
 </template>

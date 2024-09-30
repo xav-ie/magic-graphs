@@ -77,27 +77,27 @@ const runner = () => {
 
 <template>
   <div>
-    <div class="flex gap-3">
+    <div class="flex gap-3 px-3 py-2 bg-[#282c34]">
       <button v-for="(val, key) in implementations" :key="key"
-        class="bg-blue-600 px-10 py-2 font-bold text-xl rounded-full mb-2 hover:bg-blue-800"
+        class="bg-gray-700 px-5 py-1 font-bold text-md rounded-full hover:bg-gray-800"
         @click="userFn = `${userFuncSig}\n  ${val}\n}`">
         {{ key }}
       </button>
     </div>
     <h2 class="text-xl">
-      <codemirror v-model="userFn" mode="javascript" :tabSize="2"
-        :extensions="[javascript(), oneDark, readOnlyRangesExtension(getReadOnlyRanges)]" :style="{
+      <codemirror
+        v-model="userFn"
+        :tabSize="2"
+        :extensions="[javascript(), oneDark, readOnlyRangesExtension(getReadOnlyRanges)]"
+        :style="{
           background: 'gray',
-          height: '500px',
-        }" />
+          height: '320px',
+        }"
+      />
     </h2>
-    <button @click="runner" class="bg-blue-500 px-10 py-2 font-bold text-2xl rounded-full mt-5 hover:bg-blue-600">
-      Run
-    </button>
     <div v-if="userFnError" class="text-red-500 mt-2 text-2xl font-bold">
       {{ userFnError }}
     </div>
-    {{ trace }}
   </div>
 </template>
 
