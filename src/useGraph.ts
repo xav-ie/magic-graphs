@@ -1,10 +1,12 @@
 import { ref, onMounted, watch, type Ref } from 'vue'
+import { themes } from './themes'
 
 export type GraphOptions = {
   nodeSize: number,
   nodeBorderSize: number,
   nodeColor: string,
   nodeBorderColor: string,
+  nodeFocusColor: string,
   nodeText: (node: Node) => string,
   nodeTextSize: number,
   nodeTextColor: string,
@@ -30,6 +32,7 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
     nodeBorderSize = 8,
     nodeColor = 'white',
     nodeBorderColor = 'black',
+    nodeFocusColor = 'blue',
     nodeText = (node: Node) => node.id.toString(),
     nodeTextSize = 24,
     nodeTextColor = 'black',
@@ -37,8 +40,10 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
     edgeWidth = 10,
   } = options
 
+  let nodeIdCount = 1
   const nodes = ref<Node[]>([])
   const edges = ref<Edge[]>([])
+  const focusedNodeId = ref<Node['id'] | null>(null)
 
   const drawNode = (ctx: CanvasRenderingContext2D, node: Node) => {
     // draw node
@@ -48,7 +53,8 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
     ctx.fill()
 
     // draw border
-    ctx.strokeStyle = nodeBorderColor
+    const borderColor = node.id === focusedNodeId.value ? nodeFocusColor : nodeBorderColor
+    ctx.strokeStyle = borderColor
     ctx.lineWidth = nodeBorderSize
     ctx.stroke()
     ctx.closePath()
@@ -92,14 +98,28 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
       const { offsetX, offsetY } = ev
       addNode({ x: offsetX, y: offsetY })
     })
+
+    canvas.value.addEventListener('mousedown', (ev) => {
+      const node = getNodeByCoordinates(ev.offsetX, ev.offsetY)
+      if (!node) return
+      focusedNodeId.value = node.id
+    })
+
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Backspace' && focusedNodeId.value) {
+        removeNode(focusedNodeId.value)
+      }
+    })
   })
 
   const addNode = (node: Partial<Node>) => {
-    nodes.value.push({
-      id: node.id || nodes.value.length + 1,
+    const newNode = {
+      id: node.id || nodeIdCount++,
       x: node.x || 100,
       y: node.y || 100,
-    })
+    }
+    nodes.value.push(newNode)
+    focusedNodeId.value = newNode.id
   }
 
   const moveNode = (id: number, x: number, y: number) => {
@@ -196,3 +216,9 @@ export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: Parti
 
   return graph
 }
+
+export const useWeirdDraggableGraph = (canvas: Ref<HTMLCanvasElement>) => useDraggableGraph(canvas, themes.weird)
+
+export const useYonaGraph = (canvas: Ref<HTMLCanvasElement>) => useDraggableGraph(canvas, {
+  nodeText: ({ id }) => 'Yona ' + id
+})
