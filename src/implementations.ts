@@ -33,4 +33,5 @@ export const implementations = {
     children.forEach(child => helper(child.node))
   }
   helper(1)`,
+  ['Custom']: `graph['1']`
 }
