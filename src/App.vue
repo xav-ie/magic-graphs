@@ -13,16 +13,7 @@ const weightedGraph = {
   7: [{ node: 6, weight: 1 }],
 }
 
-const graph = ref<Record<number, number[]>>({
-  1: [2, 4],
-  2: [3],
-  3: [],
-  4: [5, 7],
-  5: [6],
-  6: [4],
-  7: [6],
-})
-
+const graph = ref<Record<number, number[]>>({ 1: [2], 2: [1] })
 </script>
 
 <template>

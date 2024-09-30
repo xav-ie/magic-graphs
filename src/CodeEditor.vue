@@ -24,6 +24,8 @@ const graphProxy = new Proxy(props.graph, {
 const argName = 'graph';
 const userFuncSig = `function traverse(${argName}) { // 🔒`;
 
+const getFullFn = (implementation: string) => `${userFuncSig}\n  ${implementation}\n}`;
+
 const getReadOnlyRanges = (targetState: EditorState) => ([
   {
     from: undefined,
@@ -35,7 +37,7 @@ const getReadOnlyRanges = (targetState: EditorState) => ([
   }
 ])
 
-const userFn = useLocalStorage('userFn', 'return graph');
+const userFn = useLocalStorage('userFn', getFullFn(implementations.BFS));
 const userFnError = ref('');
 
 const runner = () => {
@@ -67,7 +69,7 @@ watch(userFn, runner, { immediate: true });
   <div class="flex gap-3 px-3 py-2 bg-[#282c34]">
     <button
       v-for="(val, key) in implementations"
-      @click="userFn = `${userFuncSig}\n  ${val}\n}`"
+      @click="userFn = getFullFn(val)"
       :key="key"
       class="bg-gray-700 px-5 py-1 font-bold text-md rounded-full hover:bg-gray-800"
     >
