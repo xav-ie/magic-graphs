@@ -1,5 +1,6 @@
 import { ref, onMounted, watch, type Ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
+import { onClickOutside } from '@vueuse/core'
 import { themes } from './themes'
 
 export type GraphOptions = Partial<{
@@ -17,6 +18,11 @@ export type GraphOptions = Partial<{
   /* for loading existing graphs */
   nodes: Node[],
   edges: Edge[],
+
+  /* callbacks */
+
+  /* is invoked whenever a node or edge is added or removed */
+  onStructureChange: (nodes: Node[], edges: Edge[]) => void,
 }>
 
 export type Node = {
@@ -118,6 +124,8 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
       }
     })
 
+    onClickOutside(canvas, () => focusedNodeId.value = null)
+
     setInterval(() => {
       const ctx = canvas.value.getContext('2d')
       if (ctx) {
@@ -133,6 +141,7 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
       y: node.y || 100,
     }
     nodes.value.push(newNode)
+    options.onStructureChange?.(nodes.value, edges.value)
     if (focusNode) focusedNodeId.value = newNode.id
   }
 
@@ -156,19 +165,22 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
 
   const removeNode = (id: number) => {
     const index = nodes.value.findIndex(node => node.id === id)
-    if (index !== -1) {
-      nodes.value.splice(index, 1)
-    }
-
+    if (index === -1) return
+    nodes.value.splice(index, 1)
     edges.value = edges.value.filter(edge => edge.from !== id && edge.to !== id)
+    options.onStructureChange?.(nodes.value, edges.value)
   }
 
   const addEdge = (edge: Edge) => {
     edges.value.push(edge)
+    options.onStructureChange?.(nodes.value, edges.value)
   }
 
   const removeEdge = (edge: Edge) => {
-    edges.value = edges.value.filter(e => e.from !== edge.from || e.to !== edge.to)
+    const edgeIndex = edges.value.findIndex(e => e.from === edge.from && e.to === edge.to)
+    if (edgeIndex === -1) return
+    edges.value.splice(edgeIndex, 1)
+    options.onStructureChange?.(nodes.value, edges.value)
   }
 
   defaultEdges.forEach((edge) => addEdge(edge))
@@ -241,6 +253,8 @@ export const usePersistentDraggableGraph = (
 
   useLocalStorage(storageKey + '-nodes', graph.nodes)
   useLocalStorage(storageKey + '-edges', graph.edges)
+
+  options.onStructureChange?.(graph.nodes.value, graph.edges.value)
 
   return graph
 }

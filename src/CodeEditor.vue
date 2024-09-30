@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watchEffect, computed } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { implementations } from './implementations';
 import { Codemirror } from 'vue-codemirror';
@@ -14,12 +14,12 @@ const props = defineProps<{
   graph: Record<number, number[]>;
 }>();
 
-const graphProxy = new Proxy(props.graph, {
+const graphProxy = computed(() => new Proxy(props.graph, {
   get(target, prop, receiver) {
     trace.value.push(prop);
     return Reflect.get(target, prop, receiver);
   }
-});
+}));
 
 const argName = 'graph';
 const userFuncSig = `function traverse(${argName}) { // 🔒`;
@@ -40,7 +40,7 @@ const getReadOnlyRanges = (targetState: EditorState) => ([
 const userFn = useLocalStorage('userFn', getFullFn(implementations.BFS));
 const userFnError = ref('');
 
-const runner = () => {
+watchEffect(() => {
   try {
     const fn = new Function(argName,
       userFn
@@ -50,7 +50,7 @@ const runner = () => {
         .join('\n'))
     userFnError.value = '';
     trace.value = [];
-    fn(graphProxy);
+    fn(graphProxy.value);
   } catch (e) {
     if (e instanceof Error) {
       userFnError.value = `${e.name}: ${e.message}`;
@@ -58,9 +58,7 @@ const runner = () => {
       userFnError.value = 'An error occurred while running the function';
     }
   }
-}
-
-watch(userFn, runner, { immediate: true });
+});
 </script>
 
 <template>
