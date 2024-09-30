@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useDraggableGraph } from './useGraph';
-import { themes } from './themes';
+import { usePersistentDraggableGraph } from './useGraph';
 import { useWindowSize } from '@vueuse/core';
 
 const canvas = ref<HTMLCanvasElement>();
 
-const { addNode, addEdge } = useDraggableGraph(canvas)
-
-addNode({ x: 100, y: 100 });
-addNode({ x: 200, y: 200 });
-addEdge({ from: 1, to: 2 });
+usePersistentDraggableGraph(canvas, 'graph', {
+  nodes: [{ x: 100, y: 100 }, { x: 200, y: 200 }],
+  edges: [{ from: 1, to: 2 }],
+})
 
 const padding = 50;
 const { width, height } = useWindowSize();

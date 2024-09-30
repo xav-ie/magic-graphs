@@ -1,7 +1,8 @@
 import { ref, onMounted, watch, type Ref } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 import { themes } from './themes'
 
-export type GraphOptions = {
+export type GraphOptions = Partial<{
   nodeSize: number,
   nodeBorderSize: number,
   nodeColor: string,
@@ -11,8 +12,12 @@ export type GraphOptions = {
   nodeTextSize: number,
   nodeTextColor: string,
   edgeColor: string,
-  edgeWidth: number
-}
+  edgeWidth: number,
+
+  /* for loading existing graphs */
+  nodes: Node[],
+  edges: Edge[],
+}>
 
 export type Node = {
   id: number,
@@ -25,7 +30,7 @@ export type Edge = {
   from: number,
 }
 
-export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphOptions> = {}) => {
+export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions = {}) => {
 
   const {
     nodeSize = 35,
@@ -38,6 +43,8 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
     nodeTextColor = 'black',
     edgeColor = 'black',
     edgeWidth = 10,
+    nodes: defaultNodes = [],
+    edges: defaultEdges = [],
   } = options
 
   let nodeIdCount = 1
@@ -119,14 +126,14 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
     }, 1000 / 60 /* 60fps */)
   })
 
-  const addNode = (node: Partial<Node>) => {
+  const addNode = (node: Partial<Node>, focusNode = true) => {
     const newNode = {
       id: node.id || nodeIdCount++,
       x: node.x || 100,
       y: node.y || 100,
     }
     nodes.value.push(newNode)
-    focusedNodeId.value = newNode.id
+    if (focusNode) focusedNodeId.value = newNode.id
   }
 
   const moveNode = (id: number, x: number, y: number) => {
@@ -164,6 +171,9 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
     edges.value = edges.value.filter(e => e.from !== edge.from || e.to !== edge.to)
   }
 
+  defaultEdges.forEach((edge) => addEdge(edge))
+  defaultNodes.forEach((node) => addNode(node, false))
+
   return {
     nodes,
     edges,
@@ -177,7 +187,7 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphO
   }
 }
 
-export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: Partial<GraphOptions> = {}) => {
+export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions = {}) => {
 
   const graph = useGraph(canvas, options)
   const nodeBeingDragged = ref<Node | null>(null)
@@ -214,8 +224,23 @@ export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: Parti
   return graph
 }
 
-export const useWeirdDraggableGraph = (canvas: Ref<HTMLCanvasElement>) => useDraggableGraph(canvas, themes.weird)
-
-export const useYonaGraph = (canvas: Ref<HTMLCanvasElement>) => useDraggableGraph(canvas, {
-  nodeText: ({ id }) => 'Yona ' + id
+export const useWeirdDraggableGraph = (
+  canvas: Ref<HTMLCanvasElement>,
+  options: GraphOptions = {}
+) => useDraggableGraph(canvas, {
+  ...themes.weird,
+  ...options,
 })
+
+export const usePersistentDraggableGraph = (
+  canvas: Ref<HTMLCanvasElement>,
+  storageKey: string,
+  options: GraphOptions = {}
+) => {
+  const graph = useDraggableGraph(canvas, options)
+
+  useLocalStorage(storageKey + '-nodes', graph.nodes)
+  useLocalStorage(storageKey + '-edges', graph.edges)
+
+  return graph
+}
