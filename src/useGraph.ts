@@ -1,13 +1,16 @@
-import { ref, onMounted, watch, type Ref } from 'vue'
+import { ref, onMounted, type Ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { onClickOutside } from '@vueuse/core'
 import { themes } from './themes'
 
+type GetterOrValue<T, K extends any[] = []> = T | ((...arg: K) => T)
+type NodeGetterOrValue<T> = GetterOrValue<T, [Node]>
+
 export type GraphOptions = Partial<{
   nodeSize: number,
   nodeBorderSize: number,
-  nodeColor: string,
-  nodeBorderColor: string,
+  nodeColor: NodeGetterOrValue<string>,
+  nodeBorderColor: NodeGetterOrValue<string>,
   nodeFocusBorderColor: string,
   nodeFocusColor: string,
   nodeText: (node: Node) => string,
@@ -42,8 +45,8 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
   const {
     nodeSize = 35,
     nodeBorderSize = 8,
-    nodeColor = 'white',
-    nodeBorderColor = 'black',
+    nodeColor = () => 'white',
+    nodeBorderColor = () => 'black',
     nodeFocusBorderColor = 'blue',
     nodeFocusColor = 'white',
     nodeText = (node: Node) => node.id.toString(),
@@ -64,12 +67,12 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     // draw node
     ctx.beginPath()
     ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2)
-    const fillColor = node.id === focusedNodeId.value ? nodeFocusColor : nodeColor
+    const fillColor = node.id === focusedNodeId.value ? nodeFocusColor : nodeColor(node)
     ctx.fillStyle = fillColor
     ctx.fill()
 
     // draw border
-    const borderColor = node.id === focusedNodeId.value ? nodeFocusBorderColor : nodeBorderColor
+    const borderColor = node.id === focusedNodeId.value ? nodeFocusBorderColor : nodeBorderColor(node)
     ctx.strokeStyle = borderColor
     ctx.lineWidth = nodeBorderSize
     ctx.stroke()

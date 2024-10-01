@@ -34,10 +34,18 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
   tos.map(to => ({ from: Number(from), to: Number(to) }))
 );
 
+const bfsNodeColorizer = () => {
+  const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
+  return (node: Node) => {
+    return colors[1]
+  }
+}
+
 // @ts-expect-error - TS complains about the canvas ref type
 const { addEdge } = useDarkDraggableGraph(canvas, {
   nodes: defaultNodes,
   edges: defaultEdges,
+  nodeBorderColor: bfsNodeColorizer(),
   onStructureChange: (nodes, edges) => emit(
     'update:modelValue',
     nodes.reduce<ConsumableGraph>((acc, node) => {

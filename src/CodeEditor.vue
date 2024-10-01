@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, computed, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
 import { implementations } from './implementations';
 import { Codemirror } from 'vue-codemirror';
@@ -17,6 +17,8 @@ const props = defineProps<{
 const graphProxy = computed(() => new Proxy({ ...props.graph }, {
   get(target, prop, receiver) {
     trace.value.push(prop);
+    if (trace.value.length > 100) throw new Error('Infinite loop detected');
+    if (!Reflect.has(target, prop)) throw new Error(`Node "${prop.toString()}" not found in graph`);
     return Reflect.get(target, prop, receiver);
   }
 }));
