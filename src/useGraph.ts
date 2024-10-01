@@ -5,19 +5,27 @@ import { themes } from './themes'
 
 type GetterOrValue<T, K extends any[] = []> = T | ((...arg: K) => T)
 type NodeGetterOrValue<T> = GetterOrValue<T, [Node]>
+type EdgeGetterOrValue<T> = GetterOrValue<T, [Edge]>
+
+const getValue = <T, K extends any[]>(value: GetterOrValue<T, K>, ...args: K) => {
+  if (typeof value === 'function') {
+    return (value as (...args: K) => T)(...args)
+  }
+  return value
+}
 
 export type GraphOptions = Partial<{
-  nodeSize: number,
-  nodeBorderSize: number,
+  nodeSize: NodeGetterOrValue<number>,
+  nodeBorderSize: NodeGetterOrValue<number>,
   nodeColor: NodeGetterOrValue<string>,
   nodeBorderColor: NodeGetterOrValue<string>,
-  nodeFocusBorderColor: string,
-  nodeFocusColor: string,
-  nodeText: (node: Node) => string,
-  nodeTextSize: number,
-  nodeTextColor: string,
-  edgeColor: string,
-  edgeWidth: number,
+  nodeFocusBorderColor: NodeGetterOrValue<string>,
+  nodeFocusColor: NodeGetterOrValue<string>,
+  nodeText: NodeGetterOrValue<string>,
+  nodeTextSize: NodeGetterOrValue<number>,
+  nodeTextColor: NodeGetterOrValue<string>,
+  edgeColor: EdgeGetterOrValue<string>,
+  edgeWidth: EdgeGetterOrValue<number>,
 
   /* for loading existing graphs */
   nodes: Node[],
@@ -45,8 +53,8 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
   const {
     nodeSize = 35,
     nodeBorderSize = 8,
-    nodeColor = () => 'white',
-    nodeBorderColor = () => 'black',
+    nodeColor = 'white',
+    nodeBorderColor = 'black',
     nodeFocusBorderColor = 'blue',
     nodeFocusColor = 'white',
     nodeText = (node: Node) => node.id.toString(),
@@ -66,24 +74,24 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
   const drawNode = (ctx: CanvasRenderingContext2D, node: Node) => {
     // draw node
     ctx.beginPath()
-    ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2)
-    const fillColor = node.id === focusedNodeId.value ? nodeFocusColor : nodeColor(node)
-    ctx.fillStyle = fillColor
+    ctx.arc(node.x, node.y, getValue(nodeSize, node), 0, Math.PI * 2)
+    const fillColor = node.id === focusedNodeId.value ? nodeFocusColor : nodeColor
+    ctx.fillStyle = getValue(fillColor, node)
     ctx.fill()
 
     // draw border
-    const borderColor = node.id === focusedNodeId.value ? nodeFocusBorderColor : nodeBorderColor(node)
-    ctx.strokeStyle = borderColor
-    ctx.lineWidth = nodeBorderSize
+    const borderColor = node.id === focusedNodeId.value ? nodeFocusBorderColor : nodeBorderColor
+    ctx.strokeStyle = getValue(borderColor, node)
+    ctx.lineWidth = getValue(nodeBorderSize, node)
     ctx.stroke()
     ctx.closePath()
 
     // draw text label
-    ctx.font = `bold ${nodeTextSize}px Arial`
-    ctx.fillStyle = nodeTextColor
+    ctx.font = `bold ${getValue(nodeTextSize, node)}px Arial`
+    ctx.fillStyle = getValue(nodeTextColor, node)
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText(nodeText(node), node.x, node.y)
+    ctx.fillText(getValue(nodeText, node), node.x, node.y)
   }
 
   const drawEdge = (ctx: CanvasRenderingContext2D, edge: Edge) => {
@@ -95,8 +103,8 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     ctx.beginPath()
     ctx.moveTo(from.x, from.y)
     ctx.lineTo(to.x, to.y)
-    ctx.strokeStyle = edgeColor
-    ctx.lineWidth = edgeWidth
+    ctx.strokeStyle = getValue(edgeColor, edge)
+    ctx.lineWidth = getValue(edgeWidth, edge)
     ctx.stroke()
     ctx.closePath()
   }
@@ -165,7 +173,7 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
 
   const getNodeByCoordinates = (x: number, y: number) => {
     return nodes.value.find(node => {
-      return Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2) < nodeSize
+      return Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2) < getValue(nodeSize, node)
     })
   }
 

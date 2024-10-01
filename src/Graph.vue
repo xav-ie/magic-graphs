@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useDarkDraggableGraph  } from './useGraph';
+import { computed, ref, } from 'vue';
+import { useDarkDraggableGraph, type Node } from './useGraph';
 import { useWindowSize } from '@vueuse/core';
 
 const canvas = ref<HTMLCanvasElement>();
@@ -35,9 +35,8 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
 );
 
 const bfsNodeColorizer = () => {
-  const colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
   return (node: Node) => {
-    return colors[1]
+    return colors[node.id % colors.length];
   }
 }
 
