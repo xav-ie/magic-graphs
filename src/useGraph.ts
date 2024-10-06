@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted, type Ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount, type Ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { onClickOutside } from '@vueuse/core'
 import { themes } from './themes'
@@ -75,14 +75,16 @@ export type GraphOptions = Partial<{
   edgeWidth: EdgeGetterOrValue<number>,
 
   /* for loading existing graphs */
-  nodes: Node[],
+  nodes: NodeOptions[],
   edges: Edge[],
-
-  /* callbacks */
-
-  /* is invoked whenever a node or edge is added or removed */
-  onStructureChange: (nodes: Node[], edges: Edge[]) => void,
 }>
+
+/* for nodes that have not been added to the graph yet */
+export type NodeOptions = {
+  id?: number,
+  x: number,
+  y: number,
+}
 
 export type Node = {
   id: number,
@@ -95,7 +97,10 @@ export type Edge = {
   from: number,
 }
 
-export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions = {}) => {
+export const useGraph =(
+  canvas: Ref<HTMLCanvasElement | undefined | null>,
+  options: GraphOptions = {}
+) => {
 
   const {
     nodeSize = 35,
@@ -130,10 +135,6 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     onDblClick: [],
 
     onKeydown: [],
-  }
-
-  if (options.onStructureChange) {
-    eventBus.onStructureChange.push(options.onStructureChange)
   }
 
   const drawNode = (ctx: CanvasRenderingContext2D, node: Node) => {
@@ -175,7 +176,7 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
   }
 
   const draw = (ctx: CanvasRenderingContext2D) => {
-    ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
+    ctx.clearRect(0, 0, canvas.value!.width, canvas.value!.height)
     edges.value.forEach(edge => drawEdge(ctx, edge))
     nodes.value.forEach(node => drawNode(ctx, node))
   }
@@ -217,6 +218,10 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
   const stopClickOutsideListener = onClickOutside(canvas, () => setFocusedNode(undefined))
 
   onMounted(() => {
+    if (!canvas.value) {
+      throw new Error('Canvas element not found')
+    }
+
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.addEventListener(event, listeners)
     }
@@ -226,7 +231,11 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     }
   })
 
-  onUnmounted(() => {
+  onBeforeUnmount(() => {
+    if (!canvas.value) {
+      throw new Error('Canvas element not found')
+    }
+
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.removeEventListener(event, listeners)
     }
@@ -239,7 +248,7 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     stopClickOutsideListener()
   })
 
-  const addNode = (node: { id?: number, x: number, y: number }, focusNode = true) => {
+  const addNode = (node: NodeOptions, focusNode = true) => {
     const newNode = {
       id: node.id || nodeIdCount++,
       x: node.x,
@@ -321,16 +330,16 @@ type WithNodeEvents<T extends UseGraphEventBusCallbackMappings> = T & {
   onNodeHoverChange: (newNode: Node | undefined, oldNode: Node | undefined) => void;
 }
 
-type NewMappings = WithNodeEvents<UseGraphEventBusCallbackMappings>
+type MappingsWithNodeEvents = WithNodeEvents<UseGraphEventBusCallbackMappings>
 
 export const useGraphWithNodeEvents = (
-  canvas: Ref<HTMLCanvasElement>,
+  canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: GraphOptions = {}
 ) => {
   const graph = useGraph(canvas, options)
   let currHoveredNode: Node | undefined = undefined
 
-  const eventBus: MappingsToEventBus<NewMappings> = {
+  const eventBus: MappingsToEventBus<MappingsWithNodeEvents> = {
     ...graph.eventBus,
     onNodeHoverChange: [],
   }
@@ -351,9 +360,28 @@ export const useGraphWithNodeEvents = (
   }
 }
 
-export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions = {}) => {
+type WithDragEvents<T extends UseGraphEventBusCallbackMappings> = T & {
+  onNodeDragStart: (node: Node) => void;
+  onNodeDragEnd: (node: Node) => void;
+}
+
+type MappingsWithDragAndNodeEvents = WithDragEvents<MappingsWithNodeEvents>
+
+export const useDraggableGraph = (
+  canvas: Ref<HTMLCanvasElement | undefined | null>,
+  options: GraphOptions = {}
+) => {
 
   const graph = useGraphWithNodeEvents(canvas, options)
+
+  const eventBus: MappingsToEventBus<MappingsWithDragAndNodeEvents> = {
+    ...graph.eventBus,
+    onNodeDragStart: [],
+    onNodeDragEnd: [],
+  }
+
+  const subscribe = generateSubscriber(eventBus)
+
   const nodeBeingDragged = ref<Node | null>(null)
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | null>(null)
 
@@ -361,12 +389,14 @@ export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: Graph
     const { offsetX, offsetY } = ev;
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
     const node = graph.getNodeByCoordinates(offsetX, offsetY);
-    if (node) {
-      nodeBeingDragged.value = node;
-    }
+    if (!node) return
+    nodeBeingDragged.value = node;
+    eventBus.onNodeDragStart.forEach(fn => fn(node))
   }
 
   const endDrag = () => {
+    if (!nodeBeingDragged.value) return
+    eventBus.onNodeDragEnd.forEach(fn => fn(nodeBeingDragged.value))
     nodeBeingDragged.value = null;
   }
 
@@ -379,17 +409,22 @@ export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: Graph
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
   }
 
-  graph.subscribe('onMouseDown', beginDrag)
-  graph.subscribe('onMouseUp', endDrag)
-  graph.subscribe('onMouseMove', drag)
+  subscribe('onMouseDown', beginDrag)
+  subscribe('onMouseUp', endDrag)
+  subscribe('onMouseMove', drag)
 
-  return graph
+  return {
+    ...graph,
+    eventBus,
+    subscribe,
+  }
 }
 
 export const useUserEditableGraph = (
-  canvas: Ref<HTMLCanvasElement>,
+  canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: GraphOptions = {}
 ) => {
+
   const graph = useDraggableGraph(canvas, options)
 
   graph.subscribe('onDblClick', (ev) => {
@@ -414,32 +449,40 @@ export const useWeirdDraggableGraph = (
 })
 
 export const usePersistentDraggableGraph = (
-  canvas: Ref<HTMLCanvasElement>,
+  canvas: Ref<HTMLCanvasElement | undefined | null>,
   storageKey: string,
   options: GraphOptions = {}
 ) => {
+
   const graph = useDraggableGraph(canvas, options)
 
   // TODO: load the nodes and edges in properly and not just by mem ref
   useLocalStorage(storageKey + '-nodes', graph.nodes)
   useLocalStorage(storageKey + '-edges', graph.edges)
 
-  options.onStructureChange?.(graph.nodes.value, graph.edges.value)
-
   return graph
 }
 
 export const useDarkUserEditableGraph = (
-  canvas: Ref<HTMLCanvasElement>,
+  canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: GraphOptions = {}
 ) => {
+
   const g = useUserEditableGraph(canvas, {
     ...themes.dark,
     ...options,
   })
 
-  g.subscribe('onNodeHoverChange', (nodeBeingHovered) => {
-    console.log('nodeBeingHovered', nodeBeingHovered?.id)
+  // g.subscribe('onNodeHoverChange', (nodeBeingHovered) => {
+  //   console.log('nodeBeingHovered', nodeBeingHovered?.id)
+  // })
+
+  g.subscribe('onNodeDragStart', (node) => {
+    console.log('drag start', node.id)
+  })
+
+  g.subscribe('onNodeDragEnd', (node) => {
+    console.log('drag end', node.id)
   })
 
   return g

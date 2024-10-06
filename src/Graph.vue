@@ -35,20 +35,20 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
   tos.map(to => ({ from: Number(from), to: Number(to) }))
 );
 
-// @ts-expect-error - TS complains about the canvas ref type
-const { addEdge } = useDarkUserEditableGraph(canvas, {
+const { addEdge, subscribe } = useDarkUserEditableGraph(canvas, {
   nodes: defaultNodes,
   edges: defaultEdges,
-  onStructureChange: (nodes, edges) => emit(
-    'update:modelValue',
-    nodes.reduce<ConsumableGraph>((acc, node) => {
-      acc[node.id] = edges
-        .filter(edge => edge.from === node.id)
-        .map(edge => edge.to);
-      return acc;
-    }, {})
-  )
 });
+
+subscribe('onStructureChange', (nodes, edges) => emit(
+  'update:modelValue',
+  nodes.reduce<ConsumableGraph>((acc, node) => {
+    acc[node.id] = edges
+      .filter(edge => edge.from === node.id)
+      .map(edge => edge.to);
+    return acc;
+  }, {})
+))
 
 const tempEdgeInput = ref('');
 
