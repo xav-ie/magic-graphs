@@ -3,9 +3,9 @@ import { useLocalStorage } from '@vueuse/core'
 import { onClickOutside } from '@vueuse/core'
 import { themes } from './themes'
 
-type GetterOrValue<T, K extends any[] = []> = T | ((...arg: K) => T)
-type NodeGetterOrValue<T> = GetterOrValue<T, [Node]>
-type EdgeGetterOrValue<T> = GetterOrValue<T, [Edge]>
+type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
+type NodeGetterOrValue<T> = MaybeGetter<T, [Node]>
+type EdgeGetterOrValue<T> = MaybeGetter<T, [Edge]>
 
 type EventNames = keyof HTMLElementEventMap
 
@@ -40,14 +40,26 @@ type UseGraphEventBusCallbackMappings = {
   onKeydown: ((ev: KeyboardEvent) => void);
 }
 
-type UseGraphEventBus = Record<keyof UseGraphEventBusCallbackMappings, any[]>
+type MappingsToEventBus<T> = Record<keyof T, any[]>
+type UseGraphEventBus = MappingsToEventBus<UseGraphEventBusCallbackMappings>
 
-const getValue = <T, K extends any[]>(value: GetterOrValue<T, K>, ...args: K) => {
+const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
   if (typeof value === 'function') {
     return (value as (...args: K) => T)(...args)
   }
   return value
 }
+
+/*
+  generates a "subscribe" function for the event bus
+  in order to registering new events
+*/
+const generateSubscriber = <T extends UseGraphEventBusCallbackMappings>(
+  eventBus: MappingsToEventBus<T>
+) => <K extends keyof T>(
+  event: K,
+  fn: T[K]
+) => eventBus[event].push(fn)
 
 export type GraphOptions = Partial<{
   nodeSize: NodeGetterOrValue<number>,
@@ -287,37 +299,6 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
   defaultEdges.forEach((edge) => addEdge(edge))
   defaultNodes.forEach((node) => addNode(node, false))
 
-  const subscribe = <T extends keyof UseGraphEventBus>(
-    event: T,
-    fn: UseGraphEventBusCallbackMappings[T]
-  ) => {
-    console.log('event', event)
-    eventBus[event].push(fn)
-  }
-
-  const extendEventBus = <
-    K extends string,
-    E extends Function = () => void,
-    T extends UseGraphEventBus = UseGraphEventBus,
-  >(
-    eventBus: T,
-    newEventKey: K,
-  ) => {
-    const newEventBus = {
-      ...eventBus,
-      [newEventKey]: [],
-    } as T & { [_ in K]: E[] }
-
-    const newSubscribe = ((event: keyof T | K, fn: E) => {
-      newEventBus[event].push(fn)
-    })
-
-    return {
-      newEventBus,
-      newSubscribe,
-    }
-  }
-
   return {
     nodes,
     edges,
@@ -332,38 +313,47 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     getFocusedNodeId: () => focusedNodeId.value,
     setFocusedNode,
     eventBus,
-    extendEventBus,
-    subscribe,
+    subscribe: generateSubscriber(eventBus),
   }
 }
+
+type WithNodeEvents<T extends UseGraphEventBusCallbackMappings> = T & {
+  onNodeHoverChange: (newNode: Node | undefined, oldNode: Node | undefined) => void;
+}
+
+type NewMappings = WithNodeEvents<UseGraphEventBusCallbackMappings>
 
 export const useGraphWithNodeEvents = (
   canvas: Ref<HTMLCanvasElement>,
   options: GraphOptions = {}
 ) => {
   const graph = useGraph(canvas, options)
-  const {
-    newEventBus,
-    newSubscribe
-  } = graph.extendEventBus<'onNodeHoverChange', (node: Node | undefined) => void>(
-    graph.eventBus,
-    'onNodeHoverChange'
-  )
+  let currHoveredNode: Node | undefined = undefined
 
-  newSubscribe('onNodeHoverChange', (node) => {
-    console.log('node', node?.id)
-  });
+  const eventBus: MappingsToEventBus<NewMappings> = {
+    ...graph.eventBus,
+    onNodeHoverChange: [],
+  }
+
+  const subscribe = generateSubscriber(eventBus)
+
+  subscribe('onMouseMove', (ev) => {
+    const node = graph.getNodeByCoordinates(ev.offsetX, ev.offsetY)
+    if (node === currHoveredNode) return
+    eventBus.onNodeHoverChange.forEach(fn => fn(node, currHoveredNode))
+    currHoveredNode = node
+  })
 
   return {
     ...graph,
-    subscribe: newSubscribe,
-    eventBus: newEventBus,
+    eventBus,
+    subscribe,
   }
 }
 
 export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions = {}) => {
 
-  const graph = useGraph(canvas, options)
+  const graph = useGraphWithNodeEvents(canvas, options)
   const nodeBeingDragged = ref<Node | null>(null)
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | null>(null)
 
@@ -448,9 +438,9 @@ export const useDarkUserEditableGraph = (
     ...options,
   })
 
-  // g.subscribe('onNodeHoverChange', (nodeBeingHovered) => {
-  //   console.log('nodeBeingHovered', nodeBeingHovered?.id)
-  // })
+  g.subscribe('onNodeHoverChange', (nodeBeingHovered) => {
+    console.log('nodeBeingHovered', nodeBeingHovered?.id)
+  })
 
   return g
 }
