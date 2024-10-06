@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, } from 'vue';
-import { useDarkDraggableGraph, type Node } from './useGraph';
+import { useDarkUserEditableGraph, useGraph, useDraggableGraph, useUserEditableGraph, type Node } from './useGraph';
 import { useWindowSize } from '@vueuse/core';
 // import { bfsNodeColorizer } from './graphColorizer';
 
@@ -36,10 +36,9 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
 );
 
 // @ts-expect-error - TS complains about the canvas ref type
-const { addEdge } = useDarkDraggableGraph(canvas, {
+const { addEdge } = useDarkUserEditableGraph(canvas, {
   nodes: defaultNodes,
   edges: defaultEdges,
-  // nodeBorderColor: (graph) => bfsNodeColorizer(graph),
   onStructureChange: (nodes, edges) => emit(
     'update:modelValue',
     nodes.reduce<ConsumableGraph>((acc, node) => {
