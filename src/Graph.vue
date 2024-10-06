@@ -2,6 +2,7 @@
 import { computed, ref, } from 'vue';
 import { useDarkDraggableGraph, type Node } from './useGraph';
 import { useWindowSize } from '@vueuse/core';
+// import { bfsNodeColorizer } from './graphColorizer';
 
 const canvas = ref<HTMLCanvasElement>();
 
@@ -34,17 +35,11 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
   tos.map(to => ({ from: Number(from), to: Number(to) }))
 );
 
-const bfsNodeColorizer = () => {
-  return (node: Node) => {
-    return colors[node.id % colors.length];
-  }
-}
-
 // @ts-expect-error - TS complains about the canvas ref type
 const { addEdge } = useDarkDraggableGraph(canvas, {
   nodes: defaultNodes,
   edges: defaultEdges,
-  nodeBorderColor: bfsNodeColorizer(),
+  // nodeBorderColor: (graph) => bfsNodeColorizer(graph),
   onStructureChange: (nodes, edges) => emit(
     'update:modelValue',
     nodes.reduce<ConsumableGraph>((acc, node) => {

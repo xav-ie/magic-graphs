@@ -1,4 +1,4 @@
-import { ref, onMounted, type Ref } from 'vue'
+import { ref, onMounted, onUnmounted, type Ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { onClickOutside } from '@vueuse/core'
 import { themes } from './themes'
@@ -69,7 +69,39 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
   let nodeIdCount = 1
   const nodes = ref<Node[]>([])
   const edges = ref<Edge[]>([])
-  const focusedNodeId = ref<Node['id'] | null>(null)
+  const focusedNodeId = ref<Node['id'] | undefined>()
+
+  type EventBus = {
+    onStructureChange: ((nodes: Node[], edges: Edge[]) => void);
+    onNodeFocusChange: ((newNode: Node | undefined, oldNode: Node | undefined) => void);
+
+    /* canvas element events */
+    onClick: ((ev: MouseEvent) => void);
+    onMouseDown: ((ev: MouseEvent) => void);
+    onMouseUp: ((ev: MouseEvent) => void);
+    onMouseMove: ((ev: MouseEvent) => void);
+    onDblClick: ((ev: MouseEvent) => void);
+
+    onKeydown: ((ev: KeyboardEvent) => void);
+  }
+
+  const eventBus: Record<keyof EventBus, any[]> = {
+    onStructureChange: [],
+    onNodeFocusChange: [],
+
+    /* canvas element events */
+    onClick: [],
+    onMouseDown: [],
+    onMouseUp: [],
+    onMouseMove: [],
+    onDblClick: [],
+
+    onKeydown: [],
+  }
+
+  if (options.onStructureChange) {
+    eventBus.onStructureChange.push(options.onStructureChange)
+  }
 
   const drawNode = (ctx: CanvasRenderingContext2D, node: Node) => {
     // draw node
@@ -115,30 +147,69 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     nodes.value.forEach(node => drawNode(ctx, node))
   }
 
+  type EventNames = keyof HTMLElementEventMap
+
+  type FilterEventNames<T> = {
+    [K in EventNames]: HTMLElementEventMap[K] extends T ? K : never
+  }[EventNames]
+
+  type MouseEventNames = FilterEventNames<MouseEvent>
+  type KeyboardEventNames = FilterEventNames<KeyboardEvent>
+
+  type EventMap<T extends EventNames, E> = Record<T, (ev: E) => void>
+
+  type MouseEventMap = EventMap<MouseEventNames, MouseEvent>
+  type KeyboardEventMap = EventMap<KeyboardEventNames, KeyboardEvent>
+
+  const mouseEvents: Partial<MouseEventMap> = {
+    click: (ev: MouseEvent) => {
+      eventBus.onClick.forEach(fn => fn(ev))
+    },
+    mousedown: (ev: MouseEvent) => {
+      eventBus.onMouseDown.forEach(fn => fn(ev))
+      const node = getNodeByCoordinates(ev.offsetX, ev.offsetY)
+      setFocusedNode(node?.id)
+    },
+    mouseup: (ev: MouseEvent) => {
+      eventBus.onMouseUp.forEach(fn => fn(ev))
+    },
+    mousemove: (ev: MouseEvent) => {
+      eventBus.onMouseMove.forEach(fn => fn(ev))
+    },
+    dblclick: (ev: MouseEvent) => {
+      eventBus.onDblClick.forEach(fn => fn(ev))
+      const { offsetX, offsetY } = ev
+      addNode({ x: offsetX, y: offsetY })
+    },
+  }
+
+  const keyboardEvents: Partial<KeyboardEventMap> = {
+    keydown: (ev: KeyboardEvent) => {
+      if (ev.key === 'Backspace' && focusedNodeId.value) {
+        removeNode(focusedNodeId.value)
+      }
+      eventBus.onKeydown.forEach(fn => fn(ev))
+    }
+  }
+
+  type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][]
+  type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
+
   onMounted(() => {
     const ctx = canvas.value.getContext('2d')
     if (ctx) {
       draw(ctx)
     }
 
-    canvas.value.addEventListener('dblclick', (ev) => {
-      const { offsetX, offsetY } = ev
-      addNode({ x: offsetX, y: offsetY })
-    })
+    for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
+      canvas.value.addEventListener(event, listeners)
+    }
 
-    canvas.value.addEventListener('mousedown', (ev) => {
-      const node = getNodeByCoordinates(ev.offsetX, ev.offsetY)
-      if (!node) return focusedNodeId.value = null
-      focusedNodeId.value = node.id
-    })
+    for (const [event, listeners] of Object.entries(keyboardEvents) as KeyboardEventEntries) {
+      document.addEventListener(event, listeners)
+    }
 
-    document.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Backspace' && focusedNodeId.value) {
-        removeNode(focusedNodeId.value)
-      }
-    })
-
-    onClickOutside(canvas, () => focusedNodeId.value = null)
+    onClickOutside(canvas, () => setFocusedNode(undefined))
 
     setInterval(() => {
       const ctx = canvas.value.getContext('2d')
@@ -148,15 +219,25 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     }, 1000 / 60 /* 60fps */)
   })
 
-  const addNode = (node: Partial<Node>, focusNode = true) => {
+  onUnmounted(() => {
+    for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
+      canvas.value.removeEventListener(event, listeners)
+    }
+
+    for (const [event, listeners] of Object.entries(keyboardEvents) as KeyboardEventEntries) {
+      document.removeEventListener(event, listeners)
+    }
+  })
+
+  const addNode = (node: { id?: number, x: number, y: number }, focusNode = true) => {
     const newNode = {
       id: node.id || nodeIdCount++,
-      x: node.x || 100,
-      y: node.y || 100,
+      x: node.x,
+      y: node.y,
     }
     nodes.value.push(newNode)
-    options.onStructureChange?.(nodes.value, edges.value)
-    if (focusNode) focusedNodeId.value = newNode.id
+    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    if (focusNode) setFocusedNode(newNode.id)
   }
 
   const moveNode = (id: number, x: number, y: number) => {
@@ -182,19 +263,27 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     if (index === -1) return
     nodes.value.splice(index, 1)
     edges.value = edges.value.filter(edge => edge.from !== id && edge.to !== id)
-    options.onStructureChange?.(nodes.value, edges.value)
+    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
   }
 
   const addEdge = (edge: Edge) => {
     edges.value.push(edge)
-    options.onStructureChange?.(nodes.value, edges.value)
+    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
   }
 
   const removeEdge = (edge: Edge) => {
     const edgeIndex = edges.value.findIndex(e => e.from === edge.from && e.to === edge.to)
     if (edgeIndex === -1) return
     edges.value.splice(edgeIndex, 1)
-    options.onStructureChange?.(nodes.value, edges.value)
+    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+  }
+
+  const setFocusedNode = (newNodeId: number | undefined) => {
+    if (focusedNodeId.value === newNodeId) return
+    const oldNode = focusedNodeId.value ? getNode(focusedNodeId.value) : undefined
+    const newNode = newNodeId ? getNode(newNodeId) : undefined
+    focusedNodeId.value = newNodeId
+    eventBus.onNodeFocusChange.forEach(fn => fn(newNode, oldNode))
   }
 
   defaultEdges.forEach((edge) => addEdge(edge))
@@ -210,6 +299,10 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     removeNode,
     addEdge,
     removeEdge,
+    setFocusedNode,
+    subscribe: <T extends keyof EventBus>(event: T, fn: EventBus[T]) => {
+      eventBus[event].push(fn)
+    },
   }
 }
 
@@ -241,11 +334,9 @@ export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: Graph
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
   }
 
-  onMounted(() => {
-    canvas.value.addEventListener('mousedown', beginDrag)
-    canvas.value.addEventListener('mouseup', endDrag)
-    canvas.value.addEventListener('mousemove', drag)
-  })
+  graph.subscribe('onMouseDown', beginDrag)
+  graph.subscribe('onMouseUp', endDrag)
+  graph.subscribe('onMouseMove', drag)
 
   return graph
 }
@@ -277,7 +368,13 @@ export const usePersistentDraggableGraph = (
 export const useDarkDraggableGraph = (
   canvas: Ref<HTMLCanvasElement>,
   options: GraphOptions = {}
-) => useDraggableGraph(canvas, {
-  ...themes.dark,
-  ...options,
-})
+) => {
+  const g = useDraggableGraph(canvas, {
+    ...themes.dark,
+    ...options,
+  })
+
+  return g
+}
+
+export type Graph = ReturnType<typeof useGraph>
