@@ -178,16 +178,16 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     },
     dblclick: (ev: MouseEvent) => {
       eventBus.onDblClick.forEach(fn => fn(ev))
-      const { offsetX, offsetY } = ev
-      addNode({ x: offsetX, y: offsetY })
+      // const { offsetX, offsetY } = ev
+      // addNode({ x: offsetX, y: offsetY })
     },
   }
 
   const keyboardEvents: Partial<KeyboardEventMap> = {
     keydown: (ev: KeyboardEvent) => {
-      if (ev.key === 'Backspace' && focusedNodeId.value) {
-        removeNode(focusedNodeId.value)
-      }
+      // if (ev.key === 'Backspace' && focusedNodeId.value) {
+      //   removeNode(focusedNodeId.value)
+      // }
       eventBus.onKeydown.forEach(fn => fn(ev))
     }
   }
@@ -195,12 +195,16 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
   type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][]
   type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
 
-  onMounted(() => {
+  const drawGraphInterval = setInterval(() => {
     const ctx = canvas.value.getContext('2d')
     if (ctx) {
       draw(ctx)
     }
+  }, 1000 / 60 /* 60fps */)
 
+  const stopClickOutsideListener = onClickOutside(canvas, () => setFocusedNode(undefined))
+
+  onMounted(() => {
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.addEventListener(event, listeners)
     }
@@ -208,15 +212,6 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     for (const [event, listeners] of Object.entries(keyboardEvents) as KeyboardEventEntries) {
       document.addEventListener(event, listeners)
     }
-
-    onClickOutside(canvas, () => setFocusedNode(undefined))
-
-    setInterval(() => {
-      const ctx = canvas.value.getContext('2d')
-      if (ctx) {
-        draw(ctx)
-      }
-    }, 1000 / 60 /* 60fps */)
   })
 
   onUnmounted(() => {
@@ -227,6 +222,9 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     for (const [event, listeners] of Object.entries(keyboardEvents) as KeyboardEventEntries) {
       document.removeEventListener(event, listeners)
     }
+
+    clearInterval(drawGraphInterval)
+    stopClickOutsideListener()
   })
 
   const addNode = (node: { id?: number, x: number, y: number }, focusNode = true) => {
@@ -299,6 +297,8 @@ export const useGraph = (canvas: Ref<HTMLCanvasElement>, options: GraphOptions =
     removeNode,
     addEdge,
     removeEdge,
+    getFocusedNode: () => focusedNodeId.value ? getNode(focusedNodeId.value) : undefined,
+    getFocusedNodeId: () => focusedNodeId.value,
     setFocusedNode,
     subscribe: <T extends keyof EventBus>(event: T, fn: EventBus[T]) => {
       eventBus[event].push(fn)
@@ -341,6 +341,25 @@ export const useDraggableGraph = (canvas: Ref<HTMLCanvasElement>, options: Graph
   return graph
 }
 
+export const useUserEditableGraph = (
+  canvas: Ref<HTMLCanvasElement>,
+  options: GraphOptions = {}
+) => {
+  const graph = useDraggableGraph(canvas, options)
+
+  graph.subscribe('onDblClick', (ev) => {
+    const { offsetX, offsetY } = ev
+    graph.addNode({ x: offsetX, y: offsetY })
+  })
+
+  graph.subscribe('onKeydown', (ev) => {
+    const focusedNodeId = graph.getFocusedNodeId()
+    if (ev.key === 'Backspace' && focusedNodeId) graph.removeNode(focusedNodeId)
+  });
+
+  return graph
+}
+
 export const useWeirdDraggableGraph = (
   canvas: Ref<HTMLCanvasElement>,
   options: GraphOptions = {}
@@ -369,7 +388,7 @@ export const useDarkDraggableGraph = (
   canvas: Ref<HTMLCanvasElement>,
   options: GraphOptions = {}
 ) => {
-  const g = useDraggableGraph(canvas, {
+  const g = useUserEditableGraph(canvas, {
     ...themes.dark,
     ...options,
   })
