@@ -28,6 +28,8 @@ type UseGraphEventBusCallbackMappings = {
   /* graph dataflow events */
   onStructureChange: ((nodes: Node[], edges: Edge[]) => void);
   onNodeFocusChange: ((newNode: Node | undefined, oldNode: Node | undefined) => void);
+  onNodeAdded: (node: Node) => void;
+  onNodeRemoved: (node: Node) => void;
 
   /* canvas dom events */
   onClick: ((ev: MouseEvent) => void);
@@ -124,6 +126,8 @@ export const useGraph =(
   const eventBus: UseGraphEventBus = {
     onStructureChange: [],
     onNodeFocusChange: [],
+    onNodeAdded: [],
+    onNodeRemoved: [],
 
     /* canvas element events */
     onClick: [],
@@ -256,6 +260,7 @@ export const useGraph =(
     }
     nodes.value.push(newNode)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    eventBus.onNodeAdded.forEach(fn => fn(newNode))
     if (focusNode) setFocusedNode(newNode.id)
     return newNode
   }
@@ -281,9 +286,11 @@ export const useGraph =(
   const removeNode = (id: number) => {
     const index = nodes.value.findIndex(node => node.id === id)
     if (index === -1) return
+    const removedNode = nodes.value[index]
     nodes.value.splice(index, 1)
     edges.value = edges.value.filter(edge => edge.from !== id && edge.to !== id)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    eventBus.onNodeRemoved.forEach(fn => fn(removedNode))
   }
 
   const addEdge = (edge: Edge) => {
@@ -328,7 +335,6 @@ export const useGraph =(
 
 type WithNodeEvents<T extends UseGraphEventBusCallbackMappings> = T & {
   onNodeHoverChange: (newNode: Node | undefined, oldNode: Node | undefined) => void;
-  onNodeAdded: (node: Node) => void;
 }
 
 type MappingsWithNodeEvents = WithNodeEvents<UseGraphEventBusCallbackMappings>
@@ -344,6 +350,7 @@ export const useGraphWithNodeEvents = (
     ...graph.eventBus,
     onNodeHoverChange: [],
     onNodeAdded: [],
+    onNodeRemoved: [],
   }
 
   const subscribe = generateSubscriber(eventBus)
@@ -361,11 +368,19 @@ export const useGraphWithNodeEvents = (
     return newNode
   }
 
+  const removeNode = (id: number) => {
+    const node = graph.getNode(id)
+    if (!node) return
+    graph.removeNode(id)
+    eventBus.onNodeRemoved.forEach(fn => fn(node))
+  }
+
   return {
     ...graph,
     eventBus,
     subscribe,
     addNode,
+    removeNode,
   }
 }
 

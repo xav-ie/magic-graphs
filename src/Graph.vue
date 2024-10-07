@@ -36,22 +36,10 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
 
 const graph = useDarkUserEditableGraph(canvas);
 
-const { colorize, decolorize, setStartNode, setColorPalette } = bfsNodeColorizer(graph, {
-  startNode: 1,
+const { toggleColorize, setStartNode } = bfsNodeColorizer(graph, {
+  startNode: 2,
   colorPalette: ['red', 'green', 'blue', 'orange']
 });
-
-// turns on colorization
-colorize();
-
-// turns off colorization
-decolorize();
-
-// reactively sets the start node for the BFS (takes node id)
-setStartNode(0);
-
-// reactively sets the color palette
-setColorPalette(['black', 'white', 'gray', 'purple']);
 
 defaultNodes.forEach(node => graph.addNode(node, false));
 defaultEdges.forEach(edge => graph.addEdge(edge));
@@ -76,6 +64,7 @@ const createEdge = () => {
 
 <template>
   <div :style="{ padding: `${padding}px` }">
+    <button class="absolute px-3 py-1" @click="toggleColorize">toggle bfs colorizer</button>
     <canvas
       :width="canvasWidth"
       :height="canvasHeight"

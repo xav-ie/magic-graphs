@@ -14,8 +14,10 @@ export const bfsNodeColorizer = (
   optionArg: Partial<BFSColorizerOptions> = {}
 ) => {
 
+  let isColorized = false;
+
   const defaultOptions: BFSColorizerOptions = {
-    startNode: graph.nodes.value[0].id,
+    startNode: graph.nodes.value[0]?.id ?? 1,
     colorPalette: defaultColorPalette,
   }
 
@@ -64,9 +66,15 @@ export const bfsNodeColorizer = (
   }
 
   graph.subscribe('onStructureChange', computeBfsLevels);
+  graph.subscribe('onNodeRemoved', (node) => {
+    if (options.value.startNode === node.id && graph.nodes.value.length > 0) {
+      setStartNode(graph.nodes.value[0].id);
+    }
+  });
 
   const colorize = () => {
     graph.options.value.nodeBorderColor = (node) => {
+      isColorized = true;
       const level = bfsLevelRecord[node.id];
       // not in bfs tree
       if (level === undefined) {
@@ -78,6 +86,7 @@ export const bfsNodeColorizer = (
   }
 
   const decolorize = () => {
+    isColorized = false;
     graph.options.value.nodeBorderColor = preserveGraphOptionsState.nodeBorderColor;
   }
 
@@ -93,6 +102,7 @@ export const bfsNodeColorizer = (
   return {
     colorize,
     decolorize,
+    toggleColorize: () => isColorized ? decolorize() : colorize(),
     setStartNode,
     setColorPalette,
   }
