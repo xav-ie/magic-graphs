@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, } from 'vue';
 import { useDarkUserEditableGraph, useGraph, useDraggableGraph, useUserEditableGraph, type Node } from './useGraph';
-import { useWindowSize } from '@vueuse/core';
+import { set, useWindowSize } from '@vueuse/core';
 import { bfsNodeColorizer } from './graphColorizers';
 import { nodesEdgesToAdjList, type AdjacencyList } from './graphConverters';
 
@@ -36,10 +36,16 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
 
 const graph = useDarkUserEditableGraph(canvas);
 
-const { toggleColorize, setStartNode } = bfsNodeColorizer(graph, {
-  startNode: 2,
+const { toggleColorize, setColorPalette } = bfsNodeColorizer(graph, {
+  startNode: 1,
   colorPalette: ['red', 'green', 'blue', 'orange']
 });
+
+toggleColorize();
+
+setTimeout(() => {
+  setColorPalette(['white', 'black'])
+}, 2000);
 
 defaultNodes.forEach(node => graph.addNode(node, false));
 defaultEdges.forEach(edge => graph.addEdge(edge));
