@@ -35,10 +35,10 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
   tos.map(to => ({ from: Number(from), to: Number(to) }))
 );
 
-const graph = useDarkUserEditableGraph(canvas, {
-  nodes: defaultNodes,
-  edges: defaultEdges,
-});
+const graph = useDarkUserEditableGraph(canvas);
+
+defaultNodes.forEach(node => graph.addNode(node, false));
+defaultEdges.forEach(edge => graph.addEdge(edge));
 
 graph.subscribe('onStructureChange', (nodes, edges) => emit(
   'update:modelValue',

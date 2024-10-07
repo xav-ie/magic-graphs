@@ -75,6 +75,20 @@ export type GraphOptions = {
   edgeWidth: EdgeGetterOrValue<number>,
 }
 
+const defaultOptions: GraphOptions = {
+  nodeSize: 35,
+  nodeBorderSize: 8,
+  nodeColor: 'white',
+  nodeBorderColor: 'black',
+  nodeFocusBorderColor: 'blue',
+  nodeFocusColor: 'white',
+  nodeText: (node: Node) => node.id.toString(),
+  nodeTextSize: 24,
+  nodeTextColor: 'black',
+  edgeColor: 'black',
+  edgeWidth: 10,
+}
+
 /* for nodes that have not been added to the graph yet */
 export type NodeOptions = {
   id?: number,
@@ -98,26 +112,11 @@ export const useGraph =(
   optionsArg: Partial<GraphOptions> = {}
 ) => {
 
-  const defaultOptions: GraphOptions = {
-    nodeSize: 35,
-    nodeBorderSize: 8,
-    nodeColor: 'white',
-    nodeBorderColor: 'black',
-    nodeFocusBorderColor: 'blue',
-    nodeFocusColor: 'white',
-    nodeText: (node: Node) => node.id.toString(),
-    nodeTextSize: 24,
-    nodeTextColor: 'black',
-    edgeColor: 'black',
-    edgeWidth: 10,
-  }
-
   const options = ref({
     ...defaultOptions,
     ...optionsArg,
   })
 
-  let nodeIdCount = 1
   const nodes = ref<Node[]>([])
   const edges = ref<Edge[]>([])
   const focusedNodeId = ref<Node['id'] | undefined>()
@@ -248,14 +247,17 @@ export const useGraph =(
   })
 
   const addNode = (node: NodeOptions, focusNode = true) => {
+    const lastNode = nodes.value[nodes.value.length - 1]
+    const id = lastNode ? lastNode.id + 1 : 1
     const newNode = {
-      id: node.id || nodeIdCount++,
+      id: node.id || id,
       x: node.x,
       y: node.y,
     }
     nodes.value.push(newNode)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     if (focusNode) setFocusedNode(newNode.id)
+    return newNode
   }
 
   const moveNode = (id: number, x: number, y: number) => {
@@ -287,6 +289,7 @@ export const useGraph =(
   const addEdge = (edge: Edge) => {
     edges.value.push(edge)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    return edge
   }
 
   const removeEdge = (edge: Edge) => {
@@ -352,15 +355,10 @@ export const useGraphWithNodeEvents = (
     currHoveredNode = node
   })
 
-  let id = 3
   const addNode = (node: NodeOptions, focusNode = true) => {
-    const n = {
-      id: id++,
-      x: node.x,
-      y: node.y,
-    }
-    graph.addNode(n, focusNode)
-    eventBus.onNodeAdded.forEach(fn => fn(n))
+    const newNode = graph.addNode(node, focusNode)
+    eventBus.onNodeAdded.forEach(fn => fn(newNode))
+    return newNode
   }
 
   return {
