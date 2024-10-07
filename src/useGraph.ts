@@ -43,7 +43,7 @@ type UseGraphEventBusCallbackMappings = {
 type MappingsToEventBus<T> = Record<keyof T, any[]>
 type UseGraphEventBus = MappingsToEventBus<UseGraphEventBusCallbackMappings>
 
-const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
+export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
   if (typeof value === 'function') {
     return (value as (...args: K) => T)(...args)
   }
