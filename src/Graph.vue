@@ -2,18 +2,17 @@
 import { computed, ref, } from 'vue';
 import { useDarkUserEditableGraph, useGraph, useDraggableGraph, useUserEditableGraph, type Node } from './useGraph';
 import { useWindowSize } from '@vueuse/core';
-// import { bfsNodeColorizer } from './graphColorizer';
+import { bfsNodeColorizer } from './graphColorizers';
+import { nodesEdgesToAdjList, type AdjacencyList } from './graphConverters';
 
 const canvas = ref<HTMLCanvasElement>();
 
-type ConsumableGraph = Record<number, number[]>;
-
 const props = defineProps<{
-  modelValue: ConsumableGraph;
+  modelValue: AdjacencyList;
 }>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: ConsumableGraph): void,
+  (e: 'update:modelValue', value: AdjacencyList): void,
 }>();
 
 const padding = 20;
@@ -36,18 +35,19 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
 );
 
 const graph = useDarkUserEditableGraph(canvas);
+const { colorize, decolorize } = bfsNodeColorizer(graph);
+
+let it = 0;
+setInterval(() => {
+  ++it % 2 === 0 ? colorize() : decolorize();
+}, 1000);
 
 defaultNodes.forEach(node => graph.addNode(node, false));
 defaultEdges.forEach(edge => graph.addEdge(edge));
 
 graph.subscribe('onStructureChange', (nodes, edges) => emit(
   'update:modelValue',
-  nodes.reduce<ConsumableGraph>((acc, node) => {
-    acc[node.id] = edges
-      .filter(edge => edge.from === node.id)
-      .map(edge => edge.to);
-    return acc;
-  }, {})
+  nodesEdgesToAdjList(nodes, edges)
 ))
 
 const tempEdgeInput = ref('');
