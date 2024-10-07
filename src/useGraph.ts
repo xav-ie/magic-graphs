@@ -1,4 +1,4 @@
-import { ref, onMounted, onBeforeUnmount, type Ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount, type Ref, readonly } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { onClickOutside } from '@vueuse/core'
 import { themes } from './themes'
@@ -428,6 +428,7 @@ export const useDraggableGraph = (
     ...graph,
     eventBus,
     subscribe,
+    nodeBeingDragged: readonly(nodeBeingDragged),
   }
 }
 
@@ -480,7 +481,7 @@ export const useUserEditableGraph = (
   }
 
   const drawMiniNodes = (ctx: CanvasRenderingContext2D) => {
-    if (!miniNodeData.value) return
+    if (!miniNodeData.value || graph.nodeBeingDragged.value) return
     const { x: originX, y: originY } = miniNodeData.value.origin
     const orbitingNode = miniNodeData.value.origin
     const nodeRadius = getValue(graph.options.value.nodeSize, orbitingNode)
@@ -501,6 +502,7 @@ export const useUserEditableGraph = (
     if (!node) return miniNodeData.value = undefined
     miniNodeData.value = { origin: node, mousePosition: { x: node.x, y: node.y } }
   })
+
   graph.subscribe('onRepaint', drawMiniNodes)
 
   return graph
