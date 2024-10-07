@@ -35,12 +35,12 @@ const defaultEdges = Object.entries(props.modelValue).flatMap(([from, tos]) =>
   tos.map(to => ({ from: Number(from), to: Number(to) }))
 );
 
-const { addEdge, subscribe } = useDarkUserEditableGraph(canvas, {
+const graph = useDarkUserEditableGraph(canvas, {
   nodes: defaultNodes,
   edges: defaultEdges,
 });
 
-subscribe('onStructureChange', (nodes, edges) => emit(
+graph.subscribe('onStructureChange', (nodes, edges) => emit(
   'update:modelValue',
   nodes.reduce<ConsumableGraph>((acc, node) => {
     acc[node.id] = edges
@@ -56,8 +56,8 @@ const createEdge = () => {
   const [from, to] = tempEdgeInput.value.split(' ').map(Number);
   if (from && to) {
     // while we only support undirected graphs, we add both edges
-    addEdge({ from, to });
-    addEdge({ from: to, to: from });
+    graph.addEdge({ from, to });
+    graph.addEdge({ from: to, to: from });
     tempEdgeInput.value = '';
   }
 };

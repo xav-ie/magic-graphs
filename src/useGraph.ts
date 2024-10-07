@@ -61,7 +61,7 @@ const generateSubscriber = <T extends UseGraphEventBusCallbackMappings>(
   fn: T[K]
 ) => eventBus[event].push(fn)
 
-export type GraphOptions = Partial<{
+export type GraphOptions = {
   nodeSize: NodeGetterOrValue<number>,
   nodeBorderSize: NodeGetterOrValue<number>,
   nodeColor: NodeGetterOrValue<string>,
@@ -73,11 +73,7 @@ export type GraphOptions = Partial<{
   nodeTextColor: NodeGetterOrValue<string>,
   edgeColor: EdgeGetterOrValue<string>,
   edgeWidth: EdgeGetterOrValue<number>,
-
-  /* for loading existing graphs */
-  nodes: NodeOptions[],
-  edges: Edge[],
-}>
+}
 
 /* for nodes that have not been added to the graph yet */
 export type NodeOptions = {
@@ -99,24 +95,27 @@ export type Edge = {
 
 export const useGraph =(
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: GraphOptions = {}
+  optionsArg: Partial<GraphOptions> = {}
 ) => {
 
-  const {
-    nodeSize = 35,
-    nodeBorderSize = 8,
-    nodeColor = 'white',
-    nodeBorderColor = 'black',
-    nodeFocusBorderColor = 'blue',
-    nodeFocusColor = 'white',
-    nodeText = (node: Node) => node.id.toString(),
-    nodeTextSize = 24,
-    nodeTextColor = 'black',
-    edgeColor = 'black',
-    edgeWidth = 10,
-    nodes: defaultNodes = [],
-    edges: defaultEdges = [],
-  } = options
+  const defaultOptions: GraphOptions = {
+    nodeSize: 35,
+    nodeBorderSize: 8,
+    nodeColor: 'white',
+    nodeBorderColor: 'black',
+    nodeFocusBorderColor: 'blue',
+    nodeFocusColor: 'white',
+    nodeText: (node: Node) => node.id.toString(),
+    nodeTextSize: 24,
+    nodeTextColor: 'black',
+    edgeColor: 'black',
+    edgeWidth: 10,
+  }
+
+  const options = ref({
+    ...defaultOptions,
+    ...optionsArg,
+  })
 
   let nodeIdCount = 1
   const nodes = ref<Node[]>([])
@@ -140,24 +139,24 @@ export const useGraph =(
   const drawNode = (ctx: CanvasRenderingContext2D, node: Node) => {
     // draw node
     ctx.beginPath()
-    ctx.arc(node.x, node.y, getValue(nodeSize, node), 0, Math.PI * 2)
-    const fillColor = node.id === focusedNodeId.value ? nodeFocusColor : nodeColor
+    ctx.arc(node.x, node.y, getValue(options.value.nodeSize, node), 0, Math.PI * 2)
+    const fillColor = node.id === focusedNodeId.value ? options.value.nodeFocusColor : options.value.nodeColor
     ctx.fillStyle = getValue(fillColor, node)
     ctx.fill()
 
     // draw border
-    const borderColor = node.id === focusedNodeId.value ? nodeFocusBorderColor : nodeBorderColor
+    const borderColor = node.id === focusedNodeId.value ? options.value.nodeFocusBorderColor : options.value.nodeBorderColor
     ctx.strokeStyle = getValue(borderColor, node)
-    ctx.lineWidth = getValue(nodeBorderSize, node)
+    ctx.lineWidth = getValue(options.value.nodeBorderSize, node)
     ctx.stroke()
     ctx.closePath()
 
     // draw text label
-    ctx.font = `bold ${getValue(nodeTextSize, node)}px Arial`
-    ctx.fillStyle = getValue(nodeTextColor, node)
+    ctx.font = `bold ${getValue(options.value.nodeTextSize, node)}px Arial`
+    ctx.fillStyle = getValue(options.value.nodeTextColor, node)
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText(getValue(nodeText, node), node.x, node.y)
+    ctx.fillText(getValue(options.value.nodeText, node), node.x, node.y)
   }
 
   const drawEdge = (ctx: CanvasRenderingContext2D, edge: Edge) => {
@@ -169,8 +168,8 @@ export const useGraph =(
     ctx.beginPath()
     ctx.moveTo(from.x, from.y)
     ctx.lineTo(to.x, to.y)
-    ctx.strokeStyle = getValue(edgeColor, edge)
-    ctx.lineWidth = getValue(edgeWidth, edge)
+    ctx.strokeStyle = getValue(options.value.edgeColor, edge)
+    ctx.lineWidth = getValue(options.value.edgeWidth, edge)
     ctx.stroke()
     ctx.closePath()
   }
@@ -273,7 +272,7 @@ export const useGraph =(
 
   const getNodeByCoordinates = (x: number, y: number) => {
     return nodes.value.find(node => {
-      return Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2) < getValue(nodeSize, node)
+      return Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2) < getValue(options.value.nodeSize, node)
     })
   }
 
@@ -305,9 +304,6 @@ export const useGraph =(
     eventBus.onNodeFocusChange.forEach(fn => fn(newNode, oldNode))
   }
 
-  defaultEdges.forEach((edge) => addEdge(edge))
-  defaultNodes.forEach((node) => addNode(node, false))
-
   return {
     nodes,
     edges,
@@ -323,18 +319,20 @@ export const useGraph =(
     setFocusedNode,
     eventBus,
     subscribe: generateSubscriber(eventBus),
+    options,
   }
 }
 
 type WithNodeEvents<T extends UseGraphEventBusCallbackMappings> = T & {
   onNodeHoverChange: (newNode: Node | undefined, oldNode: Node | undefined) => void;
+  onNodeAdded: (node: Node) => void;
 }
 
 type MappingsWithNodeEvents = WithNodeEvents<UseGraphEventBusCallbackMappings>
 
 export const useGraphWithNodeEvents = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: GraphOptions = {}
+  options: Partial<GraphOptions> = {}
 ) => {
   const graph = useGraph(canvas, options)
   let currHoveredNode: Node | undefined = undefined
@@ -342,6 +340,7 @@ export const useGraphWithNodeEvents = (
   const eventBus: MappingsToEventBus<MappingsWithNodeEvents> = {
     ...graph.eventBus,
     onNodeHoverChange: [],
+    onNodeAdded: [],
   }
 
   const subscribe = generateSubscriber(eventBus)
@@ -353,10 +352,22 @@ export const useGraphWithNodeEvents = (
     currHoveredNode = node
   })
 
+  let id = 3
+  const addNode = (node: NodeOptions, focusNode = true) => {
+    const n = {
+      id: id++,
+      x: node.x,
+      y: node.y,
+    }
+    graph.addNode(n, focusNode)
+    eventBus.onNodeAdded.forEach(fn => fn(n))
+  }
+
   return {
     ...graph,
     eventBus,
     subscribe,
+    addNode,
   }
 }
 
@@ -369,7 +380,7 @@ type MappingsWithDragAndNodeEvents = WithDragEvents<MappingsWithNodeEvents>
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: GraphOptions = {}
+  options: Partial<GraphOptions> = {}
 ) => {
 
   const graph = useGraphWithNodeEvents(canvas, options)
@@ -422,7 +433,7 @@ export const useDraggableGraph = (
 
 export const useUserEditableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: GraphOptions = {}
+  options: Partial<GraphOptions> = {}
 ) => {
 
   const graph = useDraggableGraph(canvas, options)
@@ -442,7 +453,7 @@ export const useUserEditableGraph = (
 
 export const useWeirdDraggableGraph = (
   canvas: Ref<HTMLCanvasElement>,
-  options: GraphOptions = {}
+  options: Partial<GraphOptions> = {}
 ) => useDraggableGraph(canvas, {
   ...themes.weird,
   ...options,
@@ -451,7 +462,7 @@ export const useWeirdDraggableGraph = (
 export const usePersistentDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   storageKey: string,
-  options: GraphOptions = {}
+  options: Partial<GraphOptions> = {}
 ) => {
 
   const graph = useDraggableGraph(canvas, options)
@@ -465,24 +476,12 @@ export const usePersistentDraggableGraph = (
 
 export const useDarkUserEditableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: GraphOptions = {}
+  options: Partial<GraphOptions> = {}
 ) => {
 
   const g = useUserEditableGraph(canvas, {
     ...themes.dark,
     ...options,
-  })
-
-  // g.subscribe('onNodeHoverChange', (nodeBeingHovered) => {
-  //   console.log('nodeBeingHovered', nodeBeingHovered?.id)
-  // })
-
-  g.subscribe('onNodeDragStart', (node) => {
-    console.log('drag start', node.id)
-  })
-
-  g.subscribe('onNodeDragEnd', (node) => {
-    console.log('drag end', node.id)
   })
 
   return g

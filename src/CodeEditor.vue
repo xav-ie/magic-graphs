@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { useLocalStorage } from '@vueuse/core';
+import { useLocalStorage, useWebWorkerFn } from '@vueuse/core';
 import { implementations } from './implementations';
 import { Codemirror } from 'vue-codemirror';
 import { javascript } from "@codemirror/lang-javascript";
