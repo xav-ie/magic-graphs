@@ -30,16 +30,17 @@ type UseGraphEventBusCallbackMappings = {
   onNodeFocusChange: ((newNode: Node | undefined, oldNode: Node | undefined) => void);
   onNodeAdded: (node: Node) => void;
   onNodeRemoved: (node: Node) => void;
+  onRepaint: (ctx: CanvasRenderingContext2D) => void;
 
   /* canvas dom events */
-  onClick: ((ev: MouseEvent) => void);
-  onMouseDown: ((ev: MouseEvent) => void);
-  onMouseUp: ((ev: MouseEvent) => void);
-  onMouseMove: ((ev: MouseEvent) => void);
-  onDblClick: ((ev: MouseEvent) => void);
+  onClick: (ev: MouseEvent) => void;
+  onMouseDown: (ev: MouseEvent) => void;
+  onMouseUp: (ev: MouseEvent) => void;
+  onMouseMove: (ev: MouseEvent) => void;
+  onDblClick: (ev: MouseEvent) => void;
 
   /* global dom events */
-  onKeydown: ((ev: KeyboardEvent) => void);
+  onKeydown: (ev: KeyboardEvent) => void;
 }
 
 type MappingsToEventBus<T> = Record<keyof T, any[]>
@@ -121,6 +122,7 @@ export const useGraph =(
     onNodeFocusChange: [],
     onNodeAdded: [],
     onNodeRemoved: [],
+    onRepaint: [],
 
     /* canvas element events */
     onClick: [],
@@ -207,6 +209,7 @@ export const useGraph =(
     const ctx = canvas.value.getContext('2d')
     if (ctx) {
       draw(ctx)
+      eventBus.onRepaint.forEach(fn => fn(ctx))
     }
   }, 1000 / 60 /* 60fps */)
 
@@ -350,8 +353,6 @@ export const useGraphWithNodeEvents = (
   const eventBus: MappingsToEventBus<MappingsWithNodeEvents> = {
     ...graph.eventBus,
     onNodeHoverChange: [],
-    onNodeAdded: [],
-    onNodeRemoved: [],
   }
 
   const subscribe = generateSubscriber(eventBus)
@@ -363,25 +364,10 @@ export const useGraphWithNodeEvents = (
     currHoveredNode = node
   })
 
-  const addNode = (node: Partial<Node>, focusNode = true) => {
-    const newNode = graph.addNode(node, focusNode)
-    eventBus.onNodeAdded.forEach(fn => fn(newNode))
-    return newNode
-  }
-
-  const removeNode = (id: number) => {
-    const node = graph.getNode(id)
-    if (!node) return
-    graph.removeNode(id)
-    eventBus.onNodeRemoved.forEach(fn => fn(node))
-  }
-
   return {
     ...graph,
     eventBus,
     subscribe,
-    addNode,
-    removeNode,
   }
 }
 
@@ -445,12 +431,28 @@ export const useDraggableGraph = (
   }
 }
 
+type UserEditableGraphOptions<T extends GraphOptions = GraphOptions> = T & {
+  miniNodeRadius: NodeGetterOrValue<number>;
+  miniNodeColor: NodeGetterOrValue<string>;
+}
+
+type OrbitedNode = {
+  origin: Node,
+  mousePosition: { x: number, y: number },
+}
+
 export const useUserEditableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {}
+  options: Partial<UserEditableGraphOptions> = {}
 ) => {
 
   const graph = useDraggableGraph(canvas, options)
+
+  const {
+    // default mini node radius scales at 2 root r
+    miniNodeRadius = (node) => Math.sqrt(getValue(graph.options.value.nodeSize, node)) * 2,
+    miniNodeColor = 'black',
+  } = options
 
   graph.subscribe('onDblClick', (ev) => {
     const { offsetX, offsetY } = ev
@@ -461,6 +463,45 @@ export const useUserEditableGraph = (
     const focusedNodeId = graph.getFocusedNodeId()
     if (ev.key === 'Backspace' && focusedNodeId) graph.removeNode(focusedNodeId)
   });
+
+  // const draggingMiniNode = ref(false)
+  const miniNodeData = ref<OrbitedNode | undefined>()
+
+  const getMiniNodeOffsets = (nodeRadius: number, nodeBorderWidth: number) => {
+    if (!miniNodeData.value) return []
+    const miniNodeRadiusVal = getValue(miniNodeRadius, miniNodeData.value.origin)
+    const offset = nodeRadius - (miniNodeRadiusVal / 3) + (nodeBorderWidth / 2)
+    return [
+      [0, -offset], // north
+      [offset, 0], // east
+      [0, offset], // south
+      [-offset, 0], // west
+    ]
+  }
+
+  const drawMiniNodes = (ctx: CanvasRenderingContext2D) => {
+    if (!miniNodeData.value) return
+    const { x: originX, y: originY } = miniNodeData.value.origin
+    const orbitingNode = miniNodeData.value.origin
+    const nodeRadius = getValue(graph.options.value.nodeSize, orbitingNode)
+    const nodeBorderRadius = getValue(graph.options.value.nodeBorderSize, orbitingNode)
+    const miniNodeOffsets = getMiniNodeOffsets(nodeRadius, nodeBorderRadius)
+    const miniNodeRadiusVal = getValue(miniNodeRadius, orbitingNode)
+    const miniNodeColorVal = getValue(miniNodeColor, orbitingNode)
+    for (const [x, y] of miniNodeOffsets) {
+      ctx.beginPath()
+      ctx.arc(originX + x, originY + y, miniNodeRadiusVal, 0, Math.PI * 2)
+      ctx.fillStyle = miniNodeColorVal
+      ctx.fill()
+      ctx.closePath()
+    }
+  }
+
+  graph.subscribe('onNodeHoverChange', (node) => {
+    if (!node) return miniNodeData.value = undefined
+    miniNodeData.value = { origin: node, mousePosition: { x: node.x, y: node.y } }
+  })
+  graph.subscribe('onRepaint', drawMiniNodes)
 
   return graph
 }
@@ -490,7 +531,7 @@ export const usePersistentDraggableGraph = (
 
 export const useDarkUserEditableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {}
+  options: Partial<UserEditableGraphOptions> = {}
 ) => {
 
   const g = useUserEditableGraph(canvas, {

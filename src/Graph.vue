@@ -20,7 +20,10 @@ const { width, height } = useWindowSize();
 const canvasWidth = computed(() => width.value - padding * 2);
 const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 
-const graph = useDarkUserEditableGraph(canvas);
+const graph = useDarkUserEditableGraph(canvas, {
+  nodeSize: 80,
+  miniNodeColor: 'rgb(30, 30, 40)',
+});
 const { colorize, decolorize, setStartNode } = bfsNodeColorizer(graph);
 graph.subscribe('onNodeHoverChange', (node) => {
   if (node) {
