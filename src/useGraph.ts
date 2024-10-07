@@ -91,13 +91,6 @@ const defaultOptions: GraphOptions = {
   edgeWidth: 10,
 }
 
-/* for nodes that have not been added to the graph yet */
-export type NodeOptions = {
-  id?: number,
-  x: number,
-  y: number,
-}
-
 export type Node = {
   id: number,
   x: number,
@@ -250,13 +243,21 @@ export const useGraph =(
     stopClickOutsideListener()
   })
 
-  const addNode = (node: NodeOptions, focusNode = true) => {
+  // eventually move this stuff out of here
+  const getRandomBetweenRange = (min: number, max: number) => Math.round(Math.random() * (max - min) + min);
+  const getRandomPointOnCanvas = (canvas: HTMLCanvasElement) => ({
+    x: getRandomBetweenRange(50, canvas.width - 50),
+    y: getRandomBetweenRange(50, canvas.height - 50),
+  });
+
+  const addNode = (node: Partial<Node>, focusNode = true) => {
     const lastNode = nodes.value[nodes.value.length - 1]
     const id = lastNode ? lastNode.id + 1 : 1
+    const { x, y } = canvas.value ? getRandomPointOnCanvas(canvas.value) : { x: 0, y: 0 }
     const newNode = {
-      id: node.id || id,
-      x: node.x,
-      y: node.y,
+      id: node.id ?? id,
+      x: node.x ?? x,
+      y: node.y ?? y,
     }
     nodes.value.push(newNode)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
@@ -362,7 +363,7 @@ export const useGraphWithNodeEvents = (
     currHoveredNode = node
   })
 
-  const addNode = (node: NodeOptions, focusNode = true) => {
+  const addNode = (node: Partial<Node>, focusNode = true) => {
     const newNode = graph.addNode(node, focusNode)
     eventBus.onNodeAdded.forEach(fn => fn(newNode))
     return newNode
