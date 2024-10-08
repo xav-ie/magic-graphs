@@ -21,16 +21,7 @@ const canvasWidth = computed(() => width.value - padding * 2);
 const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 
 const graph = useDarkUserEditableGraph(canvas, {
-  nodeSize: (n) => n.id * 50,
   miniNodeColor: 'rgb(30, 30, 40)',
-});
-const { colorize, decolorize, setStartNode } = bfsNodeColorizer(graph);
-graph.subscribe('onNodeHoverChange', (node) => {
-  if (node) {
-    setStartNode(node.id);
-    colorize();
-  }
-  else decolorize();
 });
 
 const { nodes: defaultNodes, edges: defaultEdges } = adjListToNodesEdges(props.modelValue);
