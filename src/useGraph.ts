@@ -502,22 +502,9 @@ export const useDraggableMiniNodeGraph = (
 
   graph.subscribe('onRepaint', drawMiniNodes)
 
-  // const miniNodeOnTheMove = ref<{ x: number, y: number } | undefined>()
-
-  // graph.subscribe('onMouseDown', (ev) => {
-  //   if (!isOnMiniNode(ev)) return
-  //   miniNodeOnTheMove.value = { x: ev.offsetX, y: ev.offsetY }
-  // })
-
-  // graph.subscribe('onRepaint', (ctx) => {
-  //   if (!miniNodeOnTheMove.value) return
-  //   const { x, y } = miniNodeOnTheMove.value
-  //   ctx.beginPath()
-  //   ctx.arc(x, y, 10, 0, Math.PI * 2)
-  //   ctx.fillStyle = 'red'
-  //   ctx.fill()
-  //   ctx.closePath()
-  // })
+  graph.subscribe('onNodeRemoved', (node) => {
+    if (miniNodeData.value?.origin.id === node.id) miniNodeData.value = undefined
+  })
 
   return graph
 }
@@ -532,7 +519,8 @@ export const useUserEditableGraph = (
 
   graph.subscribe('onDblClick', (ev) => {
     const { offsetX, offsetY } = ev
-    graph.addNode({ x: offsetX, y: offsetY })
+    const node = graph.addNode({ x: offsetX, y: offsetY })
+    graph.eventBus.onNodeHoverChange.forEach(fn => fn(node))
   })
 
   graph.subscribe('onKeydown', (ev) => {
