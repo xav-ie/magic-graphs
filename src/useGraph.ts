@@ -2,6 +2,8 @@ import { ref, onMounted, onBeforeUnmount, type Ref, readonly } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { onClickOutside } from '@vueuse/core'
 import { themes } from './themes'
+import { isInCircle } from './hitboxHelpers'
+import { drawCircle } from './shapeHelpers'
 
 type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
 type NodeGetterOrValue<T> = MaybeGetter<T, [Node]>
@@ -256,12 +258,17 @@ export const useGraph =(
     y: getRandomBetweenRange(50, canvas.height - 50),
   });
 
+  const getNewNodeId = () => {
+    const ids = nodes.value.map(node => node.id)
+    let id = 1
+    while (ids.includes(id)) id++
+    return id
+  }
+
   const addNode = (node: Partial<Node>, focusNode = true) => {
-    const lastNode = nodes.value[nodes.value.length - 1]
-    const id = lastNode ? lastNode.id + 1 : 1
     const { x, y } = canvas.value ? getRandomPointOnCanvas(canvas.value) : { x: 0, y: 0 }
     const newNode = {
-      id: node.id ?? id,
+      id: node.id ?? getNewNodeId(),
       x: node.x ?? x,
       y: node.y ?? y,
     }
@@ -284,10 +291,20 @@ export const useGraph =(
     return nodes.value.find(node => node.id === id)
   }
 
-  const getNodeByCoordinates = (x: number, y: number) => {
+  /*
+    @param x - the x coordinate
+    @param y - the y coordinate
+    @param buffer - the buffer is used to increase the hit box of a node beyond its radius
+    @returns the node that is closest to the given coordinates
+  */
+  const getNodeByCoordinates = (x: number, y: number, buffer = 0) => {
     /* @ts-expect-error - findLast is not in the types */
     return nodes.value.findLast(node => {
-      return Math.sqrt((node.x - x) ** 2 + (node.y - y) ** 2) < getValue(options.value.nodeSize, node)
+      const nodeRadius = getValue(options.value.nodeSize, node)
+      const nodeBorderRadius = getValue(options.value.nodeBorderSize, node)
+      const point = { x, y }
+      const nodeCircle = { x: node.x, y: node.y, radius: nodeRadius + nodeBorderRadius + buffer }
+      return isInCircle(point, nodeCircle)
     })
   }
 
@@ -429,12 +446,14 @@ export const useDraggableGraph = (
 
 type MiniNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & {
   miniNodeRadius: NodeGetterOrValue<number>;
+  miniNodeColorWhenNodeFocused: NodeGetterOrValue<string>;
   miniNodeColor: NodeGetterOrValue<string>;
 }
 
-type OrbitedNode = {
-  origin: Node,
-  mousePosition: { x: number, y: number },
+type MiniNode = {
+  x: number,
+  y: number,
+  direction: 'north' | 'east' | 'south' | 'west',
 }
 
 export const useDraggableMiniNodeGraph = (
@@ -442,68 +461,114 @@ export const useDraggableMiniNodeGraph = (
   options: Partial<MiniNodeGraphOptions> = {}
 ) => {
 
+  const graph = useDraggableGraph(canvas, options)
+  const parentNode = ref<Node | undefined>()
+  const activeMiniNode = ref<MiniNode | undefined>()
+
   const {
     // default mini node radius scales at 2 root r
     miniNodeRadius = (node) => Math.sqrt(getValue(graph.options.value.nodeSize, node)) * 2,
+    miniNodeColorWhenNodeFocused = graph.options.value.nodeFocusBorderColor,
     miniNodeColor = 'black',
   } = options
 
-  const graph = useDraggableGraph(canvas, options)
-  const miniNodeData = ref<OrbitedNode | undefined>()
-
-  const getMiniNodeOffsets = (nodeRadius: number, nodeBorderWidth: number) => {
-    if (!miniNodeData.value) return []
-    const miniNodeRadiusVal = getValue(miniNodeRadius, miniNodeData.value.origin)
+  const getMiniNodes = (nodeRadius: number, nodeBorderWidth: number): MiniNode[] => {
+    if (!parentNode.value) return []
+    const miniNodeRadiusVal = getValue(miniNodeRadius, parentNode.value)
     const offset = nodeRadius - (miniNodeRadiusVal / 3) + (nodeBorderWidth / 2)
     return [
-      [0, -offset], // north
-      [offset, 0], // east
-      [0, offset], // south
-      [-offset, 0], // west
+      {
+        x: parentNode.value.x,
+        y: parentNode.value.y - offset,
+        direction: 'north',
+      },
+      {
+        x: parentNode.value.x + offset,
+        y: parentNode.value.y,
+        direction: 'east',
+      },
+      {
+        x: parentNode.value.x,
+        y: parentNode.value.y + offset,
+        direction: 'south',
+      },
+      {
+        x: parentNode.value.x - offset,
+        y: parentNode.value.y,
+        direction: 'west',
+      },
     ]
   }
 
   const drawMiniNodes = (ctx: CanvasRenderingContext2D) => {
-    if (!miniNodeData.value || graph.nodeBeingDragged.value) return
-    const { x: originX, y: originY } = miniNodeData.value.origin
-    const orbitingNode = miniNodeData.value.origin
-    const nodeRadius = getValue(graph.options.value.nodeSize, orbitingNode)
-    const nodeBorderRadius = getValue(graph.options.value.nodeBorderSize, orbitingNode)
-    const miniNodeOffsets = getMiniNodeOffsets(nodeRadius, nodeBorderRadius)
-    const miniNodeRadiusVal = getValue(miniNodeRadius, orbitingNode)
-    const miniNodeColorVal = getValue(miniNodeColor, orbitingNode)
-    for (const [x, y] of miniNodeOffsets) {
-      ctx.beginPath()
-      ctx.arc(originX + x, originY + y, miniNodeRadiusVal, 0, Math.PI * 2)
-      ctx.fillStyle = miniNodeColorVal
-      ctx.fill()
-      ctx.closePath()
+    if (!parentNode.value || graph.nodeBeingDragged.value) return
+
+    // get the radius of the mini nodes
+    const nodeRadius = getValue(graph.options.value.nodeSize, parentNode.value)
+    const nodeBorderRadius = getValue(graph.options.value.nodeBorderSize, parentNode.value)
+    const miniNodeRadiusVal = getValue(miniNodeRadius, parentNode.value)
+
+    // get the color of the mini nodes
+    const normalMiniNodeColorVal = getValue(miniNodeColor, parentNode.value)
+    const focusedMiniNodeColorVal = getValue(miniNodeColorWhenNodeFocused, parentNode.value)
+    const isParentFocused = parentNode.value.id === graph.getFocusedNodeId()
+    const miniNodeColorVal = isParentFocused ? focusedMiniNodeColorVal : normalMiniNodeColorVal
+
+    const miniNodes = getMiniNodes(nodeRadius, nodeBorderRadius)
+    if (activeMiniNode.value) {
+
+
+    }
+
+
+    for (const miniNode of miniNodes) {
+      drawCircle(ctx, {
+        x: miniNode.x,
+        y: miniNode.y,
+        radius: miniNodeRadiusVal,
+        color: miniNodeColorVal,
+      })
     }
   }
 
-  const isOnMiniNode = (ev: MouseEvent) => {
-    if (!miniNodeData.value) return false
-    const { offsetX, offsetY } = ev
-    const nodeRadius = getValue(graph.options.value.nodeSize, miniNodeData.value.origin)
-    const nodeBorderRadius = getValue(graph.options.value.nodeBorderSize, miniNodeData.value.origin)
-    const miniNodeOffsets = getMiniNodeOffsets(nodeRadius, nodeBorderRadius)
-    return miniNodeOffsets.some(([x, y]) => {
-      if (!miniNodeData.value) return false
-      const miniNodeRadiusVal = getValue(miniNodeRadius, miniNodeData.value.origin)
-      return Math.sqrt(
-        (miniNodeData.value.origin.x + x - offsetX) ** 2 + (miniNodeData.value.origin.y + y - offsetY) ** 2) < miniNodeRadiusVal
+  const getMiniNode = (x: number, y: number) => {
+    if (!parentNode.value) return false
+    const nodeRadius = getValue(graph.options.value.nodeSize, parentNode.value)
+    const nodeBorderRadius = getValue(graph.options.value.nodeBorderSize, parentNode.value)
+    const miniNodes = getMiniNodes(nodeRadius, nodeBorderRadius)
+    return miniNodes.find((miniNode) => {
+      if (!parentNode.value) return false
+      const point = { x, y }
+      return isInCircle(point, {
+        x: miniNode.x,
+        y: miniNode.y,
+        radius: getValue(miniNodeRadius, parentNode.value),
+      })
     })
   }
 
   graph.subscribe('onNodeHoverChange', (node) => {
-    if (!node) return miniNodeData.value = undefined
-    miniNodeData.value = { origin: node, mousePosition: { x: node.x, y: node.y } }
+    if (!node) return
+    parentNode.value = node
+  })
+
+  graph.subscribe('onMouseDown', (ev) => {
+    const miniNode = getMiniNode(ev.offsetX, ev.offsetY)
+    console.log('mousedown', miniNode)
+    if (!miniNode) return
+    activeMiniNode.value = miniNode
+    graph.draggingEnabled.value = false
+  })
+
+  graph.subscribe('onMouseMove', (ev) => {
+    if (!activeMiniNode.value) return
+
   })
 
   graph.subscribe('onRepaint', drawMiniNodes)
 
   graph.subscribe('onNodeRemoved', (node) => {
-    if (miniNodeData.value?.origin.id === node.id) miniNodeData.value = undefined
+    if (parentNode.value?.id === node.id) parentNode.value = undefined
   })
 
   return graph
