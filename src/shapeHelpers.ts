@@ -9,7 +9,7 @@ type CircleOptions = {
   color: string,
 }
 
-export const drawCircle = (ctx: CanvasRenderingContext2D, options: CircleOptions) => {
+export const drawCircleWithCtx = (ctx: CanvasRenderingContext2D) => (options: CircleOptions) => {
   ctx.beginPath();
   ctx.arc(options.x, options.y, options.radius, 0, 2 * Math.PI);
   ctx.fillStyle = options.color;

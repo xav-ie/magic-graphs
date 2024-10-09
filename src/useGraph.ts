@@ -1,9 +1,9 @@
-import { ref, onMounted, onBeforeUnmount, type Ref, readonly } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch, type Ref, readonly } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { onClickOutside } from '@vueuse/core'
 import { themes } from './themes'
 import { isInCircle } from './hitboxHelpers'
-import { drawCircle } from './shapeHelpers'
+import { drawCircleWithCtx } from './shapeHelpers'
 
 type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
 type NodeGetterOrValue<T> = MaybeGetter<T, [Node]>
@@ -373,7 +373,7 @@ type WithDragEvents<T extends UseGraphEventBusCallbackMappings> = T & {
   onNodeDragEnd: (node: Node) => void;
 }
 
-type MappingsWithDragAndNodeEvents = WithDragEvents<UseGraphEventBusCallbackMappings>
+type MappingsWithDragEvents = WithDragEvents<UseGraphEventBusCallbackMappings>
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -383,7 +383,7 @@ export const useDraggableGraph = (
   const graph = useGraph(canvas, options)
   const draggingEnabled = ref(true)
 
-  const eventBus: MappingsToEventBus<MappingsWithDragAndNodeEvents> = {
+  const eventBus: MappingsToEventBus<MappingsWithDragEvents> = {
     ...graph.eventBus,
     onNodeDragStart: [],
     onNodeDragEnd: [],
@@ -431,6 +431,10 @@ export const useDraggableGraph = (
     graph.nodes.value.push(node)
   })
 
+  watch(draggingEnabled, () => {
+    nodeBeingDragged.value = undefined
+  })
+
   subscribe('onMouseDown', beginDrag)
   subscribe('onMouseUp', endDrag)
   subscribe('onMouseMove', drag)
@@ -450,6 +454,13 @@ type MiniNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & {
   miniNodeColor: NodeGetterOrValue<string>;
 }
 
+type WithMiniNodeEvents<T extends MappingsWithDragEvents> = T & {
+  onMiniNodeDragStart: (parentNode: Node, miniNode: MiniNode) => void;
+  onMiniNodeDrop: (parentNode: Node, miniNode: MiniNode) => void;
+}
+
+type MappingsWithMiniNodeEvents = WithMiniNodeEvents<MappingsWithDragEvents>
+
 type MiniNode = {
   x: number,
   y: number,
@@ -464,6 +475,14 @@ export const useDraggableMiniNodeGraph = (
   const graph = useDraggableGraph(canvas, options)
   const parentNode = ref<Node | undefined>()
   const activeMiniNode = ref<MiniNode | undefined>()
+
+  const eventBus: MappingsToEventBus<MappingsWithMiniNodeEvents> = {
+    ...graph.eventBus,
+    onMiniNodeDragStart: [],
+    onMiniNodeDrop: [],
+  }
+
+  const subscribe = generateSubscriber(eventBus)
 
   const {
     // default mini node radius scales at 2 root r
@@ -515,14 +534,18 @@ export const useDraggableMiniNodeGraph = (
     const miniNodeColorVal = isParentFocused ? focusedMiniNodeColorVal : normalMiniNodeColorVal
 
     const miniNodes = getMiniNodes(nodeRadius, nodeBorderRadius)
+    const drawCircle = drawCircleWithCtx(ctx)
     if (activeMiniNode.value) {
-
-
+      return drawCircle({
+        x: activeMiniNode.value.x,
+        y: activeMiniNode.value.y,
+        radius: miniNodeRadiusVal,
+        color: miniNodeColorVal,
+      })
     }
 
-
     for (const miniNode of miniNodes) {
-      drawCircle(ctx, {
+      drawCircle({
         x: miniNode.x,
         y: miniNode.y,
         radius: miniNodeRadiusVal,
@@ -547,31 +570,44 @@ export const useDraggableMiniNodeGraph = (
     })
   }
 
-  graph.subscribe('onNodeHoverChange', (node) => {
-    if (!node) return
+  subscribe('onNodeHoverChange', (node) => {
+    if (!node || activeMiniNode.value) return
     parentNode.value = node
   })
 
-  graph.subscribe('onMouseDown', (ev) => {
+  subscribe('onMouseDown', (ev) => {
     const miniNode = getMiniNode(ev.offsetX, ev.offsetY)
-    console.log('mousedown', miniNode)
     if (!miniNode) return
     activeMiniNode.value = miniNode
+    eventBus.onMiniNodeDragStart.forEach(fn => fn(parentNode.value, miniNode))
     graph.draggingEnabled.value = false
   })
 
-  graph.subscribe('onMouseMove', (ev) => {
+  subscribe('onMouseMove', (ev) => {
     if (!activeMiniNode.value) return
-
+    activeMiniNode.value.x = ev.offsetX
+    activeMiniNode.value.y = ev.offsetY
   })
 
-  graph.subscribe('onRepaint', drawMiniNodes)
+  subscribe('onMouseUp', () => {
+    if (!activeMiniNode.value) return
+    eventBus.onMiniNodeDrop.forEach(fn => fn(parentNode.value, activeMiniNode.value))
+    activeMiniNode.value = undefined
+    graph.draggingEnabled.value = true
+  })
 
-  graph.subscribe('onNodeRemoved', (node) => {
+  subscribe('onRepaint', drawMiniNodes)
+
+  subscribe('onNodeRemoved', (node) => {
     if (parentNode.value?.id === node.id) parentNode.value = undefined
   })
 
-  return graph
+  return {
+    ...graph,
+    eventBus,
+    subscribe,
+    activeMiniNode: readonly(activeMiniNode),
+  }
 }
 
 type UserEditableGraphOptions = MiniNodeGraphOptions
@@ -592,6 +628,11 @@ export const useUserEditableGraph = (
     const focusedNodeId = graph.getFocusedNodeId()
     if (ev.key === 'Backspace' && focusedNodeId) graph.removeNode(focusedNodeId)
   });
+
+  graph.subscribe('onMiniNodeDrop', (parentNode, miniNode) => {
+    console.log('mini node drop', parentNode.id, miniNode.direction)
+    console.log('dropped at', miniNode.x, miniNode.y)
+  })
 
   return graph
 }
