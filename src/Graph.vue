@@ -20,9 +20,7 @@ const { width, height } = useWindowSize();
 const canvasWidth = computed(() => width.value - padding * 2);
 const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 
-const graph = useDarkUserEditableGraph(canvas, {
-  nodeAnchorColor: 'rgb(30, 30, 40)',
-});
+const graph = useDarkUserEditableGraph(canvas);
 
 const { nodes: defaultNodes, edges: defaultEdges } = adjListToNodesEdges(props.modelValue);
 onMounted(() => {

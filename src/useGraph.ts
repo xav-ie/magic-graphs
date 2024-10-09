@@ -68,12 +68,12 @@ const generateSubscriber = <T extends UseGraphEventBusCallbackMappings>(
 ) => eventBus[event].push(fn)
 
 export type GraphOptions = {
-  nodeSize: NodeGetterOrValue<number>,
-  nodeBorderSize: NodeGetterOrValue<number>,
+  nodeRadius: NodeGetterOrValue<number>,
+  nodeBorderWidth: NodeGetterOrValue<number>,
   nodeColor: NodeGetterOrValue<string>,
   nodeBorderColor: NodeGetterOrValue<string>,
-  nodeFocusBorderColor: NodeGetterOrValue<string>,
   nodeFocusColor: NodeGetterOrValue<string>,
+  nodeFocusBorderColor: NodeGetterOrValue<string>,
   nodeText: NodeGetterOrValue<string>,
   nodeTextSize: NodeGetterOrValue<number>,
   nodeTextColor: NodeGetterOrValue<string>,
@@ -82,8 +82,8 @@ export type GraphOptions = {
 }
 
 const defaultOptions: GraphOptions = {
-  nodeSize: 35,
-  nodeBorderSize: 8,
+  nodeRadius: 35,
+  nodeBorderWidth: 8,
   nodeColor: 'white',
   nodeBorderColor: 'black',
   nodeFocusBorderColor: 'blue',
@@ -147,8 +147,8 @@ export const useGraph =(
       nodeColor,
       nodeBorderColor,
       nodeFocusBorderColor,
-      nodeSize,
-      nodeBorderSize,
+      nodeRadius,
+      nodeBorderWidth,
       nodeText,
       nodeTextSize,
       nodeTextColor
@@ -163,11 +163,11 @@ export const useGraph =(
         x: node.x,
         y: node.y
       },
-      radius: getValue(nodeSize, node),
+      radius: getValue(nodeRadius, node),
       color: getValue(fillColor, node),
       stroke: {
         color: getValue(borderColor, node),
-        width: getValue(nodeBorderSize, node),
+        width: getValue(nodeBorderWidth, node),
       },
       text: {
         content: getValue(nodeText, node),
@@ -315,15 +315,15 @@ export const useGraph =(
     @param buffer - the buffer is used to increase the hit box of a node beyond its radius
     @returns the node that is closest to the given coordinates
   */
-  const getNodeByCoordinates = (x: number, y: number, buffer = 0) => {
-    /* @ts-expect-error - findLast is not in the types */
+  const getNodeByCoordinates = (x: number, y: number, buffer = 0): Node | undefined => {
+    /* @ts-expect-error - findLast proto not typed */
     return nodes.value.findLast(node => {
-      const nodeRadius = getValue(options.value.nodeSize, node)
-      const nodeBorderRadius = getValue(options.value.nodeBorderSize, node)
+      const nodeRadius = getValue(options.value.nodeRadius, node)
+      const nodeBorderWidth = getValue(options.value.nodeBorderWidth, node)
       const point = { x, y }
-      const nodeCircle = { x: node.x, y: node.y, radius: nodeRadius + nodeBorderRadius + buffer }
+      const nodeCircle = { x: node.x, y: node.y, radius: nodeRadius + nodeBorderWidth + buffer }
       return isInCircle(point, nodeCircle)
-    }) as Node | undefined
+    })
   }
 
   const removeNode = (id: number) => {
@@ -464,13 +464,13 @@ export const useDraggableGraph = (
   }
 }
 
-type NodeAnchor = {
+export type NodeAnchor = {
   x: number,
   y: number,
   direction: 'north' | 'east' | 'south' | 'west',
 }
 
-type AnchorNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & {
+export type AnchorNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & {
   nodeAnchorRadius: NodeGetterOrValue<number>;
   nodeAnchorColor: NodeGetterOrValue<string>;
   nodeAnchorColorWhenParentFocused: NodeGetterOrValue<string>;
@@ -502,7 +502,7 @@ export const useDraggableNodeAnchorGraph = (
 
   const {
     // default mini node radius scales at 2 root r
-    nodeAnchorRadius: anchorRadius = (node) => Math.sqrt(getValue(graph.options.value.nodeSize, node)) * 2,
+    nodeAnchorRadius: anchorRadius = (node) => Math.sqrt(getValue(graph.options.value.nodeRadius, node)) * 2,
     nodeAnchorColor: anchorColor = 'black',
     nodeAnchorColorWhenParentFocused: anchorColorWhenParentFocused = graph.options.value.nodeFocusBorderColor,
   } = options
@@ -533,8 +533,8 @@ export const useDraggableNodeAnchorGraph = (
 
   const getAnchors = (node: Node): NodeAnchor[] => {
     const anchorRadiusVal = getValue(anchorRadius, node)
-    const nodeRadiusVal = getValue(graph.options.value.nodeSize, node)
-    const nodeBorderWidthVal = getValue(graph.options.value.nodeBorderSize, node)
+    const nodeRadiusVal = getValue(graph.options.value.nodeRadius, node)
+    const nodeBorderWidthVal = getValue(graph.options.value.nodeBorderWidth, node)
     const offset = nodeRadiusVal - (anchorRadiusVal / 3) + (nodeBorderWidthVal / 2)
     return [
       {
@@ -619,7 +619,7 @@ export const useDraggableNodeAnchorGraph = (
   }
 }
 
-type UserEditableGraphOptions = AnchorNodeGraphOptions
+export type UserEditableGraphOptions = AnchorNodeGraphOptions
 export const useUserEditableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<UserEditableGraphOptions> = {}

@@ -1,6 +1,6 @@
-import { type GraphOptions } from "./useGraph"
+import type { UserEditableGraphOptions } from "./useGraph"
 
-export const themes: Record<string, GraphOptions> = {
+export const themes: Record<string, Partial<UserEditableGraphOptions>> = {
   weird: {
     nodeBorderColor: 'pink',
     nodeColor: 'brown',
@@ -14,5 +14,7 @@ export const themes: Record<string, GraphOptions> = {
     nodeFocusBorderColor: 'rgb(200, 0, 0)',
     nodeFocusColor: 'rgb(100, 60, 70)',
     nodeTextSize: 26,
+    nodeAnchorColor: 'rgb(30, 30, 40)',
+    nodeAnchorColorWhenParentFocused: 'rgb(170, 0, 0)',
   },
 }
