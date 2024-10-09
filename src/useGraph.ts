@@ -3,8 +3,7 @@ import { useLocalStorage } from '@vueuse/core'
 import { onClickOutside } from '@vueuse/core'
 import { themes } from './themes'
 import { isInCircle } from './hitboxHelpers'
-import { drawCircleWithCtx } from './shapeHelpers'
-import { classicNameResolver } from 'typescript'
+import { drawCircleWithCtx, drawLineWithCtx } from './shapeHelpers'
 
 type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
 type NodeGetterOrValue<T> = MaybeGetter<T, [Node]>
@@ -140,27 +139,43 @@ export const useGraph =(
     onKeydown: [],
   }
 
+  const subscribe = generateSubscriber(eventBus)
+
   const drawNode = (ctx: CanvasRenderingContext2D, node: Node) => {
-    // draw node
-    ctx.beginPath()
-    ctx.arc(node.x, node.y, getValue(options.value.nodeSize, node), 0, Math.PI * 2)
-    const fillColor = node.id === focusedNodeId.value ? options.value.nodeFocusColor : options.value.nodeColor
-    ctx.fillStyle = getValue(fillColor, node)
-    ctx.fill()
+    const {
+      nodeFocusColor,
+      nodeColor,
+      nodeBorderColor,
+      nodeFocusBorderColor,
+      nodeSize,
+      nodeBorderSize,
+      nodeText,
+      nodeTextSize,
+      nodeTextColor
+    } = options.value
 
-    // draw border
-    const borderColor = node.id === focusedNodeId.value ? options.value.nodeFocusBorderColor : options.value.nodeBorderColor
-    ctx.strokeStyle = getValue(borderColor, node)
-    ctx.lineWidth = getValue(options.value.nodeBorderSize, node)
-    ctx.stroke()
-    ctx.closePath()
+    const fillColor = node.id === focusedNodeId.value ? nodeFocusColor : nodeColor
+    const borderColor = node.id === focusedNodeId.value ? nodeFocusBorderColor : nodeBorderColor
 
-    // draw text label
-    ctx.font = `bold ${getValue(options.value.nodeTextSize, node)}px Arial`
-    ctx.fillStyle = getValue(options.value.nodeTextColor, node)
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(getValue(options.value.nodeText, node), node.x, node.y)
+    const drawCircle = drawCircleWithCtx(ctx)
+    drawCircle({
+      at: {
+        x: node.x,
+        y: node.y
+      },
+      radius: getValue(nodeSize, node),
+      color: getValue(fillColor, node),
+      stroke: {
+        color: getValue(borderColor, node),
+        width: getValue(nodeBorderSize, node),
+      },
+      text: {
+        content: getValue(nodeText, node),
+        fontSize: getValue(nodeTextSize, node),
+        fontWeight: 'bold',
+        color: getValue(nodeTextColor, node),
+      }
+    })
   }
 
   const drawEdge = (ctx: CanvasRenderingContext2D, edge: Edge) => {
@@ -169,20 +184,22 @@ export const useGraph =(
 
     if (!from || !to) return
 
-    ctx.beginPath()
-    ctx.moveTo(from.x, from.y)
-    ctx.lineTo(to.x, to.y)
-    ctx.strokeStyle = getValue(options.value.edgeColor, edge)
-    ctx.lineWidth = getValue(options.value.edgeWidth, edge)
-    ctx.stroke()
-    ctx.closePath()
+    const drawLine = drawLineWithCtx(ctx)
+
+    drawLine({
+      start: { x: from.x, y: from.y },
+      end: { x: to.x, y: to.y },
+      color: getValue(options.value.edgeColor, edge),
+      width: getValue(options.value.edgeWidth, edge),
+    })
   }
 
-  const draw = (ctx: CanvasRenderingContext2D) => {
-    ctx.clearRect(0, 0, canvas.value!.width, canvas.value!.height)
+  const drawGraph = (ctx: CanvasRenderingContext2D) => {
     edges.value.forEach(edge => drawEdge(ctx, edge))
     nodes.value.forEach(node => drawNode(ctx, node))
   }
+
+  subscribe('onRepaint', drawGraph)
 
   const mouseEvents: Partial<MouseEventMap> = {
     click: (ev: MouseEvent) => {
@@ -214,7 +231,7 @@ export const useGraph =(
     if (!canvas.value) return
     const ctx = canvas.value.getContext('2d')
     if (ctx) {
-      draw(ctx)
+      ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
       eventBus.onRepaint.forEach(fn => fn(ctx))
     }
   }, 1000 / 60 /* 60fps */)
@@ -339,8 +356,6 @@ export const useGraph =(
     focusedNodeId.value = newNodeId
     eventBus.onNodeFocusChange.forEach(fn => fn(newNode, oldNode))
   }
-
-  const subscribe = generateSubscriber(eventBus)
 
   let currHoveredNode: Node | undefined = undefined
   subscribe('onMouseMove', (ev) => {
@@ -507,10 +522,10 @@ export const useDraggableNodeAnchorGraph = (
 
     for (const anchor of anchors) {
       const { x, y } = anchor
-      const circle = { x, y, radius, color }
+      const circle = { at: { x, y }, radius, color }
       if (activeAnchor.value && activeAnchor.value.direction === anchor.direction) {
-        circle.x = activeAnchor.value.x
-        circle.y = activeAnchor.value.y
+        circle.at.x = activeAnchor.value.x
+        circle.at.y = activeAnchor.value.y
       }
       drawCircle(circle)
     }
