@@ -1,6 +1,6 @@
 import { getValue, generateSubscriber } from "./useGraphHelpers";
 import { useDraggableGraph, type MappingsWithDragEvents } from "./useDraggableGraph";
-import type { Node, NodeGetterOrValue } from "./useGraphTypes";
+import type { GNode, NodeGetterOrValue } from "./useGraphTypes";
 import { type GraphOptions, type MappingsToEventBus } from "./useGraphBase";
 import { ref, readonly, type Ref } from 'vue'
 import { drawCircleWithCtx } from "./shapeHelpers";
@@ -19,8 +19,8 @@ export type AnchorNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & 
 }
 
 type WithNodeAnchorEvents<T extends MappingsWithDragEvents> = T & {
-  onNodeAnchorDragStart: (parentNode: Node, nodeAnchor: NodeAnchor) => void;
-  onNodeAnchorDrop: (parentNode: Node, nodeAnchor: NodeAnchor) => void;
+  onNodeAnchorDragStart: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
+  onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
 }
 
 type MappingsWithNodeAnchorEvents = WithNodeAnchorEvents<MappingsWithDragEvents>
@@ -31,7 +31,7 @@ export const useDraggableNodeAnchorGraph = (
 ) => {
 
   const graph = useDraggableGraph(canvas, options)
-  const parentNode = ref<Node | undefined>()
+  const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
 
   const eventBus: MappingsToEventBus<MappingsWithNodeAnchorEvents> = {
@@ -73,7 +73,7 @@ export const useDraggableNodeAnchorGraph = (
     }
   }
 
-  const getAnchors = (node: Node): NodeAnchor[] => {
+  const getAnchors = (node: GNode): NodeAnchor[] => {
     const anchorRadiusVal = getValue(anchorRadius, node)
     const nodeRadiusVal = getValue(graph.options.value.nodeRadius, node)
     const nodeBorderWidthVal = getValue(graph.options.value.nodeBorderWidth, node)
@@ -102,7 +102,7 @@ export const useDraggableNodeAnchorGraph = (
     ]
   }
 
-  const getAnchor = (node: Node, x: number, y: number) => {
+  const getAnchor = (node: GNode, x: number, y: number) => {
     const anchors = getAnchors(node)
     return anchors.find((anchor) => {
       const point = { x, y }

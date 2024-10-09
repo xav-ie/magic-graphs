@@ -11,11 +11,11 @@ import {
   type MappingsToEventBus
 } from './useGraphBase'
 import { generateSubscriber } from './useGraphHelpers';
-import type { Node } from './useGraphTypes'
+import type { GNode } from './useGraphTypes'
 
 export type WithDragEvents<T extends UseGraphEventBusCallbackMappings> = T & {
-  onNodeDragStart: (node: Node) => void;
-  onNodeDrop: (node: Node) => void;
+  onNodeDragStart: (node: GNode) => void;
+  onNodeDrop: (node: GNode) => void;
 }
 
 export type MappingsWithDragEvents = WithDragEvents<UseGraphEventBusCallbackMappings>
@@ -36,7 +36,7 @@ export const useDraggableGraph = (
 
   const subscribe = generateSubscriber(eventBus)
 
-  const nodeBeingDragged = ref<Node | undefined>()
+  const nodeBeingDragged = ref<GNode | undefined>()
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | undefined>()
 
   const beginDrag = (ev: MouseEvent) => {

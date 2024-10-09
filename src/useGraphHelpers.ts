@@ -1,6 +1,9 @@
 import type { MaybeGetter } from './useGraphTypes'
 import type { UseGraphEventBusCallbackMappings, MappingsToEventBus } from './useGraphBase'
 
+/*
+  unwraps MaybeGetter type into a value of type T
+*/
 export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
   if (typeof value === 'function') {
     return (value as (...args: K) => T)(...args)

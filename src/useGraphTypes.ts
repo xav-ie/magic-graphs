@@ -1,18 +1,23 @@
 
-export type Node = {
+export type GNode = {
   id: number,
   x: number,
   y: number,
 }
 
-export type Edge = {
+export type GEdge = {
   to: number,
   from: number,
 }
 
+/*
+  @template T - the type of the value
+  @template K - the type of the arguments
+*/
 export type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
-export type NodeGetterOrValue<T> = MaybeGetter<T, [Node]>
-export type EdgeGetterOrValue<T> = MaybeGetter<T, [Edge]>
+
+export type NodeGetterOrValue<T> = MaybeGetter<T, [GNode]>
+export type EdgeGetterOrValue<T> = MaybeGetter<T, [GEdge]>
 
 type EventNames = keyof HTMLElementEventMap
 

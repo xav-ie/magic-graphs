@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
-import { useDarkUserEditableGraph, useGraph, useDraggableGraph, useUserEditableGraph, type Node } from './useGraph';
+import { useDarkUserEditableGraph } from './useGraph';
 import { useWindowSize } from '@vueuse/core';
 import { bfsNodeColorizer } from './graphColorizers';
 import { nodesEdgesToAdjList, adjListToNodesEdges, type AdjacencyList } from './graphConverters';

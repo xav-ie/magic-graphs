@@ -1,11 +1,8 @@
 import { toRef } from 'vue';
 import { nodesEdgesToAdjList } from './graphConverters';
-import {
-  getValue,
-  type Graph,
-  type Node as GNode,
-  type Edge as GEdge
-} from './useGraph';
+import type { GNode, GEdge } from './useGraphTypes';
+import type { Graph } from './useGraph';
+import { getValue } from './useGraphHelpers';
 
 const defaultColorPalette = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
 

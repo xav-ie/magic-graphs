@@ -8,8 +8,8 @@ import { onClickOutside } from '@vueuse/core';
 import type {
   NodeGetterOrValue,
   EdgeGetterOrValue,
-  Node,
-  Edge,
+  GNode,
+  GEdge,
   MouseEventMap,
   KeyboardEventMap,
   MouseEventEntries,
@@ -21,12 +21,12 @@ import { isInCircle } from './hitboxHelpers';
 
 export type UseGraphEventBusCallbackMappings = {
   /* graph dataflow events */
-  onStructureChange: (nodes: Node[], edges: Edge[]) => void;
-  onNodeFocusChange: (newNode: Node | undefined, oldNode: Node | undefined) => void;
-  onNodeAdded: (node: Node) => void;
-  onNodeRemoved: (node: Node) => void;
+  onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
+  onNodeFocusChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
+  onNodeAdded: (node: GNode) => void;
+  onNodeRemoved: (node: GNode) => void;
   onRepaint: (ctx: CanvasRenderingContext2D) => void;
-  onNodeHoverChange: (newNode: Node | undefined, oldNode: Node | undefined) => void;
+  onNodeHoverChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
 
   /* canvas dom events */
   onClick: (ev: MouseEvent) => void;
@@ -63,7 +63,7 @@ const defaultOptions: GraphOptions = {
   nodeBorderColor: 'black',
   nodeFocusBorderColor: 'blue',
   nodeFocusColor: 'white',
-  nodeText: (node: Node) => node.id.toString(),
+  nodeText: (node: GNode) => node.id.toString(),
   nodeTextSize: 24,
   nodeTextColor: 'black',
   edgeColor: 'black',
@@ -80,9 +80,9 @@ export const useGraph =(
     ...optionsArg,
   })
 
-  const nodes = ref<Node[]>([])
-  const edges = ref<Edge[]>([])
-  const focusedNodeId = ref<Node['id'] | undefined>()
+  const nodes = ref<GNode[]>([])
+  const edges = ref<GEdge[]>([])
+  const focusedNodeId = ref<GNode['id'] | undefined>()
 
   const eventBus: UseGraphEventBus = {
     onStructureChange: [],
@@ -105,7 +105,7 @@ export const useGraph =(
 
   const subscribe = generateSubscriber(eventBus)
 
-  const drawNode = (ctx: CanvasRenderingContext2D, node: Node) => {
+  const drawNode = (ctx: CanvasRenderingContext2D, node: GNode) => {
     const {
       nodeFocusColor,
       nodeColor,
@@ -142,7 +142,7 @@ export const useGraph =(
     })
   }
 
-  const drawEdge = (ctx: CanvasRenderingContext2D, edge: Edge) => {
+  const drawEdge = (ctx: CanvasRenderingContext2D, edge: GEdge) => {
     const from = nodes.value.find(node => node.id === edge.from)
     const to = nodes.value.find(node => node.id === edge.to)
 
@@ -190,6 +190,8 @@ export const useGraph =(
       eventBus.onKeydown.forEach(fn => fn(ev))
     }
   }
+
+  const drawMap = new Map<string, string>()
 
   const drawGraphInterval = setInterval(() => {
     if (!canvas.value) return
@@ -247,7 +249,7 @@ export const useGraph =(
     return id
   }
 
-  const addNode = (node: Partial<Node>, focusNode = true) => {
+  const addNode = (node: Partial<GNode>, focusNode = true) => {
     const { x, y } = canvas.value ? getRandomPointOnCanvas(canvas.value) : { x: 0, y: 0 }
     const newNode = {
       id: node.id ?? getNewNodeId(),
@@ -279,7 +281,7 @@ export const useGraph =(
     @param buffer - the buffer is used to increase the hit box of a node beyond its radius
     @returns the node that is closest to the given coordinates
   */
-  const getNodeByCoordinates = (x: number, y: number, buffer = 0): Node | undefined => {
+  const getNodeByCoordinates = (x: number, y: number, buffer = 0): GNode | undefined => {
     /* @ts-expect-error - findLast proto not typed */
     return nodes.value.findLast(node => {
       const nodeRadius = getValue(options.value.nodeRadius, node)
@@ -300,13 +302,13 @@ export const useGraph =(
     eventBus.onNodeRemoved.forEach(fn => fn(removedNode))
   }
 
-  const addEdge = (edge: Edge) => {
+  const addEdge = (edge: GEdge) => {
     edges.value.push(edge)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     return edge
   }
 
-  const removeEdge = (edge: Edge) => {
+  const removeEdge = (edge: GEdge) => {
     const edgeIndex = edges.value.findIndex(e => e.from === edge.from && e.to === edge.to)
     if (edgeIndex === -1) return
     edges.value.splice(edgeIndex, 1)
@@ -321,7 +323,7 @@ export const useGraph =(
     eventBus.onNodeFocusChange.forEach(fn => fn(newNode, oldNode))
   }
 
-  let currHoveredNode: Node | undefined = undefined
+  let currHoveredNode: GNode | undefined = undefined
   subscribe('onMouseMove', (ev) => {
     const node = getNodeByCoordinates(ev.offsetX, ev.offsetY)
     if (node === currHoveredNode) return
@@ -345,5 +347,6 @@ export const useGraph =(
     eventBus,
     subscribe,
     options,
+    drawMap,
   }
 }
