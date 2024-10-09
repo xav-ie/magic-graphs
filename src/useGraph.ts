@@ -371,7 +371,7 @@ export const useGraph =(
 
 type WithDragEvents<T extends UseGraphEventBusCallbackMappings> = T & {
   onNodeDragStart: (node: Node) => void;
-  onNodeDragEnd: (node: Node) => void;
+  onNodeDrop: (node: Node) => void;
 }
 
 type MappingsWithDragEvents = WithDragEvents<UseGraphEventBusCallbackMappings>
@@ -387,7 +387,7 @@ export const useDraggableGraph = (
   const eventBus: MappingsToEventBus<MappingsWithDragEvents> = {
     ...graph.eventBus,
     onNodeDragStart: [],
-    onNodeDragEnd: [],
+    onNodeDrop: [],
   }
 
   const subscribe = generateSubscriber(eventBus)
@@ -405,9 +405,9 @@ export const useDraggableGraph = (
     eventBus.onNodeDragStart.forEach(fn => fn(node))
   }
 
-  const endDrag = () => {
+  const drop = () => {
     if (!nodeBeingDragged.value) return
-    eventBus.onNodeDragEnd.forEach(fn => fn(nodeBeingDragged.value))
+    eventBus.onNodeDrop.forEach(fn => fn(nodeBeingDragged.value))
     nodeBeingDragged.value = undefined;
   }
 
@@ -437,7 +437,7 @@ export const useDraggableGraph = (
   })
 
   subscribe('onMouseDown', beginDrag)
-  subscribe('onMouseUp', endDrag)
+  subscribe('onMouseUp', drop)
   subscribe('onMouseMove', drag)
 
   return {
@@ -449,54 +449,78 @@ export const useDraggableGraph = (
   }
 }
 
-type MiniNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & {
-  miniNodeRadius: NodeGetterOrValue<number>;
-  miniNodeColorWhenNodeFocused: NodeGetterOrValue<string>;
-  miniNodeColor: NodeGetterOrValue<string>;
-}
-
-type WithMiniNodeEvents<T extends MappingsWithDragEvents> = T & {
-  onMiniNodeDragStart: (parentNode: Node, miniNode: MiniNode) => void;
-  onMiniNodeDrop: (parentNode: Node, miniNode: MiniNode) => void;
-}
-
-type MappingsWithMiniNodeEvents = WithMiniNodeEvents<MappingsWithDragEvents>
-
-type MiniNode = {
+type NodeAnchor = {
   x: number,
   y: number,
   direction: 'north' | 'east' | 'south' | 'west',
 }
 
-export const useDraggableMiniNodeGraph = (
+type AnchorNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & {
+  nodeAnchorRadius: NodeGetterOrValue<number>;
+  nodeAnchorColor: NodeGetterOrValue<string>;
+  nodeAnchorColorWhenParentFocused: NodeGetterOrValue<string>;
+}
+
+type WithNodeAnchorEvents<T extends MappingsWithDragEvents> = T & {
+  onNodeAnchorDragStart: (parentNode: Node, nodeAnchor: NodeAnchor) => void;
+  onNodeAnchorDrop: (parentNode: Node, nodeAnchor: NodeAnchor) => void;
+}
+
+type MappingsWithNodeAnchorEvents = WithNodeAnchorEvents<MappingsWithDragEvents>
+
+export const useDraggableNodeAnchorGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<MiniNodeGraphOptions> = {}
+  options: Partial<AnchorNodeGraphOptions> = {}
 ) => {
 
   const graph = useDraggableGraph(canvas, options)
   const parentNode = ref<Node | undefined>()
-  const activeMiniNode = ref<MiniNode | undefined>()
+  const activeAnchor = ref<NodeAnchor | undefined>()
 
-  const eventBus: MappingsToEventBus<MappingsWithMiniNodeEvents> = {
+  const eventBus: MappingsToEventBus<MappingsWithNodeAnchorEvents> = {
     ...graph.eventBus,
-    onMiniNodeDragStart: [],
-    onMiniNodeDrop: [],
+    onNodeAnchorDragStart: [],
+    onNodeAnchorDrop: [],
   }
 
   const subscribe = generateSubscriber(eventBus)
 
   const {
     // default mini node radius scales at 2 root r
-    miniNodeRadius = (node) => Math.sqrt(getValue(graph.options.value.nodeSize, node)) * 2,
-    miniNodeColorWhenNodeFocused = graph.options.value.nodeFocusBorderColor,
-    miniNodeColor = 'black',
+    nodeAnchorRadius: anchorRadius = (node) => Math.sqrt(getValue(graph.options.value.nodeSize, node)) * 2,
+    nodeAnchorColor: anchorColor = 'black',
+    nodeAnchorColorWhenParentFocused: anchorColorWhenParentFocused = graph.options.value.nodeFocusBorderColor,
   } = options
 
-  const getMiniNodes = (node: Node): MiniNode[] => {
-    const miniNodeRadiusVal = getValue(miniNodeRadius, node)
-    const nodeRadius = getValue(graph.options.value.nodeSize, node)
-    const nodeBorderWidth = getValue(graph.options.value.nodeBorderSize, node)
-    const offset = nodeRadius - (miniNodeRadiusVal / 3) + (nodeBorderWidth / 2)
+  const drawAnchors = (ctx: CanvasRenderingContext2D) => {
+    if (!parentNode.value || graph.nodeBeingDragged.value) return
+
+    const anchorColorVal = getValue(anchorColor, parentNode.value)
+    const anchorColorWhenParentFocusedVal = getValue(anchorColorWhenParentFocused, parentNode.value)
+    const isParentFocused = parentNode.value.id === graph.getFocusedNodeId()
+    const color = isParentFocused ? anchorColorWhenParentFocusedVal : anchorColorVal
+
+    const anchors = getAnchors(parentNode.value)
+    const drawCircle = drawCircleWithCtx(ctx)
+
+    const radius = getValue(anchorRadius, parentNode.value)
+
+    for (const anchor of anchors) {
+      const { x, y } = anchor
+      const circle = { x, y, radius, color }
+      if (activeAnchor.value && activeAnchor.value.direction === anchor.direction) {
+        circle.x = activeAnchor.value.x
+        circle.y = activeAnchor.value.y
+      }
+      drawCircle(circle)
+    }
+  }
+
+  const getAnchors = (node: Node): NodeAnchor[] => {
+    const anchorRadiusVal = getValue(anchorRadius, node)
+    const nodeRadiusVal = getValue(graph.options.value.nodeSize, node)
+    const nodeBorderWidthVal = getValue(graph.options.value.nodeBorderSize, node)
+    const offset = nodeRadiusVal - (anchorRadiusVal / 3) + (nodeBorderWidthVal / 2)
     return [
       {
         x: node.x,
@@ -521,83 +545,52 @@ export const useDraggableMiniNodeGraph = (
     ]
   }
 
-  const drawMiniNodes = (ctx: CanvasRenderingContext2D) => {
-    if (!parentNode.value || graph.nodeBeingDragged.value) return
-
-    // get the color of the mini nodes
-    const normalMiniNodeColorVal = getValue(miniNodeColor, parentNode.value)
-    const focusedMiniNodeColorVal = getValue(miniNodeColorWhenNodeFocused, parentNode.value)
-    const isParentFocused = parentNode.value.id === graph.getFocusedNodeId()
-    const miniNodeColorVal = isParentFocused ? focusedMiniNodeColorVal : normalMiniNodeColorVal
-
-    const miniNodes = getMiniNodes(parentNode.value)
-    const drawCircle = drawCircleWithCtx(ctx)
-
-    // get the radius of the mini nodes
-    const miniNodeRadiusVal = getValue(miniNodeRadius, parentNode.value)
-
-    for (const miniNode of miniNodes) {
-      const circle = {
-        x: miniNode.x,
-        y: miniNode.y,
-        radius: miniNodeRadiusVal,
-        color: miniNodeColorVal,
-      }
-      if (activeMiniNode.value && activeMiniNode.value.direction === miniNode.direction) {
-        circle.x = activeMiniNode.value.x
-        circle.y = activeMiniNode.value.y
-      }
-      drawCircle(circle)
-    }
-  }
-
-  const getMiniNode = (x: number, y: number) => {
-    if (!parentNode.value) return
-    const miniNodes = getMiniNodes(parentNode.value)
-    return miniNodes.find((miniNode) => {
-      if (!parentNode.value) return
+  const getAnchor = (node: Node, x: number, y: number) => {
+    const anchors = getAnchors(node)
+    return anchors.find((anchor) => {
       const point = { x, y }
       return isInCircle(point, {
-        x: miniNode.x,
-        y: miniNode.y,
-        radius: getValue(miniNodeRadius, parentNode.value),
+        x: anchor.x,
+        y: anchor.y,
+        radius: getValue(anchorRadius, node),
       })
     })
   }
 
   subscribe('onMouseMove', (ev) => {
-    if (activeMiniNode.value) return
+    if (activeAnchor.value) return
     const node = graph.getNodeByCoordinates(ev.offsetX, ev.offsetY)
     if (!node && parentNode.value) {
-      const hoveredMiniNode = getMiniNode(ev.offsetX, ev.offsetY)
-      if (hoveredMiniNode) return
+      const hoveredAnchor = getAnchor(parentNode.value, ev.offsetX, ev.offsetY)
+      if (hoveredAnchor) return
     }
     parentNode.value = node
   })
 
   subscribe('onMouseDown', (ev) => {
-    const miniNode = getMiniNode(ev.offsetX, ev.offsetY)
-    if (!miniNode) return
-    activeMiniNode.value = miniNode
-    eventBus.onMiniNodeDragStart.forEach(fn => fn(parentNode.value, miniNode))
+    if (!parentNode.value) return
+    const anchor = getAnchor(parentNode.value, ev.offsetX, ev.offsetY)
+    if (!anchor) return
+    activeAnchor.value = anchor
+    eventBus.onNodeAnchorDragStart.forEach(fn => fn(parentNode.value, anchor))
     graph.draggingEnabled.value = false
   })
 
   subscribe('onMouseMove', (ev) => {
-    if (!activeMiniNode.value) return
-    activeMiniNode.value.x = ev.offsetX
-    activeMiniNode.value.y = ev.offsetY
+    if (!activeAnchor.value) return
+    activeAnchor.value.x = ev.offsetX
+    activeAnchor.value.y = ev.offsetY
   })
 
   subscribe('onMouseUp', () => {
-    if (!activeMiniNode.value) return
-    eventBus.onMiniNodeDrop.forEach(fn => fn(parentNode.value, activeMiniNode.value))
-    activeMiniNode.value = undefined
+    if (!activeAnchor.value) return
+    eventBus.onNodeAnchorDrop.forEach(fn => fn(parentNode.value, activeAnchor.value))
+    activeAnchor.value = undefined
     parentNode.value = undefined
     graph.draggingEnabled.value = true
   })
 
-  subscribe('onRepaint', drawMiniNodes)
+  subscribe('onRepaint', drawAnchors)
 
   subscribe('onNodeRemoved', (node) => {
     if (parentNode.value?.id === node.id) parentNode.value = undefined
@@ -607,17 +600,17 @@ export const useDraggableMiniNodeGraph = (
     ...graph,
     eventBus,
     subscribe,
-    activeMiniNode: readonly(activeMiniNode),
+    activeNodeAnchor: readonly(activeAnchor),
   }
 }
 
-type UserEditableGraphOptions = MiniNodeGraphOptions
+type UserEditableGraphOptions = AnchorNodeGraphOptions
 export const useUserEditableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<UserEditableGraphOptions> = {}
 ) => {
 
-  const graph = useDraggableMiniNodeGraph(canvas, options)
+  const graph = useDraggableNodeAnchorGraph(canvas, options)
 
   graph.subscribe('onDblClick', (ev) => {
     const { offsetX, offsetY } = ev
@@ -630,13 +623,8 @@ export const useUserEditableGraph = (
     if (ev.key === 'Backspace' && focusedNodeId) graph.removeNode(focusedNodeId)
   });
 
-  // graph.subscribe('onMiniNodeDragStart', (parentNode, miniNode) => {
-  //   console.log('mini node drag started', parentNode.id, miniNode.direction)
-  // })
-
-  graph.subscribe('onMiniNodeDrop', (parentNode, miniNode) => {
-    const node = graph.getNodeByCoordinates(miniNode.x, miniNode.y)
-    console.log('dropped on', node?.id)
+  graph.subscribe('onNodeAnchorDrop', (parentNode, anchor) => {
+    const node = graph.getNodeByCoordinates(anchor.x, anchor.y)
     if (!node) return
     graph.addEdge({ from: parentNode.id, to: node.id })
     graph.addEdge({ from: node.id, to: parentNode.id })
