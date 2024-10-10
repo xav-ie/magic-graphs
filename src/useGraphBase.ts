@@ -2,6 +2,7 @@ import {
   ref,
   onMounted,
   onBeforeUnmount,
+  computed,
   type Ref
 } from 'vue'
 import { onClickOutside } from '@vueuse/core';
@@ -15,9 +16,9 @@ import type {
   MouseEventEntries,
   KeyboardEventEntries
 } from './useGraphTypes'
-import { generateSubscriber, getValue } from './useGraphHelpers';
+import { generateSubscriber, getValue, generateId } from './useGraphHelpers';
 import { drawCircleWithCtx, drawLineWithCtx } from './shapeHelpers';
-import { isInCircle } from './hitboxHelpers';
+import { isInCircle, isInLine } from './hitboxHelpers';
 
 export type UseGraphEventBusCallbackMappings = {
   /* graph dataflow events */
@@ -37,6 +38,14 @@ export type UseGraphEventBusCallbackMappings = {
 
   /* global dom events */
   onKeydown: (ev: KeyboardEvent) => void;
+}
+
+type DrawItem = {
+  type: 'node',
+  data: GNode,
+} | {
+  type: 'edge',
+  data: GEdge,
 }
 
 export type MappingsToEventBus<T> = Record<keyof T, any[]>
@@ -63,7 +72,7 @@ const defaultOptions: GraphOptions = {
   nodeBorderColor: 'black',
   nodeFocusBorderColor: 'blue',
   nodeFocusColor: 'white',
-  nodeText: (node: GNode) => node.id.toString(),
+  nodeText: ({ label }: GNode) => label,
   nodeTextSize: 24,
   nodeTextColor: 'black',
   edgeColor: 'black',
@@ -142,10 +151,16 @@ export const useGraph =(
     })
   }
 
-  const drawEdge = (ctx: CanvasRenderingContext2D, edge: GEdge) => {
-    const from = nodes.value.find(node => node.id === edge.from)
-    const to = nodes.value.find(node => node.id === edge.to)
+  const getFromToNodes = (edge: GEdge) => {
+    // using label when its ID that should be used but if i use ID, we create a new property that
+    // predefined nodes and edges outside of the graph instance do not know about!
+    const from = nodes.value.find(node => node.label === edge.from)
+    const to = nodes.value.find(node => node.label === edge.to)
+    return { from, to }
+  }
 
+  const drawEdge = (ctx: CanvasRenderingContext2D, edge: GEdge) => {
+    const { from, to } = getFromToNodes(edge)
     if (!from || !to) return
 
     const drawLine = drawLineWithCtx(ctx)
@@ -158,15 +173,16 @@ export const useGraph =(
     })
   }
 
-  const drawGraph = (ctx: CanvasRenderingContext2D) => {
-    edges.value.forEach(edge => drawEdge(ctx, edge))
-    nodes.value.forEach(node => drawNode(ctx, node))
-  }
-
-  subscribe('onRepaint', drawGraph)
+  const drawItems = computed(() => {
+    // console.log('drawItems computed')
+    const nodeDrawItems = nodes.value.map(node => ({ type: 'node', data: node } as const))
+    const edgeDrawItems = edges.value.map(edge => ({ type: 'edge', data: edge } as const))
+    return [...edgeDrawItems, ...nodeDrawItems,]
+  })
 
   const mouseEvents: Partial<MouseEventMap> = {
     click: (ev: MouseEvent) => {
+      console.log(getDrawItemsByCoordinates(ev.offsetX, ev.offsetY))
       eventBus.onClick.forEach(fn => fn(ev))
     },
     mousedown: (ev: MouseEvent) => {
@@ -191,13 +207,15 @@ export const useGraph =(
     }
   }
 
-  const drawMap = new Map<string, string>()
-
   const drawGraphInterval = setInterval(() => {
     if (!canvas.value) return
     const ctx = canvas.value.getContext('2d')
     if (ctx) {
       ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
+      for (const item of drawItems.value) {
+        if (item.type === 'node') drawNode(ctx, item.data)
+        if (item.type === 'edge') drawEdge(ctx, item.data)
+      }
       eventBus.onRepaint.forEach(fn => fn(ctx))
     }
   }, 1000 / 60 /* 60fps */)
@@ -242,17 +260,18 @@ export const useGraph =(
     y: getRandomBetweenRange(50, canvas.height - 50),
   });
 
-  const getNewNodeId = () => {
-    const ids = nodes.value.map(node => node.id)
-    let id = 1
-    while (ids.includes(id)) id++
-    return id
+  const getNewNodeLabel = () => {
+    const labels = nodes.value.map(node => node.label)
+    let label = 1
+    while (labels.includes(label.toString())) label++
+    return label.toString()
   }
 
   const addNode = (node: Partial<GNode>, focusNode = true) => {
     const { x, y } = canvas.value ? getRandomPointOnCanvas(canvas.value) : { x: 0, y: 0 }
     const newNode = {
-      id: node.id ?? getNewNodeId(),
+      id: node.id ?? generateId(),
+      label: node.label ?? getNewNodeLabel(),
       x: node.x ?? x,
       y: node.y ?? y,
     }
@@ -263,7 +282,7 @@ export const useGraph =(
     return newNode
   }
 
-  const moveNode = (id: number, x: number, y: number) => {
+  const moveNode = (id: GNode['id'], x: number, y: number) => {
     const node = nodes.value.find(node => node.id === id)
     if (node) {
       node.x = x
@@ -271,8 +290,29 @@ export const useGraph =(
     }
   }
 
-  const getNode = (id: number) => {
+  const getNode = (id: GNode['id']) => {
     return nodes.value.find(node => node.id === id)
+  }
+
+  const getDrawItemsByCoordinates = (x: number, y: number) => {
+    return drawItems.value.filter(item => {
+      if (item.type === 'node') {
+        const nodeRadius = getValue(options.value.nodeRadius, item.data)
+        const nodeBorderWidth = getValue(options.value.nodeBorderWidth, item.data)
+        const point = { x, y }
+        const nodeCircle = { x: item.data.x, y: item.data.y, radius: nodeRadius + nodeBorderWidth }
+        return isInCircle(point, nodeCircle)
+      } if (item.type === 'edge') {
+        const { from, to } = getFromToNodes(item.data)
+        if (!from || !to) return false
+        const point = { x, y }
+        return isInLine(point, {
+          start: { x: from.x, y: from.y },
+          end: { x: to.x, y: to.y },
+          width: getValue(options.value.edgeWidth, item.data),
+        })
+      }
+    })
   }
 
   /*
@@ -283,16 +323,10 @@ export const useGraph =(
   */
   const getNodeByCoordinates = (x: number, y: number, buffer = 0): GNode | undefined => {
     /* @ts-expect-error - findLast proto not typed */
-    return nodes.value.findLast(node => {
-      const nodeRadius = getValue(options.value.nodeRadius, node)
-      const nodeBorderWidth = getValue(options.value.nodeBorderWidth, node)
-      const point = { x, y }
-      const nodeCircle = { x: node.x, y: node.y, radius: nodeRadius + nodeBorderWidth + buffer }
-      return isInCircle(point, nodeCircle)
-    })
+    return getDrawItemsByCoordinates(x, y).findLast(item => item.type === 'node')?.data
   }
 
-  const removeNode = (id: number) => {
+  const removeNode = (id: GNode['id']) => {
     const index = nodes.value.findIndex(node => node.id === id)
     if (index === -1) return
     const removedNode = nodes.value[index]
@@ -302,8 +336,8 @@ export const useGraph =(
     eventBus.onNodeRemoved.forEach(fn => fn(removedNode))
   }
 
-  const addEdge = (edge: GEdge) => {
-    edges.value.push(edge)
+  const addEdge = (edge: Omit<GEdge, 'id'>) => {
+    edges.value.push({ ...edge, id: generateId() })
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     return edge
   }
@@ -315,7 +349,7 @@ export const useGraph =(
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
   }
 
-  const setFocusedNode = (newNodeId: number | undefined) => {
+  const setFocusedNode = (newNodeId: GNode['id'] | undefined) => {
     if (focusedNodeId.value === newNodeId) return
     const oldNode = focusedNodeId.value ? getNode(focusedNodeId.value) : undefined
     const newNode = newNodeId ? getNode(newNodeId) : undefined
@@ -347,6 +381,5 @@ export const useGraph =(
     eventBus,
     subscribe,
     options,
-    drawMap,
   }
 }

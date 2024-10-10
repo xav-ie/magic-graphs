@@ -13,7 +13,7 @@ export const adjListToNodesEdges = (adjList: AdjacencyList) => {
   const nodes = Object.keys(adjList).map(() => ({} as GNode));
 
   const edges = Object.entries(adjList).flatMap(([from, tos]) =>
-    tos.map(to => ({ from: Number(from), to: Number(to) }))
+    tos.map(to => ({ from: from.toString(), to: to.toString() }))
   );
 
   return { nodes, edges };

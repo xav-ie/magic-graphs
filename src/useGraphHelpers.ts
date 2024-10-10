@@ -21,3 +21,8 @@ export const generateSubscriber = <T extends UseGraphEventBusCallbackMappings>(
   event: K,
   fn: T[K]
 ) => eventBus[event].push(fn)
+
+/*
+  generates id. Every item on the canvas must have an id
+*/
+export const generateId = () => Math.random().toString(36).substring(2, 9)

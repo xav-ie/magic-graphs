@@ -1,13 +1,15 @@
 
 export type GNode = {
-  id: number,
+  id: string,
+  label: string,
   x: number,
   y: number,
 }
 
 export type GEdge = {
-  to: number,
-  from: number,
+  id: string,
+  to: string,
+  from: string,
 }
 
 /*
