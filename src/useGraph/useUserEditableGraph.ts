@@ -21,10 +21,14 @@ export const useUserEditableGraph = (
   });
 
   graph.subscribe('onNodeAnchorDrop', (parentNode, anchor) => {
-    const node = graph.getNodeByCoordinates(anchor.x, anchor.y)
+    const topItemNoAnchorOrLink = graph.getDrawItemsByCoordinates(anchor.x, anchor.y).slice(0, -2)
+    if (topItemNoAnchorOrLink.length === 0) return
+    const maybeNode = topItemNoAnchorOrLink.pop()
+    if (maybeNode?.graphType !== 'node') return
+    const node = graph.nodes.value.find(n => n.id === maybeNode.id)
     if (!node) return
-    graph.addEdge({ from: parentNode.id, to: node.id })
-    graph.addEdge({ from: node.id, to: parentNode.id })
+    graph.addEdge({ from: parentNode.label, to: node.label })
+    graph.addEdge({ from: node.label, to: parentNode.label })
   })
 
   return graph

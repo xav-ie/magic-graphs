@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
+import { ref } from 'vue';
 import Graph from './Graph.vue';
 import CodeEditor from './CodeEditor.vue';
 
@@ -13,7 +13,7 @@ const weightedGraph = {
   7: [{ node: 6, weight: 1 }],
 }
 
-const graph = ref<Record<number, number[]>>({ 1: [2], 2: [1] })
+const graph = ref<Record<number, number[]>>({ 1: [2], 2: [1], 3: [] })
 </script>
 
 <template>

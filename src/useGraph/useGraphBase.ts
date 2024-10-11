@@ -197,7 +197,7 @@ export const useGraph =(
     setFocusedNode(node?.id)
   })
 
-  let aggregator: SchemaItem[] = []
+  const aggregator = ref<SchemaItem[]>([])
   const updateAggregator: ((aggregator: SchemaItem[]) => SchemaItem[])[] = []
 
   updateAggregator.push((aggregator) => {
@@ -224,11 +224,11 @@ export const useGraph =(
     if (ctx) {
       ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
 
-      aggregator = []
-      const schemaItems = updateAggregator.reduce((acc, fn) => fn(acc), aggregator)
+      const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
+      aggregator.value = [...evaluateAggregator]
 
       const { drawLine, drawCircle } = drawShape(ctx)
-      for (const item of schemaItems) {
+      for (const item of aggregator.value) {
         if (item.schemaType === 'circle') {
           drawCircle(item.schema)
         } else if (item.schemaType === 'line') {
@@ -317,7 +317,7 @@ export const useGraph =(
   const getDrawItemsByCoordinates = (x: number, y: number) => {
     const point = { x, y }
     const { isInCircle, isInLine } = hitboxes(point)
-    return aggregator.filter(item => {
+    return aggregator.value.filter(item => {
       if (item.schemaType === 'circle') {
         return isInCircle(item.schema)
       } if (item.schemaType === 'line') {
@@ -332,7 +332,7 @@ export const useGraph =(
     @param buffer - the buffer is used to increase the hit box of a node beyond its radius
     @returns the node that is at the given coordinates
   */
-  const getNodeByCoordinates = (x: number, y: number, buffer = 0): GNode | undefined => {
+  const getNodeByCoordinates = (x: number, y: number): GNode | undefined => {
     const topItem = getDrawItemsByCoordinates(x, y).pop()
     if (!topItem) return
     if (topItem.graphType !== 'node') return
@@ -385,6 +385,7 @@ export const useGraph =(
     moveNode,
     getNode,
     getNodeByCoordinates,
+    getDrawItemsByCoordinates,
     removeNode,
     addEdge,
     removeEdge,
@@ -395,5 +396,6 @@ export const useGraph =(
     subscribe,
     options,
     updateAggregator,
+    aggregator,
   }
 }

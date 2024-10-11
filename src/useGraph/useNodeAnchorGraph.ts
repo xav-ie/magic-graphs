@@ -1,6 +1,6 @@
 import { getValue, generateSubscriber } from "./useGraphHelpers";
 import { useDraggableGraph, type MappingsWithDragEvents } from "./useDraggableGraph";
-import type { GNode, NodeGetterOrValue } from "./types";
+import type { SchemaItem, GNode, NodeGetterOrValue, MaybeGetter } from "./types";
 import { type GraphOptions, type MappingsToEventBus } from "./useGraphBase";
 import { ref, readonly, type Ref } from 'vue'
 import { hitboxes } from "../shapes/hitboxes";
@@ -16,6 +16,8 @@ export type AnchorNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & 
   nodeAnchorRadius: NodeGetterOrValue<number>;
   nodeAnchorColor: NodeGetterOrValue<string>;
   nodeAnchorColorWhenParentFocused: NodeGetterOrValue<string>;
+  linkPreviewColor: MaybeGetter<string, [GNode, NodeAnchor]>;
+  linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
 }
 
 type WithNodeAnchorEvents<T extends MappingsWithDragEvents> = T & {
@@ -43,10 +45,12 @@ export const useDraggableNodeAnchorGraph = (
   const subscribe = generateSubscriber(eventBus)
 
   const {
-    // default mini node radius scales at 2 root r
+    // default anchor radius scales with respect to its parent at ceil(2 root r)
     nodeAnchorRadius: anchorRadius = (node) => Math.ceil(Math.sqrt(getValue(graph.options.value.nodeRadius, node)) * 2),
     nodeAnchorColor: anchorColor = 'black',
     nodeAnchorColorWhenParentFocused: anchorColorWhenParentFocused = graph.options.value.nodeFocusBorderColor,
+    linkPreviewColor = getValue(graph.options.value.edgeColor, graph.edges.value[0]),
+    linkPreviewWidth = getValue(graph.options.value.edgeWidth, graph.edges.value[0]),
   } = options
 
   const getAnchorSchematics = (): Circle[] => {
@@ -58,7 +62,6 @@ export const useDraggableNodeAnchorGraph = (
     const color = isParentFocused ? anchorColorWhenParentFocusedVal : anchorColorVal
 
     const anchors = getAnchors(parentNode.value)
-
     const radius = getValue(anchorRadius, parentNode.value)
 
     const circles = []
@@ -115,6 +118,21 @@ export const useDraggableNodeAnchorGraph = (
     })
   }
 
+  const getLinkPreviewSchematic = () => {
+    if (!parentNode.value || !activeAnchor.value) return
+    const { x, y } = activeAnchor.value
+    const start = { x: parentNode.value.x, y: parentNode.value.y }
+    const end = { x, y }
+    const color = getValue(linkPreviewColor, parentNode.value, activeAnchor.value)
+    const width = getValue(linkPreviewWidth, parentNode.value, activeAnchor.value)
+    return {
+      id: 'link-preview',
+      graphType: 'link-preview',
+      schemaType: 'line',
+      schema: { start, end, color, width },
+    } as const
+  }
+
   subscribe('onMouseMove', (ev) => {
     if (activeAnchor.value) return
     const node = graph.getNodeByCoordinates(ev.offsetX, ev.offsetY)
@@ -144,7 +162,6 @@ export const useDraggableNodeAnchorGraph = (
     if (!activeAnchor.value) return
     eventBus.onNodeAnchorDrop.forEach(fn => fn(parentNode.value, activeAnchor.value))
     activeAnchor.value = undefined
-    parentNode.value = undefined
     graph.draggingEnabled.value = true
   })
 
@@ -158,6 +175,13 @@ export const useDraggableNodeAnchorGraph = (
         schema: anchor,
       })
     }
+    return aggregator
+  })
+
+  graph.updateAggregator.push((aggregator) => {
+    const linkPreview = getLinkPreviewSchematic()
+    if (!linkPreview) return aggregator
+    aggregator.push(linkPreview)
     return aggregator
   })
 
