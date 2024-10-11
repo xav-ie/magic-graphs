@@ -179,7 +179,7 @@ export const useDraggableNodeAnchorGraph = (
         graphType: 'node-anchor',
         schemaType: 'circle',
         schema: anchor,
-        priority: 1,
+        priority: 1000,
       })
     }
     return aggregator
@@ -191,13 +191,13 @@ export const useDraggableNodeAnchorGraph = (
     if (!linkPreview || !parentNode.value) return aggregator
     const highestPriorityNodeScore = aggregator.reduce((acc, item) => {
       if (item.graphType !== 'node') return acc
-      return item.priority < acc ? item.priority : acc
-    }, Infinity)
+      return item.priority > acc ? item.priority : acc
+    }, -Infinity)
     const { id: parentNodeId } = parentNode.value
     const parentNodeSchema = aggregator.find((item) => item.id === parentNodeId)
     if (!parentNodeSchema) return aggregator
-    parentNodeSchema.priority = highestPriorityNodeScore - 1
-    linkPreview.priority = highestPriorityNodeScore - 0.5
+    parentNodeSchema.priority = highestPriorityNodeScore + 1
+    linkPreview.priority = highestPriorityNodeScore + 0.5
     aggregator.push(linkPreview)
     return aggregator
   })

@@ -213,7 +213,7 @@ export const useGraph =(
       graphType: 'edge',
       schemaType: 'line',
       schema: getEdgeSchematic(edge),
-      priority: i + 1000,
+      priority: i,
     } as const)).filter(({ schema }) => schema) as SchemaItem[]
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)
@@ -227,7 +227,7 @@ export const useGraph =(
       ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
 
       const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
-      aggregator.value = [...evaluateAggregator.sort((a, b) => b.priority - a.priority)]
+      aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
 
       const { drawLine, drawCircle } = drawShape(ctx)
       for (const item of aggregator.value) {
@@ -384,12 +384,12 @@ export const useGraph =(
     if (!currHoveredNode) return aggregator
     const highestPriorityNodeScore = aggregator.reduce((acc, item) => {
       if (item.graphType !== 'node') return acc
-      return item.priority < acc ? item.priority : acc
-    }, Infinity)
+      return item.priority > acc ? item.priority : acc
+    }, -Infinity)
     const { id: hoveredNodeId } = currHoveredNode
     const hoveredNodeSchema = aggregator.find((item) => item.id === hoveredNodeId)
     if (!hoveredNodeSchema) return aggregator
-    hoveredNodeSchema.priority = highestPriorityNodeScore - 0.1
+    hoveredNodeSchema.priority = highestPriorityNodeScore + 0.1
     return aggregator
   })
 
