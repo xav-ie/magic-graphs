@@ -201,17 +201,19 @@ export const useGraph =(
   const updateAggregator: ((aggregator: SchemaItem[]) => SchemaItem[])[] = []
 
   updateAggregator.push((aggregator) => {
-    const nodeSchemaItems = nodes.value.map(node => ({
+    const nodeSchemaItems = nodes.value.map((node, i) => ({
       id: node.id,
       graphType: 'node',
       schemaType: 'circle',
       schema: getNodeSchematic(node),
+      priority: i + 100,
     } as const))
-    const edgeSchemaItems = edges.value.map(edge => ({
+    const edgeSchemaItems = edges.value.map((edge, i) => ({
       id: edge.id,
       graphType: 'edge',
       schemaType: 'line',
       schema: getEdgeSchematic(edge),
+      priority: i + 1000,
     } as const)).filter(({ schema }) => schema) as SchemaItem[]
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)
@@ -225,7 +227,7 @@ export const useGraph =(
       ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
 
       const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
-      aggregator.value = [...evaluateAggregator]
+      aggregator.value = [...evaluateAggregator.sort((a, b) => b.priority - a.priority)]
 
       const { drawLine, drawCircle } = drawShape(ctx)
       for (const item of aggregator.value) {
@@ -376,6 +378,11 @@ export const useGraph =(
     if (node === currHoveredNode) return
     eventBus.onNodeHoverChange.forEach(fn => fn(node, currHoveredNode))
     currHoveredNode = node
+  })
+
+  updateAggregator.push((aggregator) => {
+    // TODO move hovered node above all other nodes using priority
+    return aggregator
   })
 
   return {

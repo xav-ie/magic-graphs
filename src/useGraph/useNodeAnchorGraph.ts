@@ -118,7 +118,7 @@ export const useDraggableNodeAnchorGraph = (
     })
   }
 
-  const getLinkPreviewSchematic = () => {
+  const getLinkPreviewSchematic = (): SchemaItem | undefined => {
     if (!parentNode.value || !activeAnchor.value) return
     const { x, y } = activeAnchor.value
     const start = { x: parentNode.value.x, y: parentNode.value.y }
@@ -130,7 +130,8 @@ export const useDraggableNodeAnchorGraph = (
       graphType: 'link-preview',
       schemaType: 'line',
       schema: { start, end, color, width },
-    } as const
+      priority: 100,
+    }
   }
 
   subscribe('onMouseMove', (ev) => {
@@ -166,13 +167,19 @@ export const useDraggableNodeAnchorGraph = (
   })
 
   graph.updateAggregator.push((aggregator) => {
+    if (!parentNode.value) return aggregator
     const anchors = getAnchorSchematics()
+    const { id: parentNodeId } = parentNode.value
+    const parentNodeSchema = aggregator.find((item) => item.id === parentNodeId)
+    if (!parentNodeSchema) return aggregator
+    const { priority: parentNodePriority } = parentNodeSchema
     for (const anchor of anchors) {
       aggregator.push({
         id: 'anchor',
         graphType: 'node-anchor',
         schemaType: 'circle',
         schema: anchor,
+        priority: parentNodePriority - 0.5,
       })
     }
     return aggregator
@@ -182,21 +189,16 @@ export const useDraggableNodeAnchorGraph = (
   graph.updateAggregator.push((aggregator) => {
     const linkPreview = getLinkPreviewSchematic()
     if (!linkPreview || !parentNode.value) return aggregator
-    const { id } = parentNode.value
-    const parentNodeIndex = aggregator.findIndex((item) => item.id === id)
-    // @ts-expect-error - findLastIndex is not in type system
-    const topNodeIndex = aggregator.findLastIndex((item) => item.graphType === 'node') as number
-    if (parentNodeIndex === -1 || topNodeIndex === -1) {
-      console.error('Trouble updating aggregator! Parent node or top node not found.')
-      return aggregator
-    }
-    if (parentNodeIndex !== topNodeIndex) {
-      const parentSchema = aggregator[parentNodeIndex]
-      const topNodeSchema = aggregator[topNodeIndex]
-      aggregator[parentNodeIndex] = topNodeSchema
-      aggregator[topNodeIndex] = parentSchema
-    }
-    aggregator.splice(parentNodeIndex, 0, linkPreview)
+    const highestPriorityNodeScore = aggregator.reduce((acc, item) => {
+      if (item.graphType !== 'node') return acc
+      return item.priority < acc ? item.priority : acc
+    }, Infinity)
+    const { id: parentNodeId } = parentNode.value
+    const parentNodeSchema = aggregator.find((item) => item.id === parentNodeId)
+    if (!parentNodeSchema) return aggregator
+    parentNodeSchema.priority = highestPriorityNodeScore - 1
+    linkPreview.priority = highestPriorityNodeScore - 0.5
+    aggregator.push(linkPreview)
     return aggregator
   })
 

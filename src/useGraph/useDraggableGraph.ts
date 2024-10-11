@@ -68,14 +68,6 @@ export const useDraggableGraph = (
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
   }
 
-  subscribe('onNodeHoverChange', (node) => {
-    if (!node || nodeBeingDragged.value) return
-    const nodeIndex = graph.nodes.value.findIndex(n => n.id === node.id)
-    if (nodeIndex === -1) return
-    graph.nodes.value.splice(nodeIndex, 1)
-    graph.nodes.value.push(node)
-  })
-
   watch(draggingEnabled, () => {
     nodeBeingDragged.value = undefined
   })
