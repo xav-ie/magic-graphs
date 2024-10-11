@@ -178,10 +178,25 @@ export const useDraggableNodeAnchorGraph = (
     return aggregator
   })
 
+  // insert the link preview under the parent node and above the rest of the nodes
   graph.updateAggregator.push((aggregator) => {
     const linkPreview = getLinkPreviewSchematic()
-    if (!linkPreview) return aggregator
-    aggregator.push(linkPreview)
+    if (!linkPreview || !parentNode.value) return aggregator
+    const { id } = parentNode.value
+    const parentNodeIndex = aggregator.findIndex((item) => item.id === id)
+    // @ts-expect-error - findLastIndex is not in type system
+    const topNodeIndex = aggregator.findLastIndex((item) => item.graphType === 'node') as number
+    if (parentNodeIndex === -1 || topNodeIndex === -1) {
+      console.error('Trouble updating aggregator! Parent node or top node not found.')
+      return aggregator
+    }
+    if (parentNodeIndex !== topNodeIndex) {
+      const parentSchema = aggregator[parentNodeIndex]
+      const topNodeSchema = aggregator[topNodeIndex]
+      aggregator[parentNodeIndex] = topNodeSchema
+      aggregator[topNodeIndex] = parentSchema
+    }
+    aggregator.splice(parentNodeIndex, 0, linkPreview)
     return aggregator
   })
 
