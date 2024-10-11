@@ -130,11 +130,6 @@ export const useDraggableNodeAnchorGraph = (
     const anchor = getAnchor(parentNode.value, ev.offsetX, ev.offsetY)
     if (!anchor) return
     activeAnchor.value = anchor
-    const isParentAlreadyFocused = parentNode.value.id === graph.getFocusedNodeId()
-    queueMicrotask(() => {
-      if (isParentAlreadyFocused) return
-      graph.setFocusedNode(undefined)
-    })
     eventBus.onNodeAnchorDragStart.forEach(fn => fn(parentNode.value, anchor))
     graph.draggingEnabled.value = false
   })
@@ -153,7 +148,7 @@ export const useDraggableNodeAnchorGraph = (
     graph.draggingEnabled.value = true
   })
 
-  subscribe('onRepaint', (aggregator) => {
+  graph.updateAggregator.push((aggregator) => {
     const anchors = getAnchorSchematics()
     for (const anchor of anchors) {
       aggregator.push({
