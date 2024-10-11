@@ -381,7 +381,15 @@ export const useGraph =(
   })
 
   updateAggregator.push((aggregator) => {
-    // TODO move hovered node above all other nodes using priority
+    if (!currHoveredNode) return aggregator
+    const highestPriorityNodeScore = aggregator.reduce((acc, item) => {
+      if (item.graphType !== 'node') return acc
+      return item.priority < acc ? item.priority : acc
+    }, Infinity)
+    const { id: hoveredNodeId } = currHoveredNode
+    const hoveredNodeSchema = aggregator.find((item) => item.id === hoveredNodeId)
+    if (!hoveredNodeSchema) return aggregator
+    hoveredNodeSchema.priority = highestPriorityNodeScore - 0.1
     return aggregator
   })
 

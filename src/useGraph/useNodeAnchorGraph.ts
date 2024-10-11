@@ -179,7 +179,7 @@ export const useDraggableNodeAnchorGraph = (
         graphType: 'node-anchor',
         schemaType: 'circle',
         schema: anchor,
-        priority: parentNodePriority - 0.5,
+        priority: 1,
       })
     }
     return aggregator
