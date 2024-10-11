@@ -1,10 +1,10 @@
 import { getValue, generateSubscriber } from "./useGraphHelpers";
 import { useDraggableGraph, type MappingsWithDragEvents } from "./useDraggableGraph";
-import type { GNode, NodeGetterOrValue } from "./useGraphTypes";
+import type { GNode, NodeGetterOrValue } from "./types";
 import { type GraphOptions, type MappingsToEventBus } from "./useGraphBase";
 import { ref, readonly, type Ref } from 'vue'
-import { drawCircleWithCtx } from "./shapeHelpers";
-import { isInCircle } from "./hitboxHelpers";
+import { hitboxes } from "../shapes/hitboxes";
+import type { Circle } from "@/shapes/types";
 
 export type NodeAnchor = {
   x: number,
@@ -27,7 +27,7 @@ type MappingsWithNodeAnchorEvents = WithNodeAnchorEvents<MappingsWithDragEvents>
 
 export const useDraggableNodeAnchorGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<AnchorNodeGraphOptions> = {}
+  options: Partial<AnchorNodeGraphOptions> = {},
 ) => {
 
   const graph = useDraggableGraph(canvas, options)
@@ -44,13 +44,13 @@ export const useDraggableNodeAnchorGraph = (
 
   const {
     // default mini node radius scales at 2 root r
-    nodeAnchorRadius: anchorRadius = (node) => Math.sqrt(getValue(graph.options.value.nodeRadius, node)) * 2,
+    nodeAnchorRadius: anchorRadius = (node) => Math.ceil(Math.sqrt(getValue(graph.options.value.nodeRadius, node)) * 2),
     nodeAnchorColor: anchorColor = 'black',
     nodeAnchorColorWhenParentFocused: anchorColorWhenParentFocused = graph.options.value.nodeFocusBorderColor,
   } = options
 
-  const drawAnchors = (ctx: CanvasRenderingContext2D) => {
-    if (!parentNode.value || graph.nodeBeingDragged.value) return
+  const getAnchorSchematics = (): Circle[] => {
+    if (!parentNode.value || graph.nodeBeingDragged.value) return []
 
     const anchorColorVal = getValue(anchorColor, parentNode.value)
     const anchorColorWhenParentFocusedVal = getValue(anchorColorWhenParentFocused, parentNode.value)
@@ -58,10 +58,10 @@ export const useDraggableNodeAnchorGraph = (
     const color = isParentFocused ? anchorColorWhenParentFocusedVal : anchorColorVal
 
     const anchors = getAnchors(parentNode.value)
-    const drawCircle = drawCircleWithCtx(ctx)
 
     const radius = getValue(anchorRadius, parentNode.value)
 
+    const circles = []
     for (const anchor of anchors) {
       const { x, y } = anchor
       const circle = { at: { x, y }, radius, color }
@@ -69,8 +69,9 @@ export const useDraggableNodeAnchorGraph = (
         circle.at.x = activeAnchor.value.x
         circle.at.y = activeAnchor.value.y
       }
-      drawCircle(circle)
+      circles.push(circle)
     }
+    return circles
   }
 
   const getAnchors = (node: GNode): NodeAnchor[] => {
@@ -106,9 +107,9 @@ export const useDraggableNodeAnchorGraph = (
     const anchors = getAnchors(node)
     return anchors.find((anchor) => {
       const point = { x, y }
-      return isInCircle(point, {
-        x: anchor.x,
-        y: anchor.y,
+      const { isInCircle } = hitboxes(point)
+      return isInCircle({
+        at: { x: anchor.x, y: anchor.y },
         radius: getValue(anchorRadius, node),
       })
     })
@@ -152,7 +153,18 @@ export const useDraggableNodeAnchorGraph = (
     graph.draggingEnabled.value = true
   })
 
-  subscribe('onRepaint', drawAnchors)
+  subscribe('onRepaint', (aggregator) => {
+    const anchors = getAnchorSchematics()
+    for (const anchor of anchors) {
+      aggregator.push({
+        id: 'anchor',
+        graphType: 'node-anchor',
+        schemaType: 'circle',
+        schema: anchor,
+      })
+    }
+    return aggregator
+  })
 
   subscribe('onNodeRemoved', (node) => {
     if (parentNode.value?.id === node.id) parentNode.value = undefined

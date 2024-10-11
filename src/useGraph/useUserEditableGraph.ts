@@ -27,9 +27,5 @@ export const useUserEditableGraph = (
     graph.addEdge({ from: node.id, to: parentNode.id })
   })
 
-  graph.subscribe('onNodeFocusChange', (newNode, oldNode) => {
-    console.log('focus change', newNode, oldNode)
-  })
-
   return graph
 }

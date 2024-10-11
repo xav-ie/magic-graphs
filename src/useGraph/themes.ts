@@ -1,4 +1,4 @@
-import type { UserEditableGraphOptions } from "./useGraph"
+import type { UserEditableGraphOptions } from "./useUserEditableGraph"
 
 export const themes: Record<string, Partial<UserEditableGraphOptions>> = {
   weird: {

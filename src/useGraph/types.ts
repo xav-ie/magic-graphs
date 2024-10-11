@@ -1,3 +1,4 @@
+import type { Circle, Line } from "@/shapes/types"
 
 export type GNode = {
   id: string,
@@ -37,3 +38,15 @@ export type KeyboardEventMap = EventMap<KeyboardEventNames, KeyboardEvent>
 
 export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][]
 export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
+
+export type SchemaItem = {
+  id: string,
+  graphType: string,
+  schemaType: 'circle',
+  schema: Circle,
+} | {
+  id: string,
+  graphType: string,
+  schemaType: 'line',
+  schema: Line,
+}

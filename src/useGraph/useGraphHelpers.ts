@@ -1,4 +1,4 @@
-import type { MaybeGetter } from './useGraphTypes'
+import type { MaybeGetter } from './types'
 import type { UseGraphEventBusCallbackMappings, MappingsToEventBus } from './useGraphBase'
 
 /*

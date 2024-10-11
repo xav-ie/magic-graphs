@@ -11,7 +11,7 @@ import {
   type MappingsToEventBus
 } from './useGraphBase'
 import { generateSubscriber } from './useGraphHelpers';
-import type { GNode } from './useGraphTypes'
+import type { GNode } from './types'
 
 export type WithDragEvents<T extends UseGraphEventBusCallbackMappings> = T & {
   onNodeDragStart: (node: GNode) => void;
@@ -22,7 +22,7 @@ export type MappingsWithDragEvents = WithDragEvents<UseGraphEventBusCallbackMapp
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {}
+  options: Partial<GraphOptions> = {},
 ) => {
 
   const graph = useGraph(canvas, options)

@@ -1,31 +1,20 @@
 /*
   This file contains helper functions for hit boxes on the canvas.
 */
+import type { Coordinate, Circle, Line } from "./types"
 
-type Circle = {
-  x: number,
-  y: number,
-  radius: number,
-}
+export const hitboxes = (point: Coordinate) => ({
+  isInCircle: isInCircle(point),
+  isInLine: isInLine(point),
+})
 
-type Line = {
-  start: Coordinate,
-  end: Coordinate,
-  width: number,
-}
-
-type Coordinate = {
-  x: number,
-  y: number,
-}
-
-export const isInCircle = (point: Coordinate, circle: Circle) => {
-  const dx = point.x - circle.x;
-  const dy = point.y - circle.y;
+export const isInCircle = (point: Coordinate) => (circle: Circle) => {
+  const dx = point.x - circle.at.x;
+  const dy = point.y - circle.at.y;
   return dx * dx + dy * dy <= circle.radius * circle.radius;
 }
 
-export const isInLine = (point: Coordinate, line: Line) => {
+export const isInLine = (point: Coordinate) => (line: Line) => {
   const { start, end, width } = line;
   const { x: x1, y: y1 } = start;
   const { x: x2, y: y2 } = end;
