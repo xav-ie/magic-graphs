@@ -1,4 +1,8 @@
-import type { Circle, Line } from "@/shapes/types"
+import type {
+  Circle,
+  Line,
+  Square
+} from "@/shapes/types"
 
 export type GNode = {
   id: string,
@@ -45,14 +49,19 @@ type SharedSchemaItemFields = {
   priority: number,
 }
 
-type CircleSchemaItem = SharedSchemaItemFields & {
+export type CircleSchemaItem = SharedSchemaItemFields & {
   schemaType: 'circle',
   schema: Circle,
 }
 
-type LineSchemaItem = SharedSchemaItemFields & {
+export type LineSchemaItem = SharedSchemaItemFields & {
   schemaType: 'line',
   schema: Line,
 }
 
-export type SchemaItem = CircleSchemaItem | LineSchemaItem
+export type SquareSchemaItem = SharedSchemaItemFields & {
+  schemaType: 'square',
+  schema: Square,
+}
+
+export type SchemaItem = CircleSchemaItem | LineSchemaItem | SquareSchemaItem

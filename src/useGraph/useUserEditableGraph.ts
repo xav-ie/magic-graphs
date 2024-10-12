@@ -1,3 +1,4 @@
+import type { SchemaItem } from "./types"
 import { useDraggableNodeAnchorGraph, type AnchorNodeGraphOptions } from "./useNodeAnchorGraph"
 import { type Ref } from 'vue'
 
@@ -21,11 +22,12 @@ export const useUserEditableGraph = (
   });
 
   graph.subscribe('onNodeAnchorDrop', (parentNode, anchor) => {
-    const topItemNoAnchorOrLink = graph.getDrawItemsByCoordinates(anchor.x, anchor.y).slice(0, -2)
-    if (topItemNoAnchorOrLink.length === 0) return
-    const maybeNode = topItemNoAnchorOrLink.pop()
-    if (maybeNode?.graphType !== 'node') return
-    const node = graph.nodes.value.find(n => n.id === maybeNode.id)
+    const { x, y } = anchor
+    const stuff = graph.getDrawItemsByCoordinates(x, y)
+    // @ts-expect-error findLast is real
+    const nodeSchema = stuff.findLast((item: SchemaItem) => item.graphType === 'node') as SchemaItem | undefined
+    if (!nodeSchema) return
+    const node = graph.nodes.value.find(node => node.id === nodeSchema.id)
     if (!node) return
     graph.addEdge({ from: parentNode.label, to: node.label })
     graph.addEdge({ from: node.label, to: parentNode.label })

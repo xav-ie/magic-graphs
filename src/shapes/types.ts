@@ -27,6 +27,15 @@ export type Circle = {
   text?: Text
 }
 
+export type Square = {
+  at: Coordinate,
+  width: number,
+  height: number,
+  color?: string,
+  stroke?: Stroke,
+  text?: Text
+}
+
 export type Line = {
   start: Coordinate,
   end: Coordinate,

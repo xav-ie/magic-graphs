@@ -20,7 +20,15 @@ const { width, height } = useWindowSize();
 const canvasWidth = computed(() => width.value - padding * 2);
 const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 
-const graph = useDarkUserEditableGraph(canvas);
+const graph = useDarkUserEditableGraph(canvas, {
+  nodeShape: (node) => {
+    if (Number(node.label) % 2 === 0) {
+      return 'square';
+    } else {
+      return 'circle';
+    }
+  }
+});
 
 const { nodes: defaultNodes, edges: defaultEdges } = adjListToNodesEdges(props.modelValue);
 onMounted(() => {

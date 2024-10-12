@@ -1,6 +1,6 @@
 import { getValue, generateSubscriber, prioritizeNode } from "./useGraphHelpers";
 import { useDraggableGraph, type MappingsWithDragEvents } from "./useDraggableGraph";
-import type { SchemaItem, GNode, NodeGetterOrValue, MaybeGetter } from "./types";
+import type { SchemaItem, LineSchemaItem, GNode, NodeGetterOrValue, MaybeGetter } from "./types";
 import { type GraphOptions, type MappingsToEventBus } from "./useGraphBase";
 import { ref, readonly, type Ref } from 'vue'
 import { hitboxes } from "../shapes/hitboxes";
@@ -46,7 +46,7 @@ export const useDraggableNodeAnchorGraph = (
 
   const {
     // default anchor radius scales with respect to its parent at ceil(2 root r)
-    nodeAnchorRadius: anchorRadius = (node) => Math.ceil(Math.sqrt(getValue(graph.options.value.nodeRadius, node)) * 2),
+    nodeAnchorRadius: anchorRadius = (node) => Math.ceil(Math.sqrt(getValue(graph.options.value.nodeSize, node)) * 2),
     nodeAnchorColor: anchorColor = 'black',
     nodeAnchorColorWhenParentFocused: anchorColorWhenParentFocused = graph.options.value.nodeFocusBorderColor,
     linkPreviewColor = getValue(graph.options.value.edgeColor, graph.edges.value[0]),
@@ -79,9 +79,9 @@ export const useDraggableNodeAnchorGraph = (
 
   const getAnchors = (node: GNode): NodeAnchor[] => {
     const anchorRadiusVal = getValue(anchorRadius, node)
-    const nodeRadiusVal = getValue(graph.options.value.nodeRadius, node)
+    const nodeSizeVal = getValue(graph.options.value.nodeSize, node)
     const nodeBorderWidthVal = getValue(graph.options.value.nodeBorderWidth, node)
-    const offset = nodeRadiusVal - (anchorRadiusVal / 3) + (nodeBorderWidthVal / 2)
+    const offset = nodeSizeVal - (anchorRadiusVal / 3) + (nodeBorderWidthVal / 2)
     return [
       {
         x: node.x,
@@ -125,7 +125,7 @@ export const useDraggableNodeAnchorGraph = (
     const end = { x, y }
     const color = getValue(linkPreviewColor, parentNode.value, activeAnchor.value)
     const width = getValue(linkPreviewWidth, parentNode.value, activeAnchor.value)
-    const schema: Omit<SchemaItem, 'priority'> = {
+    const schema: Omit<LineSchemaItem, 'priority'> = {
       id: 'link-preview',
       graphType: 'link-preview',
       schemaType: 'line',
@@ -174,34 +174,34 @@ export const useDraggableNodeAnchorGraph = (
     const parentNodeSchema = aggregator.find((item) => item.id === parentNodeId)
     if (!parentNodeSchema) return aggregator
     const { priority: parentNodePriority } = parentNodeSchema
+    const priority = parentNodePriority + (activeAnchor.value ? Infinity : 0)
     for (const anchor of anchors) {
       aggregator.push({
         id: 'anchor',
         graphType: 'node-anchor',
         schemaType: 'circle',
         schema: anchor,
-        priority: 1000,
+        priority: priority,
       })
     }
     return aggregator
   })
 
   // insert the link preview under the parent node and above the rest of the nodes
-  // graph.updateAggregator.push((aggregator) => {
-  //   const linkPreview = getLinkPreviewSchematic()
-  //   if (!linkPreview || !parentNode.value) return aggregator
-  //   const highestPriorityNodeScore = aggregator.reduce((acc, item) => {
-  //     if (item.graphType !== 'node') return acc
-  //     return item.priority > acc ? item.priority : acc
-  //   }, -Infinity)
-  //   const { id: parentNodeId } = parentNode.value
-  //   const parentNodeSchema = aggregator.find((item) => item.id === parentNodeId)
-  //   if (!parentNodeSchema) return aggregator
-  //   parentNodeSchema.priority = highestPriorityNodeScore + 1
-  //   linkPreview.priority = highestPriorityNodeScore + 0.5
-  //   aggregator.push(linkPreview)
-  //   return aggregator
-  // })
+  graph.updateAggregator.push((aggregator) => {
+    if (!parentNode.value || !activeAnchor.value) return aggregator
+    const { id: parentNodeId } = parentNode.value
+    prioritizeNode(parentNodeId, aggregator)
+    const parentNodePriority = aggregator.find((item) => item.id === parentNodeId)?.priority
+    if (!parentNodePriority) return aggregator
+    const linkPreview = getLinkPreviewSchematic()
+    if (!linkPreview) return aggregator
+    aggregator.push({
+      ...linkPreview,
+      priority: parentNodePriority - 0.1,
+    })
+    return aggregator
+  })
 
   subscribe('onNodeRemoved', (node) => {
     if (parentNode.value?.id === node.id) parentNode.value = undefined

@@ -1,17 +1,24 @@
 /*
   This file contains helper functions for hit boxes on the canvas.
 */
-import type { Coordinate, Circle, Line } from "./types"
+import type { Coordinate, Circle, Line, Square } from "./types"
 
 export const hitboxes = (point: Coordinate) => ({
   isInCircle: isInCircle(point),
   isInLine: isInLine(point),
+  isInSquare: isInSquare(point),
 })
 
 export const isInCircle = (point: Coordinate) => (circle: Circle) => {
   const dx = point.x - circle.at.x;
   const dy = point.y - circle.at.y;
   return dx * dx + dy * dy <= circle.radius * circle.radius;
+}
+
+export const isInSquare = (point: Coordinate) => (square: Square) => {
+  const { at, width, height } = square;
+  const { x, y } = at;
+  return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }
 
 export const isInLine = (point: Coordinate) => (line: Line) => {

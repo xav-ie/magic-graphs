@@ -16,10 +16,16 @@ import type {
   KeyboardEventEntries,
   SchemaItem
 } from './types'
-import { generateSubscriber, getValue, generateId, prioritizeNode } from './useGraphHelpers';
+import {
+  generateSubscriber,
+  generateId,
+  prioritizeNode,
+  getRandomPointOnCanvas
+} from './useGraphHelpers';
 import { drawShape } from '../shapes/draw';
 import { hitboxes } from '../shapes/hitboxes';
-import type { Circle, Line } from '../shapes/types';
+import { getNodeSchematic, type SupportedNodeShapes } from './schematics/node';
+import { getEdgeSchematic } from './schematics/edge';
 
 export type UseGraphEventBusCallbackMappings = {
   /* graph dataflow events */
@@ -50,7 +56,7 @@ export type MappingsToEventBus<T> = Record<keyof T, any[]>
 export type UseGraphEventBus = MappingsToEventBus<UseGraphEventBusCallbackMappings>
 
 export type GraphOptions = {
-  nodeRadius: NodeGetterOrValue<number>,
+  nodeSize: NodeGetterOrValue<number>,
   nodeBorderWidth: NodeGetterOrValue<number>,
   nodeColor: NodeGetterOrValue<string>,
   nodeBorderColor: NodeGetterOrValue<string>,
@@ -59,12 +65,13 @@ export type GraphOptions = {
   nodeText: NodeGetterOrValue<string>,
   nodeTextSize: NodeGetterOrValue<number>,
   nodeTextColor: NodeGetterOrValue<string>,
+  nodeShape: NodeGetterOrValue<SupportedNodeShapes>,
   edgeColor: EdgeGetterOrValue<string>,
   edgeWidth: EdgeGetterOrValue<number>,
 }
 
 const defaultOptions: GraphOptions = {
-  nodeRadius: 35,
+  nodeSize: 35,
   nodeBorderWidth: 8,
   nodeColor: 'white',
   nodeBorderColor: 'black',
@@ -73,6 +80,7 @@ const defaultOptions: GraphOptions = {
   nodeText: ({ label }: GNode) => label,
   nodeTextSize: 24,
   nodeTextColor: 'black',
+  nodeShape: 'circle',
   edgeColor: 'black',
   edgeWidth: 10,
 }
@@ -112,62 +120,6 @@ export const useGraph =(
 
   const subscribe = generateSubscriber(eventBus)
 
-  const getNodeSchematic = (node: GNode): Circle => {
-    const {
-      nodeFocusColor,
-      nodeColor,
-      nodeBorderColor,
-      nodeFocusBorderColor,
-      nodeRadius,
-      nodeBorderWidth,
-      nodeText,
-      nodeTextSize,
-      nodeTextColor
-    } = options.value
-
-    const fillColor = node.id === focusedNodeId.value ? nodeFocusColor : nodeColor
-    const borderColor = node.id === focusedNodeId.value ? nodeFocusBorderColor : nodeBorderColor
-
-    return {
-      at: {
-        x: node.x,
-        y: node.y
-      },
-      radius: getValue(nodeRadius, node),
-      color: getValue(fillColor, node),
-      stroke: {
-        color: getValue(borderColor, node),
-        width: getValue(nodeBorderWidth, node),
-      },
-      text: {
-        content: getValue(nodeText, node),
-        fontSize: getValue(nodeTextSize, node),
-        fontWeight: 'bold',
-        color: getValue(nodeTextColor, node),
-      }
-    }
-  }
-
-  const getFromToNodes = (edge: GEdge) => {
-    // using label when its ID that should be used but if i use ID, we create a new property that
-    // predefined nodes and edges outside of the graph instance do not know about!
-    const from = nodes.value.find(node => node.label === edge.from)
-    const to = nodes.value.find(node => node.label === edge.to)
-    return { from, to }
-  }
-
-  const getEdgeSchematic = (edge: GEdge): Line | undefined => {
-    const { from, to } = getFromToNodes(edge)
-    if (!from || !to) return
-
-    return {
-      start: { x: from.x, y: from.y },
-      end: { x: to.x, y: to.y },
-      color: getValue(options.value.edgeColor, edge),
-      width: getValue(options.value.edgeWidth, edge),
-    }
-  }
-
   const mouseEvents: Partial<MouseEventMap> = {
     click: (ev: MouseEvent) => {
       eventBus.onClick.forEach(fn => fn(ev))
@@ -201,18 +153,22 @@ export const useGraph =(
   const updateAggregator: ((aggregator: SchemaItem[]) => SchemaItem[])[] = []
 
   updateAggregator.push((aggregator) => {
-    const nodeSchemaItems = nodes.value.map((node, i) => ({
-      id: node.id,
-      graphType: 'node',
-      schemaType: 'circle',
-      schema: getNodeSchematic(node),
-      priority: (i * 10) + 100,
-    } as const))
+    const nodeSchemaItems = nodes.value.map((node, i) => {
+      const schema = getNodeSchematic(node, options.value, focusedNodeId.value)
+      const isCircle = 'radius' in schema
+      return {
+        id: node.id,
+        graphType: 'node',
+        schemaType: isCircle ? 'circle' : 'square',
+        schema,
+        priority: (i * 10) + 100,
+      } as SchemaItem
+    })
     const edgeSchemaItems = edges.value.map((edge, i) => ({
       id: edge.id,
       graphType: 'edge',
       schemaType: 'line',
-      schema: getEdgeSchematic(edge),
+      schema: getEdgeSchematic(edge, nodes.value, options.value),
       priority: (i * 10),
     } as const)).filter(({ schema }) => schema) as SchemaItem[]
     aggregator.push(...edgeSchemaItems)
@@ -228,13 +184,16 @@ export const useGraph =(
 
       const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
       aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
-
-      const { drawLine, drawCircle } = drawShape(ctx)
+      const { drawLine, drawCircle, drawSquare } = drawShape(ctx)
       for (const item of aggregator.value) {
         if (item.schemaType === 'circle') {
           drawCircle(item.schema)
         } else if (item.schemaType === 'line') {
           drawLine(item.schema)
+        } else if (item.schemaType === 'square') {
+          drawSquare(item.schema)
+        } else {
+          throw new Error('Unknown schema type')
         }
       }
 
@@ -275,13 +234,6 @@ export const useGraph =(
     stopClickOutsideListener()
   })
 
-  // eventually move this stuff out of here
-  const getRandomBetweenRange = (min: number, max: number) => Math.round(Math.random() * (max - min) + min);
-  const getRandomPointOnCanvas = (canvas: HTMLCanvasElement) => ({
-    x: getRandomBetweenRange(50, canvas.width - 50),
-    y: getRandomBetweenRange(50, canvas.height - 50),
-  });
-
   const getNewNodeLabel = () => {
     const labels = nodes.value.map(node => node.label)
     let label = 1
@@ -318,12 +270,16 @@ export const useGraph =(
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
     const point = { x, y }
-    const { isInCircle, isInLine } = hitboxes(point)
+    const { isInCircle, isInLine, isInSquare } = hitboxes(point)
     return aggregator.value.filter(item => {
       if (item.schemaType === 'circle') {
         return isInCircle(item.schema)
       } if (item.schemaType === 'line') {
         return isInLine(item.schema)
+      } if (item.schemaType === 'square') {
+        return isInSquare(item.schema)
+      } else {
+        throw new Error('Unknown schema type')
       }
     })
   }
