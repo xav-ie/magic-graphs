@@ -1,4 +1,4 @@
-import { getValue, generateSubscriber } from "./useGraphHelpers";
+import { getValue, generateSubscriber, prioritizeNode } from "./useGraphHelpers";
 import { useDraggableGraph, type MappingsWithDragEvents } from "./useDraggableGraph";
 import type { SchemaItem, GNode, NodeGetterOrValue, MaybeGetter } from "./types";
 import { type GraphOptions, type MappingsToEventBus } from "./useGraphBase";
@@ -118,20 +118,20 @@ export const useDraggableNodeAnchorGraph = (
     })
   }
 
-  const getLinkPreviewSchematic = (): SchemaItem | undefined => {
+  const getLinkPreviewSchematic = () => {
     if (!parentNode.value || !activeAnchor.value) return
     const { x, y } = activeAnchor.value
     const start = { x: parentNode.value.x, y: parentNode.value.y }
     const end = { x, y }
     const color = getValue(linkPreviewColor, parentNode.value, activeAnchor.value)
     const width = getValue(linkPreviewWidth, parentNode.value, activeAnchor.value)
-    return {
+    const schema: Omit<SchemaItem, 'priority'> = {
       id: 'link-preview',
       graphType: 'link-preview',
       schemaType: 'line',
       schema: { start, end, color, width },
-      priority: 100,
     }
+    return schema
   }
 
   subscribe('onMouseMove', (ev) => {
@@ -163,6 +163,7 @@ export const useDraggableNodeAnchorGraph = (
     if (!activeAnchor.value) return
     eventBus.onNodeAnchorDrop.forEach(fn => fn(parentNode.value, activeAnchor.value))
     activeAnchor.value = undefined
+    parentNode.value = undefined
     graph.draggingEnabled.value = true
   })
 
@@ -186,21 +187,21 @@ export const useDraggableNodeAnchorGraph = (
   })
 
   // insert the link preview under the parent node and above the rest of the nodes
-  graph.updateAggregator.push((aggregator) => {
-    const linkPreview = getLinkPreviewSchematic()
-    if (!linkPreview || !parentNode.value) return aggregator
-    const highestPriorityNodeScore = aggregator.reduce((acc, item) => {
-      if (item.graphType !== 'node') return acc
-      return item.priority > acc ? item.priority : acc
-    }, -Infinity)
-    const { id: parentNodeId } = parentNode.value
-    const parentNodeSchema = aggregator.find((item) => item.id === parentNodeId)
-    if (!parentNodeSchema) return aggregator
-    parentNodeSchema.priority = highestPriorityNodeScore + 1
-    linkPreview.priority = highestPriorityNodeScore + 0.5
-    aggregator.push(linkPreview)
-    return aggregator
-  })
+  // graph.updateAggregator.push((aggregator) => {
+  //   const linkPreview = getLinkPreviewSchematic()
+  //   if (!linkPreview || !parentNode.value) return aggregator
+  //   const highestPriorityNodeScore = aggregator.reduce((acc, item) => {
+  //     if (item.graphType !== 'node') return acc
+  //     return item.priority > acc ? item.priority : acc
+  //   }, -Infinity)
+  //   const { id: parentNodeId } = parentNode.value
+  //   const parentNodeSchema = aggregator.find((item) => item.id === parentNodeId)
+  //   if (!parentNodeSchema) return aggregator
+  //   parentNodeSchema.priority = highestPriorityNodeScore + 1
+  //   linkPreview.priority = highestPriorityNodeScore + 0.5
+  //   aggregator.push(linkPreview)
+  //   return aggregator
+  // })
 
   subscribe('onNodeRemoved', (node) => {
     if (parentNode.value?.id === node.id) parentNode.value = undefined

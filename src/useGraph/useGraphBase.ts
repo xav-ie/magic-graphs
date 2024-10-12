@@ -16,7 +16,7 @@ import type {
   KeyboardEventEntries,
   SchemaItem
 } from './types'
-import { generateSubscriber, getValue, generateId } from './useGraphHelpers';
+import { generateSubscriber, getValue, generateId, prioritizeNode } from './useGraphHelpers';
 import { drawShape } from '../shapes/draw';
 import { hitboxes } from '../shapes/hitboxes';
 import type { Circle, Line } from '../shapes/types';
@@ -206,14 +206,14 @@ export const useGraph =(
       graphType: 'node',
       schemaType: 'circle',
       schema: getNodeSchematic(node),
-      priority: i + 100,
+      priority: (i * 10) + 100,
     } as const))
     const edgeSchemaItems = edges.value.map((edge, i) => ({
       id: edge.id,
       graphType: 'edge',
       schemaType: 'line',
       schema: getEdgeSchematic(edge),
-      priority: i,
+      priority: (i * 10),
     } as const)).filter(({ schema }) => schema) as SchemaItem[]
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)
@@ -382,14 +382,7 @@ export const useGraph =(
 
   updateAggregator.push((aggregator) => {
     if (!currHoveredNode) return aggregator
-    const highestPriorityNodeScore = aggregator.reduce((acc, item) => {
-      if (item.graphType !== 'node') return acc
-      return item.priority > acc ? item.priority : acc
-    }, -Infinity)
-    const { id: hoveredNodeId } = currHoveredNode
-    const hoveredNodeSchema = aggregator.find((item) => item.id === hoveredNodeId)
-    if (!hoveredNodeSchema) return aggregator
-    hoveredNodeSchema.priority = highestPriorityNodeScore + 0.1
+    prioritizeNode(currHoveredNode.id, aggregator)
     return aggregator
   })
 
