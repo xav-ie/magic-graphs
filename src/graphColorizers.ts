@@ -1,7 +1,7 @@
 import { toRef } from 'vue';
 import { nodesEdgesToAdjList } from './graphConverters';
 import type { GNode, GEdge } from '@/useGraph/types';
-import type { Graph } from '@/useGraph/useGraphBase';
+import type { Graph } from '@/useGraph/useGraph';
 import { getValue } from '@/useGraph/useGraphHelpers';
 
 const defaultColorPalette = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
@@ -37,7 +37,6 @@ export const bfsNodeColorizer = (
 
   const computeBfsLevels = (nodes: GNode[], edges: GEdge[]) => {
     const adjList = nodesEdgesToAdjList(nodes, edges);
-
     bfsLevelRecord = {};
 
     if (!adjList[options.value.startNode]) {
@@ -79,7 +78,7 @@ export const bfsNodeColorizer = (
   const colorize = () => {
     graph.options.value.nodeBorderColor = (node) => {
       isColorized = true;
-      const level = bfsLevelRecord[node.id];
+      const level = bfsLevelRecord[node.label];
       // not in bfs tree
       if (level === undefined) {
         return getValue(preserveGraphOptionsState.nodeBorderColor, node);
