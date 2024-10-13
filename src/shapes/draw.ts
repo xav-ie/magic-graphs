@@ -1,7 +1,7 @@
 /*
   This file contains helper functions for drawing shapes on the canvas.
 */
-import { calculateAngle, getLargestAngularSpace } from "./helpers";
+import { getAngle, getLargestAngularSpace, rotatePoint } from "./helpers";
 import type { Circle, Line, Square, Triangle, UTurnArrow } from "./types"
 
 /**
@@ -137,26 +137,60 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
 
 export const drawUTurnArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: UTurnArrow) => {
   const { drawLine, drawTriangle } = drawShape(ctx);
-  const { spacing, center, upDistance, downDistance } = options;
+  const { spacing, center, upDistance, downDistance, angle, lineWidth, color = 'black' } = options;
 
-  const p1 = rotatePoint(edge.from.position.x, edge.from.position.y - lineSpacing / 2, edge.from.position.x, edge.from.position.y, openSpaceAngle)
-  const p2 = rotatePoint(edge.from.position.x + lineLength / 2, edge.from.position.y - lineSpacing / 2, edge.from.position.x, edge.from.position.y, openSpaceAngle)
+  const arrowHeadHeight = 22;
+  const pLineLength = arrowHeadHeight / 1.75;
 
-  const p3 = rotatePoint(edge.from.position.x + 60, edge.from.position.y + lineSpacing / 2, edge.from.position.x, edge.from.position.y, openSpaceAngle)
-  const p4 = rotatePoint(edge.from.position.x + lineLength / 2, edge.from.position.y + lineSpacing / 2, edge.from.position.x, edge.from.position.y, openSpaceAngle)
+  const longLegFrom = rotatePoint({ x: center.x, y: center.y - spacing }, center, angle);
+  const longLegTo = rotatePoint({ x: center.x + upDistance, y: center.y - spacing}, center, angle);
 
-  const arcCenter = rotatePoint(edge.from.position.x + lineLength / 2, edge.from.position.y, edge.from.position.x, edge.from.position.y, openSpaceAngle)
+  const shortLegFrom = rotatePoint({ x: center.x + upDistance, y: center.y + spacing }, center, angle);
+  const shortLegTo = rotatePoint({ x: center.x + upDistance - downDistance, y: center.y + spacing }, center, angle);
 
-  ctx.beginPath()
-  ctx.moveTo(p1.x, p1.y)
-  ctx.lineTo(p2.x, p2.y)
+  const arcCenter = rotatePoint({ x: center.x + upDistance, y: center.y }, center, angle);
 
-  ctx.moveTo(p3.x, p3.y)
-  ctx.lineTo(p4.x, p4.y)
+  const epiCenter = {
+    x: shortLegTo.x + pLineLength * Math.cos(angle),
+    y: shortLegTo.y + pLineLength * Math.sin(angle),
+  }
+  
+  const trianglePt1 = rotatePoint({ x: center.x + upDistance - downDistance - pLineLength, y: center.y + spacing }, center, angle);
 
-  ctx.arc(arcCenter.x, arcCenter.y, lineSpacing / 2, Math.PI / 2 + openSpaceAngle, -Math.PI / 2 + openSpaceAngle, true)
-  // @ts-expect-error
-  ctx.strokeStyle = getValue(edgeColor, edge)
-  ctx.stroke()
-  ctx.closePath()
+  const trianglePt2 = {
+    x: epiCenter.x + pLineLength * Math.cos(angle + Math.PI / 2),
+    y: epiCenter.y + pLineLength * Math.sin(angle + Math.PI / 2),
+  }
+
+  const trianglePt3 = {
+    x: epiCenter.x - pLineLength * Math.cos(angle + Math.PI / 2),
+    y: epiCenter.y - pLineLength * Math.sin(angle + Math.PI / 2),
+  }
+
+  drawTriangle({
+    point1: trianglePt1,
+    point2: trianglePt2,
+    point3: trianglePt3,
+    color
+  })
+  
+  drawLine({
+    start: { x: longLegFrom.x, y: longLegFrom.y },
+    end: { x: longLegTo.x, y: longLegTo.y },
+    width: lineWidth,
+    color
+  })
+  
+  drawLine({
+    start: { x: shortLegFrom.x, y: shortLegFrom.y },
+    end: { x: shortLegTo.x, y: shortLegTo.y },
+    width: lineWidth,
+    color
+  })
+  
+  ctx.beginPath();
+  ctx.arc(arcCenter.x, arcCenter.y, spacing, Math.PI / 2 + angle, -Math.PI / 2 + angle, true);
+  ctx.strokeStyle = color;
+  ctx.stroke();
+  ctx.closePath();
 }
