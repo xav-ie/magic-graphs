@@ -7,6 +7,7 @@ export const drawShape = (ctx: CanvasRenderingContext2D) => ({
   drawCircle: drawCircleWithCtx(ctx),
   drawLine: drawLineWithCtx(ctx),
   drawSquare: drawSquareWithCtx(ctx),
+  drawTriangle: drawTriangleWithCtx(ctx),
 })
 
 export const drawCircleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Circle) => {

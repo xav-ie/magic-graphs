@@ -1,12 +1,13 @@
 /*
   This file contains helper functions for hit boxes on the canvas.
 */
-import type { Coordinate, Circle, Line, Square } from "./types"
+import type { Coordinate, Circle, Line, Square, Triangle } from "./types"
 
 export const hitboxes = (point: Coordinate) => ({
   isInCircle: isInCircle(point),
   isInLine: isInLine(point),
   isInSquare: isInSquare(point),
+  isInTriangle: isInTriangle(point),
 })
 
 export const isInCircle = (point: Coordinate) => (circle: Circle) => {
@@ -32,4 +33,23 @@ export const isInLine = (point: Coordinate) => (line: Line) => {
   ) / Math.sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2);
 
   return distance <= width / 2;
+}
+
+/*
+  uses barycentric coordinate system for triangles. dont ask me, im not that smart.
+  https://en.wikipedia.org/wiki/Barycentric_coordinate_system
+*/
+export const isInTriangle = (point: Coordinate) => (triangle: Triangle) => {
+  const {
+    point1: a,
+    point2: b,
+    point3: c
+  } = triangle;
+  const { x, y } = point;
+
+  const area = 0.5 * (-b.y * c.x + a.y * (-b.x + c.x) + a.x * (b.y - c.y) + b.x * c.y);
+  const s = 1 / (2 * area) * (a.y * c.x - a.x * c.y + (c.y - a.y) * x + (a.x - c.x) * y);
+  const t = 1 / (2 * area) * (a.x * b.y - a.y * b.x + (a.y - b.y) * x + (b.x - a.x) * y);
+
+  return s > 0 && t > 0 && 1 - s - t > 0;
 }
