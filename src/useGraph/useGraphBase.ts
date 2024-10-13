@@ -40,6 +40,7 @@ export type UseGraphEventBusCallbackMappings = {
   */
   onRepaint: (ctx: CanvasRenderingContext2D) => void;
   onNodeHoverChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
+  onGraphReset: () => void;
 
   /* canvas dom events */
   onClick: (ev: MouseEvent) => void;
@@ -106,6 +107,7 @@ export const useGraph =(
     onNodeRemoved: [],
     onRepaint: [],
     onNodeHoverChange: [],
+    onGraphReset: [],
 
 
     /* canvas element events */
@@ -346,6 +348,12 @@ export const useGraph =(
     return aggregator
   }
 
+  const resetGraph = () => {
+    nodes.value = []
+    edges.value = []
+    eventBus.onGraphReset.forEach(fn => fn())
+  }
+
   updateAggregator.push(liftHoveredNodeToTop)
 
   return {
@@ -367,5 +375,6 @@ export const useGraph =(
     options,
     updateAggregator,
     aggregator,
+    resetGraph,
   }
 }

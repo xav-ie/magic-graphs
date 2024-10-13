@@ -48,6 +48,7 @@ export const useDarkPersistentUserEditableGraph = (
 
     graph.subscribe('onStructureChange', trackChanges)
     graph.subscribe('onNodeDrop', trackChanges)
+    graph.subscribe('onGraphReset', trackChanges)
   })
 
   return graph

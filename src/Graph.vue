@@ -49,6 +49,10 @@ graph.subscribe('onStructureChange', (nodes, edges) => emit(
 
 <template>
   <div :style="{ padding: `${padding}px` }">
+    <button
+      @click.stop="graph.resetGraph"
+      class="bg-red-600 text-white px-3 py-1 rounded-lg font-bold m-2 absolute"
+    >Reset Graph</button>
     <canvas
       :width="canvasWidth"
       :height="canvasHeight"
