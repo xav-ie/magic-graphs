@@ -200,7 +200,7 @@ export const useGraph =(
           drawSquare(item.schema)
         } else if (item.schemaType === 'arrow') {
           drawArrow(item.schema)
-        } 
+        }
         else if (item.schemaType === 'uturn') {
           drawUTurnArrow(item.schema)
         }
@@ -292,7 +292,7 @@ export const useGraph =(
         return isInSquare(item.schema)
       } if (item.schemaType === 'arrow') {
         return isInArrow(item.schema)
-      } 
+      }
       if (item.schemaType === 'uturn') return true
       else {
         throw new Error('Unknown schema type')
@@ -318,7 +318,7 @@ export const useGraph =(
     if (index === -1) return
     const removedNode = nodes.value[index]
     nodes.value.splice(index, 1)
-    edges.value = edges.value.filter(edge => edge.from !== id && edge.to !== id)
+    edges.value = edges.value.filter(edge => edge.from !== removedNode.label && edge.to !== removedNode.label)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     eventBus.onNodeRemoved.forEach(fn => fn(removedNode))
   }
@@ -361,8 +361,11 @@ export const useGraph =(
   const resetGraph = () => {
     nodes.value = []
     edges.value = []
+    focusedNodeId.value = undefined
     eventBus.onGraphReset.forEach(fn => fn())
   }
+
+  subscribe('onGraphReset', () => eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value)))
 
   updateAggregator.push(liftHoveredNodeToTop)
 
