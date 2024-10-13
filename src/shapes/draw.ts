@@ -95,7 +95,7 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
   const { drawLine, drawTriangle } = drawShape(ctx);
   const { start: lineStart, end: lineEnd, width, color = 'black' } = options;
 
-  const arrowHeadHeight = 30;
+  const arrowHeadHeight = 25;
 
   const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
 

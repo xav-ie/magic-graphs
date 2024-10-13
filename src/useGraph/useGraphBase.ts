@@ -168,7 +168,7 @@ export const useGraph =(
       id: edge.id,
       graphType: 'edge',
       schemaType: 'arrow',
-      schema: getEdgeSchematic(edge, nodes.value, options.value),
+      schema: getEdgeSchematic(edge, nodes.value, edges.value, options.value),
       priority: (i * 10),
     } as const)).filter(({ schema }) => schema) as SchemaItem[]
     aggregator.push(...edgeSchemaItems)
