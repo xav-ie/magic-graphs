@@ -167,7 +167,7 @@ export const useGraph =(
     const edgeSchemaItems = edges.value.map((edge, i) => ({
       id: edge.id,
       graphType: 'edge',
-      schemaType: 'line',
+      schemaType: 'arrow',
       schema: getEdgeSchematic(edge, nodes.value, options.value),
       priority: (i * 10),
     } as const)).filter(({ schema }) => schema) as SchemaItem[]
@@ -184,7 +184,7 @@ export const useGraph =(
 
       const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
       aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
-      const { drawLine, drawCircle, drawSquare } = drawShape(ctx)
+      const { drawLine, drawCircle, drawSquare, drawArrow } = drawShape(ctx)
       for (const item of aggregator.value) {
         if (item.schemaType === 'circle') {
           drawCircle(item.schema)
@@ -192,6 +192,8 @@ export const useGraph =(
           drawLine(item.schema)
         } else if (item.schemaType === 'square') {
           drawSquare(item.schema)
+        } else if (item.schemaType === 'arrow') {
+          drawArrow(item.schema)
         } else {
           throw new Error('Unknown schema type')
         }
@@ -270,7 +272,7 @@ export const useGraph =(
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
     const point = { x, y }
-    const { isInCircle, isInLine, isInSquare } = hitboxes(point)
+    const { isInCircle, isInLine, isInSquare, isInArrow } = hitboxes(point)
     return aggregator.value.filter(item => {
       if (item.schemaType === 'circle') {
         return isInCircle(item.schema)
@@ -278,6 +280,8 @@ export const useGraph =(
         return isInLine(item.schema)
       } if (item.schemaType === 'square') {
         return isInSquare(item.schema)
+      } if (item.schemaType === 'arrow') {
+        return isInArrow(item.schema)
       } else {
         throw new Error('Unknown schema type')
       }

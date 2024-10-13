@@ -1,7 +1,8 @@
 import type {
   Circle,
   Line,
-  Square
+  Square,
+  Arrow
 } from "@/shapes/types"
 
 export type GNode = {
@@ -64,4 +65,9 @@ export type SquareSchemaItem = SharedSchemaItemFields & {
   schema: Square,
 }
 
-export type SchemaItem = CircleSchemaItem | LineSchemaItem | SquareSchemaItem
+export type ArrowSchemaItem = SharedSchemaItemFields & {
+  schemaType: 'arrow',
+  schema: Arrow,
+}
+
+export type SchemaItem = CircleSchemaItem | LineSchemaItem | SquareSchemaItem | ArrowSchemaItem

@@ -14,6 +14,7 @@ export const drawShape = (ctx: CanvasRenderingContext2D) => ({
   drawLine: drawLineWithCtx(ctx),
   drawSquare: drawSquareWithCtx(ctx),
   drawTriangle: drawTriangleWithCtx(ctx),
+  drawArrow: drawArrowWithCtx(ctx),
 })
 
 export const drawCircleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Circle) => {
@@ -90,6 +91,44 @@ export const drawTriangleWithCtx = (ctx: CanvasRenderingContext2D) => (options: 
   ctx.closePath();
 }
 
-export const fn = (ctx: CanvasRenderingContext2D) => (options: Line) => {
+export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line) => {
+  const { drawLine, drawTriangle } = drawShape(ctx);
+  const { start: lineStart, end: lineEnd, width, color = 'black' } = options;
 
+  const arrowHeadHeight = 30;
+
+  const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
+
+  const epiCenter = {
+    x: lineEnd.x - arrowHeadHeight * Math.cos(angle),
+    y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
+  }
+
+  const pLineLength = arrowHeadHeight / 1.75;
+
+  const trianglePt1 = lineEnd;
+
+  const trianglePt2 = {
+    x: epiCenter.x + pLineLength * Math.cos(angle + Math.PI / 2),
+    y: epiCenter.y + pLineLength * Math.sin(angle + Math.PI / 2),
+  }
+
+  const trianglePt3 = {
+    x: epiCenter.x - pLineLength * Math.cos(angle + Math.PI / 2),
+    y: epiCenter.y - pLineLength * Math.sin(angle + Math.PI / 2),
+  }
+
+  drawLine({
+    start: lineStart,
+    end: epiCenter,
+    width,
+    color,
+  })
+
+  drawTriangle({
+    point1: trianglePt1,
+    point2: trianglePt2,
+    point3: trianglePt3,
+    color,
+  });
 }

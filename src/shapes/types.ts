@@ -43,6 +43,8 @@ export type Line = {
   color?: string,
 }
 
+export type Arrow = Line
+
 export type Triangle = {
   point1: Coordinate,
   point2: Coordinate,

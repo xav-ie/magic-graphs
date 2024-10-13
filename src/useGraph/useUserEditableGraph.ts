@@ -30,7 +30,7 @@ export const useUserEditableGraph = (
     const node = graph.nodes.value.find(node => node.id === nodeSchema.id)
     if (!node) return
     graph.addEdge({ from: parentNode.label, to: node.label })
-    graph.addEdge({ from: node.label, to: parentNode.label })
+    // graph.addEdge({ from: node.label, to: parentNode.label })
   })
 
   return graph
