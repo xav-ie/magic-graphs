@@ -22,24 +22,29 @@ const { width, height } = useWindowSize();
 const canvasWidth = computed(() => width.value - padding * 2);
 const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 
-const graph = useDarkPersistentUserEditableGraph(canvas, 'graph', {
-  nodeAnchorColor: 'black',
-});
-
-graph.options.value.nodeAnchorColor = 'blue';
+const graph = useDarkPersistentUserEditableGraph(canvas, 'graph');
 
 const a = { x: 100, y: 100 };
 const b = { x: 200, y: 100 };
 const c = { x: 150, y: 200 };
 
 graph.subscribe('onRepaint', (ctx) => {
-  const { drawTriangle } = drawShape(ctx);
-  drawTriangle({
-    point1: a,
-    point2: b,
-    point3: c,
-    color: 'purple'
-  });
+  // const { drawTriangle, drawLine, drawCircle } = drawShape(ctx);
+  // const line = { start: { x: 100, y: 200 }, end: { x: 800, y: 300 } };
+  // drawLine({ ...line, color: 'red', width: 12 });
+  // const dx = line.end.x - line.start.x;
+  // const dy = line.end.y - line.start.y;
+  // const lineLength = Math.sqrt(dx * dx + dy * dy);
+  // const offset = 100;
+  // const scaleFactor = lineLength / offset;
+  // const scaledDx = dx / scaleFactor;
+  // const scaledDy = dy / scaleFactor;
+  // const scaledEnd = { x: line.end.x - scaledDx, y: line.end.y - scaledDy };
+  // drawCircle({
+  //   at: scaledEnd,
+  //   radius: 6,
+  //   color: 'blue',
+  // })
 })
 
 const { nodes: defaultNodes, edges: defaultEdges } = adjListToNodesEdges(props.modelValue);
