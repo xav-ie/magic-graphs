@@ -161,7 +161,7 @@ export const useGraph =(
         graphType: 'node',
         schemaType: isCircle ? 'circle' : 'square',
         schema,
-        priority: (i * 10) + 100,
+        priority: (i * 10) + 1000,
       } as SchemaItem
     })
     const edgeSchemaItems = edges.value.map((edge, i) => ({

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
-import { useDarkUserEditableGraph } from '@/useGraph/useGraph';
+import { useDarkPersistentUserEditableGraph } from '@/useGraph/useGraph';
 import { useWindowSize } from '@vueuse/core';
 import { bfsNodeColorizer } from './graphColorizers';
 import { nodesEdgesToAdjList, adjListToNodesEdges, type AdjacencyList } from './graphConverters';
+import { fn } from './shapes/draw';
 
 const canvas = ref<HTMLCanvasElement>();
 
@@ -20,12 +21,21 @@ const { width, height } = useWindowSize();
 const canvasWidth = computed(() => width.value - padding * 2);
 const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 
-const graph = useDarkUserEditableGraph(canvas);
+const graph = useDarkPersistentUserEditableGraph(canvas, 'graph-1');
+
+graph.subscribe('onRepaint', (ctx) => {
+  fn(ctx)({
+    start: { x: 50, y: 50 },
+    end: { x: 50 + 10, y: 50 + 60 },
+    color: 'red',
+    width: 10,
+  });
+})
 
 const { nodes: defaultNodes, edges: defaultEdges } = adjListToNodesEdges(props.modelValue);
 onMounted(() => {
-  defaultNodes.forEach(node => graph.addNode(node, false));
-  defaultEdges.forEach(edge => graph.addEdge(edge));
+  // defaultNodes.forEach(node => graph.addNode(node, false));
+  // defaultEdges.forEach(edge => graph.addEdge(edge));
 });
 
 graph.subscribe('onStructureChange', (nodes, edges) => emit(

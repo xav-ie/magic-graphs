@@ -42,3 +42,10 @@ export type Line = {
   width: number,
   color?: string,
 }
+
+export type Triangle = {
+  point1: Coordinate,
+  point2: Coordinate,
+  point3: Coordinate,
+  color?: string,
+}

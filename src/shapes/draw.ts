@@ -1,7 +1,7 @@
 /*
   This file contains helper functions for drawing shapes on the canvas.
 */
-import type { Circle, Line, Square } from "./types"
+import type { Circle, Line, Square, Triangle } from "./types"
 
 export const drawShape = (ctx: CanvasRenderingContext2D) => ({
   drawCircle: drawCircleWithCtx(ctx),
@@ -70,4 +70,19 @@ export const drawLineWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line
   ctx.lineWidth = width;
   ctx.stroke();
   ctx.closePath();
+}
+
+export const drawTriangleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Triangle) => {
+  const { point1, point2, point3, color = 'black' } = options;
+  ctx.beginPath();
+  ctx.moveTo(point1.x, point1.y);
+  ctx.lineTo(point2.x, point2.y);
+  ctx.lineTo(point3.x, point3.y);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.closePath();
+}
+
+export const fn = (ctx: CanvasRenderingContext2D) => (options: Line) => {
+
 }

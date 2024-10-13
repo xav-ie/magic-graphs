@@ -1,4 +1,4 @@
-import type { GNode, GEdge } from './useGraphTypes';
+import type { GNode, GEdge } from '@/useGraph/types';
 
 export type AdjacencyList = Record<GNode['id'], GNode['id'][]>;
 
