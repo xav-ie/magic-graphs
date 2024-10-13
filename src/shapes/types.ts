@@ -52,6 +52,10 @@ export type Triangle = {
   color?: string,
 }
 
-export type UTurnArrow = Arrow & {
+export type UTurnArrow = {
   spacing: number,
+  center: Coordinate,
+  upDistance: number,
+  downDistance: number,
+  angle: number,
 }

@@ -1,6 +1,7 @@
 /*
   This file contains helper functions for drawing shapes on the canvas.
 */
+import { calculateAngle, getLargestAngularSpace } from "./helpers";
 import type { Circle, Line, Square, Triangle, UTurnArrow } from "./types"
 
 /**
@@ -136,6 +137,26 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
 
 export const drawUTurnArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: UTurnArrow) => {
   const { drawLine, drawTriangle } = drawShape(ctx);
-  const { start: lineStart, end: lineEnd, width, color = 'black', spacing } = options;
+  const { spacing, center, upDistance, downDistance } = options;
 
+  const p1 = rotatePoint(edge.from.position.x, edge.from.position.y - lineSpacing / 2, edge.from.position.x, edge.from.position.y, openSpaceAngle)
+  const p2 = rotatePoint(edge.from.position.x + lineLength / 2, edge.from.position.y - lineSpacing / 2, edge.from.position.x, edge.from.position.y, openSpaceAngle)
+
+  const p3 = rotatePoint(edge.from.position.x + 60, edge.from.position.y + lineSpacing / 2, edge.from.position.x, edge.from.position.y, openSpaceAngle)
+  const p4 = rotatePoint(edge.from.position.x + lineLength / 2, edge.from.position.y + lineSpacing / 2, edge.from.position.x, edge.from.position.y, openSpaceAngle)
+
+  const arcCenter = rotatePoint(edge.from.position.x + lineLength / 2, edge.from.position.y, edge.from.position.x, edge.from.position.y, openSpaceAngle)
+
+  ctx.beginPath()
+  ctx.moveTo(p1.x, p1.y)
+  ctx.lineTo(p2.x, p2.y)
+
+  ctx.moveTo(p3.x, p3.y)
+  ctx.lineTo(p4.x, p4.y)
+
+  ctx.arc(arcCenter.x, arcCenter.y, lineSpacing / 2, Math.PI / 2 + openSpaceAngle, -Math.PI / 2 + openSpaceAngle, true)
+  // @ts-expect-error
+  ctx.strokeStyle = getValue(edgeColor, edge)
+  ctx.stroke()
+  ctx.closePath()
 }

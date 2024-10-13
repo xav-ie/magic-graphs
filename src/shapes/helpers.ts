@@ -27,7 +27,7 @@ export const rotatePoint = (pointToRotate: Coordinate, centerPoint: Coordinate, 
  * @param point2 - the second point
  * @returns the angle between the two points in radians
  */
-export const calculateAngle = (point1: Coordinate, point2: Coordinate) => {
+export const getAngle = (point1: Coordinate, point2: Coordinate) => {
   const { x: x1, y: y1 } = point1
   const { x: x2, y: y2 } = point2
   return Math.atan2(y2 - y1, x2 - x1)
@@ -43,10 +43,10 @@ export const calculateAngle = (point1: Coordinate, point2: Coordinate) => {
 export const getLargestAngularSpace = (center: Coordinate, points: Coordinate[]) => {
   if (points.length === 0) return 0
   const [ firstPoint ] = points
-  if (points.length === 1) return calculateAngle(center, firstPoint) + Math.PI
+  if (points.length === 1) return getAngle(center, firstPoint) + Math.PI
 
   const angles = points
-    .map((point) => calculateAngle(center, point))
+    .map((point) => getAngle(center, point))
     .sort((angleA, angleB) => angleA - angleB)
 
   let maxAngularDistance = 0
