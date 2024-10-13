@@ -8,7 +8,7 @@ import type { Coordinate } from "./types"
  * @param angle - the angle in radians that the pointToRotate will rotate by
  * @returns the new point after rotation
  */
-const rotatePoint = (pointToRotate: Coordinate, centerPoint: Coordinate, angle: number) => {
+export const rotatePoint = (pointToRotate: Coordinate, centerPoint: Coordinate, angle: number) => {
   const cosA = Math.cos(angle)
   const sinA = Math.sin(angle)
   const dx = pointToRotate.x - centerPoint.x
@@ -31,4 +31,35 @@ export const calculateAngle = (point1: Coordinate, point2: Coordinate) => {
   const { x: x1, y: y1 } = point1
   const { x: x2, y: y2 } = point2
   return Math.atan2(y2 - y1, x2 - x1)
+}
+
+/**
+ * @description calculates the midpoint of the largest angular between a center point and a list of points
+ *
+ * @param center - the center point
+ * @param points - the list of points
+ * @returns the midpoint of the largest angular space
+ */
+export const getLargestAngularSpace = (center: Coordinate, points: Coordinate[]) => {
+  if (points.length === 0) return 0
+  const [ firstPoint ] = points
+  if (points.length === 1) return calculateAngle(center, firstPoint) + Math.PI
+
+  const angles = points
+    .map((point) => calculateAngle(center, point))
+    .sort((angleA, angleB) => angleA - angleB)
+
+  let maxAngularDistance = 0
+  let maxAngularDistanceIndex = 0
+
+  for (let i = 0; i < angles.length; i++) {
+    const nextAngle = (i + 1) % angles.length
+    const angularDistance = (angles[nextAngle] - angles[i] + 2 * Math.PI) % (2 * Math.PI)
+    if (angularDistance > maxAngularDistance) {
+      maxAngularDistance = angularDistance
+      maxAngularDistanceIndex = i
+    }
+  }
+
+  return (angles[maxAngularDistanceIndex] + maxAngularDistance / 2) % (2 * Math.PI)
 }
