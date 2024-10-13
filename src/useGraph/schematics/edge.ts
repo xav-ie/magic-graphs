@@ -43,8 +43,8 @@ export const getEdgeSchematic = (edge: GEdge, nodes: GNode[], edges: GEdge[], op
   const selfDirectedEdgeLine: UTurnArrow = {
     spacing: 14,
     center: { x: from.x, y: from.y },
-    upDistance: 800,
-    downDistance: 700,
+    upDistance: 80,
+    downDistance: 25,
     angle: largestAngularSpace,
     lineWidth: getValue(options.edgeWidth, edge),
     color: getValue(options.edgeColor, edge)
