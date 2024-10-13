@@ -1,7 +1,8 @@
 /*
   This file contains helper functions for hit boxes on the canvas.
 */
-import type { Coordinate, Circle, Line, Square, Triangle } from "./types"
+import type { Coordinate, Circle, Line, Square, Triangle, UTurnArrow, Rectangle } from "./types"
+import { rotatePoint } from "./helpers"
 
 /**
  * @param point - the point to check if it is in the shape
@@ -13,6 +14,7 @@ export const hitboxes = (point: Coordinate) => ({
   isInSquare: isInSquare(point),
   isInTriangle: isInTriangle(point),
   isInArrow: isInLine(point),
+  isInUTurnArrow: isInUTurnArrow(point)
 })
 
 /**
@@ -31,6 +33,16 @@ export const isInCircle = (point: Coordinate) => (circle: Circle) => {
 */
 export const isInSquare = (point: Coordinate) => (square: Square) => {
   const { at, width, height } = square;
+  const { x, y } = at;
+  return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
+}
+
+/**
+ * @param point - the point to check if it is in the rectangle
+ * @returns a function that checks if the point is in the rectangle
+*/
+export const isInRectangle = (point: Coordinate) => (rectangle: Rectangle) => {
+  const { at, width, height } = rectangle;
   const { x, y } = at;
   return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }
@@ -72,4 +84,20 @@ export const isInTriangle = (point: Coordinate) => (triangle: Triangle) => {
   const t = 1 / (2 * area) * (a.x * b.y - a.y * b.x + (a.y - b.y) * x + (b.x - a.x) * y);
 
   return s > 0 && t > 0 && 1 - s - t > 0;
+}
+
+export const isInUTurnArrow = (point: Coordinate) => (uTurnArrow: UTurnArrow) => {
+  const {
+    spacing,
+    center,
+    upDistance,
+    lineWidth,
+    angle
+  } = uTurnArrow;
+ 
+  return isInLine(point)({
+    start: center,
+    end: rotatePoint({ x: center.x + upDistance, y: center.y }, center, angle),
+    width: 2 * spacing + lineWidth 
+  })
 }
