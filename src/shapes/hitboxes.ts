@@ -3,6 +3,10 @@
 */
 import type { Coordinate, Circle, Line, Square, Triangle } from "./types"
 
+/**
+ * @param point - the point to check if it is in the shape
+ * @returns an object that aggregates all the hitbox functions to check if the point is in a given shape
+ */
 export const hitboxes = (point: Coordinate) => ({
   isInCircle: isInCircle(point),
   isInLine: isInLine(point),
@@ -10,18 +14,30 @@ export const hitboxes = (point: Coordinate) => ({
   isInTriangle: isInTriangle(point),
 })
 
+/**
+ * @param point - the point to check if it is in the circle
+ * @returns a function that checks if the point is in the circle
+ */
 export const isInCircle = (point: Coordinate) => (circle: Circle) => {
   const dx = point.x - circle.at.x;
   const dy = point.y - circle.at.y;
   return dx * dx + dy * dy <= circle.radius * circle.radius;
 }
 
+/**
+ * @param point - the point to check if it is in the square
+ * @returns a function that checks if the point is in the square
+*/
 export const isInSquare = (point: Coordinate) => (square: Square) => {
   const { at, width, height } = square;
   const { x, y } = at;
   return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }
 
+/**
+ * @param point - the point to check if it is in the line
+ * @returns a function that checks if the point is in the line
+*/
 export const isInLine = (point: Coordinate) => (line: Line) => {
   const { start, end, width } = line;
   const { x: x1, y: y1 } = start;
@@ -35,9 +51,12 @@ export const isInLine = (point: Coordinate) => (line: Line) => {
   return distance <= width / 2;
 }
 
-/*
-  uses barycentric coordinate system for triangles. dont ask me, im not that smart.
-  https://en.wikipedia.org/wiki/Barycentric_coordinate_system
+/**
+ * uses barycentric coordinate system for triangles. dont ask me, im not that smart.
+ * https://en.wikipedia.org/wiki/Barycentric_coordinate_system
+ *
+  @param {Coordinate} point - the point to check if it is in the triangle
+  @returns a function that checks if the point is in the triangle
 */
 export const isInTriangle = (point: Coordinate) => (triangle: Triangle) => {
   const {
