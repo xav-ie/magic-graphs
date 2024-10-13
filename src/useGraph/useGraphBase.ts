@@ -166,13 +166,17 @@ export const useGraph =(
         priority: (i * 10) + 1000,
       } as SchemaItem
     })
-    const edgeSchemaItems = edges.value.map((edge, i) => ({
-      id: edge.id,
-      graphType: 'edge',
-      schemaType: 'arrow',
-      schema: getEdgeSchematic(edge, nodes.value, edges.value, options.value),
-      priority: (i * 10),
-    } as const)).filter(({ schema }) => schema) as SchemaItem[]
+    const edgeSchemaItems = edges.value.map((edge, i) => {
+      const schema = getEdgeSchematic(edge, nodes.value, edges.value, options.value)
+      const isUTurn = 'upDistance' in schema
+      return ({
+        id: edge.id,
+        graphType: 'edge',
+        schemaType: isUTurn ? 'uturn' : 'arrow',
+        schema,
+        priority: (i * 10),
+      } as const)
+    }).filter(({ schema }) => schema) as SchemaItem[]
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)
     return aggregator
@@ -186,7 +190,7 @@ export const useGraph =(
 
       const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
       aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
-      const { drawLine, drawCircle, drawSquare, drawArrow } = drawShape(ctx)
+      const { drawLine, drawCircle, drawSquare, drawArrow, drawUTurnArrow } = drawShape(ctx)
       for (const item of aggregator.value) {
         if (item.schemaType === 'circle') {
           drawCircle(item.schema)
@@ -196,7 +200,11 @@ export const useGraph =(
           drawSquare(item.schema)
         } else if (item.schemaType === 'arrow') {
           drawArrow(item.schema)
-        } else {
+        } 
+        else if (item.schemaType === 'uturn') {
+          drawUTurnArrow(item.schema)
+        }
+        else {
           throw new Error('Unknown schema type')
         }
       }
@@ -284,7 +292,9 @@ export const useGraph =(
         return isInSquare(item.schema)
       } if (item.schemaType === 'arrow') {
         return isInArrow(item.schema)
-      } else {
+      } 
+      if (item.schemaType === 'uturn') return true
+      else {
         throw new Error('Unknown schema type')
       }
     })

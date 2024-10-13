@@ -58,4 +58,6 @@ export type UTurnArrow = {
   upDistance: number,
   downDistance: number,
   angle: number,
+  lineWidth: number,
+  color?: string,
 }

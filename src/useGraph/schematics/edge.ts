@@ -1,13 +1,14 @@
 import type { GEdge, GNode } from '../types'
-import type { Line, Arrow } from '@/shapes/types'
+import type { Arrow, UTurnArrow } from '@/shapes/types'
 import { getValue, getFromToNodes } from '../useGraphHelpers'
 import type { GraphOptions } from '../useGraphBase'
+import { getLargestAngularSpace } from '@/shapes/helpers'
 
 export const getEdgeSchematic = (edge: GEdge, nodes: GNode[], edges: GEdge[], options: GraphOptions) => {
   const { from, to } = getFromToNodes(edge, nodes)
-  if (!from || !to) return
 
   const isBidirectional = edges.some(e => e.from === to.label && e.to === from.label)
+  const isSelfDirecting = to === from
 
   const nodeSizeVal = getValue(options.nodeSize, to) + 10
 
@@ -31,6 +32,24 @@ export const getEdgeSchematic = (edge: GEdge, nodes: GNode[], edges: GEdge[], op
     end.y += Math.sin(angle + Math.PI / 2) * lineSpacing
   }
 
+  const largestAngularSpace = getLargestAngularSpace(start, edges
+    .filter((e) => (e.from === from.label || e.to === to.label) && e.from !== e.to)
+    .map((e) => {
+      const { from: fromNode, to: toNode } = getFromToNodes(e, nodes)
+      return from.id === fromNode.id ? { x: toNode.x, y: toNode.y } : { x: fromNode.x, y: fromNode.y }
+    })
+  )
+
+  const selfDirctedEdgeLine: UTurnArrow = {
+    spacing: lineSpacing,
+    center: { x: from.x, y: from.y },
+    upDistance: 80,
+    downDistance: 25,
+    angle: largestAngularSpace,
+    lineWidth: getValue(options.edgeWidth, edge),
+    color: getValue(options.edgeColor, edge)
+  };
+
   const edgeLine: Arrow = {
     start,
     end,
@@ -38,5 +57,5 @@ export const getEdgeSchematic = (edge: GEdge, nodes: GNode[], edges: GEdge[], op
     width: getValue(options.edgeWidth, edge),
   }
 
-  return edgeLine
+  return isSelfDirecting ? selfDirctedEdgeLine : edgeLine
 }

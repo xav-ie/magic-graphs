@@ -56,7 +56,10 @@ export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement) => ({
 export const getFromToNodes = (edge: GEdge, nodes: GNode[]) => {
   // using label when its ID that should be used but if i use ID, we create a new property that
   // predefined nodes and edges outside of the graph instance do not know about!
+  
   const from = nodes.find(node => node.label === edge.from)
   const to = nodes.find(node => node.label === edge.to)
+  if (!from || !to) throw new Error('Error')
+
   return { from, to }
 }
