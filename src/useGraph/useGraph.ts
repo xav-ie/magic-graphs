@@ -25,7 +25,7 @@ export const useWeirdDraggableGraph = (
 export const useDarkPersistentUserEditableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   storageKey: string,
-  options: Partial<GraphOptions> = {}
+  options: Partial<UserEditableGraphOptions> = {}
 ) => {
 
   const graph = useDarkUserEditableGraph(canvas, options)

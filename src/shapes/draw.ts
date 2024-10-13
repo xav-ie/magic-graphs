@@ -3,6 +3,12 @@
 */
 import type { Circle, Line, Square, Triangle } from "./types"
 
+/**
+ * @description parent function that returns all the draw functions for the shapes
+ *
+ * @param {CanvasRenderingContext2D} ctx - the canvas context to draw the shapes on
+ * @returns an object that aggregates all the draw functions to draw a shape on the canvas
+ */
 export const drawShape = (ctx: CanvasRenderingContext2D) => ({
   drawCircle: drawCircleWithCtx(ctx),
   drawLine: drawLineWithCtx(ctx),

@@ -284,11 +284,11 @@ export const useGraph =(
     })
   }
 
-  /*
+  /**
     @param x - the x coordinate
     @param y - the y coordinate
     @param buffer - the buffer is used to increase the hit box of a node beyond its radius
-    @returns the node that is at the given coordinates
+    @returns the node that is at the given coordinates or undefined if no node is found or is covered by another non-node item
   */
   const getNodeByCoordinates = (x: number, y: number): GNode | undefined => {
     const topItem = getDrawItemsByCoordinates(x, y).pop()
@@ -336,11 +336,13 @@ export const useGraph =(
     currHoveredNode = node
   })
 
-  updateAggregator.push((aggregator) => {
+  const liftHoveredNodeToTop = (aggregator: SchemaItem[]) => {
     if (!currHoveredNode) return aggregator
     prioritizeNode(currHoveredNode.id, aggregator)
     return aggregator
-  })
+  }
+
+  updateAggregator.push(liftHoveredNodeToTop)
 
   return {
     nodes,

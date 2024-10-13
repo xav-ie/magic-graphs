@@ -1,18 +1,38 @@
+/**
+ * @module useNodeAnchorGraph
+ *
+ * Helpful terms:
+ * - Parent Node: The node that the anchors spawn around.
+ * - Node Anchor/Anchor: A draggable handle that spawns around the parent node.
+ * - Link Preview: The line that appears between the parent node and the anchor when the anchor is being dragged.
+ * - Active Anchor: The anchor that is currently being dragged.
+ * - Anchor Node Graph: A graph that supports the creation and event propagation of anchors around nodes.
+ */
+
 import { getValue, generateSubscriber, prioritizeNode } from "./useGraphHelpers";
 import { useDraggableGraph, type MappingsWithDragEvents } from "./useDraggableGraph";
-import type { SchemaItem, LineSchemaItem, GNode, NodeGetterOrValue, MaybeGetter } from "./types";
+import type { SchemaItem, LineSchemaItem, GNode, GEdge, NodeGetterOrValue, MaybeGetter } from "./types";
 import { type GraphOptions, type MappingsToEventBus } from "./useGraphBase";
 import { ref, readonly, type Ref } from 'vue'
 import { hitboxes } from "../shapes/hitboxes";
 import type { Circle } from "@/shapes/types";
 
 export type NodeAnchor = {
+  /**
+   * @description the x-coordinate of the anchor
+   */
   x: number,
+  /**
+   * @description the y-coordinate of the anchor
+   */
   y: number,
+  /**
+   * @description the direction of the anchor relative to the parent node
+   */
   direction: 'north' | 'east' | 'south' | 'west',
 }
 
-export type AnchorNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & {
+export type AnchorNodeOptions = {
   nodeAnchorRadius: NodeGetterOrValue<number>;
   nodeAnchorColor: NodeGetterOrValue<string>;
   nodeAnchorColorWhenParentFocused: NodeGetterOrValue<string>;
@@ -20,19 +40,82 @@ export type AnchorNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & 
   linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
 }
 
+/**
+ * @description default options for the anchor node graph
+ * @param options - the options passed to the base useGraph composition function
+ * @param edges - the edges of the graph
+ * @returns the default options for the anchor node graph
+ */
+const defaultOptions: (options: GraphOptions, edges: GEdge[]) => AnchorNodeOptions = (
+  options: GraphOptions,
+  edges: GEdge[],
+) => ({
+  /**
+   * @description calculates the radius of the default node anchor - scales with 2 * sqrt(nodeSize)
+   * @param node - the parent node of the anchor
+   * @returns the radius of the node anchor
+   */
+  nodeAnchorRadius: (node: GNode) => {
+    const nodeSize = getValue(options.nodeSize, node)
+    return Math.ceil(Math.sqrt(nodeSize) * 2)
+  },
+  /**
+   * the color of the node anchor
+   */
+  nodeAnchorColor: 'black',
+  /**
+   * the color of the node anchor when the parent node is focused
+   */
+  nodeAnchorColorWhenParentFocused: options.nodeFocusBorderColor,
+  /**
+   * the color of the link preview
+   */
+  linkPreviewColor: getValue(options.edgeColor, edges[0]),
+  /**
+   * the width of the link preview
+   */
+  linkPreviewWidth: getValue(options.edgeWidth, edges[0]),
+})
+
+export type AnchorNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & AnchorNodeOptions
+
 type WithNodeAnchorEvents<T extends MappingsWithDragEvents> = T & {
+  /**
+   * @description event fired when the user initiates a drag on a node anchor
+   * @param parentNode - the parent node of the anchor
+   * @param nodeAnchor - the anchor being dragged
+   */
   onNodeAnchorDragStart: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
+  /**
+   * @description event fired when the user drops a node anchor
+   * @param parentNode - the parent node of the anchor
+   * @param nodeAnchor - the anchor being dropped
+   */
   onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
 }
 
 type MappingsWithNodeAnchorEvents = WithNodeAnchorEvents<MappingsWithDragEvents>
 
+/**
+ * @requires a draggable graph interface.
+ *
+ * Node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
+ * when hovered over.
+ *
+ * Extends the event bus to support child composition functions subscribing to events like `onNodeAnchorDragStart`
+ * and `onNodeAnchorDrop` for user-driven anchor interactions.
+ *
+ * @param {HTMLCanvasElement} canvas - The canvas element on which to render the graph.
+ * @param {Object} optionsArg - The configuration options for the anchor node graph.
+ * @returns {Object} The draggable graph interface with additional node anchor functionality, options, and events.
+ */
 export const useDraggableNodeAnchorGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<AnchorNodeGraphOptions> = {},
+  optionsArg: Partial<AnchorNodeGraphOptions> = {},
 ) => {
 
-  const graph = useDraggableGraph(canvas, options)
+  const graph = useDraggableGraph(canvas, optionsArg)
+
   const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
 
@@ -44,17 +127,19 @@ export const useDraggableNodeAnchorGraph = (
 
   const subscribe = generateSubscriber(eventBus)
 
-  const {
-    // default anchor radius scales with respect to its parent at ceil(2 root r)
-    nodeAnchorRadius: anchorRadius = (node) => Math.ceil(Math.sqrt(getValue(graph.options.value.nodeSize, node)) * 2),
-    nodeAnchorColor: anchorColor = 'black',
-    nodeAnchorColorWhenParentFocused: anchorColorWhenParentFocused = graph.options.value.nodeFocusBorderColor,
-    linkPreviewColor = getValue(graph.options.value.edgeColor, graph.edges.value[0]),
-    linkPreviewWidth = getValue(graph.options.value.edgeWidth, graph.edges.value[0]),
-  } = options
+  const options = ref({
+    ...defaultOptions(graph.options.value, graph.edges.value),
+    ...optionsArg,
+  })
 
-  const getAnchorSchematics = (): Circle[] => {
+  const getAnchorSchematics = () => {
     if (!parentNode.value || graph.nodeBeingDragged.value) return []
+
+    const {
+      nodeAnchorRadius: anchorRadius,
+      nodeAnchorColor: anchorColor,
+      nodeAnchorColorWhenParentFocused: anchorColorWhenParentFocused,
+    } = options.value
 
     const anchorColorVal = getValue(anchorColor, parentNode.value)
     const anchorColorWhenParentFocusedVal = getValue(anchorColorWhenParentFocused, parentNode.value)
@@ -64,7 +149,7 @@ export const useDraggableNodeAnchorGraph = (
     const anchors = getAnchors(parentNode.value)
     const radius = getValue(anchorRadius, parentNode.value)
 
-    const circles = []
+    const circles: Circle[] = []
     for (const anchor of anchors) {
       const { x, y } = anchor
       const circle = { at: { x, y }, radius, color }
@@ -77,8 +162,12 @@ export const useDraggableNodeAnchorGraph = (
     return circles
   }
 
+  /**
+   * @param {GNode} node - the parent node of the anchor
+   * @returns an array of anchors for the given node
+   */
   const getAnchors = (node: GNode): NodeAnchor[] => {
-    const anchorRadiusVal = getValue(anchorRadius, node)
+    const anchorRadiusVal = getValue(options.value.nodeAnchorRadius, node)
     const nodeSizeVal = getValue(graph.options.value.nodeSize, node)
     const nodeBorderWidthVal = getValue(graph.options.value.nodeBorderWidth, node)
     const offset = nodeSizeVal - (anchorRadiusVal / 3) + (nodeBorderWidthVal / 2)
@@ -106,6 +195,12 @@ export const useDraggableNodeAnchorGraph = (
     ]
   }
 
+  /**
+   * @param {GNode} node - the parent node of the anchor
+   * @param {number} x - the x-coordinate to check
+   * @param {number} y - the y-coordinate to check
+   * @returns the anchor at the given coordinates if it exists or undefined
+   */
   const getAnchor = (node: GNode, x: number, y: number) => {
     const anchors = getAnchors(node)
     return anchors.find((anchor) => {
@@ -113,7 +208,7 @@ export const useDraggableNodeAnchorGraph = (
       const { isInCircle } = hitboxes(point)
       return isInCircle({
         at: { x: anchor.x, y: anchor.y },
-        radius: getValue(anchorRadius, node),
+        radius: getValue(options.value.nodeAnchorRadius, node),
       })
     })
   }
@@ -123,6 +218,7 @@ export const useDraggableNodeAnchorGraph = (
     const { x, y } = activeAnchor.value
     const start = { x: parentNode.value.x, y: parentNode.value.y }
     const end = { x, y }
+    const { linkPreviewColor, linkPreviewWidth } = options.value
     const color = getValue(linkPreviewColor, parentNode.value, activeAnchor.value)
     const width = getValue(linkPreviewWidth, parentNode.value, activeAnchor.value)
     const schema: Omit<LineSchemaItem, 'priority'> = {
@@ -134,7 +230,11 @@ export const useDraggableNodeAnchorGraph = (
     return schema
   }
 
-  subscribe('onMouseMove', (ev) => {
+  /**
+   * @description updates which node is the parent node based on the mouse event
+   * @param {MouseEvent} ev - the mouse event to update the parent node
+   */
+  const updateParentNode = (ev: MouseEvent) => {
     if (activeAnchor.value) return
     const node = graph.getNodeByCoordinates(ev.offsetX, ev.offsetY)
     if (!node && parentNode.value) {
@@ -142,7 +242,9 @@ export const useDraggableNodeAnchorGraph = (
       if (hoveredAnchor) return
     }
     parentNode.value = node
-  })
+  }
+
+  subscribe('onMouseMove', updateParentNode)
 
   subscribe('onMouseDown', (ev) => {
     if (!parentNode.value) return
@@ -153,21 +255,33 @@ export const useDraggableNodeAnchorGraph = (
     graph.draggingEnabled.value = false
   })
 
-  subscribe('onMouseMove', (ev) => {
+  /**
+   * @description updates the position of the active anchor based on the mouse event
+   * @param {MouseEvent} ev - the mouse event to update the active anchor position
+   */
+  const updateActiveAnchorPosition = (ev: MouseEvent) => {
     if (!activeAnchor.value) return
     activeAnchor.value.x = ev.offsetX
     activeAnchor.value.y = ev.offsetY
-  })
+  }
 
-  subscribe('onMouseUp', () => {
+  subscribe('onMouseMove', updateActiveAnchorPosition)
+
+  /**
+   * @description drops the active anchor and triggers the onNodeAnchorDrop
+   * event with the parent node and active anchor
+   */
+  const dropAnchor = () => {
     if (!activeAnchor.value) return
     eventBus.onNodeAnchorDrop.forEach(fn => fn(parentNode.value, activeAnchor.value))
     activeAnchor.value = undefined
     parentNode.value = undefined
     graph.draggingEnabled.value = true
-  })
+  }
 
-  graph.updateAggregator.push((aggregator) => {
+  subscribe('onMouseUp', dropAnchor)
+
+  const insertAnchorsIntoAggregator = (aggregator: SchemaItem[]) => {
     if (!parentNode.value) return aggregator
     const anchors = getAnchorSchematics()
     const { id: parentNodeId } = parentNode.value
@@ -185,10 +299,9 @@ export const useDraggableNodeAnchorGraph = (
       })
     }
     return aggregator
-  })
+  }
 
-  // insert the link preview under the parent node and above the rest of the nodes
-  graph.updateAggregator.push((aggregator) => {
+  const insertLinkPreviewIntoAggregator = (aggregator: SchemaItem[]) => {
     if (!parentNode.value || !activeAnchor.value) return aggregator
     const { id: parentNodeId } = parentNode.value
     prioritizeNode(parentNodeId, aggregator)
@@ -201,16 +314,23 @@ export const useDraggableNodeAnchorGraph = (
       priority: parentNodePriority - 0.1,
     })
     return aggregator
-  })
+  }
+
+  graph.updateAggregator.push(insertAnchorsIntoAggregator)
+  graph.updateAggregator.push(insertLinkPreviewIntoAggregator)
 
   subscribe('onNodeRemoved', (node) => {
-    if (parentNode.value?.id === node.id) parentNode.value = undefined
+    if (parentNode.value?.id === node.id) {
+      parentNode.value = undefined
+      activeAnchor.value = undefined
+    }
   })
 
   return {
     ...graph,
     eventBus,
     subscribe,
+    options,
     activeNodeAnchor: readonly(activeAnchor),
   }
 }
