@@ -25,15 +25,16 @@ const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 const graph = useDarkPersistentUserEditableGraph(canvas, 'graph', {
 });
 
-// graph.subscribe('onRepaint', (ctx) => {
-//   const { drawArrow } = drawShape(ctx)
+graph.subscribe('onRepaint', (ctx) => {
+  const { drawUTurnArrow } = drawShape(ctx)
 
-//   drawArrow({
-//     width: 12,
-//     start: { x: 100, y: 100 },
-//     end: { x: 800, y: 400 },
-//   })
-// })
+  drawUTurnArrow({
+    width: 12,
+    start: { x: 100, y: 100 },
+    end: { x: 800, y: 400 },
+    spacing: 20,
+  })
+})
 
 const { nodes: defaultNodes, edges: defaultEdges } = adjListToNodesEdges(props.modelValue);
 onMounted(() => {

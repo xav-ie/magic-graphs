@@ -1,7 +1,7 @@
 /*
   This file contains helper functions for drawing shapes on the canvas.
 */
-import type { Circle, Line, Square, Triangle } from "./types"
+import type { Circle, Line, Square, Triangle, UTurnArrow } from "./types"
 
 /**
  * @description parent function that returns all the draw functions for the shapes
@@ -15,6 +15,7 @@ export const drawShape = (ctx: CanvasRenderingContext2D) => ({
   drawSquare: drawSquareWithCtx(ctx),
   drawTriangle: drawTriangleWithCtx(ctx),
   drawArrow: drawArrowWithCtx(ctx),
+  drawUTurnArrow: drawUTurnArrowWithCtx(ctx),
 })
 
 export const drawCircleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Circle) => {
@@ -131,4 +132,10 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
     point3: trianglePt3,
     color,
   });
+}
+
+export const drawUTurnArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: UTurnArrow) => {
+  const { drawLine, drawTriangle } = drawShape(ctx);
+  const { start: lineStart, end: lineEnd, width, color = 'black', spacing } = options;
+
 }

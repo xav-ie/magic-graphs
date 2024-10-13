@@ -51,3 +51,7 @@ export type Triangle = {
   point3: Coordinate,
   color?: string,
 }
+
+export type UTurnArrow = Arrow & {
+  spacing: number,
+}
