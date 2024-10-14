@@ -22,14 +22,14 @@ export const getEdgeSchematic = (edge: GEdge, nodes: GNode[], edges: GEdge[], op
   const start = { x: from.x, y: from.y }
   const end = epiCenter
 
-  const lineSpacing = 12
+  const bidirectionalEdgeSpacing = 12
 
   if (isBidirectional) {
-    start.x += Math.cos(angle + Math.PI / 2) * lineSpacing
-    start.y += Math.sin(angle + Math.PI / 2) * lineSpacing
+    start.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
+    start.y += Math.sin(angle + Math.PI / 2) * bidirectionalEdgeSpacing
 
-    end.x += Math.cos(angle + Math.PI / 2) * lineSpacing
-    end.y += Math.sin(angle + Math.PI / 2) * lineSpacing
+    end.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
+    end.y += Math.sin(angle + Math.PI / 2) * bidirectionalEdgeSpacing
   }
 
   const largestAngularSpace = getLargestAngularSpace(start, edges
@@ -40,8 +40,8 @@ export const getEdgeSchematic = (edge: GEdge, nodes: GNode[], edges: GEdge[], op
     })
   )
 
-  const selfDirctedEdgeLine: UTurnArrow = {
-    spacing: lineSpacing,
+  const selfDirectedEdgeLine: UTurnArrow = {
+    spacing: 14,
     center: { x: from.x, y: from.y },
     upDistance: 80,
     downDistance: 25,
@@ -57,5 +57,5 @@ export const getEdgeSchematic = (edge: GEdge, nodes: GNode[], edges: GEdge[], op
     width: getValue(options.edgeWidth, edge),
   }
 
-  return isSelfDirecting ? selfDirctedEdgeLine : edgeLine
+  return isSelfDirecting ? selfDirectedEdgeLine : edgeLine
 }
