@@ -282,7 +282,7 @@ export const useGraph =(
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
     const point = { x, y }
-    const { isInCircle, isInLine, isInSquare, isInArrow } = hitboxes(point)
+    const { isInCircle, isInLine, isInSquare, isInArrow, isInUTurnArrow } = hitboxes(point)
     return aggregator.value.filter(item => {
       if (item.schemaType === 'circle') {
         return isInCircle(item.schema)
@@ -292,9 +292,9 @@ export const useGraph =(
         return isInSquare(item.schema)
       } if (item.schemaType === 'arrow') {
         return isInArrow(item.schema)
-      }
-      if (item.schemaType === 'uturn') return true
-      else {
+      } if (item.schemaType === 'uturn') {
+        return isInUTurnArrow(item.schema)
+      } else {
         throw new Error('Unknown schema type')
       }
     })
