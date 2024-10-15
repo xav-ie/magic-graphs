@@ -17,7 +17,7 @@ export const useUserEditableGraph = (
   })
 
   graph.subscribe('onKeydown', (ev) => {
-    const focusedNodeId = graph.getFocusedNodeId()
+    const focusedNodeId = graph.focusedId.value
     if (ev.key === 'Backspace' && focusedNodeId) graph.removeNode(focusedNodeId)
   });
 

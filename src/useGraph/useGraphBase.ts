@@ -2,7 +2,8 @@ import {
   ref,
   onMounted,
   onBeforeUnmount,
-  type Ref
+  type Ref,
+  readonly
 } from 'vue'
 import { onClickOutside } from '@vueuse/core';
 import type {
@@ -30,7 +31,10 @@ import { getEdgeSchematic } from './schematics/edge';
 export type UseGraphEventBusCallbackMappings = {
   /* graph dataflow events */
   onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
-  onNodeFocusChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
+  onFocusChange: (
+    newGItemId: GNode['id'] | GEdge['id'] | undefined,
+    oldGItemId: GNode['id'] | GEdge['id'] | undefined
+  ) => void;
   onNodeAdded: (node: GNode) => void;
   onNodeRemoved: (node: GNode) => void;
   /*
@@ -69,6 +73,7 @@ export type GraphOptions = {
   nodeShape: NodeGetterOrValue<SupportedNodeShapes>,
   edgeColor: EdgeGetterOrValue<string>,
   edgeWidth: EdgeGetterOrValue<number>,
+  edgeFocusColor: EdgeGetterOrValue<string>,
 }
 
 const defaultOptions: GraphOptions = {
@@ -84,6 +89,7 @@ const defaultOptions: GraphOptions = {
   nodeShape: 'circle',
   edgeColor: 'black',
   edgeWidth: 10,
+  edgeFocusColor: 'blue',
 }
 
 export const useGraph =(
@@ -98,11 +104,11 @@ export const useGraph =(
 
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
-  const focusedNodeId = ref<GNode['id'] | undefined>()
+  const focusedId = ref<GNode['id'] | GEdge['id'] | undefined>()
 
   const eventBus: UseGraphEventBus = {
     onStructureChange: [],
-    onNodeFocusChange: [],
+    onFocusChange: [],
     onNodeAdded: [],
     onNodeRemoved: [],
     onRepaint: [],
@@ -146,17 +152,21 @@ export const useGraph =(
     }
   }
 
-  subscribe('onMouseDown', (ev) => {
-    const node = getNodeByCoordinates(ev.offsetX, ev.offsetY)
-    setFocusedNode(node?.id)
-  })
+  const handleFocusChange = (ev: MouseEvent) => {
+    const focusableTypes = ['node', 'edge']
+    const topItem = getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
+    if (!topItem || !focusableTypes.includes(topItem.graphType)) return setFocus(undefined)
+    setFocus(topItem.id)
+  }
+
+  subscribe('onMouseDown', handleFocusChange)
 
   const aggregator = ref<SchemaItem[]>([])
   const updateAggregator: ((aggregator: SchemaItem[]) => SchemaItem[])[] = []
 
   updateAggregator.push((aggregator) => {
     const nodeSchemaItems = nodes.value.map((node, i) => {
-      const schema = getNodeSchematic(node, options.value, focusedNodeId.value)
+      const schema = getNodeSchematic(node, options.value, focusedId.value)
       const isCircle = 'radius' in schema
       return {
         id: node.id,
@@ -167,7 +177,7 @@ export const useGraph =(
       } as SchemaItem
     })
     const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(edge, nodes.value, edges.value, options.value)
+      const schema = getEdgeSchematic(edge, nodes.value, edges.value, options.value, focusedId.value)
       const isUTurn = 'upDistance' in schema
       return ({
         id: edge.id,
@@ -213,7 +223,7 @@ export const useGraph =(
     }
   }, 1000 / 60 /* 60fps */)
 
-  const stopClickOutsideListener = onClickOutside(canvas, () => setFocusedNode(undefined))
+  const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
 
   onMounted(() => {
     if (!canvas.value) {
@@ -264,7 +274,7 @@ export const useGraph =(
     nodes.value.push(newNode)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     eventBus.onNodeAdded.forEach(fn => fn(newNode))
-    if (focusNode) setFocusedNode(newNode.id)
+    if (focusNode) setFocus(newNode.id)
     return newNode
   }
 
@@ -278,6 +288,10 @@ export const useGraph =(
 
   const getNode = (id: GNode['id']) => {
     return nodes.value.find(node => node.id === id)
+  }
+
+  const getEdge = (id: GEdge['id']) => {
+    return edges.value.find(edge => edge.id === id)
   }
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
@@ -303,7 +317,6 @@ export const useGraph =(
   /**
     @param x - the x coordinate
     @param y - the y coordinate
-    @param buffer - the buffer is used to increase the hit box of a node beyond its radius
     @returns the node that is at the given coordinates or undefined if no node is found or is covered by another non-node item
   */
   const getNodeByCoordinates = (x: number, y: number): GNode | undefined => {
@@ -336,12 +349,10 @@ export const useGraph =(
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
   }
 
-  const setFocusedNode = (newNodeId: GNode['id'] | undefined) => {
-    if (focusedNodeId.value === newNodeId) return
-    const oldNode = focusedNodeId.value ? getNode(focusedNodeId.value) : undefined
-    const newNode = newNodeId ? getNode(newNodeId) : undefined
-    focusedNodeId.value = newNodeId
-    eventBus.onNodeFocusChange.forEach(fn => fn(newNode, oldNode))
+  const setFocus = (newGItemId: GNode['id'] | GEdge['id'] | undefined) => {
+    if (focusedId.value === newGItemId) return
+    eventBus.onFocusChange.forEach(fn => fn(newGItemId, focusedId.value))
+    focusedId.value = newGItemId
   }
 
   let currHoveredNode: GNode | undefined = undefined
@@ -361,7 +372,7 @@ export const useGraph =(
   const resetGraph = () => {
     nodes.value = []
     edges.value = []
-    focusedNodeId.value = undefined
+    focusedId.value = undefined
     eventBus.onGraphReset.forEach(fn => fn())
   }
 
@@ -380,9 +391,15 @@ export const useGraph =(
     removeNode,
     addEdge,
     removeEdge,
-    getFocusedNode: () => focusedNodeId.value ? getNode(focusedNodeId.value) : undefined,
-    getFocusedNodeId: () => focusedNodeId.value,
-    setFocusedNode,
+    getFocusedItem: () => {
+      if (!focusedId.value) return
+      const node = getNode(focusedId.value)
+      if (node) return { item: node, type: 'node' } as const
+      const edge = getEdge(focusedId.value)
+      if (edge) return { item: edge, type: 'edge' } as const
+    },
+    focusedId: readonly(focusedId),
+    setFocus,
     eventBus,
     subscribe,
     options,

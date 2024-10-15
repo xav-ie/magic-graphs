@@ -143,7 +143,7 @@ export const useDraggableNodeAnchorGraph = (
 
     const anchorColorVal = getValue(anchorColor, parentNode.value)
     const anchorColorWhenParentFocusedVal = getValue(anchorColorWhenParentFocused, parentNode.value)
-    const isParentFocused = parentNode.value.id === graph.getFocusedNodeId()
+    const isParentFocused = parentNode.value.id === graph.focusedId.value
     const color = isParentFocused ? anchorColorWhenParentFocusedVal : anchorColorVal
 
     const anchors = getAnchors(parentNode.value)
