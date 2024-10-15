@@ -337,13 +337,18 @@ export const useGraph =(
   }
 
   const addEdge = (edge: Omit<GEdge, 'id'>) => {
-    edges.value.push({ ...edge, id: generateId() })
+    const edgeExists = edges.value.some(e => e.from === edge.from && e.to === edge.to)
+    if (edgeExists) return
+    edges.value.push({
+      ...edge,
+      id: generateId()
+    })
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     return edge
   }
 
-  const removeEdge = (edge: GEdge) => {
-    const edgeIndex = edges.value.findIndex(e => e.from === edge.from && e.to === edge.to)
+  const removeEdge = (edgeId: GEdge['id']) => {
+    const edgeIndex = edges.value.findIndex(edge => edge.id === edgeId)
     if (edgeIndex === -1) return
     edges.value.splice(edgeIndex, 1)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))

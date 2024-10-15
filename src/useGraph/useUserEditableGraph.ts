@@ -1,8 +1,11 @@
-import type { SchemaItem } from "./types"
-import { useDraggableNodeAnchorGraph, type AnchorNodeGraphOptions } from "./useNodeAnchorGraph"
+import type { SchemaItem, GNode } from "./types"
+import { useDraggableNodeAnchorGraph, type AnchorNodeGraphOptions, type NodeAnchor } from "./useNodeAnchorGraph"
 import { type Ref } from 'vue'
 
 export type UserEditableGraphOptions = AnchorNodeGraphOptions
+
+/**
+ */
 export const useUserEditableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<UserEditableGraphOptions> = {}
@@ -10,27 +13,37 @@ export const useUserEditableGraph = (
 
   const graph = useDraggableNodeAnchorGraph(canvas, options)
 
-  graph.subscribe('onDblClick', (ev) => {
+  const handleNodeCreation = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev
-    const node = graph.addNode({ x: offsetX, y: offsetY })
-    graph.eventBus.onNodeHoverChange.forEach(fn => fn(node))
-  })
+    graph.addNode({ x: offsetX, y: offsetY })
+  }
 
-  graph.subscribe('onKeydown', (ev) => {
-    const focusedNodeId = graph.focusedId.value
-    if (ev.key === 'Backspace' && focusedNodeId) graph.removeNode(focusedNodeId)
-  });
-
-  graph.subscribe('onNodeAnchorDrop', (parentNode, anchor) => {
+  const handleEdgeCreation = (parentNode: GNode, anchor: NodeAnchor) => {
     const { x, y } = anchor
-    const stuff = graph.getDrawItemsByCoordinates(x, y)
+    const itemStack = graph.getDrawItemsByCoordinates(x, y)
     // @ts-expect-error findLast is real
-    const nodeSchema = stuff.findLast((item: SchemaItem) => item.graphType === 'node') as SchemaItem | undefined
+    const nodeSchema = itemStack.findLast((item: SchemaItem) => item.graphType === 'node') as SchemaItem | undefined
     if (!nodeSchema) return
     const node = graph.nodes.value.find(node => node.id === nodeSchema.id)
     if (!node) return
     graph.addEdge({ from: parentNode.label, to: node.label })
-  })
+  }
+
+  const handleDeletion = (ev: KeyboardEvent) => {
+    const focusedItem = graph.getFocusedItem()
+    if (!focusedItem) return
+    if (ev.key !== 'Backspace') return
+    const { item, type } = focusedItem
+    if (type === 'node') {
+      graph.removeNode(item.id)
+    } else if (type === 'edge') {
+      graph.removeEdge(item.id)
+    }
+  }
+
+  graph.subscribe('onDblClick', handleNodeCreation)
+  graph.subscribe('onKeydown', handleDeletion)
+  graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
 
   return graph
 }
