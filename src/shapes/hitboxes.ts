@@ -60,12 +60,25 @@ export const isInLine = (point: Coordinate) => (line: Line) => {
   const { x: x2, y: y2 } = end;
   const { x, y } = point;
 
-  const distance = Math.abs(
-    (y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1
-  ) / Math.sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2);
+  const lineLengthSquared = (x2 - x1) ** 2 + (y2 - y1) ** 2;
 
-  return distance <= width / 2;
-}
+  if (lineLengthSquared === 0) {
+    const distanceSquared = (x - x1) ** 2 + (y - y1) ** 2;
+    return distanceSquared <= (width / 2) ** 2;
+  }
+
+  const projectionDistance = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / lineLengthSquared;
+
+  const clampedProjectionDistance = Math.max(0, Math.min(1, projectionDistance));
+
+  const closestX = x1 + clampedProjectionDistance * (x2 - x1);
+  const closestY = y1 + clampedProjectionDistance * (y2 - y1);
+
+  const distanceSquared = (x - closestX) ** 2 + (y - closestY) ** 2;
+
+  return distanceSquared <= (width / 2) ** 2;
+};
+
 
 /**
  * @description checks if the point is in the text label of the line
@@ -144,6 +157,12 @@ export const isInUTurnArrow = (point: Coordinate) => (uTurnArrow: UTurnArrow) =>
     lineWidth,
     angle
   } = uTurnArrow;
+
+  console.log(isInLine(point)({
+    start: center,
+    end: rotatePoint({ x: center.x + upDistance, y: center.y }, center, angle),
+    width: 2 * spacing + lineWidth
+  }))
 
   return isInLine(point)({
     start: center,
