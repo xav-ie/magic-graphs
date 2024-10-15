@@ -113,9 +113,10 @@ export const drawLineWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line
 
     if (options.text.bgColor) {
       const { bgColor } = options.text;
-      drawCircleWithCtx(ctx)({
-        at: { x: textX, y: textY },
-        radius: fontSize,
+      drawSquareWithCtx(ctx)({
+        at: { x: textX - 25, y: textY - 25 },
+        width: 50,
+        height: 50,
         color: bgColor,
       })
     }

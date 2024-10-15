@@ -7,8 +7,6 @@ import {
 } from 'vue'
 import { onClickOutside } from '@vueuse/core';
 import type {
-  NodeGetterOrValue,
-  EdgeGetterOrValue,
   GNode,
   GEdge,
   MouseEventMap,
