@@ -3,7 +3,7 @@
 */
 import type { Coordinate, Circle, Line, Square, Triangle, UTurnArrow, Rectangle } from "./types"
 import { LINE_TEXT_DEFAULTS } from "./types"
-import { rotatePoint } from "./helpers"
+import { rotatePoint, getAngle } from "./helpers"
 
 /**
  * @param point - the point to check if it is in the shape
@@ -73,16 +73,33 @@ export const isInLine = (point: Coordinate) => (line: Line) => {
  */
 export const isInLineText = (point: Coordinate) => (line: Line) => {
   if (!line.text) return false;
-  const { start, end, text } = line;
+  const {
+    start,
+    end,
+    text
+  } = line;
+
   const {
     fontSize,
-    fontWeight,
-    color,
     offsetFromCenter
   } = {
     ...LINE_TEXT_DEFAULTS,
     ...text
   };
+
+  const theta = getAngle(start, end);
+
+  const offsetX = offsetFromCenter * Math.cos(theta);
+  const offsetY = offsetFromCenter * Math.sin(theta);
+
+  const textX = (start.x + end.x) / 2 + offsetX;
+  const textY = (start.y + end.y) / 2 + offsetY;
+
+  return isInSquare(point)({
+    at: { x: textX - fontSize, y: textY - fontSize },
+    width: fontSize * 2,
+    height: fontSize * 2,
+  });
 }
 
 /**
