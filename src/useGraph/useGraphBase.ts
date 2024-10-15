@@ -74,6 +74,7 @@ export type GraphOptions = {
   edgeColor: EdgeGetterOrValue<string>,
   edgeWidth: EdgeGetterOrValue<number>,
   edgeFocusColor: EdgeGetterOrValue<string>,
+  graphBgColor: string,
 }
 
 const defaultOptions: GraphOptions = {
@@ -90,6 +91,7 @@ const defaultOptions: GraphOptions = {
   edgeColor: 'black',
   edgeWidth: 10,
   edgeFocusColor: 'blue',
+  graphBgColor: 'white',
 }
 
 export const useGraph =(
@@ -229,6 +231,8 @@ export const useGraph =(
     if (!canvas.value) {
       throw new Error('Canvas element not found')
     }
+
+    canvas.value.style.backgroundColor = options.value.graphBgColor
 
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.addEventListener(event, listeners)

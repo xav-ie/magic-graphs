@@ -16,5 +16,6 @@ export const themes: Record<string, Partial<UserEditableGraphOptions>> = {
     nodeTextSize: 26,
     nodeAnchorColor: 'rgb(30, 30, 40)',
     nodeAnchorColorWhenParentFocused: 'rgb(170, 0, 0)',
+    graphBgColor: 'rgb(75, 85, 99)' // tailwind bg-gray-600
   },
 }

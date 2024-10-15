@@ -1,11 +1,11 @@
 import type { GNode, GEdge } from '@/useGraph/types';
 
-export type AdjacencyList = Record<GNode['id'], GNode['id'][]>;
+export type AdjacencyList = Record<number, number[]>;
 
 export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes.reduce<AdjacencyList>((acc, node) => {
-  acc[node.label] = edges
-    .filter(edge => edge.from === node.label)
-    .map(edge => edge.to);
+  acc[Number(node.label)] = edges
+    .filter(edge => Number(edge.from) === Number(node.label))
+    .map(edge => Number(edge.to));
   return acc;
 }, {});
 

@@ -9,9 +9,10 @@ export type Coordinate = {
 
 export type Text = {
   content: string,
-  fontSize: number,
-  fontWeight: 'lighter' | 'normal' | 'bold' | 'bolder',
-  color: string,
+  fontSize?: number,
+  fontWeight?: 'lighter' | 'normal' | 'bold' | 'bolder',
+  color?: string,
+  bgColor?: string,
 }
 
 export type Stroke = {
@@ -42,6 +43,10 @@ export type Line = {
   start: Coordinate,
   end: Coordinate,
   width: number,
+  // offsetFromCenter is used to position text. By default, text is centered on the line.
+  // If -10, text will be on the line but 10 units below the center.
+  // If 10, text will be on the line but 10 units above the center.
+  text?: Text & { offsetFromCenter?: number },
   color?: string,
 }
 
@@ -62,4 +67,5 @@ export type UTurnArrow = {
   angle: number,
   lineWidth: number,
   color?: string,
+  text?: Text
 }

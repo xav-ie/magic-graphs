@@ -1,7 +1,7 @@
 /*
   This file contains helper functions for drawing shapes on the canvas.
 */
-import { rotatePoint } from "./helpers";
+import { getAngle, rotatePoint } from "./helpers";
 import type { Circle, Line, Square, Triangle, UTurnArrow } from "./types"
 
 /**
@@ -34,7 +34,13 @@ export const drawCircleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Ci
   }
 
   if (options.text) {
-    const { content, fontSize, fontWeight, color } = options.text;
+    const {
+      content,
+      fontSize = 12,
+      fontWeight = 'normal',
+      color = 'black'
+    } = options.text;
+
     ctx.font = `${fontWeight} ${fontSize}px Arial`;
     ctx.fillStyle = color;
     ctx.textAlign = 'center';
@@ -60,7 +66,13 @@ export const drawSquareWithCtx = (ctx: CanvasRenderingContext2D) => (options: Sq
   }
 
   if (options.text) {
-    const { content, fontSize, fontWeight, color } = options.text;
+    const {
+      content,
+      fontSize = 12,
+      fontWeight = 'normal',
+      color = 'black'
+    } = options.text;
+
     ctx.font = `${fontWeight} ${fontSize}px Arial`;
     ctx.fillStyle = color;
     ctx.textAlign = 'center';
@@ -72,6 +84,7 @@ export const drawSquareWithCtx = (ctx: CanvasRenderingContext2D) => (options: Sq
 }
 
 export const drawLineWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line) => {
+
   const { start, end, color = 'black', width } = options;
   ctx.beginPath();
   ctx.moveTo(start.x, start.y);
@@ -80,6 +93,39 @@ export const drawLineWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line
   ctx.lineWidth = width;
   ctx.stroke();
   ctx.closePath();
+
+  if (options.text) {
+    const {
+      content,
+      fontSize = 12,
+      fontWeight = 'normal',
+      color = 'black',
+      offsetFromCenter = 0
+    } = options.text;
+
+    const theta = getAngle(start, end);
+
+    const offsetX = offsetFromCenter * Math.cos(theta);
+    const offsetY = offsetFromCenter * Math.sin(theta);
+
+    const textX = (start.x + end.x) / 2 + offsetX;
+    const textY = (start.y + end.y) / 2 + offsetY;
+
+    if (options.text.bgColor) {
+      const { bgColor } = options.text;
+      drawCircleWithCtx(ctx)({
+        at: { x: textX, y: textY },
+        radius: fontSize,
+        color: bgColor,
+      })
+    }
+
+    ctx.font = `${fontWeight} ${fontSize}px Arial`;
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(content, textX, textY);
+  }
 }
 
 export const drawTriangleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Triangle) => {
@@ -97,7 +143,7 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
   const { drawLine, drawTriangle } = drawShape(ctx);
   const { start: lineStart, end: lineEnd, width, color = 'black' } = options;
 
-  const arrowHeadHeight = 25;
+  const arrowHeadHeight = width * 2.5;
 
   const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
 
@@ -125,6 +171,7 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
     end: epiCenter,
     width,
     color,
+    text: options.text,
   })
 
   drawTriangle({
@@ -139,7 +186,7 @@ export const drawUTurnArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options
   const { drawLine, drawTriangle } = drawShape(ctx);
   const { spacing, center, upDistance, downDistance, angle, lineWidth, color = 'black' } = options;
 
-  const arrowHeadHeight = 22;
+  const arrowHeadHeight = lineWidth * 2.4;
   const pLineLength = arrowHeadHeight / 1.75;
 
   const longLegFrom = rotatePoint({ x: center.x, y: center.y - spacing }, center, angle);
@@ -154,7 +201,7 @@ export const drawUTurnArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options
     x: shortLegTo.x + pLineLength * Math.cos(angle),
     y: shortLegTo.y + pLineLength * Math.sin(angle),
   }
-  
+
   const trianglePt1 = rotatePoint({ x: center.x + upDistance - downDistance - pLineLength, y: center.y + spacing }, center, angle);
 
   const trianglePt2 = {
@@ -173,21 +220,21 @@ export const drawUTurnArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options
     point3: trianglePt3,
     color
   })
-  
+
   drawLine({
     start: { x: longLegFrom.x, y: longLegFrom.y },
     end: { x: longLegTo.x, y: longLegTo.y },
     width: lineWidth,
     color
   })
-  
+
   drawLine({
     start: { x: shortLegFrom.x, y: shortLegFrom.y },
     end: { x: shortLegTo.x, y: shortLegTo.y },
     width: lineWidth,
     color
   })
-  
+
   ctx.beginPath();
   ctx.arc(arcCenter.x, arcCenter.y, spacing, Math.PI / 2 + angle, -Math.PI / 2 + angle, true);
   ctx.strokeStyle = color;
