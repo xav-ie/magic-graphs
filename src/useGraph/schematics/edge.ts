@@ -33,11 +33,19 @@ export const getEdgeSchematic = (edge: GEdge, nodes: GNode[], edges: GEdge[], op
   }
 
   const largestAngularSpace = getLargestAngularSpace(start, edges
+    // remove self-referencing edge
     .filter((e) => (e.from === from.label || e.to === to.label) && e.from !== e.to)
+    // convert to { x, y } format
     .map((e) => {
       const { from: fromNode, to: toNode } = getFromToNodes(e, nodes)
       return from.id === fromNode.id ? { x: toNode.x, y: toNode.y } : { x: fromNode.x, y: fromNode.y }
     })
+    // remove duplicates (such as bi-directional edges)
+    .filter((point, index, self) =>
+        index === self.findIndex(
+          (p) => p.x === point.x && p.y === point.y
+        )
+    )
   )
 
   const selfDirectedEdgeLine: UTurnArrow = {

@@ -1,7 +1,7 @@
 /*
   This file contains helper functions for drawing shapes on the canvas.
 */
-import { getAngle, getLargestAngularSpace, rotatePoint } from "./helpers";
+import { rotatePoint } from "./helpers";
 import type { Circle, Line, Square, Triangle, UTurnArrow } from "./types"
 
 /**

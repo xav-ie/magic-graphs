@@ -51,10 +51,6 @@ export const useDarkPersistentUserEditableGraph = (
     graph.subscribe('onGraphReset', trackChanges)
   })
 
-  graph.subscribe('onClick', (ev) => {
-    console.log(graph.getDrawItemsByCoordinates(ev.offsetX, ev.offsetY))
-  })
-
   return graph
 }
 
