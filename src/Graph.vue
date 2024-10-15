@@ -25,23 +25,18 @@ const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 const graph = useDarkPersistentUserEditableGraph(canvas, 'graph');
 
 graph.subscribe('onRepaint', (ctx) => {
-  const { drawLine } = drawShape(ctx);
-  const start = { x: 100, y: 100 };
-  const end = { x: 200, y: 200 };
-  drawLine({
-    start,
-    end,
-    color: 'red',
-    width: 10,
-    text: {
-      content: '2',
-      fontSize: 16,
-      color: 'white',
-      bgColor: 'black',
-      fontWeight: 'bold',
-      offsetFromCenter: -50
-    }
-  })
+  // const { drawLine } = drawShape(ctx);
+  // const start = { x: 100, y: 100 };
+  // const end = { x: 200, y: 200 };
+  // drawLine({
+  //   start,
+  //   end,
+  //   color: 'red',
+  //   width: 10,
+  //   text: {
+  //     content: '2',
+  //   }
+  // })
 })
 
 const { nodes: defaultNodes, edges: defaultEdges } = adjListToNodesEdges(props.modelValue);

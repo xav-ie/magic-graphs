@@ -1,11 +1,11 @@
 import type { GNode } from '../types'
 import { getValue } from '../useGraphHelpers'
 import type { Circle, Square } from '@/shapes/types'
-import { type GraphOptions } from '../useGraphBase'
+import type { BaseGraphTheme } from '../themes'
 
 export type SupportedNodeShapes = 'circle' | 'square'
 
-export const getNodeSchematic = (node: GNode, options: GraphOptions, focusedNodeId: GNode['id'] | undefined) => {
+export const getNodeSchematic = (node: GNode, options: BaseGraphTheme, focusedNodeId: GNode['id'] | undefined) => {
   const {
     nodeFocusColor,
     nodeColor,
@@ -16,11 +16,13 @@ export const getNodeSchematic = (node: GNode, options: GraphOptions, focusedNode
     nodeText,
     nodeTextSize,
     nodeTextColor,
+    nodeFocusTextColor,
     nodeShape,
   } = options
 
   const fillColor = node.id === focusedNodeId ? nodeFocusColor : nodeColor
   const borderColor = node.id === focusedNodeId ? nodeFocusBorderColor : nodeBorderColor
+  const textColor = node.id === focusedNodeId ? nodeFocusTextColor : nodeTextColor
 
   const circleSchematic: Circle = {
     at: {
@@ -37,7 +39,7 @@ export const getNodeSchematic = (node: GNode, options: GraphOptions, focusedNode
       content: getValue(nodeText, node),
       fontSize: getValue(nodeTextSize, node),
       fontWeight: 'bold',
-      color: getValue(nodeTextColor, node),
+      color: getValue(textColor, node),
     }
   }
 
@@ -57,7 +59,7 @@ export const getNodeSchematic = (node: GNode, options: GraphOptions, focusedNode
       content: getValue(nodeText, node),
       fontSize: getValue(nodeTextSize, node),
       fontWeight: 'bold',
-      color: getValue(nodeTextColor, node),
+      color: getValue(textColor, node),
     }
   }
 

@@ -25,8 +25,10 @@ import {
 } from './useGraphHelpers';
 import { drawShape } from '../shapes/draw';
 import { hitboxes } from '../shapes/hitboxes';
-import { getNodeSchematic, type SupportedNodeShapes } from './schematics/node';
+import type { TextFontWeight } from '@/shapes/types';
+import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
+import { themes, type BaseGraphTheme } from './themes';
 
 export type UseGraphEventBusCallbackMappings = {
   /* graph dataflow events */
@@ -60,48 +62,14 @@ export type UseGraphEventBusCallbackMappings = {
 export type MappingsToEventBus<T> = Record<keyof T, any[]>
 export type UseGraphEventBus = MappingsToEventBus<UseGraphEventBusCallbackMappings>
 
-export type GraphOptions = {
-  nodeSize: NodeGetterOrValue<number>,
-  nodeBorderWidth: NodeGetterOrValue<number>,
-  nodeColor: NodeGetterOrValue<string>,
-  nodeBorderColor: NodeGetterOrValue<string>,
-  nodeFocusColor: NodeGetterOrValue<string>,
-  nodeFocusBorderColor: NodeGetterOrValue<string>,
-  nodeText: NodeGetterOrValue<string>,
-  nodeTextSize: NodeGetterOrValue<number>,
-  nodeTextColor: NodeGetterOrValue<string>,
-  nodeShape: NodeGetterOrValue<SupportedNodeShapes>,
-  edgeColor: EdgeGetterOrValue<string>,
-  edgeWidth: EdgeGetterOrValue<number>,
-  edgeFocusColor: EdgeGetterOrValue<string>,
-  graphBgColor: string,
-}
-
-const defaultOptions: GraphOptions = {
-  nodeSize: 35,
-  nodeBorderWidth: 8,
-  nodeColor: 'white',
-  nodeBorderColor: 'black',
-  nodeFocusBorderColor: 'blue',
-  nodeFocusColor: 'white',
-  nodeText: ({ label }: GNode) => label,
-  nodeTextSize: 24,
-  nodeTextColor: 'black',
-  nodeShape: 'circle',
-  edgeColor: 'black',
-  edgeWidth: 10,
-  edgeFocusColor: 'blue',
-  graphBgColor: 'white',
-}
-
 export const useGraph =(
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  optionsArg: Partial<GraphOptions> = {},
+  themeOptions: Partial<BaseGraphTheme> = {},
 ) => {
 
   const options = ref({
-    ...defaultOptions,
-    ...optionsArg,
+    ...themes.default,
+    ...themeOptions,
   })
 
   const nodes = ref<GNode[]>([])

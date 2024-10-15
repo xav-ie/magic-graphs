@@ -1,14 +1,14 @@
 import type { GEdge, GNode } from '../types'
 import type { Arrow, UTurnArrow } from '@/shapes/types'
 import { getValue, getFromToNodes } from '../useGraphHelpers'
-import type { GraphOptions } from '../useGraphBase'
+import type { BaseGraphTheme } from '../themes'
 import { getLargestAngularSpace } from '@/shapes/helpers'
 
 export const getEdgeSchematic = (
   edge: GEdge,
   nodes: GNode[],
   edges: GEdge[],
-  options: GraphOptions,
+  options: BaseGraphTheme,
   focusedId: GEdge['id'] | undefined
 ) => {
   const { from, to } = getFromToNodes(edge, nodes)
@@ -69,11 +69,22 @@ export const getEdgeSchematic = (
     color,
   };
 
+  const edgeTextColor = isFocused ? options.edgeFocusTextColor : options.edgeTextColor
+  const edgeTextColorVal = getValue(edgeTextColor, edge)
+
   const edgeLine: Arrow = {
     start,
     end,
     color,
     width: getValue(options.edgeWidth, edge),
+    text: {
+      content: '1',
+      bgColor: options.graphBgColor,
+      color: edgeTextColorVal,
+      fontSize: getValue(options.edgeTextSize, edge),
+      fontWeight: getValue(options.edgeTextFontWeight, edge),
+      offsetFromCenter: 35,
+    }
   }
 
   return isSelfDirecting ? selfDirectedEdgeLine : edgeLine

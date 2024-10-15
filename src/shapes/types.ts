@@ -7,10 +7,12 @@ export type Coordinate = {
   y: number,
 }
 
+export type TextFontWeight = 'lighter' | 'normal' | 'bold' | 'bolder'
+
 export type Text = {
   content: string,
   fontSize?: number,
-  fontWeight?: 'lighter' | 'normal' | 'bold' | 'bolder',
+  fontWeight?: TextFontWeight,
   color?: string,
   bgColor?: string,
 }
