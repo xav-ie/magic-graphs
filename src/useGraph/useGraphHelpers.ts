@@ -22,11 +22,20 @@ export const generateSubscriber = <T extends UseGraphEventBusCallbackMappings>(
   fn: T[K]
 ) => eventBus[event].push(fn)
 
-/*
-  generates id. Every item on the canvas must have an id
+/**
+  generates an id. Every item on the canvas must have a unique id
 */
 export const generateId = () => Math.random().toString(36).substring(2, 9)
 
+/**
+ * @description modifies the priority of the items passed in
+ * such that the item with the id passed in has the highest priority
+ * while preserving the order of the other items and their relative priorities.
+ *
+ * @param id - the id of the item to prioritize
+ * @param items - loose subset of the items in the aggregator
+ * @returns void - the items are modified in place
+ */
 export const prioritize = (id: SchemaItem['id'], items: SchemaItem[]) => {
   const itemToPrioritize = items.find(item => item.id === id)
   if (!itemToPrioritize) return
@@ -42,6 +51,13 @@ export const prioritize = (id: SchemaItem['id'], items: SchemaItem[]) => {
   }
 }
 
+/**
+ * @description a helper that, when given the aggregator, will specifically prioritize a node
+ *
+ * @param id - the id of the node to prioritize
+ * @param items - the aggregator array
+ * @returns void - the items are modified in place
+ */
 export const prioritizeNode = (id: SchemaItem['id'], items: SchemaItem[]) => {
   const nodeSchemas = items.filter(item => item.graphType === 'node')
   prioritize(id, nodeSchemas)
@@ -53,10 +69,18 @@ export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement) => ({
   y: getRandomBetweenRange(50, canvas.height - 50),
 });
 
+/**
+ * @description given an edge and a set of nodes, this function returns the nodes that the edge connects
+ *
+ * @param edge - the edge to get the nodes from
+ * @param nodes - the nodes to search for the edge's nodes
+ * @returns an object with the from and to nodes
+ * @throws an error if the nodes are not found
+ */
 export const getFromToNodes = (edge: GEdge, nodes: GNode[]) => {
   // using label when its ID that should be used but if i use ID, we create a new property that
   // predefined nodes and edges outside of the graph instance do not know about!
-  
+
   const from = nodes.find(node => node.label === edge.from)
   const to = nodes.find(node => node.label === edge.to)
   if (!from || !to) throw new Error('Error')

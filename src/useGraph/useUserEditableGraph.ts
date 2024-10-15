@@ -1,3 +1,7 @@
+/**
+ * @module useUserEditableGraph
+ */
+
 import type { SchemaItem, GNode } from "./types"
 import { useDraggableNodeAnchorGraph, type AnchorNodeGraphOptions, type NodeAnchor } from "./useNodeAnchorGraph"
 import { type Ref } from 'vue'
