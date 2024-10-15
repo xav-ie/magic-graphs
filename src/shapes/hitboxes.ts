@@ -4,6 +4,7 @@
 import type { Coordinate, Circle, Line, Square, Triangle, UTurnArrow, Rectangle } from "./types"
 import { LINE_TEXT_DEFAULTS } from "./types"
 import { rotatePoint, getAngle } from "./helpers"
+import { drawShape } from "./draw"
 
 /**
  * @param point - the point to check if it is in the shape
@@ -15,7 +16,8 @@ export const hitboxes = (point: Coordinate) => ({
   isInSquare: isInSquare(point),
   isInTriangle: isInTriangle(point),
   isInArrow: isInLine(point),
-  isInUTurnArrow: isInUTurnArrow(point)
+  isInUTurnArrow: isInUTurnArrow(point),
+  isInLineText: isInLineText(point),
 })
 
 /**
@@ -76,7 +78,8 @@ export const isInLineText = (point: Coordinate) => (line: Line) => {
   const {
     start,
     end,
-    text
+    text,
+    width
   } = line;
 
   const {
@@ -89,17 +92,26 @@ export const isInLineText = (point: Coordinate) => (line: Line) => {
 
   const theta = getAngle(start, end);
 
+  const arrowHeadHeight = width * 2.5;
+  const arrowShaftEnd = {
+    x: end.x - arrowHeadHeight * Math.cos(theta),
+    y: end.y - arrowHeadHeight * Math.sin(theta),
+  }
+
   const offsetX = offsetFromCenter * Math.cos(theta);
   const offsetY = offsetFromCenter * Math.sin(theta);
 
-  const textX = (start.x + end.x) / 2 + offsetX;
-  const textY = (start.y + end.y) / 2 + offsetY;
+  // if its an arrow use arrowShaftEnd, if its a line use end
+  const textX = (start.x + arrowShaftEnd.x) / 2 + offsetX;
+  const textY = (start.y + arrowShaftEnd.y) / 2 + offsetY;
 
-  return isInSquare(point)({
+  const textSquare = {
     at: { x: textX - fontSize, y: textY - fontSize },
     width: fontSize * 2,
     height: fontSize * 2,
-  });
+  }
+
+  return isInSquare(point)(textSquare);
 }
 
 /**

@@ -158,32 +158,31 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
   const { drawLine, drawTriangle } = drawShape(ctx);
   const { start: lineStart, end: lineEnd, width, color = 'black' } = options;
 
-  const arrowHeadHeight = width * 2.5;
-
   const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
 
-  const epiCenter = {
+  const arrowHeadHeight = width * 2.5;
+  const shaftEnd = {
     x: lineEnd.x - arrowHeadHeight * Math.cos(angle),
     y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
   }
 
-  const pLineLength = arrowHeadHeight / 1.75;
+  const perpLineLength = arrowHeadHeight / 1.75;
 
   const trianglePt1 = lineEnd;
 
   const trianglePt2 = {
-    x: epiCenter.x + pLineLength * Math.cos(angle + Math.PI / 2),
-    y: epiCenter.y + pLineLength * Math.sin(angle + Math.PI / 2),
+    x: shaftEnd.x + perpLineLength * Math.cos(angle + Math.PI / 2),
+    y: shaftEnd.y + perpLineLength * Math.sin(angle + Math.PI / 2),
   }
 
   const trianglePt3 = {
-    x: epiCenter.x - pLineLength * Math.cos(angle + Math.PI / 2),
-    y: epiCenter.y - pLineLength * Math.sin(angle + Math.PI / 2),
+    x: shaftEnd.x - perpLineLength * Math.cos(angle + Math.PI / 2),
+    y: shaftEnd.y - perpLineLength * Math.sin(angle + Math.PI / 2),
   }
 
   const shaft = {
     start: lineStart,
-    end: epiCenter,
+    end: shaftEnd,
     width,
     color,
   }

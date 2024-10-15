@@ -25,18 +25,45 @@ const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 const graph = useDarkPersistentUserEditableGraph(canvas, 'graph');
 
 graph.subscribe('onRepaint', (ctx) => {
-  // const { drawLine } = drawShape(ctx);
-  // const start = { x: 100, y: 100 };
-  // const end = { x: 200, y: 200 };
-  // drawLine({
-  //   start,
-  //   end,
-  //   color: 'red',
-  //   width: 10,
-  //   text: {
-  //     content: '2',
-  //   }
-  // })
+  // const { drawSquare } = drawShape(ctx);
+  // const sq = {"at":{"x":495.9698429203579,"y":173.08167306752438},"width":40,"height":40}
+  // drawSquare(sq);
+})
+
+graph.subscribe('onClick', (ev) => {
+  const { offsetX: x, offsetY: y } = ev;
+  const topItem = graph.getDrawItemsByCoordinates(x, y).pop();
+  if (!topItem) return;
+  const { isInLineText } = hitboxes({ x, y });
+  if (topItem.schemaType === 'arrow' && isInLineText(topItem.schema)) {
+    // create a text input
+    const input = document.createElement('textarea');
+    input.style.position = 'absolute';
+    input.style.left = `${x}px`;
+    input.style.top = `${y}px`;
+    input.style.width = '40px';
+    input.style.height = '40px';
+    input.style.zIndex = '1000';
+    // disable resizing
+    input.style.resize = 'none';
+    input.style.overflow = 'hidden';
+    input.style.border = 'none';
+    input.style.padding = '0';
+    input.style.margin = '0';
+    input.style.fontSize = '20px';
+    input.style.color = 'white';
+    input.style.backgroundColor = graph.options.value.graphBgColor;
+    input.style.fontFamily = 'Arial';
+    input.style.textAlign = 'center';
+    input.style.fontWeight = 'bold';
+    input.style.outline = 'none';
+    input.value = topItem.schema.text?.content || '';
+    input.onblur = () => {
+      input.remove();
+    }
+    document.body.appendChild(input);
+    input.focus();
+  }
 })
 
 const { nodes: defaultNodes, edges: defaultEdges } = adjListToNodesEdges(props.modelValue);

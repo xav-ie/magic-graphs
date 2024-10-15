@@ -5,7 +5,7 @@ import {
   type Ref,
   readonly
 } from 'vue'
-import { onClickOutside } from '@vueuse/core';
+import { onClickOutside, set } from '@vueuse/core';
 import type {
   GNode,
   GEdge,
@@ -124,6 +124,9 @@ export const useGraph =(
     const focusableTypes = ['node', 'edge']
     const topItem = getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     if (!topItem || !focusableTypes.includes(topItem.graphType)) return setFocus(undefined)
+    // generalize this to allow all SchemaItems a textarea field that defines if it is editable
+    const { isInLineText } = hitboxes({ x: ev.offsetX, y: ev.offsetY })
+    if (topItem.schemaType === 'arrow' && isInLineText(topItem.schema)) return setFocus(undefined)
     setFocus(topItem.id)
   }
 
