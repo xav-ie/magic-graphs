@@ -16,7 +16,9 @@ export const getEdgeSchematic = (
   const isBidirectional = edges.some(e => e.from === to.label && e.to === from.label)
   const isSelfDirecting = to === from
 
-  const nodeSizeVal = getValue(options.nodeSize, to) + 10
+  const spacingFromNode = 3
+
+  const nodeSizeVal = getValue(options.nodeSize, to) + spacingFromNode
 
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
 

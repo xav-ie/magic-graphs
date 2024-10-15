@@ -83,6 +83,49 @@ export const drawSquareWithCtx = (ctx: CanvasRenderingContext2D) => (options: Sq
   ctx.closePath();
 }
 
+export const drawTextOnLineWithCtx = (ctx: CanvasRenderingContext2D) => (line: Line) => {
+  if (!line.text) return;
+
+  const {
+    start,
+    end,
+    text
+  } = line;
+
+  const {
+    content,
+    fontSize = 12,
+    fontWeight = 'normal',
+    color = 'black',
+    offsetFromCenter = 0,
+    bgColor = 'transparent',
+  } = text;
+
+  const theta = getAngle(start, end);
+
+  const offsetX = offsetFromCenter * Math.cos(theta);
+  const offsetY = offsetFromCenter * Math.sin(theta);
+
+  const textX = (start.x + end.x) / 2 + offsetX;
+  const textY = (start.y + end.y) / 2 + offsetY;
+
+  // background matte for text
+  drawSquareWithCtx(ctx)({
+    at: { x: textX - fontSize, y: textY - fontSize },
+    width: fontSize * 2,
+    height: fontSize * 2,
+    color: bgColor,
+  })
+
+  // text
+  ctx.font = `${fontWeight} ${fontSize}px Arial`;
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(content, textX, textY);
+}
+
+
 export const drawLineWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line) => {
 
   const { start, end, color = 'black', width } = options;
@@ -94,39 +137,7 @@ export const drawLineWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line
   ctx.stroke();
   ctx.closePath();
 
-  if (options.text) {
-    const {
-      content,
-      fontSize = 12,
-      fontWeight = 'normal',
-      color = 'black',
-      offsetFromCenter = 0
-    } = options.text;
-
-    const theta = getAngle(start, end);
-
-    const offsetX = offsetFromCenter * Math.cos(theta);
-    const offsetY = offsetFromCenter * Math.sin(theta);
-
-    const textX = (start.x + end.x) / 2 + offsetX;
-    const textY = (start.y + end.y) / 2 + offsetY;
-
-    if (options.text.bgColor) {
-      const { bgColor } = options.text;
-      drawSquareWithCtx(ctx)({
-        at: { x: textX - 25, y: textY - 25 },
-        width: 50,
-        height: 50,
-        color: bgColor,
-      })
-    }
-
-    ctx.font = `${fontWeight} ${fontSize}px Arial`;
-    ctx.fillStyle = color;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(content, textX, textY);
-  }
+  if (options.text) drawTextOnLineWithCtx(ctx)(options);
 }
 
 export const drawTriangleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Triangle) => {
@@ -167,19 +178,26 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
     y: epiCenter.y - pLineLength * Math.sin(angle + Math.PI / 2),
   }
 
-  drawLine({
+  const shaft = {
     start: lineStart,
     end: epiCenter,
     width,
     color,
-    text: options.text,
-  })
+  }
+
+  drawLine(shaft);
 
   drawTriangle({
     point1: trianglePt1,
     point2: trianglePt2,
     point3: trianglePt3,
     color,
+  });
+
+  // text must be drawn over the arrow
+  if (options.text) drawTextOnLineWithCtx(ctx)({
+    ...shaft,
+    text: options.text,
   });
 }
 
