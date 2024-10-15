@@ -5,7 +5,7 @@ import {
   type Ref,
   readonly
 } from 'vue'
-import { onClickOutside, set } from '@vueuse/core';
+import { get, onClickOutside, set } from '@vueuse/core';
 import type {
   GNode,
   GEdge,
@@ -313,7 +313,9 @@ export const useGraph =(
     const edgeExists = edges.value.some(e => e.from === edge.from && e.to === edge.to)
     if (edgeExists) return
     edges.value.push({
-      ...edge,
+      to: edge.to,
+      from: edge.from,
+      weight: edge.weight ?? 1,
       id: generateId()
     })
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
@@ -364,6 +366,7 @@ export const useGraph =(
     addNode,
     moveNode,
     getNode,
+    getEdge,
     getNodeByCoordinates,
     getDrawItemsByCoordinates,
     removeNode,

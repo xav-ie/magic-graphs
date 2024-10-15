@@ -58,9 +58,23 @@ graph.subscribe('onClick', (ev) => {
     input.style.fontWeight = 'bold';
     input.style.outline = 'none';
     input.value = topItem.schema.text?.content || '';
-    input.onblur = () => {
+
+    const removeInput = () => {
+      input.onblur = null;
+      const edge = graph.getEdge(topItem.id);
+      if (!edge) throw new Error('Edge not found');
+      edge.weight = Number(input.value);
       input.remove();
     }
+
+    input.onblur = removeInput;
+
+    input.onkeydown = (ev) => {
+      if (ev.key === 'Enter') {
+        removeInput();
+      }
+    }
+
     document.body.appendChild(input);
     input.focus();
   }

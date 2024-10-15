@@ -17,6 +17,7 @@ export type GEdge = {
   id: string,
   to: string,
   from: string,
+  weight: number,
 }
 
 /*

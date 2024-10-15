@@ -80,11 +80,13 @@ export const getEdgeSchematic = (
     color,
     width: getValue(options.edgeWidth, edge),
     text: {
-      content: '1',
+      content: edge.weight.toString(),
       bgColor: options.graphBgColor,
       color: edgeTextColorVal,
       fontSize: getValue(options.edgeTextSize, edge),
       fontWeight: getValue(options.edgeTextFontWeight, edge),
+      // TODO - must take into account of actual node size.
+      // TODO - 35 is the default node size but wont work if node size is different
       offsetFromCenter: 35,
     }
   }
