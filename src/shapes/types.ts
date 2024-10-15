@@ -17,6 +17,13 @@ export type Text = {
   bgColor?: string,
 }
 
+export const LINE_TEXT_DEFAULTS = {
+  fontSize: 12,
+  fontWeight: 'normal',
+  color: 'black',
+  offsetFromCenter: 0,
+} as const
+
 export type Stroke = {
   color: string,
   width: number,

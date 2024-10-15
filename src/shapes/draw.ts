@@ -2,7 +2,7 @@
   This file contains helper functions for drawing shapes on the canvas.
 */
 import { getAngle, rotatePoint } from "./helpers";
-import type { Circle, Line, Square, Triangle, UTurnArrow } from "./types"
+import { LINE_TEXT_DEFAULTS, type Circle, type Line, type Square, type Triangle, type UTurnArrow } from "./types"
 
 /**
  * @description parent function that returns all the draw functions for the shapes
@@ -94,12 +94,15 @@ export const drawTextOnLineWithCtx = (ctx: CanvasRenderingContext2D) => (line: L
 
   const {
     content,
-    fontSize = 12,
-    fontWeight = 'normal',
-    color = 'black',
-    offsetFromCenter = 0,
-    bgColor = 'transparent',
-  } = text;
+    fontSize,
+    fontWeight,
+    color,
+    offsetFromCenter,
+    bgColor,
+  } = {
+    ...LINE_TEXT_DEFAULTS,
+    ...text
+  }
 
   const theta = getAngle(start, end);
 

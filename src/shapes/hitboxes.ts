@@ -2,6 +2,7 @@
   This file contains helper functions for hit boxes on the canvas.
 */
 import type { Coordinate, Circle, Line, Square, Triangle, UTurnArrow, Rectangle } from "./types"
+import { LINE_TEXT_DEFAULTS } from "./types"
 import { rotatePoint } from "./helpers"
 
 /**
@@ -65,6 +66,26 @@ export const isInLine = (point: Coordinate) => (line: Line) => {
 }
 
 /**
+ * @description checks if the point is in the text label of the line
+ *
+ * @param point - the point to check if it is in the line
+ * @returns a function that checks if the point is in the line
+ */
+export const isInLineText = (point: Coordinate) => (line: Line) => {
+  if (!line.text) return false;
+  const { start, end, text } = line;
+  const {
+    fontSize,
+    fontWeight,
+    color,
+    offsetFromCenter
+  } = {
+    ...LINE_TEXT_DEFAULTS,
+    ...text
+  };
+}
+
+/**
  * uses barycentric coordinate system for triangles. dont ask me, im not that smart.
  * https://en.wikipedia.org/wiki/Barycentric_coordinate_system
  *
@@ -94,10 +115,10 @@ export const isInUTurnArrow = (point: Coordinate) => (uTurnArrow: UTurnArrow) =>
     lineWidth,
     angle
   } = uTurnArrow;
- 
+
   return isInLine(point)({
     start: center,
     end: rotatePoint({ x: center.x + upDistance, y: center.y }, center, angle),
-    width: 2 * spacing + lineWidth 
+    width: 2 * spacing + lineWidth
   })
 }
