@@ -5,6 +5,14 @@ import { type Ref } from 'vue'
 export type UserEditableGraphOptions = AnchorNodeGraphOptions
 
 /**
+ * @requires a graph interface with node anchors
+ *
+ * The user editable graph implements handlers for node creation,
+ * edge creation and deletion driven by user input.
+ *
+ * @param canvas - the canvas element to render the graph
+ * @param options - the options to configure the graph
+ * @returns a user editable graph
  */
 export const useUserEditableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
