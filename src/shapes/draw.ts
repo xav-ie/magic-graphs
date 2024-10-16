@@ -8,7 +8,7 @@ import {
   TEXTAREA_DEFAULTS,
   type Line,
   type TextArea,
-  type TextAreaWithLocation,
+  type TextAreaNoLocation,
 } from "./types"
 import { drawCircleWithCtx } from "./draw/circle";
 import { drawSquareWithCtx } from "./draw/square";
@@ -17,8 +17,8 @@ import { drawTriangleWithCtx } from "./draw/triangle";
 import { drawArrowWithCtx } from "./draw/arrow";
 import { drawUTurnArrowWithCtx } from "./draw/uturn";
 
-type LocationTextAreaGetter = Record<string, (shape: Line) => TextAreaWithLocation>
-export const getLocationTextArea = (textArea: TextArea): LocationTextAreaGetter => ({
+type LocationTextAreaGetter = Record<string, (shape: Line) => TextArea>
+export const getLocationTextArea = (textArea: TextAreaNoLocation): LocationTextAreaGetter => ({
   line: (line: Line) => ({ ...textArea, at: getLocationTextAreaOnLine(line) }),
 })
 

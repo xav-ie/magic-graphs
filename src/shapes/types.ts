@@ -24,7 +24,7 @@ export const TEXT_DEFAULTS = {
 } as const
 
 // the area in which text is displayed
-export type TextArea = {
+export type TextAreaNoLocation = {
   text: Text,
   color?: string,
   editable?: boolean,
@@ -35,9 +35,9 @@ export const TEXTAREA_DEFAULTS = {
   editable: true
 } as const
 
-export type TextAreaWithLocation = {
+export type TextArea = {
   at: Coordinate,
-} & TextArea
+} & TextAreaNoLocation
 
 export type Stroke = {
   color: string,
@@ -67,7 +67,7 @@ export type Line = {
   start: Coordinate,
   end: Coordinate,
   width?: number,
-  textArea?: TextArea,
+  textArea?: TextAreaNoLocation,
   // offsetFromCenter is used to position text. By default, text is centered on the line.
   // If -10, text will be on the line but 10 units below the center.
   // If 10, text will be on the line but 10 units above the center.

@@ -1,10 +1,10 @@
 import {
-  type TextAreaWithLocation,
+  type TextArea,
   TEXTAREA_DEFAULTS,
   TEXT_DEFAULTS,
 } from '@/shapes/types';
 
-export const engageTextarea = (textAreaSchema: TextAreaWithLocation, handler: (str: string) => void) => {
+export const engageTextarea = (textAreaSchema: TextArea, handler: (str: string) => void) => {
 
   const {
     at,
