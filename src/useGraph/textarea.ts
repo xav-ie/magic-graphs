@@ -1,24 +1,24 @@
 import {
-  type TextAreaWithLocation ,
-  type TextArea,
+  type TextAreaWithLocation,
   TEXTAREA_DEFAULTS,
   TEXT_DEFAULTS,
 } from '@/shapes/types';
-import { hitboxes } from '@/shapes/hitboxes';
 
-// TODO use TextAreaWithLocation instead of TextArea when it's ready
-export const engageTextarea = (ev: MouseEvent, schema: TextArea, handler: (str: string) => void) => {
-  const { offsetX: x, offsetY: y } = ev;
-  // const { isInLineText } = hitboxes({ x, y });
+export const engageTextarea = (textAreaSchema: TextAreaWithLocation, handler: (str: string) => void) => {
 
   const {
-    // at,
+    at,
     text,
     color: bgColor,
   } = {
     ...TEXTAREA_DEFAULTS,
-    ...schema,
+    ...textAreaSchema,
   }
+
+  const {
+    x,
+    y
+  } = at;
 
   const {
     color: textColor,

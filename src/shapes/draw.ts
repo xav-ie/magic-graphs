@@ -7,6 +7,8 @@ import {
   TEXT_DEFAULTS,
   TEXTAREA_DEFAULTS,
   type Line,
+  type TextArea,
+  type TextAreaWithLocation,
 } from "./types"
 import { drawCircleWithCtx } from "./draw/circle";
 import { drawSquareWithCtx } from "./draw/square";
@@ -14,6 +16,32 @@ import { drawLineWithCtx } from "./draw/line";
 import { drawTriangleWithCtx } from "./draw/triangle";
 import { drawArrowWithCtx } from "./draw/arrow";
 import { drawUTurnArrowWithCtx } from "./draw/uturn";
+
+type LocationTextAreaGetter = Record<string, (shape: Line) => TextAreaWithLocation>
+export const getLocationTextArea = (textArea: TextArea): LocationTextAreaGetter => ({
+  line: (line: Line) => ({ ...textArea, at: getLocationTextAreaOnLine(line) }),
+})
+
+const getLocationTextAreaOnLine = (line: Line) => {
+  const {
+    textOffsetFromCenter,
+    start,
+    end,
+  } = {
+    ...LINE_DEFAULTS,
+    ...line,
+  }
+
+  const theta = getAngle(start, end);
+
+  const offsetX = textOffsetFromCenter * Math.cos(theta);
+  const offsetY = textOffsetFromCenter * Math.sin(theta);
+
+  const textX = (start.x + end.x) / 2 + offsetX;
+  const textY = (start.y + end.y) / 2 + offsetY;
+
+  return { x: textX, y: textY }
+}
 
 /**
  * @description parent function that returns all the draw functions for the shapes
@@ -33,10 +61,7 @@ export const drawShape = (ctx: CanvasRenderingContext2D) => ({
 export const drawTextOnLineWithCtx = (ctx: CanvasRenderingContext2D) => (line: Line) => {
 
   const {
-    start,
-    end,
     textArea,
-    textOffsetFromCenter
   } = {
     ...LINE_DEFAULTS,
     ...line,
@@ -62,17 +87,11 @@ export const drawTextOnLineWithCtx = (ctx: CanvasRenderingContext2D) => (line: L
     ...text
   }
 
-  const theta = getAngle(start, end);
-
-  const offsetX = textOffsetFromCenter * Math.cos(theta);
-  const offsetY = textOffsetFromCenter * Math.sin(theta);
-
-  const textX = (start.x + end.x) / 2 + offsetX;
-  const textY = (start.y + end.y) / 2 + offsetY;
+  const { at: textAreaLocation } = getLocationTextArea(textArea).line(line);
 
   // background matte for text
   drawSquareWithCtx(ctx)({
-    at: { x: textX - fontSize, y: textY - fontSize },
+    at: { x: textAreaLocation.x - fontSize, y: textAreaLocation.y - fontSize },
     width: fontSize * 2,
     height: fontSize * 2,
     color: bgColor,
@@ -83,5 +102,5 @@ export const drawTextOnLineWithCtx = (ctx: CanvasRenderingContext2D) => (line: L
   ctx.fillStyle = color;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(content, textX, textY);
+  ctx.fillText(content, textAreaLocation.x, textAreaLocation.y);
 }
