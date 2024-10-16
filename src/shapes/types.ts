@@ -9,19 +9,30 @@ export type Coordinate = {
 
 export type TextFontWeight = 'lighter' | 'normal' | 'bold' | 'bolder'
 
+// the actual text
 export type Text = {
   content: string,
   fontSize?: number,
   fontWeight?: TextFontWeight,
   color?: string,
-  bgColor?: string,
 }
 
-export const LINE_TEXT_DEFAULTS = {
+export const TEXT_DEFAULTS = {
   fontSize: 12,
   fontWeight: 'normal',
   color: 'black',
-  offsetFromCenter: 0,
+} as const
+
+// the area in which text is displayed
+export type TextArea = {
+  text: Text,
+  color?: string,
+  editable?: boolean,
+}
+
+export const TEXTAREA_DEFAULTS = {
+  color: 'white',
+  editable: true
 } as const
 
 export type Stroke = {
@@ -51,15 +62,24 @@ export type Square = Rectangle
 export type Line = {
   start: Coordinate,
   end: Coordinate,
-  width: number,
+  width?: number,
+  textArea?: TextArea,
   // offsetFromCenter is used to position text. By default, text is centered on the line.
   // If -10, text will be on the line but 10 units below the center.
   // If 10, text will be on the line but 10 units above the center.
-  text?: Text & { offsetFromCenter?: number },
+  textOffsetFromCenter?: number,
   color?: string,
 }
 
+export const LINE_DEFAULTS = {
+  width: 10,
+  textOffsetFromCenter: 0,
+  color: 'black',
+} as const
+
 export type Arrow = Line
+
+export const ARROW_DEFAULTS = LINE_DEFAULTS
 
 export type Triangle = {
   point1: Coordinate,
@@ -67,6 +87,10 @@ export type Triangle = {
   point3: Coordinate,
   color?: string,
 }
+
+export const TRIANGLE_DEFAULTS = {
+  color: 'black',
+} as const
 
 export type UTurnArrow = {
   spacing: number,
@@ -78,3 +102,7 @@ export type UTurnArrow = {
   color?: string,
   text?: Text
 }
+
+export const UTURN_ARROW_DEFAULTS = {
+  color: 'black',
+} as const
