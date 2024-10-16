@@ -70,6 +70,5 @@ export const engageTextarea = (ev: MouseEvent, schema: TextArea, handler: (str: 
   }
 
   document.body.appendChild(input);
-  input.focus();
-  console.log('input');
+  setTimeout(() => input.focus(), 10);
 }
