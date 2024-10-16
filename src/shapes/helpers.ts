@@ -21,6 +21,23 @@ export const rotatePoint = (pointToRotate: Coordinate, centerPoint: Coordinate, 
 }
 
 /**
+ * @description same as rotatePoint but modifies the pointToRotate in place as opposed to returning a new point object
+ *
+ * @param pointToRotate - the point that is to be rotated
+ * @param centerPoint - the point that the pointToRotate will rotate around
+ * @param angle - the angle in radians that the pointToRotate will rotate by
+ */
+export const rotatePointInPlace = (pointToRotate: Coordinate, centerPoint: Coordinate, angle: number) => {
+  const cosA = Math.cos(angle)
+  const sinA = Math.sin(angle)
+  const dx = pointToRotate.x - centerPoint.x
+  const dy = pointToRotate.y - centerPoint.y
+
+  pointToRotate.x = centerPoint.x + (dx * cosA - dy * sinA)
+  pointToRotate.y = centerPoint.y + (dx * sinA + dy * cosA)
+}
+
+/**
  * @description calculates the angle between two points in radians
  *
  * @param point1 - the first point
