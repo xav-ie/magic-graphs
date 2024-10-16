@@ -2,10 +2,10 @@ import {
   ref,
   onMounted,
   onBeforeUnmount,
+  readonly,
   type Ref,
-  readonly
 } from 'vue'
-import { get, onClickOutside, set } from '@vueuse/core';
+import { onClickOutside } from '@vueuse/core';
 import type {
   GNode,
   GEdge,
@@ -21,12 +21,12 @@ import {
   prioritizeNode,
   getRandomPointOnCanvas
 } from './useGraphHelpers';
-import { drawShape } from '../shapes/draw';
-import { hitboxes } from '../shapes/hitboxes';
-import type { TextFontWeight } from '@/shapes/types';
+import { drawShape } from '@/shapes/draw';
+import { hitboxes } from '@/shapes/hitboxes';
 import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
 import { themes, type BaseGraphTheme } from './themes';
+import { engageTextarea } from './textarea';
 
 export type UseGraphEventBusCallbackMappings = {
   /* graph dataflow events */
@@ -125,8 +125,21 @@ export const useGraph =(
     const topItem = getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     if (!topItem || !focusableTypes.includes(topItem.graphType)) return setFocus(undefined)
     // generalize this to allow all SchemaItems a textarea field that defines if it is editable
-    const { isInLineText } = hitboxes({ x: ev.offsetX, y: ev.offsetY })
-    if (topItem.schemaType === 'arrow' && isInLineText(topItem.schema)) return setFocus(undefined)
+    // const { isInLineText } = hitboxes({ x: ev.offsetX, y: ev.offsetY })
+    // if (topItem.schemaType === 'arrow' && isInLineText(topItem.schema)) return setFocus(undefined)
+    const { schema } = topItem
+    if ('textArea' in schema && schema.textArea?.editable) {
+      if (schema.textArea) {
+        engageTextarea(ev, schema.textArea, (str) => {
+          const edge = getEdge(topItem.id)
+          if (!edge) throw new Error('Textarea only implemented for edges')
+          const weight = Number(str)
+          if (isNaN(weight)) return
+          edge.weight = weight
+        })
+        return setFocus(undefined)
+      }
+    }
     setFocus(topItem.id)
   }
 

@@ -10,7 +10,8 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
     start: lineStart,
     end: lineEnd,
     width,
-    color
+    color,
+    textOffsetFromCenter,
   } = {
     ...ARROW_DEFAULTS,
     ...options
@@ -57,6 +58,7 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
   // text must be drawn over the arrow
   if (options.textArea) drawTextOnLineWithCtx(ctx)({
     ...shaft,
+    textOffsetFromCenter,
     textArea: options.textArea,
   });
 }

@@ -35,6 +35,10 @@ export const TEXTAREA_DEFAULTS = {
   editable: true
 } as const
 
+export type TextAreaWithLocation = {
+  at: Coordinate,
+} & TextArea
+
 export type Stroke = {
   color: string,
   width: number,

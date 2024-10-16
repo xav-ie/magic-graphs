@@ -74,17 +74,17 @@ export const getEdgeSchematic = (
   const edgeTextColor = isFocused ? options.edgeFocusTextColor : options.edgeTextColor
   const edgeTextColorVal = getValue(edgeTextColor, edge)
 
-  // TODO - must take into account of actual node size.
-  // TODO - 35 is the default node size but wont work if node size is different
   const edgeLine: Arrow = {
     start,
     end,
     color,
     width: getValue(options.edgeWidth, edge),
+    // TODO - must take into account of actual node size.
+    // TODO - 35 is the default node size but wont work if node size is different
     textOffsetFromCenter: 35,
     textArea: {
       color: options.graphBgColor,
-      editable: false,
+      editable: true,
       text: {
         content: edge.weight.toString(),
         color: edgeTextColorVal,
