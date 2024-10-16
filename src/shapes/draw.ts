@@ -1,17 +1,19 @@
 /*
   This file contains helper functions for drawing shapes on the canvas.
 */
-import { getAngle, rotatePoint } from "./helpers";
+import { getAngle } from "./helpers";
 import {
+  LINE_DEFAULTS,
   TEXT_DEFAULTS,
-  type Circle,
+  TEXTAREA_DEFAULTS,
   type Line,
-  type Square,
-  type Triangle,
-  type UTurnArrow
 } from "./types"
 import { drawCircleWithCtx } from "./draw/circle";
 import { drawSquareWithCtx } from "./draw/square";
+import { drawLineWithCtx } from "./draw/line";
+import { drawTriangleWithCtx } from "./draw/triangle";
+import { drawArrowWithCtx } from "./draw/arrow";
+import { drawUTurnArrowWithCtx } from "./draw/uturn";
 
 /**
  * @description parent function that returns all the draw functions for the shapes
@@ -29,30 +31,41 @@ export const drawShape = (ctx: CanvasRenderingContext2D) => ({
 })
 
 export const drawTextOnLineWithCtx = (ctx: CanvasRenderingContext2D) => (line: Line) => {
-  if (!line.text) return;
 
   const {
     start,
     end,
+    textArea,
+    textOffsetFromCenter
+  } = {
+    ...LINE_DEFAULTS,
+    ...line,
+  };
+
+  if (!textArea) return;
+
+  const {
+    color: bgColor,
     text
-  } = line;
+  } = {
+    ...TEXTAREA_DEFAULTS,
+    ...textArea
+  }
 
   const {
     content,
     fontSize,
     fontWeight,
     color,
-    offsetFromCenter,
-    bgColor,
   } = {
-    ...LINE_TEXT_DEFAULTS,
+    ...TEXT_DEFAULTS,
     ...text
   }
 
   const theta = getAngle(start, end);
 
-  const offsetX = offsetFromCenter * Math.cos(theta);
-  const offsetY = offsetFromCenter * Math.sin(theta);
+  const offsetX = textOffsetFromCenter * Math.cos(theta);
+  const offsetY = textOffsetFromCenter * Math.sin(theta);
 
   const textX = (start.x + end.x) / 2 + offsetX;
   const textY = (start.y + end.y) / 2 + offsetY;

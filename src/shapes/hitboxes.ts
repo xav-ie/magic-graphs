@@ -2,9 +2,8 @@
   This file contains helper functions for hit boxes on the canvas.
 */
 import type { Coordinate, Circle, Line, Square, Triangle, UTurnArrow, Rectangle } from "./types"
-import { LINE_TEXT_DEFAULTS } from "./types"
+import { TEXT_DEFAULTS, LINE_DEFAULTS } from "./types"
 import { rotatePoint, getAngle } from "./helpers"
-import { drawShape } from "./draw"
 
 /**
  * @param point - the point to check if it is in the shape
@@ -55,7 +54,10 @@ export const isInRectangle = (point: Coordinate) => (rectangle: Rectangle) => {
  * @returns a function that checks if the point is in the line
 */
 export const isInLine = (point: Coordinate) => (line: Line) => {
-  const { start, end, width } = line;
+  const { start, end, width } = {
+    ...LINE_DEFAULTS,
+    ...line
+  };
   const { x: x1, y: y1 } = start;
   const { x: x2, y: y2 } = end;
   const { x, y } = point;
@@ -87,7 +89,10 @@ export const isInLine = (point: Coordinate) => (line: Line) => {
  * @returns a function that checks if the point is in the line
  */
 export const isInLineText = (point: Coordinate) => (line: Line) => {
-  if (!line.text) return false;
+
+  return false;
+
+  if (!line.textArea) return false;
   const {
     start,
     end,
