@@ -158,12 +158,6 @@ export const isInUTurnArrow = (point: Coordinate) => (uTurnArrow: UTurnArrow) =>
     angle
   } = uTurnArrow;
 
-  console.log(isInLine(point)({
-    start: center,
-    end: rotatePoint({ x: center.x + upDistance, y: center.y }, center, angle),
-    width: 2 * spacing + lineWidth
-  }))
-
   return isInLine(point)({
     start: center,
     end: rotatePoint({ x: center.x + upDistance, y: center.y }, center, angle),

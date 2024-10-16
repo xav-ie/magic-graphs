@@ -49,6 +49,9 @@ export const DEFAULT_THEME: BaseGraphTheme = {
 
 export type GraphThemes = Record<string, Partial<UserEditableGraphOptions>>
 
+// ISSUE #17 GITHUB
+const resolveTheme = () => {}
+
 export const themes: GraphThemes = {
   default: DEFAULT_THEME,
   dark: {
@@ -62,6 +65,7 @@ export const themes: GraphThemes = {
     nodeAnchorColorWhenParentFocused: 'rgb(170, 0, 0)',
     edgeColor: 'rgb(25, 25, 25)',
     edgeFocusColor: 'rgb(200, 0, 0)',
+    // TODO BOOO!!!!
     edgeTextColor: 'white',
     edgeFocusTextColor: 'white',
     graphBgColor: 'rgb(75, 85, 99)' // tailwind bg-gray-600
