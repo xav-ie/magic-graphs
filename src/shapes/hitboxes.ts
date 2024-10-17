@@ -1,9 +1,10 @@
 /*
   This file contains helper functions for hit boxes on the canvas.
 */
-import type { Coordinate, Circle, Line, Square, Triangle, UTurnArrow, Rectangle } from "./types"
-import { TEXT_DEFAULTS, LINE_DEFAULTS } from "./types"
-import { rotatePoint, getAngle } from "./helpers"
+import type { Coordinate, Circle, Line, Square, Triangle, UTurnArrow, Rectangle, Arrow } from "./types"
+import { TEXT_DEFAULTS, LINE_DEFAULTS, TEXTAREA_DEFAULTS } from "./types"
+import { rotatePoint } from "./helpers"
+import { getLocationTextArea, getTextAreaDimension } from "./draw"
 
 /**
  * @param point - the point to check if it is in the shape
@@ -16,7 +17,8 @@ export const hitboxes = (point: Coordinate) => ({
   isInTriangle: isInTriangle(point),
   isInArrow: isInLine(point),
   isInUTurnArrow: isInUTurnArrow(point),
-  isInLineText: isInLineText(point),
+  isInLineTextArea: isInLineTextArea(point),
+  isInArrowTextArea: isInArrowTextArea(point),
 })
 
 /**
@@ -88,48 +90,40 @@ export const isInLine = (point: Coordinate) => (line: Line) => {
  * @param point - the point to check if it is in the line
  * @returns a function that checks if the point is in the line
  */
-export const isInLineText = (point: Coordinate) => (line: Line) => {
-
-  return false;
-
+export const isInLineTextArea = (point: Coordinate) => (line: Line) => {
   if (!line.textArea) return false;
-  const {
-    start,
-    end,
+  const textArea = { ...TEXTAREA_DEFAULTS, ...line.textArea };
+  const text = { ...TEXT_DEFAULTS, ...textArea.text };
+  const fullTextArea = {
+    ...textArea,
     text,
-    width
-  } = line;
-
-  const {
-    fontSize,
-    offsetFromCenter
-  } = {
-    ...LINE_TEXT_DEFAULTS,
-    ...text
-  };
-
-  const theta = getAngle(start, end);
-
-  const arrowHeadHeight = width * 2.5;
-  const arrowShaftEnd = {
-    x: end.x - arrowHeadHeight * Math.cos(theta),
-    y: end.y - arrowHeadHeight * Math.sin(theta),
+    at: getLocationTextArea(textArea).line(line),
   }
+  const { width, height } = getTextAreaDimension(fullTextArea);
 
-  const offsetX = offsetFromCenter * Math.cos(theta);
-  const offsetY = offsetFromCenter * Math.sin(theta);
+  return isInSquare(point)({
+    at: fullTextArea.at,
+    width,
+    height
+  });
+}
 
-  // if its an arrow use arrowShaftEnd, if its a line use end
-  const textX = (start.x + arrowShaftEnd.x) / 2 + offsetX;
-  const textY = (start.y + arrowShaftEnd.y) / 2 + offsetY;
-
-  const textSquare = {
-    at: { x: textX - fontSize, y: textY - fontSize },
-    width: fontSize * 2,
-    height: fontSize * 2,
+export const isInArrowTextArea = (point: Coordinate) => (arrow: Arrow) => {
+  if (!arrow.textArea) return false;
+  const textArea = { ...TEXTAREA_DEFAULTS, ...arrow.textArea };
+  const text = { ...TEXT_DEFAULTS, ...textArea.text };
+  const fullTextArea = {
+    ...textArea,
+    text,
+    at: getLocationTextArea(textArea).arrow(arrow),
   }
+  const { width, height } = getTextAreaDimension(fullTextArea);
 
-  return isInSquare(point)(textSquare);
+  return isInSquare(point)({
+    at: fullTextArea.at,
+    width,
+    height
+  });
 }
 
 /**

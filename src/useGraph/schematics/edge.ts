@@ -3,6 +3,7 @@ import type { Arrow, UTurnArrow } from '@/shapes/types'
 import { getValue, getFromToNodes } from '../useGraphHelpers'
 import type { BaseGraphTheme } from '../themes'
 import { getLargestAngularSpace } from '@/shapes/helpers'
+import { get } from '@vueuse/core'
 
 export const getEdgeSchematic = (
   edge: GEdge,
@@ -30,7 +31,9 @@ export const getEdgeSchematic = (
   const start = { x: from.x, y: from.y }
   const end = epiCenter
 
-  const bidirectionalEdgeSpacing = 12
+  const edgeWidthVal = getValue(options.edgeWidth, edge)
+
+  const bidirectionalEdgeSpacing = edgeWidthVal * 1.2
 
   if (isBidirectional) {
     start.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
@@ -61,13 +64,15 @@ export const getEdgeSchematic = (
   const isFocused = focusedId === edge.id
   const color = isFocused ? focusColorVal : colorVal
 
+  const upDistance = edgeWidthVal * 8
+  const downDistance = upDistance * 0.35
   const selfDirectedEdgeLine: UTurnArrow = {
-    spacing: 14,
+    spacing: edgeWidthVal * 1.2,
     center: { x: from.x, y: from.y },
-    upDistance: 80,
-    downDistance: 25,
+    upDistance,
+    downDistance,
     angle: largestAngularSpace,
-    lineWidth: getValue(options.edgeWidth, edge),
+    lineWidth: edgeWidthVal,
     color,
   };
 

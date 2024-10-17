@@ -120,24 +120,33 @@ export const useGraph =(
     }
   }
 
+  // function breaks with guard clauses!!!
   const handleFocusChange = (ev: MouseEvent) => {
     const focusableTypes = ['node', 'edge']
     const topItem = getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     if (!topItem || !focusableTypes.includes(topItem.graphType)) return setFocus(undefined)
 
+    const textInputHandler = (str: string) => {
+      const edge = getEdge(topItem.id)
+      if (!edge) throw new Error('Textarea only implemented for edges')
+      const weight = Number(str)
+      if (isNaN(weight)) return
+      edge.weight = weight
+    }
+
     const { schema } = topItem
-    if ('textArea' in schema && schema.textArea?.editable) {
-      const textAreaWithLoc = getLocationTextArea(schema.textArea).arrow(schema)
-      if (schema.textArea) {
-        engageTextarea(textAreaWithLoc, (str) => {
-          const edge = getEdge(topItem.id)
-          if (!edge) throw new Error('Textarea only implemented for edges')
-          const weight = Number(str)
-          if (isNaN(weight)) return
-          edge.weight = weight
-        })
+    const { isInArrowTextArea } = hitboxes({ x: ev.offsetX, y: ev.offsetY }
+
+    )
+    if ('textArea' in schema && schema.textArea?.editable ) {
+
+      const textAreaLocation = getLocationTextArea(schema.textArea).arrow(schema)
+
+      if (schema.textArea && isInArrowTextArea(schema)) {
+        engageTextarea({ ...schema.textArea, at: textAreaLocation }, textInputHandler)
         return setFocus(undefined)
       }
+
     }
     setFocus(topItem.id)
   }

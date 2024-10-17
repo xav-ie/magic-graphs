@@ -10,6 +10,7 @@ import {
   type Arrow,
   type TextArea,
   type TextAreaNoLocation,
+  type Coordinate,
 } from "./types"
 import { drawCircleWithCtx } from "./draw/circle";
 import { drawSquareWithCtx } from "./draw/square";
@@ -19,13 +20,13 @@ import { drawArrowWithCtx } from "./draw/arrow";
 import { drawUTurnArrowWithCtx } from "./draw/uturn";
 
 // given a shape that supports the text area api, get back the full text area with the location
-type LocationTextAreaGetter = Record<string, (shape: Line | Arrow) => TextArea>
+type LocationTextAreaGetter = Record<string, (shape: Line | Arrow) => Coordinate>
 export const getLocationTextArea = (textArea: TextAreaNoLocation): LocationTextAreaGetter => ({
-  line: (line: Line) => ({ ...textArea, at: getLocationTextAreaOnLine(line) }),
-  arrow: (arrow: Arrow) => ({ ...textArea, at: getLocationTextAreaOnArrow(arrow) }),
+  line: (line: Line) =>  getLocationTextAreaOnLine(line),
+  arrow: (arrow: Arrow) => getLocationTextAreaOnArrow(arrow)
 })
 
-const getLocationTextAreaOnArrow = (line: Line) => {
+export const getLocationTextAreaOnArrow = (line: Line) => {
   const {
     textOffsetFromCenter,
     start: lineStart,
@@ -58,7 +59,7 @@ const getLocationTextAreaOnArrow = (line: Line) => {
   return getLocationTextAreaOnLine(shaft);
 }
 
-const getLocationTextAreaOnLine = (line: Line) => {
+export const getLocationTextAreaOnLine = (line: Line) => {
   const {
     textOffsetFromCenter,
     start,
@@ -152,12 +153,20 @@ export type DeepRequired<T> = {
     : T[K];
 };
 
-export const drawTextAreaMatte = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => drawSquareWithCtx(ctx)({
-  at: { x: textArea.at.x, y: textArea.at.y },
+export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({
   width: textArea.text.fontSize * 2,
   height: textArea.text.fontSize * 2,
-  color: textArea.color,
-})
+});
+
+export const drawTextAreaMatte = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => {
+  const { width, height } = getTextAreaDimension(textArea);
+  drawSquareWithCtx(ctx)({
+    at: { x: textArea.at.x, y: textArea.at.y },
+    width,
+    height,
+    color: textArea.color,
+  });
+}
 
 export const drawText = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => {
   const { at } = textArea;
