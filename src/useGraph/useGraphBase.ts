@@ -127,7 +127,7 @@ export const useGraph =(
 
     const { schema } = topItem
     if ('textArea' in schema && schema.textArea?.editable) {
-      const textAreaWithLoc = getLocationTextArea(schema.textArea).line(schema)
+      const textAreaWithLoc = getLocationTextArea(schema.textArea).arrow(schema)
       if (schema.textArea) {
         engageTextarea(textAreaWithLoc, (str) => {
           const edge = getEdge(topItem.id)

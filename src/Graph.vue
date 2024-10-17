@@ -25,9 +25,15 @@ const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 const graph = useDarkPersistentUserEditableGraph(canvas, 'graph');
 
 graph.subscribe('onRepaint', (ctx) => {
-  // const { drawSquare } = drawShape(ctx);
-  // const sq = {"at":{"x":495.9698429203579,"y":173.08167306752438},"width":40,"height":40}
-  // drawSquare(sq);
+  // const { drawCircle } = drawShape(ctx);
+
+  // // 577.5991386282824 328.8278924476051
+  // const cir = {
+  //   at: { x: 577.5991386282824, y: 328.8278924476051 },
+  //   radius: 2,
+  //   color: 'purple',
+  // }
+  // drawCircle(cir);
 })
 
 const { nodes: defaultNodes, edges: defaultEdges } = adjListToNodesEdges(props.modelValue);

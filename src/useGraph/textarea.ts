@@ -30,13 +30,15 @@ export const engageTextarea = (textAreaSchema: TextArea, handler: (str: string) 
     ...text,
   }
 
+  const SIZE = 40;
+
   // create a text input
   const input = document.createElement('textarea');
   input.style.position = 'absolute';
-  input.style.left = `${x}px`;
-  input.style.top = `${y}px`;
-  input.style.width = '40px';
-  input.style.height = '40px';
+  input.style.left = `${x + (SIZE / 2)}px`;
+  input.style.top = `${y + (SIZE / 2)}px`;
+  input.style.width = `${SIZE}px`;
+  input.style.height = `${SIZE}px`;
   input.style.zIndex = '1000';
 
   // disable resizing
@@ -45,6 +47,8 @@ export const engageTextarea = (textAreaSchema: TextArea, handler: (str: string) 
   input.style.overflow = 'hidden';
   input.style.border = 'none';
   input.style.padding = '0';
+  // no hard coding, but i need to figure out how text area works
+  input.style.paddingTop = '4px';
   input.style.margin = '0';
   input.style.fontSize = `${fontSize}px`;
   input.style.color = textColor;
@@ -53,6 +57,11 @@ export const engageTextarea = (textAreaSchema: TextArea, handler: (str: string) 
   input.style.textAlign = 'center';
   input.style.fontWeight = fontWeight;
   input.style.outline = 'none';
+
+  // no text wrapping
+  input.style.whiteSpace = 'nowrap';
+
+
   input.value = content;
 
   const removeInput = () => {

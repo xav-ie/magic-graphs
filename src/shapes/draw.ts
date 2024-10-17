@@ -7,6 +7,7 @@ import {
   TEXT_DEFAULTS,
   TEXTAREA_DEFAULTS,
   type Line,
+  type Arrow,
   type TextArea,
   type TextAreaNoLocation,
 } from "./types"
@@ -17,19 +18,64 @@ import { drawTriangleWithCtx } from "./draw/triangle";
 import { drawArrowWithCtx } from "./draw/arrow";
 import { drawUTurnArrowWithCtx } from "./draw/uturn";
 
-type LocationTextAreaGetter = Record<string, (shape: Line) => TextArea>
+// given a shape that supports the text area api, get back the full text area with the location
+type LocationTextAreaGetter = Record<string, (shape: Line | Arrow) => TextArea>
 export const getLocationTextArea = (textArea: TextAreaNoLocation): LocationTextAreaGetter => ({
   line: (line: Line) => ({ ...textArea, at: getLocationTextAreaOnLine(line) }),
+  arrow: (arrow: Arrow) => ({ ...textArea, at: getLocationTextAreaOnArrow(arrow) }),
 })
+
+const getLocationTextAreaOnArrow = (line: Line) => {
+  const {
+    textOffsetFromCenter,
+    start: lineStart,
+    end: lineEnd,
+    textArea,
+    width,
+    color
+  } = {
+    ...LINE_DEFAULTS,
+    ...line,
+  }
+
+  const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
+  const arrowHeadHeight = width * 2.5;
+
+  const shaftEnd = {
+    x: lineEnd.x - arrowHeadHeight * Math.cos(angle),
+    y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
+  }
+
+  const shaft = {
+    start: lineStart,
+    end: shaftEnd,
+    width,
+    color,
+    textOffsetFromCenter,
+    textArea,
+  }
+
+  return getLocationTextAreaOnLine(shaft);
+}
 
 const getLocationTextAreaOnLine = (line: Line) => {
   const {
     textOffsetFromCenter,
     start,
     end,
+    textArea,
   } = {
     ...LINE_DEFAULTS,
     ...line,
+  }
+
+  if (!textArea) return { x: 0, y: 0 }
+
+  const { text } = textArea;
+
+  const { fontSize } = {
+    ...TEXT_DEFAULTS,
+    ...text,
   }
 
   const theta = getAngle(start, end);
@@ -40,7 +86,10 @@ const getLocationTextAreaOnLine = (line: Line) => {
   const textX = (start.x + end.x) / 2 + offsetX;
   const textY = (start.y + end.y) / 2 + offsetY;
 
-  return { x: textX, y: textY }
+  return {
+    x: textX - fontSize,
+    y: textY - fontSize
+  }
 }
 
 /**
@@ -58,49 +107,65 @@ export const drawShape = (ctx: CanvasRenderingContext2D) => ({
   drawUTurnArrow: drawUTurnArrowWithCtx(ctx),
 })
 
-export const drawTextOnLineWithCtx = (ctx: CanvasRenderingContext2D) => (line: Line) => {
+export const drawTextAreaWithCtx = (ctx: CanvasRenderingContext2D) => ({
+  line: (line: Line) => {
+    if (!line.textArea) return;
+    const textArea = {
+      ...TEXTAREA_DEFAULTS,
+      ...line.textArea,
+    }
+    const text = {
+      ...TEXT_DEFAULTS,
+      ...line.textArea.text,
+    }
+    const fullTextArea = {
+      ...textArea,
+      text,
+      at: getLocationTextAreaOnLine(line),
+    }
+    drawTextAreaMatte(ctx)(fullTextArea);
+    drawText(ctx)(fullTextArea);
+  },
+  arrow: (arrow: Arrow) => {
+    if (!arrow.textArea) return;
+    const textArea = {
+      ...TEXTAREA_DEFAULTS,
+      ...arrow.textArea,
+    }
+    const text = {
+      ...TEXT_DEFAULTS,
+      ...arrow.textArea.text,
+    }
+    const fullTextArea = {
+      ...textArea,
+      text,
+      at: getLocationTextAreaOnArrow(arrow),
+    }
+    drawTextAreaMatte(ctx)(fullTextArea);
+    drawText(ctx)(fullTextArea);
+  },
+})
 
-  const {
-    textArea,
-  } = {
-    ...LINE_DEFAULTS,
-    ...line,
-  };
+export type DeepRequired<T> = {
+  [K in keyof T]-?: T[K] extends object
+    ? DeepRequired<T[K]>
+    : T[K];
+};
 
-  if (!textArea) return;
+export const drawTextAreaMatte = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => drawSquareWithCtx(ctx)({
+  at: { x: textArea.at.x, y: textArea.at.y },
+  width: textArea.text.fontSize * 2,
+  height: textArea.text.fontSize * 2,
+  color: textArea.color,
+})
 
-  const {
-    color: bgColor,
-    text
-  } = {
-    ...TEXTAREA_DEFAULTS,
-    ...textArea
-  }
+export const drawText = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => {
+  const { at } = textArea;
+  const { content, fontSize, fontWeight, color } = textArea.text;
 
-  const {
-    content,
-    fontSize,
-    fontWeight,
-    color,
-  } = {
-    ...TEXT_DEFAULTS,
-    ...text
-  }
-
-  const { at: textAreaLocation } = getLocationTextArea(textArea).line(line);
-
-  // background matte for text
-  drawSquareWithCtx(ctx)({
-    at: { x: textAreaLocation.x - fontSize, y: textAreaLocation.y - fontSize },
-    width: fontSize * 2,
-    height: fontSize * 2,
-    color: bgColor,
-  })
-
-  // text
   ctx.font = `${fontWeight} ${fontSize}px Arial`;
   ctx.fillStyle = color;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(content, textAreaLocation.x, textAreaLocation.y);
+  ctx.fillText(content, at.x + fontSize, at.y + fontSize);
 }
