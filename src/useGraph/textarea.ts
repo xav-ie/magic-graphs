@@ -30,7 +30,7 @@ export const engageTextarea = (textAreaSchema: TextArea, handler: (str: string) 
     ...text,
   }
 
-  const SIZE = 40;
+  const SIZE = fontSize * 2;
 
   // create a text input
   const input = document.createElement('textarea');

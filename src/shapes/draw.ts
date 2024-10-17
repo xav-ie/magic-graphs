@@ -143,7 +143,8 @@ export const drawTextAreaWithCtx = (ctx: CanvasRenderingContext2D) => ({
       at: getLocationTextAreaOnArrow(arrow),
     }
     drawTextAreaMatte(ctx)(fullTextArea);
-    drawText(ctx)(fullTextArea);
+    queueMicrotask(() => drawText(ctx)(fullTextArea));
+    // drawText(ctx)(fullTextArea);
   },
 })
 
