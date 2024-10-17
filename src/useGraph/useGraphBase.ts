@@ -157,6 +157,7 @@ export const useGraph =(
   const updateAggregator: ((aggregator: SchemaItem[]) => SchemaItem[])[] = []
 
   updateAggregator.push((aggregator) => {
+
     const nodeSchemaItems = nodes.value.map((node, i) => {
       const schema = getNodeSchematic(node, options.value, focusedId.value)
       const isCircle = 'radius' in schema
@@ -168,17 +169,16 @@ export const useGraph =(
         priority: (i * 10) + 1000,
       } as SchemaItem
     })
+
     const edgeSchemaItems = edges.value.map((edge, i) => {
       const schema = getEdgeSchematic(edge, nodes.value, edges.value, options.value, focusedId.value)
-      const isUTurn = 'upDistance' in schema
-      return ({
-        id: edge.id,
-        graphType: 'edge',
-        schemaType: isUTurn ? 'uturn' : 'arrow',
-        schema,
-        priority: (i * 10),
-      } as const)
-    }).filter(({ schema }) => schema) as SchemaItem[]
+      if (!schema) return
+      return {
+        ...schema,
+        priority: i * 10
+      }
+    }).filter((i) => i && i.schema) as SchemaItem[]
+
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)
     return aggregator
@@ -331,16 +331,49 @@ export const useGraph =(
   }
 
   const addEdge = (edge: Omit<GEdge, 'id'>) => {
-    const edgeExists = edges.value.some(e => e.from === edge.from && e.to === edge.to)
-    if (edgeExists) return
+    if (edge.type === 'directed') {
+      const edgeExists = edges.value.some(e => e.from === edge.from && e.to === edge.to)
+      if (edgeExists) return
+      addDirectedEdge(edge)
+    } else if (edge.type === 'undirected') {
+      // checks both directions
+      const cond = (e: GEdge) => (e.from === edge.from && e.to === edge.to) || (e.from === edge.to && e.to === edge.from)
+      const edgeExists = edges.value.some(cond)
+      if (edgeExists) return
+      addUndirectedEdge(edge)
+    } else {
+      throw new Error('Unknown edge type')
+    }
+
+    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    return edge
+  }
+
+  const addDirectedEdge = (edge: Omit<GEdge, 'id'>) => {
     edges.value.push({
       to: edge.to,
       from: edge.from,
       weight: edge.weight ?? 1,
+      type: 'directed',
       id: generateId()
     })
-    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-    return edge
+  }
+
+  const addUndirectedEdge = (edge: Omit<GEdge, 'id'>) => {
+    edges.value.push({
+      to: edge.to,
+      from: edge.from,
+      weight: edge.weight ?? 1,
+      type: 'undirected',
+      id: generateId()
+    })
+    edges.value.push({
+      to: edge.from,
+      from: edge.to,
+      weight: edge.weight ?? 1,
+      type: 'undirected',
+      id: generateId()
+    })
   }
 
   const removeEdge = (edgeId: GEdge['id']) => {

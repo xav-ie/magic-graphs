@@ -6,11 +6,11 @@ import {
 } from 'vue'
 import {
   useGraph,
-  type GraphOptions,
   type UseGraphEventBusCallbackMappings,
   type MappingsToEventBus
 } from './useGraphBase'
 import { generateSubscriber } from './useGraphHelpers';
+import type { GraphThemes } from './themes';
 import type { GNode } from './types'
 
 export type WithDragEvents<T extends UseGraphEventBusCallbackMappings> = T & {
@@ -18,11 +18,13 @@ export type WithDragEvents<T extends UseGraphEventBusCallbackMappings> = T & {
   onNodeDrop: (node: GNode) => void;
 }
 
+export type DraggableGraphOptions = GraphThemes
+
 export type MappingsWithDragEvents = WithDragEvents<UseGraphEventBusCallbackMappings>
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
+  options: Partial<DraggableGraphOptions> = {},
 ) => {
 
   const graph = useGraph(canvas, options)

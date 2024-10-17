@@ -18,6 +18,7 @@ export type GEdge = {
   to: string,
   from: string,
   weight: number,
+  type: 'directed' | 'undirected',
 }
 
 /*

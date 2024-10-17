@@ -6,7 +6,9 @@ import type { SchemaItem, GNode } from "./types"
 import { useDraggableNodeAnchorGraph, type AnchorNodeGraphOptions, type NodeAnchor } from "./useNodeAnchorGraph"
 import { type Ref } from 'vue'
 
-export type UserEditableGraphOptions = AnchorNodeGraphOptions
+export type UserEditableGraphOptions = AnchorNodeGraphOptions & {
+  addedEdgeType?: 'directed' | 'undirected',
+}
 
 /**
  * @requires a graph interface with node anchors
@@ -38,7 +40,12 @@ export const useUserEditableGraph = (
     if (!nodeSchema) return
     const node = graph.nodes.value.find(node => node.id === nodeSchema.id)
     if (!node) return
-    graph.addEdge({ from: parentNode.label, to: node.label })
+    graph.addEdge({
+      from: parentNode.label,
+      to: node.label,
+      type: options.addedEdgeType ?? 'directed',
+      weight: 1,
+    })
   }
 
   const handleDeletion = (ev: KeyboardEvent) => {

@@ -2,8 +2,8 @@ import { onMounted, type Ref } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import { themes } from './themes'
 import type { GNode, GEdge } from './types'
-import { useDraggableGraph } from './useDraggableGraph'
-import { useGraph, type GraphOptions } from './useGraphBase'
+import { useDraggableGraph, type DraggableGraphOptions } from './useDraggableGraph'
+import { useGraph } from './useGraphBase'
 import { useUserEditableGraph, type UserEditableGraphOptions } from './useUserEditableGraph'
 
 export const useDarkUserEditableGraph = (
@@ -16,7 +16,7 @@ export const useDarkUserEditableGraph = (
 
 export const useWeirdDraggableGraph = (
   canvas: Ref<HTMLCanvasElement>,
-  options: Partial<GraphOptions> = {}
+  options: Partial<DraggableGraphOptions> = {}
 ) => useDraggableGraph(canvas, {
   ...themes.weird,
   ...options,

@@ -12,7 +12,8 @@
 import { getValue, generateSubscriber, prioritizeNode } from "./useGraphHelpers";
 import { useDraggableGraph, type MappingsWithDragEvents } from "./useDraggableGraph";
 import type { SchemaItem, LineSchemaItem, GNode, GEdge, NodeGetterOrValue, MaybeGetter } from "./types";
-import { type GraphOptions, type MappingsToEventBus } from "./useGraphBase";
+import { type MappingsToEventBus } from "./useGraphBase";
+import type { GraphThemes } from "./themes";
 import { ref, readonly, type Ref } from 'vue'
 import { hitboxes } from "../shapes/hitboxes";
 import type { Circle } from "@/shapes/types";
@@ -46,8 +47,8 @@ export type AnchorNodeOptions = {
  * @param edges - the edges of the graph
  * @returns the default options for the anchor node graph
  */
-const defaultOptions: (options: GraphOptions, edges: GEdge[]) => AnchorNodeOptions = (
-  options: GraphOptions,
+const defaultOptions: (options: GraphThemes, edges: GEdge[]) => AnchorNodeOptions = (
+  options: GraphThemes,
   edges: GEdge[],
 ) => ({
   /**
@@ -77,7 +78,7 @@ const defaultOptions: (options: GraphOptions, edges: GEdge[]) => AnchorNodeOptio
   linkPreviewWidth: getValue(options.edgeWidth, edges[0]),
 })
 
-export type AnchorNodeGraphOptions<T extends GraphOptions = GraphOptions> = T & AnchorNodeOptions
+export type AnchorNodeGraphOptions<T extends GraphThemes = GraphThemes> = T & AnchorNodeOptions
 
 type WithNodeAnchorEvents<T extends MappingsWithDragEvents> = T & {
   /**
