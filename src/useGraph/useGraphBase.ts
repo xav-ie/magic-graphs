@@ -30,7 +30,7 @@ import { getEdgeSchematic } from './schematics/edge';
 import { themes, type BaseGraphTheme } from './themes';
 import { engageTextarea } from './textarea';
 
-export type UseGraphEventBusCallbackMappings = {
+export type BaseGraphEvents = {
   /* graph dataflow events */
   onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
   onFocusChange: (
@@ -61,11 +61,11 @@ export type UseGraphEventBusCallbackMappings = {
 
 const defaultSettings = {}
 
-export type UseGraphEventBus = MappingsToEventBus<UseGraphEventBusCallbackMappings>
+export type BaseGraphEventBus = MappingsToEventBus<BaseGraphEvents>
 export type BaseGraphSettings = {}
 export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
 
-export const useGraph =(
+export const useBaseGraph =(
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<BaseGraphOptions> = {},
 ) => {

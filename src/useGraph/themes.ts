@@ -45,9 +45,10 @@ export const DEFAULT_THEME: BaseGraphTheme = {
   edgeFocusColor: 'blue',
   edgeFocusTextColor: 'black',
   graphBgColor: 'white',
-}
+} as const
 
-export type GraphThemes = Record<string, Partial<UserEditableGraphOptions>>
+// TODO replace any with the type of the top level theme
+export type GraphThemes = Record<string, any>
 
 // ISSUE #17 GITHUB
 const resolveTheme = () => {}
@@ -69,5 +70,5 @@ export const themes: GraphThemes = {
     edgeTextColor: 'white',
     edgeFocusTextColor: 'white',
     graphBgColor: 'rgb(75, 85, 99)' // tailwind bg-gray-600
-  },
+  } as const,
 }

@@ -5,32 +5,39 @@ import {
   type Ref
 } from 'vue'
 import {
-  useGraph,
-  type UseGraphEventBusCallbackMappings,
-  type MappingsToEventBus
+  useBaseGraph,
+  type BaseGraphEvents,
+  type BaseGraphSettings,
 } from './useGraphBase'
 import { generateSubscriber } from './useGraphHelpers';
-import type { GraphThemes } from './themes';
-import type { GNode } from './types'
+import type { BaseGraphTheme } from './themes';
+import type { GNode, GraphOptions, MappingsToEventBus } from './types'
 
-export type GraphEventsWithDrag = UseGraphEventBusCallbackMappings & {
+export type DraggableGraphEvents = BaseGraphEvents & {
   onNodeDragStart: (node: GNode) => void;
   onNodeDrop: (node: GNode) => void;
 }
 
-export type GraphThemeWithDrag = GraphThemes
+export type DraggableGraphTheme = BaseGraphTheme
+export type DraggableGraphSettings = BaseGraphSettings & {
+  draggable: boolean;
+}
 
-// export type
+export type DraggableGraphOptions = GraphOptions<DraggableGraphTheme, DraggableGraphSettings>
+
+export const defaultDraggableGraphSettings = {
+  draggable: true,
+} as const
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphThemeWithDrag> = {},
+  options: Partial<DraggableGraphOptions> = {},
 ) => {
 
-  const graph = useGraph(canvas, options)
+  const graph = useBaseGraph(canvas, options)
   const draggingEnabled = ref(true)
 
-  const eventBus: MappingsToEventBus<GraphEventsWithDrag> = {
+  const eventBus: MappingsToEventBus<DraggableGraphEvents> = {
     ...graph.eventBus,
     onNodeDragStart: [],
     onNodeDrop: [],
