@@ -13,24 +13,24 @@ import { generateSubscriber } from './useGraphHelpers';
 import type { GraphThemes } from './themes';
 import type { GNode } from './types'
 
-export type WithDragEvents<T extends UseGraphEventBusCallbackMappings> = T & {
+export type GraphEventsWithDrag = UseGraphEventBusCallbackMappings & {
   onNodeDragStart: (node: GNode) => void;
   onNodeDrop: (node: GNode) => void;
 }
 
-export type DraggableGraphOptions = GraphThemes
+export type GraphThemeWithDrag = GraphThemes
 
-export type MappingsWithDragEvents = WithDragEvents<UseGraphEventBusCallbackMappings>
+// export type
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<DraggableGraphOptions> = {},
+  options: Partial<GraphThemeWithDrag> = {},
 ) => {
 
   const graph = useGraph(canvas, options)
   const draggingEnabled = ref(true)
 
-  const eventBus: MappingsToEventBus<MappingsWithDragEvents> = {
+  const eventBus: MappingsToEventBus<GraphEventsWithDrag> = {
     ...graph.eventBus,
     onNodeDragStart: [],
     onNodeDrop: [],
@@ -82,7 +82,7 @@ export const useDraggableGraph = (
     ...graph,
     eventBus,
     subscribe,
-    nodeBeingDragged: readonly(nodeBeingDragged),
     draggingEnabled,
+    nodeBeingDragged: readonly(nodeBeingDragged),
   }
 }

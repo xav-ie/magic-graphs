@@ -13,7 +13,9 @@ import type {
   KeyboardEventMap,
   MouseEventEntries,
   KeyboardEventEntries,
-  SchemaItem
+  SchemaItem,
+  GraphOptions,
+  MappingsToEventBus
 } from './types'
 import {
   generateSubscriber,
@@ -57,19 +59,15 @@ export type UseGraphEventBusCallbackMappings = {
   onKeydown: (ev: KeyboardEvent) => void;
 }
 
-export type MappingsToEventBus<T> = Record<keyof T, any[]>
-export type UseGraphEventBus = MappingsToEventBus<UseGraphEventBusCallbackMappings>
-
-type UseGraphOptions = {
-  theme: BaseGraphTheme;
-  settings: {}
-}
-
 const defaultSettings = {}
+
+export type UseGraphEventBus = MappingsToEventBus<UseGraphEventBusCallbackMappings>
+export type BaseGraphSettings = {}
+export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
 
 export const useGraph =(
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<UseGraphOptions> = {},
+  options: Partial<BaseGraphOptions> = {},
 ) => {
 
   const theme = ref({
