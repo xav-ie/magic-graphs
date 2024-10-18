@@ -8,7 +8,7 @@ export const getEdgeSchematic = (
   edge: GEdge,
   nodes: GNode[],
   edges: GEdge[],
-  options: BaseGraphTheme,
+  graphTheme: BaseGraphTheme,
   focusedId: GEdge['id'] | undefined
 ): Omit<SchemaItem, 'priority'> | undefined => {
   const { from, to } = getFromToNodes(edge, nodes)
@@ -18,7 +18,7 @@ export const getEdgeSchematic = (
 
   const spacingFromNode = 3
 
-  const nodeSizeVal = getValue(options.nodeSize, to) + spacingFromNode
+  const nodeSizeVal = getValue(graphTheme.nodeSize, to) + spacingFromNode
 
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
 
@@ -30,7 +30,7 @@ export const getEdgeSchematic = (
   const start = { x: from.x, y: from.y }
   const end = epiCenter
 
-  const edgeWidthVal = getValue(options.edgeWidth, edge)
+  const edgeWidthVal = getValue(graphTheme.edgeWidth, edge)
 
   const bidirectionalEdgeSpacing = edgeWidthVal * 1.2
 
@@ -58,8 +58,8 @@ export const getEdgeSchematic = (
     )
   )
 
-  const focusColorVal = getValue(options.edgeFocusColor, edge)
-  const colorVal = getValue(options.edgeColor, edge)
+  const focusColorVal = getValue(graphTheme.edgeFocusColor, edge)
+  const colorVal = getValue(graphTheme.edgeColor, edge)
   const isFocused = focusedId === edge.id
   const color = isFocused ? focusColorVal : colorVal
 
@@ -81,17 +81,17 @@ export const getEdgeSchematic = (
     graphType: 'edge',
   } as const;
 
-  const edgeTextColor = isFocused ? options.edgeFocusTextColor : options.edgeTextColor
+  const edgeTextColor = isFocused ? graphTheme.edgeFocusTextColor : graphTheme.edgeTextColor
   const edgeTextColorVal = getValue(edgeTextColor, edge)
 
   const textArea = {
-    color: options.graphBgColor,
+    color: graphTheme.graphBgColor,
     editable: true,
     text: {
       content: edge.weight.toString(),
       color: edgeTextColorVal,
-      fontSize: getValue(options.edgeTextSize, edge),
-      fontWeight: getValue(options.edgeTextFontWeight, edge),
+      fontSize: getValue(graphTheme.edgeTextSize, edge),
+      fontWeight: getValue(graphTheme.edgeTextFontWeight, edge),
     }
   }
 
@@ -119,7 +119,7 @@ export const getEdgeSchematic = (
       start,
       end,
       color,
-      width: getValue(options.edgeWidth, edge),
+      width: getValue(graphTheme.edgeWidth, edge),
       // TODO - must take into account of actual node size.
       // TODO - 32 is approx default node size but wont work if node size is different
       textOffsetFromCenter: 32,

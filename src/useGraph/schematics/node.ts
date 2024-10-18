@@ -5,7 +5,11 @@ import type { BaseGraphTheme } from '../themes'
 
 export type SupportedNodeShapes = 'circle' | 'square'
 
-export const getNodeSchematic = (node: GNode, options: BaseGraphTheme, focusedNodeId: GNode['id'] | undefined) => {
+export const getNodeSchematic = (
+  node: GNode,
+  graphTheme: BaseGraphTheme,
+  focusedNodeId: GNode['id'] | undefined
+) => {
   const {
     nodeFocusColor,
     nodeColor,
@@ -18,7 +22,7 @@ export const getNodeSchematic = (node: GNode, options: BaseGraphTheme, focusedNo
     nodeTextColor,
     nodeFocusTextColor,
     nodeShape,
-  } = options
+  } = graphTheme
 
   const fillColor = node.id === focusedNodeId ? nodeFocusColor : nodeColor
   const borderColor = node.id === focusedNodeId ? nodeFocusBorderColor : nodeBorderColor

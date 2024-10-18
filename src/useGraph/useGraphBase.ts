@@ -60,14 +60,26 @@ export type UseGraphEventBusCallbackMappings = {
 export type MappingsToEventBus<T> = Record<keyof T, any[]>
 export type UseGraphEventBus = MappingsToEventBus<UseGraphEventBusCallbackMappings>
 
+type UseGraphOptions = {
+  theme: BaseGraphTheme;
+  settings: {}
+}
+
+const defaultSettings = {}
+
 export const useGraph =(
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  themeOptions: Partial<BaseGraphTheme> = {},
+  options: Partial<UseGraphOptions> = {},
 ) => {
 
-  const options = ref({
+  const theme = ref({
     ...themes.default,
-    ...themeOptions,
+    ...options.theme,
+  })
+
+  const settings = ref({
+    ...defaultSettings,
+    ...options.settings,
   })
 
   const nodes = ref<GNode[]>([])
@@ -159,7 +171,7 @@ export const useGraph =(
   updateAggregator.push((aggregator) => {
 
     const nodeSchemaItems = nodes.value.map((node, i) => {
-      const schema = getNodeSchematic(node, options.value, focusedId.value)
+      const schema = getNodeSchematic(node, theme.value, focusedId.value)
       const isCircle = 'radius' in schema
       return {
         id: node.id,
@@ -171,7 +183,7 @@ export const useGraph =(
     })
 
     const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(edge, nodes.value, edges.value, options.value, focusedId.value)
+      const schema = getEdgeSchematic(edge, nodes.value, edges.value, theme.value, focusedId.value)
       if (!schema) return
       return {
         ...schema,
@@ -222,7 +234,7 @@ export const useGraph =(
       throw new Error('Canvas element not found')
     }
 
-    canvas.value.style.backgroundColor = options.value.graphBgColor
+    canvas.value.style.backgroundColor = theme.value.graphBgColor
 
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.addEventListener(event, listeners)
@@ -435,11 +447,15 @@ export const useGraph =(
     },
     focusedId: readonly(focusedId),
     setFocus,
+
     eventBus,
     subscribe,
-    options,
     updateAggregator,
     aggregator,
+
+    theme,
+    settings,
+
     resetGraph,
   }
 }
