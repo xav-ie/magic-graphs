@@ -41,13 +41,12 @@ export const useDraggableGraph = (
     ...options.settings,
   }))
 
-  const eventBus: MappingsToEventBus<DraggableGraphEvents> = {
-    ...graph.eventBus,
+  const eventBus: MappingsToEventBus<DraggableGraphEvents> = Object.assign(graph.eventBus, {
     onNodeDragStart: [],
     onNodeDrop: [],
-  }
+  })
 
-  const subscribe = generateSubscriber(eventBus)
+  const { subscribe, unsubscribe } = generateSubscriber(eventBus)
 
   const nodeBeingDragged = ref<GNode | undefined>()
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | undefined>()
@@ -93,9 +92,11 @@ export const useDraggableGraph = (
 
   return {
     ...graph,
+    nodeBeingDragged: readonly(nodeBeingDragged),
+
     eventBus,
     subscribe,
-    nodeBeingDragged: readonly(nodeBeingDragged),
+    unsubscribe,
 
     settings,
   }

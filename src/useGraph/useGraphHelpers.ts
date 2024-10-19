@@ -17,7 +17,7 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
 */
 export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: MappingsToEventBus<T>) => ({
   subscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].push(fn),
-  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event] = eventBus[event].filter((f) => f !== fn)
+  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event] = eventBus[event].filter((f) => f !== fn) as T[K][],
 })
 
 /**

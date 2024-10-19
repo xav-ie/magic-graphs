@@ -1,7 +1,12 @@
 import { type Ref, onMounted, ref, watch } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import type { GNode, GEdge, GraphOptions } from '@/useGraph/types'
-import { useUserEditableGraph, type UserEditableGraphOptions, type UserEditableGraphSettings, type UserEditableGraphTheme } from './useUserEditableGraph'
+import {
+  useUserEditableGraph,
+  type UserEditableGraphOptions,
+  type UserEditableGraphSettings,
+  type UserEditableGraphTheme
+} from './useUserEditableGraph'
 
 export type PersistentGraphTheme = UserEditableGraphTheme
 export type PersistentGraphSettings = UserEditableGraphSettings & {
