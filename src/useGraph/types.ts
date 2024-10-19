@@ -7,7 +7,7 @@ import type {
 } from "@/shapes/types"
 
 /**
- * describes the options for the useGraph composable
+ * describes the options argument for all useGraph composition functions
  *
  * @template Theme - the type of the theme
  * @template Settings - the type of the settings
@@ -17,6 +17,9 @@ export type GraphOptions<Theme, Settings> = {
   settings: Partial<Settings>;
 }
 
+/**
+ * describes a node in a useGraph graph instance
+ */
 export type GNode = {
   id: string,
   label: string,
@@ -24,6 +27,9 @@ export type GNode = {
   y: number,
 }
 
+/**
+ * describes an edge in a useGraph graph instance
+ */
 export type GEdge = {
   id: string,
   to: string,
@@ -77,8 +83,20 @@ export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][
 export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
 
 type SharedSchemaItemFields = {
+  /**
+   * unique identifier for the schema item
+   */
   id: string,
+  /**
+   * the type of graph data this schema item represents, ie 'node' or 'edge'
+   */
   graphType: string,
+  /**
+   * determines the order in which this schema item is rendered
+   * on the canvas. The lower the number, the higher the priority, the higher the priority,
+   * the earlier the item is rendered on the canvas.
+   * (items with a lower priority score will appear visually underneath those with a higher score)
+   */
   priority: number,
 }
 
@@ -107,4 +125,7 @@ export type ArrowUTurnSchemaItem = SharedSchemaItemFields & {
   schema: UTurnArrow
 }
 
+/**
+ * describes a schema item that can be fed into the aggregator in order to be rendered on the canvas
+ */
 export type SchemaItem = CircleSchemaItem | LineSchemaItem | SquareSchemaItem | ArrowSchemaItem | ArrowUTurnSchemaItem
