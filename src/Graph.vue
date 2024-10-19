@@ -24,9 +24,7 @@ const canvasWidth = computed(() => width.value - padding * 2);
 const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 
 const graph = useDarkGraph(canvas, {
-  theme: {
-    nodeSize: (n) => Number(n.label) % 2 === 0 ? 20 : 30
-  },
+  theme: {},
   settings: {
     userEditable: true,
   }
@@ -91,11 +89,6 @@ const btns = [
     action: () => graph.theme.value.nodeSize = Math.floor(Math.random() * (50 - 10 + 1)) + 10,
     color: () => 'pink-600'
   },
-  {
-    label: () => 'Test Size',
-    action: () => graph.theme.value.nodeSize = (n) => Number(n.label) % 2 === 0 ? 20 : 30,
-    color: () => 'pink-600'
-  }
 ]
 
 </script>
@@ -108,7 +101,9 @@ const btns = [
           v-if="!btn.cond || btn.cond()"
           @click.stop="btn.action"
           :class="`bg-${btn.color()} text-white px-3 py-1 rounded-lg font-bold`"
-        >{{ btn.label() }}</button>
+        >
+          {{ btn.label() }}
+        </button>
       </div>
     </div>
     <canvas

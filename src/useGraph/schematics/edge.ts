@@ -1,5 +1,5 @@
 import type { GEdge, GNode, LineSchemaItem, ArrowSchemaItem, ArrowUTurnSchemaItem } from '../types'
-import { getValue, getFromToNodes } from '../useGraphHelpers'
+import { getValue, getFromToNodes, resolveThemeForEdge } from '../useGraphHelpers'
 import type { BaseGraphTheme } from '../themes'
 import { getLargestAngularSpace } from '@/shapes/helpers'
 
@@ -13,6 +13,7 @@ export const getEdgeSchematic = (
   graphTheme: BaseGraphTheme,
   focusedId: GEdge['id'] | undefined
 ): EdgeSchematic => {
+
   const { from, to } = getFromToNodes(edge, nodes)
 
   const isBidirectional = edges.some(e => e.from === to.label && e.to === from.label)
@@ -60,10 +61,12 @@ export const getEdgeSchematic = (
     )
   )
 
-  const focusColorVal = getValue(graphTheme.edgeFocusColor, edge)
-  const colorVal = getValue(graphTheme.edgeColor, edge)
+  const {
+    edgeFocusColor: focusColor,
+    edgeColor: color,
+  } = graphTheme
   const isFocused = focusedId === edge.id
-  const color = isFocused ? focusColorVal : colorVal
+  const colorVal = getValue(isFocused ? focusColor : color, edge)
 
   const upDistance = edgeWidthVal * 8
   const downDistance = upDistance * 0.35
@@ -76,7 +79,7 @@ export const getEdgeSchematic = (
       downDistance,
       angle: largestAngularSpace,
       lineWidth: edgeWidthVal,
-      color,
+      color: colorVal,
     },
     schemaType: 'uturn',
     id: edge.id,
@@ -106,7 +109,7 @@ export const getEdgeSchematic = (
       schema: {
         start: { x: from.x, y: from.y },
         end: { x: to.x, y: to.y },
-        color,
+        color: colorVal,
         width: edgeWidthVal,
         textArea,
       },
@@ -120,7 +123,7 @@ export const getEdgeSchematic = (
     schema: {
       start,
       end,
-      color,
+      color: colorVal,
       width: getValue(graphTheme.edgeWidth, edge),
       // TODO - must take into account of actual node size.
       // TODO - 32 is approx default node size but wont work if node size is different
