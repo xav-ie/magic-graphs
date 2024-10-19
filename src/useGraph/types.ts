@@ -81,15 +81,18 @@ export type KeyboardEventMap = EventMap<KeyboardEventNames, KeyboardEvent>
 export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][]
 export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
 
+type BaseGraphTypes = 'node' | 'edge'
+type NodeAnchorGraphTypes = 'node-anchor' | 'link-preview'
+
 type SharedSchemaItemFields = {
   /**
    * unique identifier for the schema item
    */
   id: string,
   /**
-   * the type of graph data this schema item represents, ie 'node' or 'edge'
+   * the type of graph data this schema item represents
    */
-  graphType: string,
+  graphType: BaseGraphTypes | NodeAnchorGraphTypes,
   /**
    * determines the order in which this schema item is rendered
    * on the canvas. The lower the number, the higher the priority, the higher the priority,
@@ -125,6 +128,6 @@ export type ArrowUTurnSchemaItem = SharedSchemaItemFields & {
 }
 
 /**
- * describes a schema item that can be fed into the aggregator in order to be rendered on the canvas
+ * @describes a schema item that can be fed into the aggregator in order to be rendered on the canvas
  */
 export type SchemaItem = CircleSchemaItem | LineSchemaItem | SquareSchemaItem | ArrowSchemaItem | ArrowUTurnSchemaItem
