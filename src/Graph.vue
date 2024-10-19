@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { useDarkGraph } from '@/useGraph/useGraph';
 import { useWindowSize } from '@vueuse/core';
 import { bfsNodeColorizer } from './graphColorizers';
@@ -26,11 +26,20 @@ const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 const graph = useDarkGraph(canvas, {
   theme: {},
   settings: {
+    nodeAnchors: true,
     userEditable: {
       addedEdgeType: 'undirected',
     }
   }
 });
+
+// watch(graph.settings, () => {
+//   console.log(graph.settings.value.nodeAnchors);
+// }, { deep: true });
+
+setInterval(() => {
+  graph.settings.value.nodeAnchors = !graph.settings.value.nodeAnchors;
+}, 2000);
 
 graph.subscribe('onStructureChange', (nodes, edges) => emit(
   'update:modelValue',

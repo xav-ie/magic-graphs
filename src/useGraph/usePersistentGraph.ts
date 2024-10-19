@@ -1,4 +1,4 @@
-import { type Ref, onMounted, ref } from 'vue'
+import { type Ref, onMounted, ref, watch } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import type { GNode, GEdge, GraphOptions } from '@/useGraph/types'
 import { useUserEditableGraph, type UserEditableGraphOptions, type UserEditableGraphSettings, type UserEditableGraphTheme } from './useUserEditableGraph'
@@ -21,10 +21,10 @@ export const usePersistentGraph = (
 
   const graph = useUserEditableGraph(canvas, options)
 
-  const settings = ref({
-    ...graph.settings.value,
+  const settings = ref<PersistentGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultPersistentGraphSettings,
-  })
+    ...options.settings,
+  }))
 
   const nodeStorage = useLocalStorage<GNode[]>(settings.value.storageKey + '-nodes', [])
   const edgeStorage = useLocalStorage<GEdge[]>(settings.value.storageKey + '-edges', [])

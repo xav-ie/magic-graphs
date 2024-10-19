@@ -13,7 +13,7 @@ import { getValue, generateSubscriber, prioritizeNode } from "./useGraphHelpers"
 import { useDraggableGraph, type DraggableGraphEvents, type DraggableGraphSettings, type DraggableGraphTheme } from "./useDraggableGraph";
 import type { SchemaItem, LineSchemaItem, GNode, GEdge, NodeGetterOrValue, MaybeGetter, GraphOptions, MappingsToEventBus } from "./types";
 import type { BaseGraphTheme } from "./themes";
-import { ref, readonly, type Ref } from 'vue'
+import { ref, readonly, type Ref, watch } from 'vue'
 import { hitboxes } from "../shapes/hitboxes";
 import type { Circle } from "@/shapes/types";
 
@@ -96,9 +96,14 @@ export type NodeAnchorGraphEvents = DraggableGraphEvents & {
   onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
 }
 
-const defaultNodeAnchorSettings = {} as const
+const defaultNodeAnchorSettings = {
+  nodeAnchors: true,
+} as const
 
-export type NodeAnchorGraphSettings = DraggableGraphSettings
+export type NodeAnchorGraphSettings = DraggableGraphSettings & {
+  nodeAnchors: boolean;
+}
+
 export type NodeAnchorGraphOptions = GraphOptions<NodeAnchorGraphTheme, NodeAnchorGraphSettings>
 
 /**
@@ -111,7 +116,7 @@ export type NodeAnchorGraphOptions = GraphOptions<NodeAnchorGraphTheme, NodeAnch
  * and `onNodeAnchorDrop` for user-driven anchor interactions.
  *
  * @param {HTMLCanvasElement} canvas - The canvas element on which to render the graph.
- * @param {Object} optionsArg - The configuration options for the anchor node graph.
+ * @param {Object} options - The configuration options for the anchor node graph.
  * @returns {Object} The draggable graph interface with additional node anchor functionality, options, and events.
  */
 export const useNodeAnchorGraph = (
@@ -126,10 +131,10 @@ export const useNodeAnchorGraph = (
     ...graph.theme.value,
   })
 
-  const settings = ref<NodeAnchorGraphSettings>({
+  const settings = ref<NodeAnchorGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultNodeAnchorSettings,
-    ...graph.settings.value,
-  })
+    ...options.settings,
+  }))
 
   const eventBus: MappingsToEventBus<NodeAnchorGraphEvents> = {
     ...graph.eventBus,
@@ -142,8 +147,16 @@ export const useNodeAnchorGraph = (
   const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
 
+  watch(settings, (newSettings) => {
+    // add node anchor deactivation logic
+  }, { deep: true })
+
   const getAnchorSchematics = () => {
-    if (!parentNode.value || graph.nodeBeingDragged.value) return []
+    if (
+      !parentNode.value ||
+      graph.nodeBeingDragged.value ||
+      !settings.value.nodeAnchors
+    ) return []
 
     const {
       nodeAnchorRadius: anchorRadius,

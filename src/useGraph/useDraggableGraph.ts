@@ -41,10 +41,10 @@ export const useDraggableGraph = (
     ...options.theme,
   })
 
-  const settings = ref<DraggableGraphSettings>({
+  const settings = ref<DraggableGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultDraggableGraphSettings,
     ...options.settings,
-  })
+  }))
 
   const eventBus: MappingsToEventBus<DraggableGraphEvents> = {
     ...graph.eventBus,
@@ -90,7 +90,7 @@ export const useDraggableGraph = (
     if (!settings.value.draggable) {
       nodeBeingDragged.value = undefined
     }
-  })
+  }, { deep: true })
 
   subscribe('onMouseDown', beginDrag)
   subscribe('onMouseUp', drop)

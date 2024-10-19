@@ -10,7 +10,7 @@ import {
   type NodeAnchorGraphSettings,
   type NodeAnchorGraphEvents
 } from "./useNodeAnchorGraph"
-import { ref, type Ref } from 'vue'
+import { ref, watch, type Ref } from 'vue'
 
 export type EditSettings = {
   addedEdgeType: 'directed' | 'undirected'
@@ -59,12 +59,15 @@ export const useUserEditableGraph = (
 
   const graph = useNodeAnchorGraph(canvas, options)
 
-  const settings = ref<UserEditableGraphSettings>({
+  const settings = ref<UserEditableGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultUserEditableGraphSettings,
-    ...graph.settings.value
-  })
+    ...options.settings,
+  }))
 
   const maybeEditSettings = resolveEditSettings(settings.value)
+
+  // TODO false settings should always return edit settings but a version of edit settings that does nothing ie { nodeAdd: null }
+  // TODO a core principle of settings is they are reactive and can be changed at runtime
   if (!maybeEditSettings) return { ...graph, settings }
 
   const editSettings = ref(maybeEditSettings)
