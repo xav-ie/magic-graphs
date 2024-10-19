@@ -131,10 +131,10 @@ export const useNodeAnchorGraph = (
 
   const graph = useDraggableGraph(canvas, options)
 
-  const theme = ref<NodeAnchorGraphTheme>({
+  const theme = ref<NodeAnchorGraphTheme>(Object.assign(graph.theme.value, {
     ...defaultNodeAnchorTheme(graph.theme.value, graph.edges.value),
-    ...graph.theme.value,
-  })
+    ...options.theme,
+  }))
 
   const settings = ref<NodeAnchorGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultNodeAnchorSettings,
@@ -259,7 +259,7 @@ export const useNodeAnchorGraph = (
    * @param {MouseEvent} ev - the mouse event to update the parent node
    */
   const updateParentNode = (ev: MouseEvent) => {
-    if (activeAnchor.value) return
+    if (activeAnchor.value || !settings.value.nodeAnchors) return
     const node = graph.getNodeByCoordinates(ev.offsetX, ev.offsetY)
     if (!node && parentNode.value) {
       const hoveredAnchor = getAnchor(parentNode.value, ev.offsetX, ev.offsetY)

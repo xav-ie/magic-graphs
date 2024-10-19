@@ -36,11 +36,6 @@ export const useDraggableGraph = (
 
   const graph = useBaseGraph(canvas, options)
 
-  const theme = ref<DraggableGraphTheme>({
-    ...graph.theme.value,
-    ...options.theme,
-  })
-
   const settings = ref<DraggableGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultDraggableGraphSettings,
     ...options.settings,
@@ -102,7 +97,6 @@ export const useDraggableGraph = (
     subscribe,
     nodeBeingDragged: readonly(nodeBeingDragged),
 
-    theme,
     settings,
   }
 }
