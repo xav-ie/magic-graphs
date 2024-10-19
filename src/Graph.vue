@@ -35,13 +35,10 @@ graph.subscribe('onStructureChange', (nodes, edges) => emit(
 ))
 
 const toggleEdgeType = () => {
-  if (isObject(graph.settings.value.userEditable)) {
-    const edgeType = graph.settings.value.userEditable.addedEdgeType;
-    if (edgeType === 'directed') {
-      graph.settings.value.userEditable.addedEdgeType = 'undirected';
-    } else {
-      graph.settings.value.userEditable.addedEdgeType = 'directed';
-    }
+  const editSettings = graph.settings.value.userEditable;
+  if (isObject(editSettings)) {
+    const { addedEdgeType } = editSettings;
+    editSettings.addedEdgeType = addedEdgeType === 'directed' ? 'undirected' : 'directed';
   } else {
     graph.settings.value.userEditable = {
       addedEdgeType: 'undirected'
@@ -76,11 +73,6 @@ const btns = [
     color: () => settings.value.nodeAnchors ? 'green-600' : 'orange-600'
   },
   {
-    label: () => 'Change Node Size' + ` (${graph.theme.value.nodeSize})`,
-    action: () => graph.theme.value.nodeSize = Math.floor(Math.random() * (50 - 10 + 1)) + 10,
-    color: () => 'blue-900'
-  },
-  {
     label: () => settings.value.userEditable ? 'Editable' : 'Not Editable',
     action: () => graph.settings.value.userEditable = !settings.value.userEditable,
     color: () => settings.value.userEditable ? 'green-600' : 'orange-600'
@@ -90,6 +82,11 @@ const btns = [
     label: () => addedEdgeType.value === 'directed' ? 'Directed' : 'Undirected',
     action: () => toggleEdgeType(),
     color: () => addedEdgeType.value === 'directed' ? 'blue-600' : 'purple-600'
+  },
+  {
+    label: () => 'Change Node Size' + ` (${graph.theme.value.nodeSize})`,
+    action: () => graph.theme.value.nodeSize = Math.floor(Math.random() * (50 - 10 + 1)) + 10,
+    color: () => 'pink-600'
   },
 ]
 
