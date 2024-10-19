@@ -97,13 +97,11 @@ export const useBaseGraph =(
     onKeydown: [],
   }
 
-  const subscribe = generateSubscriber(eventBus)
+  const { subscribe, unsubscribe } = generateSubscriber(eventBus)
 
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
   const focusedId = ref<GNode['id'] | GEdge['id'] | undefined>()
-
-
 
   const mouseEvents: Partial<MouseEventMap> = {
     click: (ev: MouseEvent) => {
@@ -455,6 +453,7 @@ export const useBaseGraph =(
 
     eventBus,
     subscribe,
+    unsubscribe,
     updateAggregator,
     aggregator,
 

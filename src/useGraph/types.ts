@@ -7,7 +7,7 @@ import type {
 } from "@/shapes/types"
 
 /**
- * describes the options argument for all useGraph composition functions
+ * @describes the options argument for all useGraph composition functions
  *
  * @template Theme - the type of the theme
  * @template Settings - the type of the settings
@@ -18,7 +18,7 @@ export type GraphOptions<Theme, Settings> = {
 }
 
 /**
- * describes a node in a useGraph graph instance
+ * @describes a node in a useGraph graph instance
  */
 export type GNode = {
   id: string,
@@ -28,7 +28,7 @@ export type GNode = {
 }
 
 /**
- * describes an edge in a useGraph graph instance
+ * @describes an edge in a useGraph graph instance
  */
 export type GEdge = {
   id: string,
@@ -39,20 +39,19 @@ export type GEdge = {
 }
 
 /**
- * describes the array in which schema items are added into in order to be rendered on the canvas
- *
+ * @describes the array in which schema items are added into in order to be rendered on the canvas
  */
 export type Aggregator = SchemaItem[]
 
 /**
- * describes a function that takes an aggregator and returns an aggregator with alterations to
+ * @describes a function that takes an aggregator and returns an aggregator with alterations to
  * the internal contents, these functions are layered on top of each other to create a pipeline
  * which will be invoked with a reducer each render cycle
  */
 export type UpdateAggregator = (aggregator: Aggregator) => Aggregator
 
 /**
- * describes the event bus mappings for the useGraph composable
+ * @describes the event bus mappings for the useGraph composable
  */
 export type MappingsToEventBus<T> = Record<keyof T, any[]>
 

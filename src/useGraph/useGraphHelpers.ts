@@ -12,15 +12,13 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
 }
 
 /**
-  generates a "subscribe" function for the event bus
-  in order to registering new events
+  generates a "subscribe" and "unsubscribe" function for the event bus
+  in order to registering and deregistering graph events
 */
-export const generateSubscriber = <T extends BaseGraphEvents>(
-  eventBus: MappingsToEventBus<T>
-) => <K extends keyof T>(
-  event: K,
-  fn: T[K]
-) => eventBus[event].push(fn)
+export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: MappingsToEventBus<T>) => ({
+  subscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].push(fn),
+  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event] = eventBus[event].filter((f) => f !== fn)
+})
 
 /**
   generates an id. Every item on the canvas must have a unique id
