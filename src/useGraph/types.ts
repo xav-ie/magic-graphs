@@ -33,6 +33,19 @@ export type GEdge = {
 }
 
 /**
+ * describes the array in which schema items are added into in order to be rendered on the canvas
+ *
+ */
+export type Aggregator = SchemaItem[]
+
+/**
+ * describes a function that takes an aggregator and returns an aggregator with alterations to
+ * the internal contents, these functions are layered on top of each other to create a pipeline
+ * which will be invoked with a reducer each render cycle
+ */
+export type UpdateAggregator = (aggregator: Aggregator) => Aggregator
+
+/**
  * describes the event bus mappings for the useGraph composable
  */
 export type MappingsToEventBus<T> = Record<keyof T, any[]>

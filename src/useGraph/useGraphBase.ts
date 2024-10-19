@@ -15,7 +15,9 @@ import type {
   KeyboardEventEntries,
   SchemaItem,
   GraphOptions,
-  MappingsToEventBus
+  MappingsToEventBus,
+  Aggregator,
+  UpdateAggregator
 } from './types'
 import {
   generateSubscriber,
@@ -162,9 +164,8 @@ export const useBaseGraph =(
 
   subscribe('onMouseDown', handleFocusChange)
 
-  type Aggregator = SchemaItem[]
   const aggregator = ref<Aggregator>([])
-  const updateAggregator: ((aggregator: Aggregator) => Aggregator)[] = []
+  const updateAggregator: UpdateAggregator[] = []
 
   updateAggregator.push((aggregator) => {
 
