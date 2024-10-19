@@ -4,7 +4,6 @@ import {
   onBeforeUnmount,
   readonly,
   type Ref,
-  watch,
 } from 'vue'
 import { onClickOutside } from '@vueuse/core';
 import type {

@@ -1,8 +1,8 @@
 import {
   ref,
-  watch,
   readonly,
-  type Ref
+  type Ref,
+  watchEffect
 } from 'vue'
 import {
   useBaseGraph,
@@ -86,15 +86,15 @@ export const useDraggableGraph = (
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
   }
 
-  watch(settings, () => {
-    if (!settings.value.draggable) {
-      nodeBeingDragged.value = undefined
-    }
-  }, { deep: true })
-
   subscribe('onMouseDown', beginDrag)
   subscribe('onMouseUp', drop)
   subscribe('onMouseMove', drag)
+
+  watchEffect(() => {
+    if (!settings.value.draggable) {
+      nodeBeingDragged.value = undefined
+    }
+  })
 
   return {
     ...graph,

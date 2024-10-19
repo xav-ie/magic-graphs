@@ -10,10 +10,15 @@
  */
 
 import { getValue, generateSubscriber, prioritizeNode } from "./useGraphHelpers";
-import { useDraggableGraph, type DraggableGraphEvents, type DraggableGraphSettings, type DraggableGraphTheme } from "./useDraggableGraph";
+import {
+  useDraggableGraph,
+  type DraggableGraphEvents,
+  type DraggableGraphSettings,
+  type DraggableGraphTheme
+} from "./useDraggableGraph";
 import type { SchemaItem, LineSchemaItem, GNode, GEdge, NodeGetterOrValue, MaybeGetter, GraphOptions, MappingsToEventBus } from "./types";
 import type { BaseGraphTheme } from "./themes";
-import { ref, readonly, type Ref, watch } from 'vue'
+import { ref, readonly, type Ref, watchEffect } from 'vue'
 import { hitboxes } from "../shapes/hitboxes";
 import type { Circle } from "@/shapes/types";
 
@@ -146,10 +151,6 @@ export const useNodeAnchorGraph = (
 
   const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
-
-  watch(settings, (newSettings) => {
-    // add node anchor deactivation logic
-  }, { deep: true })
 
   const getAnchorSchematics = () => {
     if (
@@ -342,6 +343,13 @@ export const useNodeAnchorGraph = (
 
   subscribe('onNodeRemoved', (node) => {
     if (parentNode.value?.id === node.id) {
+      parentNode.value = undefined
+      activeAnchor.value = undefined
+    }
+  })
+
+  watchEffect(() => {
+    if (!settings.value.nodeAnchors) {
       parentNode.value = undefined
       activeAnchor.value = undefined
     }
