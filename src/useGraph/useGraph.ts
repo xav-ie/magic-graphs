@@ -1,25 +1,28 @@
-import { onMounted, type Ref } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
+/**
+ * @module useGraph
+ *
+ * This is where the final layer of composition happens. Where the theme meets the graph and the alias is created.
+ * Consumers of the useGraph API import from this file.
+ */
+
+import { type Ref } from 'vue'
 import { themes } from './themes'
-import type { GNode, GEdge } from './types'
-import { useDraggableGraph, type DraggableGraphOptions } from './useDraggableGraph'
-import { useGraph } from './useGraphBase'
-import { useUserEditableGraph, type UserEditableGraphOptions } from './useUserEditableGraph'
+import {
+  usePersistentGraph,
+  type PersistentGraphOptions,
+} from './usePersistentGraph'
+import type { useBaseGraph } from './useGraphBase'
 
-export const useDarkUserEditableGraph = (
+export const useDarkGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<UserEditableGraphOptions> = {}
-) => useUserEditableGraph(canvas, {
-  ...themes.dark,
-  ...options,
+  options: Partial<PersistentGraphOptions> = {},
+) => usePersistentGraph(canvas, {
+  theme: {
+    ...options.theme,
+    ...themes.dark,
+  },
+  settings: options.settings,
 })
 
-export const useWeirdDraggableGraph = (
-  canvas: Ref<HTMLCanvasElement>,
-  options: Partial<DraggableGraphOptions> = {}
-) => useDraggableGraph(canvas, {
-  ...themes.weird,
-  ...options,
-})
-
-export type Graph = ReturnType<typeof useGraph>
+export type Graph = ReturnType<typeof useBaseGraph>
+export type DarkGraph = ReturnType<typeof useDarkGraph>

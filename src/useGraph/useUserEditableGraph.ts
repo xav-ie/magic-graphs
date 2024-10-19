@@ -65,7 +65,7 @@ export const useUserEditableGraph = (
   })
 
   const maybeEditSettings = resolveEditSettings(settings.value)
-  if (!maybeEditSettings) return graph
+  if (!maybeEditSettings) return { ...graph, settings }
 
   const editSettings = ref(maybeEditSettings)
 
@@ -106,5 +106,8 @@ export const useUserEditableGraph = (
   graph.subscribe('onKeydown', handleDeletion)
   graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
 
-  return graph
+  return {
+    ...graph,
+    settings,
+  }
 }

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
-import { useDarkPersistentUserEditableGraph } from '@/useGraph/useGraph';
+import { useDarkGraph } from '@/useGraph/useGraph';
 import { useWindowSize } from '@vueuse/core';
 import { bfsNodeColorizer } from './graphColorizers';
 import { nodesEdgesToAdjList, adjListToNodesEdges, type AdjacencyList } from './graphConverters';
 import { drawShape } from './shapes/draw';
 import { hitboxes } from './shapes/hitboxes';
+import type { PersistentGraphSettings } from './useGraph/usePersistentGraph';
 
 const canvas = ref<HTMLCanvasElement>();
 
@@ -22,26 +23,15 @@ const { width, height } = useWindowSize();
 const canvasWidth = computed(() => width.value - padding * 2);
 const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 
-const graph = useDarkPersistentUserEditableGraph(canvas, 'graph', {
-  addedEdgeType: 'undirected',
-});
-
-graph.subscribe('onRepaint', (ctx) => {
-  // const { drawCircle } = drawShape(ctx);
-
-  // // 577.5991386282824 328.8278924476051
-  // const cir = {
-  //   at: { x: 577.5991386282824, y: 328.8278924476051 },
-  //   radius: 2,
-  //   color: 'purple',
-  // }
-  // drawCircle(cir);
-})
-
-const { nodes: defaultNodes, edges: defaultEdges } = adjListToNodesEdges(props.modelValue);
-onMounted(() => {
-  // defaultNodes.forEach(node => graph.addNode(node, false));
-  // defaultEdges.forEach(edge => graph.addEdge(edge));
+const graph = useDarkGraph(canvas, {
+  theme: {
+    edgeWidth: (edge) => (edge?.weight) ?? 10,
+  },
+  settings: {
+    userEditable: {
+      addedEdgeType: 'undirected',
+    }
+  }
 });
 
 graph.subscribe('onStructureChange', (nodes, edges) => emit(
