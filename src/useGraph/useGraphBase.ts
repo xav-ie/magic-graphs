@@ -162,8 +162,9 @@ export const useBaseGraph =(
 
   subscribe('onMouseDown', handleFocusChange)
 
-  const aggregator = ref<SchemaItem[]>([])
-  const updateAggregator: ((aggregator: SchemaItem[]) => SchemaItem[])[] = []
+  type Aggregator = SchemaItem[]
+  const aggregator = ref<Aggregator>([])
+  const updateAggregator: ((aggregator: Aggregator) => Aggregator)[] = []
 
   updateAggregator.push((aggregator) => {
 
