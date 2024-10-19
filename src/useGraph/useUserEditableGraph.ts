@@ -10,7 +10,7 @@ import {
   type NodeAnchorGraphSettings,
   type NodeAnchorGraphEvents
 } from "./useNodeAnchorGraph"
-import { ref, watch, type Ref } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 
 export type EditSettings = {
   addedEdgeType: 'directed' | 'undirected'
@@ -64,13 +64,7 @@ export const useUserEditableGraph = (
     ...options.settings,
   }))
 
-  const maybeEditSettings = resolveEditSettings(settings.value)
-
-  // TODO false settings should always return edit settings but a version of edit settings that does nothing ie { nodeAdd: null }
-  // TODO a core principle of settings is they are reactive and can be changed at runtime
-  if (!maybeEditSettings) return { ...graph, settings }
-
-  const editSettings = ref(maybeEditSettings)
+  const editSettings = computed(() => resolveEditSettings(settings.value))
 
   const handleNodeCreation = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev
@@ -78,6 +72,8 @@ export const useUserEditableGraph = (
   }
 
   const handleEdgeCreation = (parentNode: GNode, anchor: NodeAnchor) => {
+    if (!editSettings.value) return
+    editSettings.value
     const { x, y } = anchor
     const itemStack = graph.getDrawItemsByCoordinates(x, y)
     // @ts-expect-error findLast is real
@@ -94,6 +90,7 @@ export const useUserEditableGraph = (
   }
 
   const handleDeletion = (ev: KeyboardEvent) => {
+    if (!editSettings.value) return
     const focusedItem = graph.getFocusedItem()
     if (!focusedItem) return
     if (ev.key !== 'Backspace') return
