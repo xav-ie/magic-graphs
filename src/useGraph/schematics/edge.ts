@@ -1,5 +1,4 @@
 import type { GEdge, GNode, SchemaItem } from '../types'
-import type { Arrow, UTurnArrow, Line } from '@/shapes/types'
 import { getValue, getFromToNodes } from '../useGraphHelpers'
 import type { BaseGraphTheme } from '../themes'
 import { getLargestAngularSpace } from '@/shapes/helpers'

@@ -53,7 +53,7 @@ export type GraphThemes = Record<string, any>
 // ISSUE #17 GITHUB
 const resolveTheme = () => {}
 
-export const themes: GraphThemes = {
+export const themes = {
   default: DEFAULT_THEME,
   dark: {
     nodeBorderColor: 'rgb(25, 25, 25)',
@@ -70,5 +70,5 @@ export const themes: GraphThemes = {
     edgeTextColor: 'white',
     edgeFocusTextColor: 'white',
     graphBgColor: 'rgb(75, 85, 99)' // tailwind bg-gray-600
-  } as const,
-}
+  },
+} as const

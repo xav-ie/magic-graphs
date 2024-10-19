@@ -2,12 +2,44 @@
  * @module useUserEditableGraph
  */
 
-import type { SchemaItem, GNode } from "./types"
-import { useDraggableNodeAnchorGraph, type AnchorNodeGraphOptions, type NodeAnchor } from "./useNodeAnchorGraph"
-import { type Ref } from 'vue'
+import type { SchemaItem, GNode, GraphOptions } from "./types"
+import {
+  useNodeAnchorGraph,
+  type NodeAnchorGraphTheme,
+  type NodeAnchor,
+  type NodeAnchorGraphSettings,
+  type NodeAnchorGraphEvents
+} from "./useNodeAnchorGraph"
+import { ref, type Ref } from 'vue'
 
-export type UserEditableGraphOptions = AnchorNodeGraphOptions & {
-  addedEdgeType?: 'directed' | 'undirected',
+export type EditSettings = {
+  addedEdgeType: 'directed' | 'undirected'
+}
+
+const defaultEditSettings = {
+  addedEdgeType: 'directed'
+} as const
+
+export type UserEditableGraphEvents = NodeAnchorGraphEvents
+export type UserEditableGraphTheme = NodeAnchorGraphTheme
+
+export type UserEditableGraphSettings = NodeAnchorGraphSettings & {
+  userEditable: boolean | EditSettings
+}
+
+export type UserEditableGraphOptions = GraphOptions<UserEditableGraphTheme, UserEditableGraphSettings>
+
+const defaultUserEditableGraphSettings = {
+  userEditable: true,
+} as const
+
+const resolveEditSettings = (settings: UserEditableGraphSettings) => {
+  if (settings.userEditable === false) return null
+  if (settings.userEditable === true) return defaultEditSettings
+  return {
+    ...defaultEditSettings,
+    ...settings.userEditable
+  }
 }
 
 /**
@@ -25,7 +57,17 @@ export const useUserEditableGraph = (
   options: Partial<UserEditableGraphOptions> = {}
 ) => {
 
-  const graph = useDraggableNodeAnchorGraph(canvas, options)
+  const graph = useNodeAnchorGraph(canvas, options)
+
+  const settings = ref<UserEditableGraphSettings>({
+    ...defaultUserEditableGraphSettings,
+    ...graph.settings.value
+  })
+
+  const maybeEditSettings = resolveEditSettings(settings.value)
+  if (!maybeEditSettings) return graph
+
+  const editSettings = ref(maybeEditSettings)
 
   const handleNodeCreation = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev
@@ -43,7 +85,7 @@ export const useUserEditableGraph = (
     graph.addEdge({
       from: parentNode.label,
       to: node.label,
-      type: options.addedEdgeType ?? 'directed',
+      type: editSettings.value.addedEdgeType,
       weight: 1,
     })
   }

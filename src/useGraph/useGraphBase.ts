@@ -59,9 +59,8 @@ export type BaseGraphEvents = {
   onKeydown: (ev: KeyboardEvent) => void;
 }
 
-const defaultSettings = {}
+const defaultSettings = {} as const
 
-export type BaseGraphEventBus = MappingsToEventBus<BaseGraphEvents>
 export type BaseGraphSettings = {}
 export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
 
@@ -70,21 +69,17 @@ export const useBaseGraph =(
   options: Partial<BaseGraphOptions> = {},
 ) => {
 
-  const theme = ref({
+  const theme = ref<BaseGraphTheme>({
     ...themes.default,
     ...options.theme,
   })
 
-  const settings = ref({
+  const settings = ref<BaseGraphSettings>({
     ...defaultSettings,
     ...options.settings,
   })
 
-  const nodes = ref<GNode[]>([])
-  const edges = ref<GEdge[]>([])
-  const focusedId = ref<GNode['id'] | GEdge['id'] | undefined>()
-
-  const eventBus: UseGraphEventBus = {
+  const eventBus: MappingsToEventBus<BaseGraphEvents> = {
     onStructureChange: [],
     onFocusChange: [],
     onNodeAdded: [],
@@ -92,19 +87,21 @@ export const useBaseGraph =(
     onRepaint: [],
     onNodeHoverChange: [],
     onGraphReset: [],
-
-
-    /* canvas element events */
     onClick: [],
     onMouseDown: [],
     onMouseUp: [],
     onMouseMove: [],
     onDblClick: [],
-
     onKeydown: [],
   }
 
   const subscribe = generateSubscriber(eventBus)
+
+  const nodes = ref<GNode[]>([])
+  const edges = ref<GEdge[]>([])
+  const focusedId = ref<GNode['id'] | GEdge['id'] | undefined>()
+
+
 
   const mouseEvents: Partial<MouseEventMap> = {
     click: (ev: MouseEvent) => {

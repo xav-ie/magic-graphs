@@ -10,10 +10,9 @@
  */
 
 import { getValue, generateSubscriber, prioritizeNode } from "./useGraphHelpers";
-import { useDraggableGraph, type MappingsWithDragEvents } from "./useDraggableGraph";
-import type { SchemaItem, LineSchemaItem, GNode, GEdge, NodeGetterOrValue, MaybeGetter } from "./types";
-import { type MappingsToEventBus } from "./useGraphBase";
-import type { GraphThemes } from "./themes";
+import { useDraggableGraph, type DraggableGraphEvents, type DraggableGraphSettings, type DraggableGraphTheme } from "./useDraggableGraph";
+import type { SchemaItem, LineSchemaItem, GNode, GEdge, NodeGetterOrValue, MaybeGetter, GraphOptions, MappingsToEventBus } from "./types";
+import type { BaseGraphTheme } from "./themes";
 import { ref, readonly, type Ref } from 'vue'
 import { hitboxes } from "../shapes/hitboxes";
 import type { Circle } from "@/shapes/types";
@@ -33,22 +32,16 @@ export type NodeAnchor = {
   direction: 'north' | 'east' | 'south' | 'west',
 }
 
-export type AnchorNodeOptions = {
-  nodeAnchorRadius: NodeGetterOrValue<number>;
-  nodeAnchorColor: NodeGetterOrValue<string>;
-  nodeAnchorColorWhenParentFocused: NodeGetterOrValue<string>;
-  linkPreviewColor: MaybeGetter<string, [GNode, NodeAnchor]>;
-  linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
-}
+type DefaultNodeGraphThemeGetter = <T extends BaseGraphTheme>(theme: T, edges: GEdge[]) => ExclusiveNodeAnchorGraphTheme
 
 /**
  * @description default options for the anchor node graph
- * @param options - the options passed to the base useGraph composition function
+ * @param theme - the options passed to the base useGraph composition function
  * @param edges - the edges of the graph
  * @returns the default options for the anchor node graph
  */
-const defaultOptions: (options: GraphThemes, edges: GEdge[]) => AnchorNodeOptions = (
-  options: GraphThemes,
+const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = <T extends BaseGraphTheme>(
+  theme: T,
   edges: GEdge[],
 ) => ({
   /**
@@ -57,7 +50,7 @@ const defaultOptions: (options: GraphThemes, edges: GEdge[]) => AnchorNodeOption
    * @returns the radius of the node anchor
    */
   nodeAnchorRadius: (node: GNode) => {
-    const nodeSize = getValue(options.nodeSize, node)
+    const nodeSize = getValue(theme.nodeSize, node)
     return Math.ceil(Math.sqrt(nodeSize) * 2)
   },
   /**
@@ -67,20 +60,28 @@ const defaultOptions: (options: GraphThemes, edges: GEdge[]) => AnchorNodeOption
   /**
    * the color of the node anchor when the parent node is focused
    */
-  nodeAnchorColorWhenParentFocused: options.nodeFocusBorderColor,
+  nodeAnchorColorWhenParentFocused: theme.nodeFocusBorderColor,
   /**
    * the color of the link preview
    */
-  linkPreviewColor: getValue(options.edgeColor, edges[0]),
+  linkPreviewColor: getValue(theme.edgeColor, edges[0]),
   /**
    * the width of the link preview
    */
-  linkPreviewWidth: getValue(options.edgeWidth, edges[0]),
+  linkPreviewWidth: getValue(theme.edgeWidth, edges[0]),
 })
 
-export type AnchorNodeGraphOptions<T extends GraphThemes = GraphThemes> = T & AnchorNodeOptions
+export type ExclusiveNodeAnchorGraphTheme = {
+  nodeAnchorRadius: NodeGetterOrValue<number>;
+  nodeAnchorColor: NodeGetterOrValue<string>;
+  nodeAnchorColorWhenParentFocused: NodeGetterOrValue<string>;
+  linkPreviewColor: MaybeGetter<string, [GNode, NodeAnchor]>;
+  linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
+}
 
-type WithNodeAnchorEvents<T extends MappingsWithDragEvents> = T & {
+export type NodeAnchorGraphTheme = DraggableGraphTheme & ExclusiveNodeAnchorGraphTheme
+
+export type NodeAnchorGraphEvents = DraggableGraphEvents & {
   /**
    * @description event fired when the user initiates a drag on a node anchor
    * @param parentNode - the parent node of the anchor
@@ -95,7 +96,10 @@ type WithNodeAnchorEvents<T extends MappingsWithDragEvents> = T & {
   onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
 }
 
-type MappingsWithNodeAnchorEvents = WithNodeAnchorEvents<MappingsWithDragEvents>
+const defaultNodeAnchorSettings = {} as const
+
+export type NodeAnchorGraphSettings = DraggableGraphSettings
+export type NodeAnchorGraphOptions = GraphOptions<NodeAnchorGraphTheme, NodeAnchorGraphSettings>
 
 /**
  * @requires a draggable graph interface.
@@ -110,17 +114,24 @@ type MappingsWithNodeAnchorEvents = WithNodeAnchorEvents<MappingsWithDragEvents>
  * @param {Object} optionsArg - The configuration options for the anchor node graph.
  * @returns {Object} The draggable graph interface with additional node anchor functionality, options, and events.
  */
-export const useDraggableNodeAnchorGraph = (
+export const useNodeAnchorGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  optionsArg: Partial<AnchorNodeGraphOptions> = {},
+  options: Partial<NodeAnchorGraphOptions> = {},
 ) => {
 
-  const graph = useDraggableGraph(canvas, optionsArg)
+  const graph = useDraggableGraph(canvas, options)
 
-  const parentNode = ref<GNode | undefined>()
-  const activeAnchor = ref<NodeAnchor | undefined>()
+  const theme = ref<NodeAnchorGraphTheme>({
+    ...defaultNodeAnchorTheme(graph.theme.value, graph.edges.value),
+    ...graph.theme.value,
+  })
 
-  const eventBus: MappingsToEventBus<MappingsWithNodeAnchorEvents> = {
+  const settings = ref<NodeAnchorGraphSettings>({
+    ...defaultNodeAnchorSettings,
+    ...graph.settings.value,
+  })
+
+  const eventBus: MappingsToEventBus<NodeAnchorGraphEvents> = {
     ...graph.eventBus,
     onNodeAnchorDragStart: [],
     onNodeAnchorDrop: [],
@@ -128,10 +139,8 @@ export const useDraggableNodeAnchorGraph = (
 
   const subscribe = generateSubscriber(eventBus)
 
-  const options = ref({
-    ...defaultOptions(graph.options.value, graph.edges.value),
-    ...optionsArg,
-  })
+  const parentNode = ref<GNode | undefined>()
+  const activeAnchor = ref<NodeAnchor | undefined>()
 
   const getAnchorSchematics = () => {
     if (!parentNode.value || graph.nodeBeingDragged.value) return []
@@ -140,7 +149,7 @@ export const useDraggableNodeAnchorGraph = (
       nodeAnchorRadius: anchorRadius,
       nodeAnchorColor: anchorColor,
       nodeAnchorColorWhenParentFocused: anchorColorWhenParentFocused,
-    } = options.value
+    } = theme.value
 
     const anchorColorVal = getValue(anchorColor, parentNode.value)
     const anchorColorWhenParentFocusedVal = getValue(anchorColorWhenParentFocused, parentNode.value)
@@ -168,9 +177,9 @@ export const useDraggableNodeAnchorGraph = (
    * @returns an array of anchors for the given node
    */
   const getAnchors = (node: GNode): NodeAnchor[] => {
-    const anchorRadiusVal = getValue(options.value.nodeAnchorRadius, node)
-    const nodeSizeVal = getValue(graph.options.value.nodeSize, node)
-    const nodeBorderWidthVal = getValue(graph.options.value.nodeBorderWidth, node)
+    const anchorRadiusVal = getValue(theme.value.nodeAnchorRadius, node)
+    const nodeSizeVal = getValue(graph.theme.value.nodeSize, node)
+    const nodeBorderWidthVal = getValue(graph.theme.value.nodeBorderWidth, node)
     const offset = nodeSizeVal - (anchorRadiusVal / 3) + (nodeBorderWidthVal / 2)
     return [
       {
@@ -209,7 +218,7 @@ export const useDraggableNodeAnchorGraph = (
       const { isInCircle } = hitboxes(point)
       return isInCircle({
         at: { x: anchor.x, y: anchor.y },
-        radius: getValue(options.value.nodeAnchorRadius, node),
+        radius: getValue(theme.value.nodeAnchorRadius, node),
       })
     })
   }
@@ -219,7 +228,7 @@ export const useDraggableNodeAnchorGraph = (
     const { x, y } = activeAnchor.value
     const start = { x: parentNode.value.x, y: parentNode.value.y }
     const end = { x, y }
-    const { linkPreviewColor, linkPreviewWidth } = options.value
+    const { linkPreviewColor, linkPreviewWidth } = theme.value
     const color = getValue(linkPreviewColor, parentNode.value, activeAnchor.value)
     const width = getValue(linkPreviewWidth, parentNode.value, activeAnchor.value)
     const schema: Omit<LineSchemaItem, 'priority'> = {
@@ -329,9 +338,12 @@ export const useDraggableNodeAnchorGraph = (
 
   return {
     ...graph,
+    activeNodeAnchor: readonly(activeAnchor),
+
     eventBus,
     subscribe,
-    options,
-    activeNodeAnchor: readonly(activeAnchor),
+
+    theme,
+    settings,
   }
 }

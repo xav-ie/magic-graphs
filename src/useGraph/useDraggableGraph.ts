@@ -35,7 +35,16 @@ export const useDraggableGraph = (
 ) => {
 
   const graph = useBaseGraph(canvas, options)
-  const draggingEnabled = ref(true)
+
+  const theme = ref<DraggableGraphTheme>({
+    ...graph.theme.value,
+    ...options.theme,
+  })
+
+  const settings = ref<DraggableGraphSettings>({
+    ...defaultDraggableGraphSettings,
+    ...options.settings,
+  })
 
   const eventBus: MappingsToEventBus<DraggableGraphEvents> = {
     ...graph.eventBus,
@@ -44,6 +53,9 @@ export const useDraggableGraph = (
   }
 
   const subscribe = generateSubscriber(eventBus)
+
+  const draggingEnabled = ref(true)
+
 
   const nodeBeingDragged = ref<GNode | undefined>()
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | undefined>()
@@ -91,5 +103,8 @@ export const useDraggableGraph = (
     subscribe,
     draggingEnabled,
     nodeBeingDragged: readonly(nodeBeingDragged),
+
+    theme,
+    settings,
   }
 }
