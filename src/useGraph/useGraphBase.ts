@@ -167,18 +167,6 @@ export const useBaseGraph =(
 
   updateAggregator.push((aggregator) => {
 
-    const nodeSchemaItems = nodes.value.map((node, i) => {
-      const schema = getNodeSchematic(node, theme.value, focusedId.value)
-      const isCircle = 'radius' in schema
-      return {
-        id: node.id,
-        graphType: 'node',
-        schemaType: isCircle ? 'circle' : 'square',
-        schema,
-        priority: (i * 10) + 1000,
-      } as SchemaItem
-    })
-
     const edgeSchemaItems = edges.value.map((edge, i) => {
       const schema = getEdgeSchematic(edge, nodes.value, edges.value, theme.value, focusedId.value)
       if (!schema) return
@@ -186,7 +174,16 @@ export const useBaseGraph =(
         ...schema,
         priority: i * 10
       }
-    }).filter((i) => i && i.schema) as SchemaItem[]
+    }).filter((item) => item && item.schema) as SchemaItem[]
+
+    const nodeSchemaItems = nodes.value.map((node, i) => {
+      const schema = getNodeSchematic(node, theme.value, focusedId.value)
+      if (!schema) return
+      return {
+        ...schema,
+        priority: (i * 10) + 1000,
+      }
+    }).filter((item) => item && item.schema) as SchemaItem[]
 
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)

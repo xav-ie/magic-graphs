@@ -1,7 +1,10 @@
-import type { GEdge, GNode, SchemaItem } from '../types'
+import type { GEdge, GNode, LineSchemaItem, ArrowSchemaItem, ArrowUTurnSchemaItem } from '../types'
 import { getValue, getFromToNodes } from '../useGraphHelpers'
 import type { BaseGraphTheme } from '../themes'
 import { getLargestAngularSpace } from '@/shapes/helpers'
+
+type EdgeSchemas = LineSchemaItem | ArrowSchemaItem | ArrowUTurnSchemaItem
+type EdgeSchematic = Omit<EdgeSchemas, 'priority'> | undefined
 
 export const getEdgeSchematic = (
   edge: GEdge,
@@ -9,7 +12,7 @@ export const getEdgeSchematic = (
   edges: GEdge[],
   graphTheme: BaseGraphTheme,
   focusedId: GEdge['id'] | undefined
-): Omit<SchemaItem, 'priority'> | undefined => {
+): EdgeSchematic => {
   const { from, to } = getFromToNodes(edge, nodes)
 
   const isBidirectional = edges.some(e => e.from === to.label && e.to === from.label)
