@@ -10,7 +10,7 @@ import {
   type NodeAnchorGraphSettings,
   type NodeAnchorGraphEvents
 } from "./useNodeAnchorGraph"
-import { ref, type Ref } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 
 export type EditSettings = {
   addedEdgeType: 'directed' | 'undirected'
@@ -59,15 +59,12 @@ export const useUserEditableGraph = (
 
   const graph = useNodeAnchorGraph(canvas, options)
 
-  const settings = ref<UserEditableGraphSettings>({
+  const settings = ref<UserEditableGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultUserEditableGraphSettings,
-    ...graph.settings.value
-  })
+    ...options.settings,
+  }))
 
-  const maybeEditSettings = resolveEditSettings(settings.value)
-  if (!maybeEditSettings) return { ...graph, settings }
-
-  const editSettings = ref(maybeEditSettings)
+  const editSettings = computed(() => resolveEditSettings(settings.value))
 
   const handleNodeCreation = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev
@@ -75,6 +72,8 @@ export const useUserEditableGraph = (
   }
 
   const handleEdgeCreation = (parentNode: GNode, anchor: NodeAnchor) => {
+    if (!editSettings.value) return
+    editSettings.value
     const { x, y } = anchor
     const itemStack = graph.getDrawItemsByCoordinates(x, y)
     // @ts-expect-error findLast is real
@@ -91,6 +90,7 @@ export const useUserEditableGraph = (
   }
 
   const handleDeletion = (ev: KeyboardEvent) => {
+    if (!editSettings.value) return
     const focusedItem = graph.getFocusedItem()
     if (!focusedItem) return
     if (ev.key !== 'Backspace') return

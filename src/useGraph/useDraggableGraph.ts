@@ -1,8 +1,8 @@
 import {
   ref,
-  watch,
   readonly,
-  type Ref
+  type Ref,
+  watchEffect
 } from 'vue'
 import {
   useBaseGraph,
@@ -36,15 +36,10 @@ export const useDraggableGraph = (
 
   const graph = useBaseGraph(canvas, options)
 
-  const theme = ref<DraggableGraphTheme>({
-    ...graph.theme.value,
-    ...options.theme,
-  })
-
-  const settings = ref<DraggableGraphSettings>({
+  const settings = ref<DraggableGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultDraggableGraphSettings,
     ...options.settings,
-  })
+  }))
 
   const eventBus: MappingsToEventBus<DraggableGraphEvents> = {
     ...graph.eventBus,
@@ -54,14 +49,11 @@ export const useDraggableGraph = (
 
   const subscribe = generateSubscriber(eventBus)
 
-  const draggingEnabled = ref(true)
-
-
   const nodeBeingDragged = ref<GNode | undefined>()
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | undefined>()
 
   const beginDrag = (ev: MouseEvent) => {
-    if (!draggingEnabled.value) return
+    if (!settings.value.draggable) return
     const { offsetX, offsetY } = ev;
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
     const node = graph.getNodeByCoordinates(offsetX, offsetY);
@@ -80,7 +72,7 @@ export const useDraggableGraph = (
     if (
       !nodeBeingDragged.value ||
       !startingCoordinatesOfDrag.value ||
-      !draggingEnabled.value
+      !settings.value.draggable
     ) return
     const { offsetX, offsetY } = ev;
     const dx = offsetX - startingCoordinatesOfDrag.value.x;
@@ -89,22 +81,22 @@ export const useDraggableGraph = (
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
   }
 
-  watch(draggingEnabled, () => {
-    nodeBeingDragged.value = undefined
-  })
-
   subscribe('onMouseDown', beginDrag)
   subscribe('onMouseUp', drop)
   subscribe('onMouseMove', drag)
+
+  watchEffect(() => {
+    if (!settings.value.draggable) {
+      nodeBeingDragged.value = undefined
+    }
+  })
 
   return {
     ...graph,
     eventBus,
     subscribe,
-    draggingEnabled,
     nodeBeingDragged: readonly(nodeBeingDragged),
 
-    theme,
     settings,
   }
 }

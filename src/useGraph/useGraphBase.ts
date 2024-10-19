@@ -384,10 +384,19 @@ export const useBaseGraph =(
   }
 
   const removeEdge = (edgeId: GEdge['id']) => {
-    const edgeIndex = edges.value.findIndex(edge => edge.id === edgeId)
-    if (edgeIndex === -1) return
-    edges.value.splice(edgeIndex, 1)
+    const edge = edges.value.find(edge => edge.id === edgeId)
+    if (!edge) return
+    edge.type === 'directed' ? removeDirectedEdge(edge) : removeUndirectedEdge(edge)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+  }
+
+  const removeDirectedEdge = (edge: GEdge) => {
+    edges.value = edges.value.filter(e => e.id !== edge.id)
+  }
+
+  const removeUndirectedEdge = (edge: GEdge) => {
+    removeDirectedEdge(edge)
+    edges.value = edges.value.filter(e => e.to !== edge.from || e.from !== edge.to)
   }
 
   const setFocus = (newGItemId: GNode['id'] | GEdge['id'] | undefined) => {

@@ -10,10 +10,15 @@
  */
 
 import { getValue, generateSubscriber, prioritizeNode } from "./useGraphHelpers";
-import { useDraggableGraph, type DraggableGraphEvents, type DraggableGraphSettings, type DraggableGraphTheme } from "./useDraggableGraph";
+import {
+  useDraggableGraph,
+  type DraggableGraphEvents,
+  type DraggableGraphSettings,
+  type DraggableGraphTheme
+} from "./useDraggableGraph";
 import type { SchemaItem, LineSchemaItem, GNode, GEdge, NodeGetterOrValue, MaybeGetter, GraphOptions, MappingsToEventBus } from "./types";
 import type { BaseGraphTheme } from "./themes";
-import { ref, readonly, type Ref } from 'vue'
+import { ref, readonly, type Ref, watchEffect } from 'vue'
 import { hitboxes } from "../shapes/hitboxes";
 import type { Circle } from "@/shapes/types";
 
@@ -96,9 +101,14 @@ export type NodeAnchorGraphEvents = DraggableGraphEvents & {
   onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
 }
 
-const defaultNodeAnchorSettings = {} as const
+const defaultNodeAnchorSettings = {
+  nodeAnchors: true,
+} as const
 
-export type NodeAnchorGraphSettings = DraggableGraphSettings
+export type NodeAnchorGraphSettings = DraggableGraphSettings & {
+  nodeAnchors: boolean;
+}
+
 export type NodeAnchorGraphOptions = GraphOptions<NodeAnchorGraphTheme, NodeAnchorGraphSettings>
 
 /**
@@ -111,7 +121,7 @@ export type NodeAnchorGraphOptions = GraphOptions<NodeAnchorGraphTheme, NodeAnch
  * and `onNodeAnchorDrop` for user-driven anchor interactions.
  *
  * @param {HTMLCanvasElement} canvas - The canvas element on which to render the graph.
- * @param {Object} optionsArg - The configuration options for the anchor node graph.
+ * @param {Object} options - The configuration options for the anchor node graph.
  * @returns {Object} The draggable graph interface with additional node anchor functionality, options, and events.
  */
 export const useNodeAnchorGraph = (
@@ -121,15 +131,15 @@ export const useNodeAnchorGraph = (
 
   const graph = useDraggableGraph(canvas, options)
 
-  const theme = ref<NodeAnchorGraphTheme>({
+  const theme = ref<NodeAnchorGraphTheme>(Object.assign(graph.theme.value, {
     ...defaultNodeAnchorTheme(graph.theme.value, graph.edges.value),
-    ...graph.theme.value,
-  })
+    ...options.theme,
+  }))
 
-  const settings = ref<NodeAnchorGraphSettings>({
+  const settings = ref<NodeAnchorGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultNodeAnchorSettings,
-    ...graph.settings.value,
-  })
+    ...options.settings,
+  }))
 
   const eventBus: MappingsToEventBus<NodeAnchorGraphEvents> = {
     ...graph.eventBus,
@@ -143,7 +153,11 @@ export const useNodeAnchorGraph = (
   const activeAnchor = ref<NodeAnchor | undefined>()
 
   const getAnchorSchematics = () => {
-    if (!parentNode.value || graph.nodeBeingDragged.value) return []
+    if (
+      !parentNode.value ||
+      graph.nodeBeingDragged.value ||
+      !settings.value.nodeAnchors
+    ) return []
 
     const {
       nodeAnchorRadius: anchorRadius,
@@ -245,7 +259,7 @@ export const useNodeAnchorGraph = (
    * @param {MouseEvent} ev - the mouse event to update the parent node
    */
   const updateParentNode = (ev: MouseEvent) => {
-    if (activeAnchor.value) return
+    if (activeAnchor.value || !settings.value.nodeAnchors) return
     const node = graph.getNodeByCoordinates(ev.offsetX, ev.offsetY)
     if (!node && parentNode.value) {
       const hoveredAnchor = getAnchor(parentNode.value, ev.offsetX, ev.offsetY)
@@ -262,7 +276,6 @@ export const useNodeAnchorGraph = (
     if (!anchor) return
     activeAnchor.value = anchor
     eventBus.onNodeAnchorDragStart.forEach(fn => fn(parentNode.value, anchor))
-    graph.draggingEnabled.value = false
   })
 
   /**
@@ -286,7 +299,6 @@ export const useNodeAnchorGraph = (
     eventBus.onNodeAnchorDrop.forEach(fn => fn(parentNode.value, activeAnchor.value))
     activeAnchor.value = undefined
     parentNode.value = undefined
-    graph.draggingEnabled.value = true
   }
 
   subscribe('onMouseUp', dropAnchor)
@@ -331,6 +343,13 @@ export const useNodeAnchorGraph = (
 
   subscribe('onNodeRemoved', (node) => {
     if (parentNode.value?.id === node.id) {
+      parentNode.value = undefined
+      activeAnchor.value = undefined
+    }
+  })
+
+  watchEffect(() => {
+    if (!settings.value.nodeAnchors) {
       parentNode.value = undefined
       activeAnchor.value = undefined
     }
