@@ -1,7 +1,7 @@
-import type { MaybeGetter, SchemaItem, GNode, GEdge } from './types'
-import type { UseGraphEventBusCallbackMappings, MappingsToEventBus } from './useGraphBase'
+import type { MaybeGetter, SchemaItem, GNode, GEdge, MappingsToEventBus } from './types'
+import type { BaseGraphEvents } from './useGraphBase'
 
-/*
+/**
   unwraps MaybeGetter type into a value of type T
 */
 export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
@@ -11,11 +11,11 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
   return value
 }
 
-/*
+/**
   generates a "subscribe" function for the event bus
   in order to registering new events
 */
-export const generateSubscriber = <T extends UseGraphEventBusCallbackMappings>(
+export const generateSubscriber = <T extends BaseGraphEvents>(
   eventBus: MappingsToEventBus<T>
 ) => <K extends keyof T>(
   event: K,

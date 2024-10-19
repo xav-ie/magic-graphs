@@ -5,36 +5,57 @@ import {
   type Ref
 } from 'vue'
 import {
-  useGraph,
-  type GraphOptions,
-  type UseGraphEventBusCallbackMappings,
-  type MappingsToEventBus
+  useBaseGraph,
+  type BaseGraphEvents,
+  type BaseGraphSettings,
 } from './useGraphBase'
 import { generateSubscriber } from './useGraphHelpers';
-import type { GNode } from './types'
+import type { BaseGraphTheme } from './themes';
+import type { GNode, GraphOptions, MappingsToEventBus } from './types'
 
-export type WithDragEvents<T extends UseGraphEventBusCallbackMappings> = T & {
+export type DraggableGraphEvents = BaseGraphEvents & {
   onNodeDragStart: (node: GNode) => void;
   onNodeDrop: (node: GNode) => void;
 }
 
-export type MappingsWithDragEvents = WithDragEvents<UseGraphEventBusCallbackMappings>
+export type DraggableGraphTheme = BaseGraphTheme
+export type DraggableGraphSettings = BaseGraphSettings & {
+  draggable: boolean;
+}
+
+export type DraggableGraphOptions = GraphOptions<DraggableGraphTheme, DraggableGraphSettings>
+
+export const defaultDraggableGraphSettings = {
+  draggable: true,
+} as const
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
+  options: Partial<DraggableGraphOptions> = {},
 ) => {
 
-  const graph = useGraph(canvas, options)
-  const draggingEnabled = ref(true)
+  const graph = useBaseGraph(canvas, options)
 
-  const eventBus: MappingsToEventBus<MappingsWithDragEvents> = {
+  const theme = ref<DraggableGraphTheme>({
+    ...graph.theme.value,
+    ...options.theme,
+  })
+
+  const settings = ref<DraggableGraphSettings>({
+    ...defaultDraggableGraphSettings,
+    ...options.settings,
+  })
+
+  const eventBus: MappingsToEventBus<DraggableGraphEvents> = {
     ...graph.eventBus,
     onNodeDragStart: [],
     onNodeDrop: [],
   }
 
   const subscribe = generateSubscriber(eventBus)
+
+  const draggingEnabled = ref(true)
+
 
   const nodeBeingDragged = ref<GNode | undefined>()
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | undefined>()
@@ -80,7 +101,10 @@ export const useDraggableGraph = (
     ...graph,
     eventBus,
     subscribe,
-    nodeBeingDragged: readonly(nodeBeingDragged),
     draggingEnabled,
+    nodeBeingDragged: readonly(nodeBeingDragged),
+
+    theme,
+    settings,
   }
 }

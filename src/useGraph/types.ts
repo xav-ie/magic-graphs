@@ -6,6 +6,17 @@ import type {
   UTurnArrow
 } from "@/shapes/types"
 
+/**
+ * describes the options for the useGraph composable
+ *
+ * @template Theme - the type of the theme
+ * @template Settings - the type of the settings
+ */
+export type GraphOptions<Theme, Settings> = {
+  theme: Partial<Theme>;
+  settings: Partial<Settings>;
+}
+
 export type GNode = {
   id: string,
   label: string,
@@ -18,9 +29,15 @@ export type GEdge = {
   to: string,
   from: string,
   weight: number,
+  type: 'directed' | 'undirected',
 }
 
-/*
+/**
+ * describes the event bus mappings for the useGraph composable
+ */
+export type MappingsToEventBus<T> = Record<keyof T, any[]>
+
+/**
   @template T - the type of the value
   @template K - the type of the arguments
 */

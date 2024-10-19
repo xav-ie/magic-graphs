@@ -2,11 +2,45 @@
  * @module useUserEditableGraph
  */
 
-import type { SchemaItem, GNode } from "./types"
-import { useDraggableNodeAnchorGraph, type AnchorNodeGraphOptions, type NodeAnchor } from "./useNodeAnchorGraph"
-import { type Ref } from 'vue'
+import type { SchemaItem, GNode, GraphOptions } from "./types"
+import {
+  useNodeAnchorGraph,
+  type NodeAnchorGraphTheme,
+  type NodeAnchor,
+  type NodeAnchorGraphSettings,
+  type NodeAnchorGraphEvents
+} from "./useNodeAnchorGraph"
+import { ref, type Ref } from 'vue'
 
-export type UserEditableGraphOptions = AnchorNodeGraphOptions
+export type EditSettings = {
+  addedEdgeType: 'directed' | 'undirected'
+}
+
+const defaultEditSettings = {
+  addedEdgeType: 'directed'
+} as const
+
+export type UserEditableGraphEvents = NodeAnchorGraphEvents
+export type UserEditableGraphTheme = NodeAnchorGraphTheme
+
+export type UserEditableGraphSettings = NodeAnchorGraphSettings & {
+  userEditable: boolean | EditSettings
+}
+
+export type UserEditableGraphOptions = GraphOptions<UserEditableGraphTheme, UserEditableGraphSettings>
+
+const defaultUserEditableGraphSettings = {
+  userEditable: true,
+} as const
+
+const resolveEditSettings = (settings: UserEditableGraphSettings) => {
+  if (settings.userEditable === false) return null
+  if (settings.userEditable === true) return defaultEditSettings
+  return {
+    ...defaultEditSettings,
+    ...settings.userEditable
+  }
+}
 
 /**
  * @requires a graph interface with node anchors
@@ -23,7 +57,17 @@ export const useUserEditableGraph = (
   options: Partial<UserEditableGraphOptions> = {}
 ) => {
 
-  const graph = useDraggableNodeAnchorGraph(canvas, options)
+  const graph = useNodeAnchorGraph(canvas, options)
+
+  const settings = ref<UserEditableGraphSettings>({
+    ...defaultUserEditableGraphSettings,
+    ...graph.settings.value
+  })
+
+  const maybeEditSettings = resolveEditSettings(settings.value)
+  if (!maybeEditSettings) return { ...graph, settings }
+
+  const editSettings = ref(maybeEditSettings)
 
   const handleNodeCreation = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev
@@ -38,7 +82,12 @@ export const useUserEditableGraph = (
     if (!nodeSchema) return
     const node = graph.nodes.value.find(node => node.id === nodeSchema.id)
     if (!node) return
-    graph.addEdge({ from: parentNode.label, to: node.label })
+    graph.addEdge({
+      from: parentNode.label,
+      to: node.label,
+      type: editSettings.value.addedEdgeType,
+      weight: 1,
+    })
   }
 
   const handleDeletion = (ev: KeyboardEvent) => {
@@ -57,5 +106,8 @@ export const useUserEditableGraph = (
   graph.subscribe('onKeydown', handleDeletion)
   graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
 
-  return graph
+  return {
+    ...graph,
+    settings,
+  }
 }

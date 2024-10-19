@@ -1,17 +1,15 @@
-import type { GEdge, GNode } from '../types'
-import type { Arrow, UTurnArrow } from '@/shapes/types'
+import type { GEdge, GNode, SchemaItem } from '../types'
 import { getValue, getFromToNodes } from '../useGraphHelpers'
 import type { BaseGraphTheme } from '../themes'
 import { getLargestAngularSpace } from '@/shapes/helpers'
-import { get } from '@vueuse/core'
 
 export const getEdgeSchematic = (
   edge: GEdge,
   nodes: GNode[],
   edges: GEdge[],
-  options: BaseGraphTheme,
+  graphTheme: BaseGraphTheme,
   focusedId: GEdge['id'] | undefined
-) => {
+): Omit<SchemaItem, 'priority'> | undefined => {
   const { from, to } = getFromToNodes(edge, nodes)
 
   const isBidirectional = edges.some(e => e.from === to.label && e.to === from.label)
@@ -19,7 +17,7 @@ export const getEdgeSchematic = (
 
   const spacingFromNode = 3
 
-  const nodeSizeVal = getValue(options.nodeSize, to) + spacingFromNode
+  const nodeSizeVal = getValue(graphTheme.nodeSize, to) + spacingFromNode
 
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
 
@@ -31,7 +29,7 @@ export const getEdgeSchematic = (
   const start = { x: from.x, y: from.y }
   const end = epiCenter
 
-  const edgeWidthVal = getValue(options.edgeWidth, edge)
+  const edgeWidthVal = getValue(graphTheme.edgeWidth, edge)
 
   const bidirectionalEdgeSpacing = edgeWidthVal * 1.2
 
@@ -53,51 +51,83 @@ export const getEdgeSchematic = (
     })
     // remove duplicates (such as bi-directional edges)
     .filter((point, index, self) =>
-        index === self.findIndex(
-          (p) => p.x === point.x && p.y === point.y
-        )
+      index === self.findIndex(
+        (p) => p.x === point.x && p.y === point.y
+      )
     )
   )
 
-  const focusColorVal = getValue(options.edgeFocusColor, edge)
-  const colorVal = getValue(options.edgeColor, edge)
+  const focusColorVal = getValue(graphTheme.edgeFocusColor, edge)
+  const colorVal = getValue(graphTheme.edgeColor, edge)
   const isFocused = focusedId === edge.id
   const color = isFocused ? focusColorVal : colorVal
 
   const upDistance = edgeWidthVal * 8
   const downDistance = upDistance * 0.35
-  const selfDirectedEdgeLine: UTurnArrow = {
-    spacing: edgeWidthVal * 1.2,
-    center: { x: from.x, y: from.y },
-    upDistance,
-    downDistance,
-    angle: largestAngularSpace,
-    lineWidth: edgeWidthVal,
-    color,
-  };
 
-  const edgeTextColor = isFocused ? options.edgeFocusTextColor : options.edgeTextColor
+  const selfDirectedEdgeLine = {
+    schema: {
+      spacing: edgeWidthVal * 1.2,
+      center: { x: from.x, y: from.y },
+      upDistance,
+      downDistance,
+      angle: largestAngularSpace,
+      lineWidth: edgeWidthVal,
+      color,
+    },
+    schemaType: 'uturn',
+    id: edge.id,
+    graphType: 'edge',
+  } as const;
+
+  const edgeTextColor = isFocused ? graphTheme.edgeFocusTextColor : graphTheme.edgeTextColor
   const edgeTextColorVal = getValue(edgeTextColor, edge)
 
-  const edgeLine: Arrow = {
-    start,
-    end,
-    color,
-    width: getValue(options.edgeWidth, edge),
-    // TODO - must take into account of actual node size.
-    // TODO - 35 is the default node size but wont work if node size is different
-    textOffsetFromCenter: 32,
-    textArea: {
-      color: options.graphBgColor,
-      editable: true,
-      text: {
-        content: edge.weight.toString(),
-        color: edgeTextColorVal,
-        fontSize: getValue(options.edgeTextSize, edge),
-        fontWeight: getValue(options.edgeTextFontWeight, edge),
-      }
+  const textArea = {
+    color: graphTheme.graphBgColor,
+    editable: true,
+    text: {
+      content: edge.weight.toString(),
+      color: edgeTextColorVal,
+      fontSize: getValue(graphTheme.edgeTextSize, edge),
+      fontWeight: getValue(graphTheme.edgeTextFontWeight, edge),
     }
   }
+
+  if (edge.type === 'undirected') {
+    // find the edge that is in the opposite direction
+    const oppositeEdge = edges.find(e => e.from === edge.to && e.to === edge.from)
+    if (!oppositeEdge) return
+    if (edge.id > oppositeEdge.id) return
+    return {
+      schema: {
+        start: { x: from.x, y: from.y },
+        end: { x: to.x, y: to.y },
+        color,
+        width: edgeWidthVal,
+        textArea,
+      },
+      schemaType: 'line',
+      id: edge.id,
+      graphType: 'edge',
+    }
+  }
+
+  const edgeLine = {
+    schema: {
+      start,
+      end,
+      color,
+      width: getValue(graphTheme.edgeWidth, edge),
+      // TODO - must take into account of actual node size.
+      // TODO - 32 is approx default node size but wont work if node size is different
+      textOffsetFromCenter: 32,
+      textArea,
+    },
+    schemaType: 'arrow',
+    id: edge.id,
+    graphType: 'edge',
+  } as const
 
   return isSelfDirecting ? selfDirectedEdgeLine : edgeLine
 }

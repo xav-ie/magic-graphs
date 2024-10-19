@@ -1,57 +1,28 @@
-import { onMounted, type Ref } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
+/**
+ * @module useGraph
+ *
+ * This is where the final layer of composition happens. Where the theme meets the graph and the alias is created.
+ * Consumers of the useGraph API import from this file.
+ */
+
+import { type Ref } from 'vue'
 import { themes } from './themes'
-import type { GNode, GEdge } from './types'
-import { useDraggableGraph } from './useDraggableGraph'
-import { useGraph, type GraphOptions } from './useGraphBase'
-import { useUserEditableGraph, type UserEditableGraphOptions } from './useUserEditableGraph'
+import {
+  usePersistentGraph,
+  type PersistentGraphOptions,
+} from './usePersistentGraph'
+import type { useBaseGraph } from './useGraphBase'
 
-export const useDarkUserEditableGraph = (
+export const useDarkGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<UserEditableGraphOptions> = {}
-) => useUserEditableGraph(canvas, {
-  ...themes.dark,
-  ...options,
+  options: Partial<PersistentGraphOptions> = {},
+) => usePersistentGraph(canvas, {
+  theme: {
+    ...options.theme,
+    ...themes.dark,
+  },
+  settings: options.settings,
 })
 
-export const useWeirdDraggableGraph = (
-  canvas: Ref<HTMLCanvasElement>,
-  options: Partial<GraphOptions> = {}
-) => useDraggableGraph(canvas, {
-  ...themes.weird,
-  ...options,
-})
-
-export const useDarkPersistentUserEditableGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  storageKey: string,
-  options: Partial<UserEditableGraphOptions> = {}
-) => {
-
-  const graph = useDarkUserEditableGraph(canvas, options)
-
-  const nodeStorage = useLocalStorage<GNode[]>(storageKey + '-nodes', [])
-  const edgeStorage = useLocalStorage<GEdge[]>(storageKey + '-edges', [])
-
-  const trackChanges = () => {
-    nodeStorage.value = graph.nodes.value
-    edgeStorage.value = graph.edges.value
-  }
-
-  onMounted(() => {
-    for (const node of nodeStorage.value) {
-      graph.addNode(node, false)
-    }
-    for (const edge of edgeStorage.value) {
-      graph.addEdge(edge)
-    }
-
-    graph.subscribe('onStructureChange', trackChanges)
-    graph.subscribe('onNodeDrop', trackChanges)
-    graph.subscribe('onGraphReset', trackChanges)
-  })
-
-  return graph
-}
-
-export type Graph = ReturnType<typeof useGraph>
+export type Graph = ReturnType<typeof useBaseGraph>
+export type DarkGraph = ReturnType<typeof useDarkGraph>

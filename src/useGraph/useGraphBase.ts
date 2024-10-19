@@ -13,7 +13,9 @@ import type {
   KeyboardEventMap,
   MouseEventEntries,
   KeyboardEventEntries,
-  SchemaItem
+  SchemaItem,
+  GraphOptions,
+  MappingsToEventBus
 } from './types'
 import {
   generateSubscriber,
@@ -28,7 +30,7 @@ import { getEdgeSchematic } from './schematics/edge';
 import { themes, type BaseGraphTheme } from './themes';
 import { engageTextarea } from './textarea';
 
-export type UseGraphEventBusCallbackMappings = {
+export type BaseGraphEvents = {
   /* graph dataflow events */
   onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
   onFocusChange: (
@@ -57,24 +59,27 @@ export type UseGraphEventBusCallbackMappings = {
   onKeydown: (ev: KeyboardEvent) => void;
 }
 
-export type MappingsToEventBus<T> = Record<keyof T, any[]>
-export type UseGraphEventBus = MappingsToEventBus<UseGraphEventBusCallbackMappings>
+const defaultSettings = {} as const
 
-export const useGraph =(
+export type BaseGraphSettings = {}
+export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
+
+export const useBaseGraph =(
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  themeOptions: Partial<BaseGraphTheme> = {},
+  options: Partial<BaseGraphOptions> = {},
 ) => {
 
-  const options = ref({
+  const theme = ref<BaseGraphTheme>({
     ...themes.default,
-    ...themeOptions,
+    ...options.theme,
   })
 
-  const nodes = ref<GNode[]>([])
-  const edges = ref<GEdge[]>([])
-  const focusedId = ref<GNode['id'] | GEdge['id'] | undefined>()
+  const settings = ref<BaseGraphSettings>({
+    ...defaultSettings,
+    ...options.settings,
+  })
 
-  const eventBus: UseGraphEventBus = {
+  const eventBus: MappingsToEventBus<BaseGraphEvents> = {
     onStructureChange: [],
     onFocusChange: [],
     onNodeAdded: [],
@@ -82,19 +87,21 @@ export const useGraph =(
     onRepaint: [],
     onNodeHoverChange: [],
     onGraphReset: [],
-
-
-    /* canvas element events */
     onClick: [],
     onMouseDown: [],
     onMouseUp: [],
     onMouseMove: [],
     onDblClick: [],
-
     onKeydown: [],
   }
 
   const subscribe = generateSubscriber(eventBus)
+
+  const nodes = ref<GNode[]>([])
+  const edges = ref<GEdge[]>([])
+  const focusedId = ref<GNode['id'] | GEdge['id'] | undefined>()
+
+
 
   const mouseEvents: Partial<MouseEventMap> = {
     click: (ev: MouseEvent) => {
@@ -157,8 +164,9 @@ export const useGraph =(
   const updateAggregator: ((aggregator: SchemaItem[]) => SchemaItem[])[] = []
 
   updateAggregator.push((aggregator) => {
+
     const nodeSchemaItems = nodes.value.map((node, i) => {
-      const schema = getNodeSchematic(node, options.value, focusedId.value)
+      const schema = getNodeSchematic(node, theme.value, focusedId.value)
       const isCircle = 'radius' in schema
       return {
         id: node.id,
@@ -168,17 +176,16 @@ export const useGraph =(
         priority: (i * 10) + 1000,
       } as SchemaItem
     })
+
     const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(edge, nodes.value, edges.value, options.value, focusedId.value)
-      const isUTurn = 'upDistance' in schema
-      return ({
-        id: edge.id,
-        graphType: 'edge',
-        schemaType: isUTurn ? 'uturn' : 'arrow',
-        schema,
-        priority: (i * 10),
-      } as const)
-    }).filter(({ schema }) => schema) as SchemaItem[]
+      const schema = getEdgeSchematic(edge, nodes.value, edges.value, theme.value, focusedId.value)
+      if (!schema) return
+      return {
+        ...schema,
+        priority: i * 10
+      }
+    }).filter((i) => i && i.schema) as SchemaItem[]
+
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)
     return aggregator
@@ -222,7 +229,7 @@ export const useGraph =(
       throw new Error('Canvas element not found')
     }
 
-    canvas.value.style.backgroundColor = options.value.graphBgColor
+    canvas.value.style.backgroundColor = theme.value.graphBgColor
 
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.addEventListener(event, listeners)
@@ -331,16 +338,49 @@ export const useGraph =(
   }
 
   const addEdge = (edge: Omit<GEdge, 'id'>) => {
-    const edgeExists = edges.value.some(e => e.from === edge.from && e.to === edge.to)
-    if (edgeExists) return
+    if (edge.type === 'directed') {
+      const edgeExists = edges.value.some(e => e.from === edge.from && e.to === edge.to)
+      if (edgeExists) return
+      addDirectedEdge(edge)
+    } else if (edge.type === 'undirected') {
+      // checks both directions
+      const cond = (e: GEdge) => (e.from === edge.from && e.to === edge.to) || (e.from === edge.to && e.to === edge.from)
+      const edgeExists = edges.value.some(cond)
+      if (edgeExists) return
+      addUndirectedEdge(edge)
+    } else {
+      throw new Error('Unknown edge type')
+    }
+
+    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    return edge
+  }
+
+  const addDirectedEdge = (edge: Omit<GEdge, 'id'>) => {
     edges.value.push({
       to: edge.to,
       from: edge.from,
       weight: edge.weight ?? 1,
+      type: 'directed',
       id: generateId()
     })
-    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-    return edge
+  }
+
+  const addUndirectedEdge = (edge: Omit<GEdge, 'id'>) => {
+    edges.value.push({
+      to: edge.to,
+      from: edge.from,
+      weight: edge.weight ?? 1,
+      type: 'undirected',
+      id: generateId()
+    })
+    edges.value.push({
+      to: edge.from,
+      from: edge.to,
+      weight: edge.weight ?? 1,
+      type: 'undirected',
+      id: generateId()
+    })
   }
 
   const removeEdge = (edgeId: GEdge['id']) => {
@@ -402,11 +442,15 @@ export const useGraph =(
     },
     focusedId: readonly(focusedId),
     setFocus,
+
     eventBus,
     subscribe,
-    options,
     updateAggregator,
     aggregator,
+
+    theme,
+    settings,
+
     resetGraph,
   }
 }
