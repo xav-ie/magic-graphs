@@ -3,6 +3,7 @@ import {
   onMounted,
   onBeforeUnmount,
   readonly,
+  watch,
   type Ref,
 } from 'vue'
 import { onClickOutside } from '@vueuse/core';
@@ -59,6 +60,10 @@ export type BaseGraphEvents = {
 
   /* global dom events */
   onKeydown: (ev: KeyboardEvent) => void;
+
+  /* reactivity events */
+  onThemeChange: () => void;
+  onSettingsChange: () => void;
 }
 
 const defaultSettings = {} as const
@@ -95,6 +100,8 @@ export const useBaseGraph =(
     onMouseMove: [],
     onDblClick: [],
     onKeydown: [],
+    onThemeChange: [],
+    onSettingsChange: [],
   }
 
   const { subscribe, unsubscribe } = generateSubscriber(eventBus)
@@ -428,6 +435,9 @@ export const useBaseGraph =(
   subscribe('onGraphReset', () => eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value)))
 
   updateAggregator.push(liftHoveredNodeToTop)
+
+  watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
+  watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
 
   return {
     nodes,

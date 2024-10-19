@@ -1,5 +1,7 @@
+import type { BaseGraphNodeTheme } from './themes'
 import type { MaybeGetter, SchemaItem, GNode, GEdge, MappingsToEventBus } from './types'
 import type { BaseGraphEvents } from './useGraphBase'
+import type { PersistentGraphTheme } from './usePersistentGraph'
 
 /**
   unwraps MaybeGetter type into a value of type T
@@ -85,3 +87,24 @@ export const getFromToNodes = (edge: GEdge, nodes: GNode[]) => {
 
   return { from, to }
 }
+
+/**
+ * gets the theme attributes for a GNode at the point in time the function is called
+ *
+ * @param theme - the theme of the useGraph instance
+ * @param node - the node to get the theme for
+ * @returns the theme attributes for the node
+ */
+export const resolveThemeForNode = (theme: PersistentGraphTheme, node: GNode): BaseGraphNodeTheme => ({
+  nodeSize: getValue(theme.nodeSize, node),
+  nodeBorderWidth: getValue(theme.nodeBorderWidth, node),
+  nodeColor: getValue(theme.nodeColor, node),
+  nodeBorderColor: getValue(theme.nodeBorderColor, node),
+  nodeFocusColor: getValue(theme.nodeFocusColor, node),
+  nodeFocusBorderColor: getValue(theme.nodeFocusBorderColor, node),
+  nodeText: getValue(theme.nodeText, node),
+  nodeFocusTextColor: getValue(theme.nodeFocusTextColor, node),
+  nodeTextSize: getValue(theme.nodeTextSize, node),
+  nodeTextColor: getValue(theme.nodeTextColor, node),
+  nodeShape: getValue(theme.nodeShape, node),
+})

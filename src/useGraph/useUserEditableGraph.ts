@@ -89,7 +89,6 @@ export const useUserEditableGraph = (
   }
 
   const handleDeletion = (ev: KeyboardEvent) => {
-    console.log('deletion')
     const focusedItem = graph.getFocusedItem()
     if (!focusedItem) return
     if (ev.key !== 'Backspace') return
