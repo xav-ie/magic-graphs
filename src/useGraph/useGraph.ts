@@ -22,36 +22,4 @@ export const useWeirdDraggableGraph = (
   ...options,
 })
 
-export const useDarkPersistentUserEditableGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  storageKey: string,
-  options: Partial<UserEditableGraphOptions> = {}
-) => {
-
-  const graph = useDarkUserEditableGraph(canvas, options)
-
-  const nodeStorage = useLocalStorage<GNode[]>(storageKey + '-nodes', [])
-  const edgeStorage = useLocalStorage<GEdge[]>(storageKey + '-edges', [])
-
-  const trackChanges = () => {
-    nodeStorage.value = graph.nodes.value
-    edgeStorage.value = graph.edges.value
-  }
-
-  onMounted(() => {
-    for (const node of nodeStorage.value) {
-      graph.addNode(node, false)
-    }
-    for (const edge of edgeStorage.value) {
-      graph.addEdge(edge)
-    }
-
-    graph.subscribe('onStructureChange', trackChanges)
-    graph.subscribe('onNodeDrop', trackChanges)
-    graph.subscribe('onGraphReset', trackChanges)
-  })
-
-  return graph
-}
-
 export type Graph = ReturnType<typeof useGraph>
