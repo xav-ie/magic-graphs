@@ -24,9 +24,7 @@ const canvasWidth = computed(() => width.value - padding * 2);
 const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 
 const graph = useDarkGraph(canvas, {
-  theme: {
-    edgeWidth: (edge) => (edge?.weight) ?? 10,
-  },
+  theme: {},
   settings: {
     userEditable: {
       addedEdgeType: 'undirected',

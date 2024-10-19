@@ -262,7 +262,6 @@ export const useNodeAnchorGraph = (
     if (!anchor) return
     activeAnchor.value = anchor
     eventBus.onNodeAnchorDragStart.forEach(fn => fn(parentNode.value, anchor))
-    graph.draggingEnabled.value = false
   })
 
   /**
@@ -286,7 +285,6 @@ export const useNodeAnchorGraph = (
     eventBus.onNodeAnchorDrop.forEach(fn => fn(parentNode.value, activeAnchor.value))
     activeAnchor.value = undefined
     parentNode.value = undefined
-    graph.draggingEnabled.value = true
   }
 
   subscribe('onMouseUp', dropAnchor)

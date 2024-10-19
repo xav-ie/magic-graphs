@@ -54,14 +54,11 @@ export const useDraggableGraph = (
 
   const subscribe = generateSubscriber(eventBus)
 
-  const draggingEnabled = ref(true)
-
-
   const nodeBeingDragged = ref<GNode | undefined>()
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | undefined>()
 
   const beginDrag = (ev: MouseEvent) => {
-    if (!draggingEnabled.value) return
+    if (!settings.value.draggable) return
     const { offsetX, offsetY } = ev;
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
     const node = graph.getNodeByCoordinates(offsetX, offsetY);
@@ -80,7 +77,7 @@ export const useDraggableGraph = (
     if (
       !nodeBeingDragged.value ||
       !startingCoordinatesOfDrag.value ||
-      !draggingEnabled.value
+      !settings.value.draggable
     ) return
     const { offsetX, offsetY } = ev;
     const dx = offsetX - startingCoordinatesOfDrag.value.x;
@@ -89,8 +86,10 @@ export const useDraggableGraph = (
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
   }
 
-  watch(draggingEnabled, () => {
-    nodeBeingDragged.value = undefined
+  watch(settings, () => {
+    if (!settings.value.draggable) {
+      nodeBeingDragged.value = undefined
+    }
   })
 
   subscribe('onMouseDown', beginDrag)
@@ -101,7 +100,6 @@ export const useDraggableGraph = (
     ...graph,
     eventBus,
     subscribe,
-    draggingEnabled,
     nodeBeingDragged: readonly(nodeBeingDragged),
 
     theme,
