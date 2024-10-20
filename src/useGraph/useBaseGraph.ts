@@ -25,8 +25,9 @@ import {
   generateId,
   prioritizeNode,
   getRandomPointOnCanvas
-} from './useGraphHelpers';
-import { drawShape, getTextAreaLocation } from '@/shapes/draw';
+} from './helpers';
+import { drawShape } from '@/shapes/draw';
+import { getTextAreaLocation } from '@/shapes/draw/text';
 import { hitboxes } from '@/shapes/hitboxes';
 import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
@@ -154,8 +155,8 @@ export const useBaseGraph =(
     )
     if ('textArea' in schema && schema.textArea?.editable ) {
 
-      const textAreaLocationArrow = getLocationTextArea(schema.textArea).arrow(schema)
-      const textAreaLocationLine = getLocationTextArea(schema.textArea).line(schema)
+      const textAreaLocationArrow = getTextAreaLocation.arrow(schema)
+      const textAreaLocationLine = getTextAreaLocation.line(schema)
       const textAreaLocation = schemaType === 'arrow' ? textAreaLocationArrow : textAreaLocationLine
 
       // TODO isInArrowTextArea doesn't cover undirected edges
