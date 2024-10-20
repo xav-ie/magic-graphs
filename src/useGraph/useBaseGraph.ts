@@ -25,8 +25,8 @@ import {
   generateId,
   prioritizeNode,
   getRandomPointOnCanvas
-} from './helpers';
-import { drawShape, getLocationTextArea } from '@/shapes/draw';
+} from './useGraphHelpers';
+import { drawShape, getTextAreaLocation } from '@/shapes/draw';
 import { hitboxes } from '@/shapes/hitboxes';
 import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
@@ -302,6 +302,7 @@ export const useBaseGraph =(
   const getDrawItemsByCoordinates = (x: number, y: number) => {
     const point = { x, y }
     const { isInCircle, isInLine, isInSquare, isInArrow, isInUTurnArrow } = hitboxes(point)
+
     // TODO Make sure that this works with priority
     return aggregator.value.filter(item => {
       if (item.schemaType === 'circle') {
@@ -423,6 +424,7 @@ export const useBaseGraph =(
     prioritizeNode(currHoveredNode.id, aggregator)
     return aggregator
   }
+
 
   const reset = () => {
     nodes.value = []

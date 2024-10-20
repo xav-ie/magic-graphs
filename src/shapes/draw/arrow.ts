@@ -1,9 +1,9 @@
-import { type Line, ARROW_DEFAULTS } from '../types';
-import { drawLineWithCtx } from './line';
+import { type Arrow, ARROW_DEFAULTS } from '../types';
+import { drawLineWithCtx, getTextAreaLocationOnLine } from './line';
 import { drawTriangleWithCtx } from './triangle';
-import { drawTextAreaWithCtx } from '../draw';
+import { drawTextArea } from './text';
 
-export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line) => {
+export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Arrow) => {
   const drawLine = drawLineWithCtx(ctx);
   const drawTriangle = drawTriangleWithCtx(ctx);
   const {
@@ -55,5 +55,38 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Lin
   });
 
   // text must be drawn over the arrow
-  if (options.textArea) drawTextAreaWithCtx(ctx).arrow(options);
+  if (options.textArea) drawTextArea(ctx).arrow(options);
+}
+
+export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
+  const {
+    textOffsetFromCenter,
+    start: lineStart,
+    end: lineEnd,
+    textArea,
+    width,
+    color
+  } = {
+    ...ARROW_DEFAULTS,
+    ...arrow,
+  }
+
+  const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
+  const arrowHeadHeight = width * 2.5;
+
+  const shaftEnd = {
+    x: lineEnd.x - arrowHeadHeight * Math.cos(angle),
+    y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
+  }
+
+  const shaft = {
+    start: lineStart,
+    end: shaftEnd,
+    width,
+    color,
+    textOffsetFromCenter,
+    textArea,
+  }
+
+  return getTextAreaLocationOnLine(shaft);
 }

@@ -162,11 +162,6 @@ export const usePersistentGraph = (
     trackChangeEvents.forEach(event => graph.unsubscribe(event, trackGraphState))
   }
 
-  const listenForEvents = () => {
-    listenForOptionsEvents()
-    listenForGraphStateEvents()
-  }
-
   const stopListeningForEvents = () => {
     stopListeningForOptionsEvents()
     stopListeningForGraphStateEvents()
@@ -189,7 +184,7 @@ export const usePersistentGraph = (
       load()
     }
 
-    listenForEvents()
+    listenForGraphStateEvents()
 
     if (newSettings.trackSettings || newSettings.trackTheme) {
       listenForOptionsEvents()

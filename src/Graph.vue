@@ -107,8 +107,10 @@ const btns = [
 <template>
   <div :style="{ padding: `${padding}px` }">
     <div class="absolute flex gap-2 m-2">
-      <div v-for="btn in btns">
-        <button
+      <div
+        v-for="btn in btns"
+      >
+      <button
           v-if="!btn.cond || btn.cond()"
           @click.stop="btn.action"
           :class="`bg-${btn.color()} text-white px-3 py-1 rounded-lg font-bold`"
