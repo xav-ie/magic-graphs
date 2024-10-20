@@ -111,7 +111,6 @@ export const usePersistentGraph = (
     const currentKey = storageKey.value
 
     // trackOptions was triggered by a change in the storage key, so we cannot update storage
-    console.log('trackOptions', previousKey, currentKey)
     if (previousKey !== currentKey) {
       previousKey = currentKey
       return

@@ -1,6 +1,6 @@
 import { type Line, LINE_DEFAULTS, TEXT_DEFAULTS } from '../types';
-import { drawTextAreaWithCtx } from '../draw';
 import { getAngle } from '../helpers';
+import { drawTextArea } from './text';
 
 export const drawLineWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line) => {
 
@@ -22,7 +22,7 @@ export const drawLineWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line
   ctx.stroke();
   ctx.closePath();
 
-  if (options.textArea) drawTextAreaWithCtx(ctx).line(options);
+  if (options.textArea) drawTextArea(ctx).line(options);
 }
 
 export const getTextAreaLocationOnLine = (line: Line) => {

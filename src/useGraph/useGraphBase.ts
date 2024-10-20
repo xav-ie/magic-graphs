@@ -149,9 +149,8 @@ export const useBaseGraph =(
     }
 
     const { schema, schemaType } = topItem
-    const { isInArrowTextArea } = hitboxes({ x: ev.offsetX, y: ev.offsetY }
+    const { isInArrowTextArea } = hitboxes({ x: ev.offsetX, y: ev.offsetY })
 
-    )
     if ('textArea' in schema && schema.textArea?.editable ) {
 
       const textAreaLocationArrow = getTextAreaLocation.arrow(schema)

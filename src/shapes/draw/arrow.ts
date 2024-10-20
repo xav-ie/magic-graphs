@@ -1,7 +1,7 @@
-import { type Arrow, ARROW_DEFAULTS, LINE_DEFAULTS } from '../types';
+import { type Arrow, ARROW_DEFAULTS } from '../types';
 import { drawLineWithCtx, getTextAreaLocationOnLine } from './line';
 import { drawTriangleWithCtx } from './triangle';
-import { drawTextAreaWithCtx } from '../draw';
+import { drawTextArea } from './text';
 
 export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Arrow) => {
   const drawLine = drawLineWithCtx(ctx);
@@ -55,7 +55,7 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Arr
   });
 
   // text must be drawn over the arrow
-  if (options.textArea) drawTextAreaWithCtx(ctx).arrow(options);
+  if (options.textArea) drawTextArea(ctx).arrow(options);
 }
 
 export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
