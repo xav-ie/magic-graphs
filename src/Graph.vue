@@ -27,6 +27,7 @@ const graph = useDarkGraph(canvas, {
   theme: {},
   settings: {
     userEditable: {},
+    displayEdgeLabels: false,
     persistent: {
       storageKey: 'graph',
     }

@@ -73,6 +73,8 @@ export const usePersistentGraph = (
 
   const graph = useUserEditableGraph(canvas, options)
 
+  return graph
+
   const settings = ref<PersistentGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultPersistentGraphSettings,
     ...options.settings,

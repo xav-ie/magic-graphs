@@ -1,7 +1,14 @@
-import type { GEdge, GNode, LineSchemaItem, ArrowSchemaItem, ArrowUTurnSchemaItem } from '../types'
-import { getValue, getFromToNodes, resolveThemeForEdge } from '../helpers'
+import type {
+  GEdge,
+  GNode,
+  LineSchemaItem,
+  ArrowSchemaItem,
+  ArrowUTurnSchemaItem
+} from '../types'
+import { getValue, getFromToNodes } from '../helpers'
 import type { BaseGraphTheme } from '../themes'
 import { getLargestAngularSpace } from '@/shapes/helpers'
+import type { BaseGraphSettings } from '../useBaseGraph'
 
 type EdgeSchemas = LineSchemaItem | ArrowSchemaItem | ArrowUTurnSchemaItem
 type EdgeSchematic = Omit<EdgeSchemas, 'priority'> | undefined
@@ -11,6 +18,7 @@ export const getEdgeSchematic = (
   nodes: GNode[],
   edges: GEdge[],
   graphTheme: BaseGraphTheme,
+  graphSettings: BaseGraphSettings,
   focusedId: GEdge['id'] | undefined
 ): EdgeSchematic => {
 
@@ -68,6 +76,20 @@ export const getEdgeSchematic = (
   const isFocused = focusedId === edge.id
   const colorVal = getValue(isFocused ? focusColor : color, edge)
 
+  const edgeTextColor = isFocused ? graphTheme.edgeFocusTextColor : graphTheme.edgeTextColor
+  const edgeTextColorVal = getValue(edgeTextColor, edge)
+
+  const textArea = {
+    color: graphTheme.graphBgColor,
+    editable: true,
+    text: {
+      content: edge.weight.toString(),
+      color: edgeTextColorVal,
+      fontSize: getValue(graphTheme.edgeTextSize, edge),
+      fontWeight: getValue(graphTheme.edgeTextFontWeight, edge),
+    }
+  }
+
   const upDistance = edgeWidthVal * 8
   const downDistance = upDistance * 0.35
 
@@ -86,20 +108,6 @@ export const getEdgeSchematic = (
     graphType: 'edge',
   } as const;
 
-  const edgeTextColor = isFocused ? graphTheme.edgeFocusTextColor : graphTheme.edgeTextColor
-  const edgeTextColorVal = getValue(edgeTextColor, edge)
-
-  const textArea = {
-    color: graphTheme.graphBgColor,
-    editable: true,
-    text: {
-      content: edge.weight.toString(),
-      color: edgeTextColorVal,
-      fontSize: getValue(graphTheme.edgeTextSize, edge),
-      fontWeight: getValue(graphTheme.edgeTextFontWeight, edge),
-    }
-  }
-
   if (edge.type === 'undirected') {
     // find the edge that is in the opposite direction
     const oppositeEdge = edges.find(e => e.from === edge.to && e.to === edge.from)
@@ -111,13 +119,15 @@ export const getEdgeSchematic = (
         end: { x: to.x, y: to.y },
         color: colorVal,
         width: edgeWidthVal,
-        textArea,
+        textArea: graphSettings.displayEdgeLabels ? textArea : undefined,
       },
       schemaType: 'line',
       id: edge.id,
       graphType: 'edge',
     }
   }
+
+  // console.log(graphSettings.displayEdgeLabels)
 
   const edgeLine = {
     schema: {
@@ -128,7 +138,7 @@ export const getEdgeSchematic = (
       // TODO - must take into account of actual node size.
       // TODO - 32 is approx default node size but wont work if node size is different
       textOffsetFromCenter: 32,
-      textArea,
+      textArea: graphSettings.displayEdgeLabels ? textArea : undefined,
     },
     schemaType: 'arrow',
     id: edge.id,

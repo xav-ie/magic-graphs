@@ -74,10 +74,22 @@ export type BaseGraphSettings = {
    * @default 60
    */
   repaintFps: number;
+  /**
+   * whether to display edge labels
+   * @default true
+   */
+  displayEdgeLabels: boolean;
+  /**
+   * whether edge labels should be editable
+   * @default true
+   */
+  edgeLabelsEditable: boolean;
 }
 
 const defaultSettings = {
   repaintFps: 60,
+  displayEdgeLabels: true,
+  edgeLabelsEditable: true,
 } as const
 
 export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
@@ -187,7 +199,7 @@ export const useBaseGraph =(
   updateAggregator.push((aggregator) => {
 
     const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(edge, nodes.value, edges.value, theme.value, focusedId.value)
+      const schema = getEdgeSchematic(edge, nodes.value, edges.value, theme.value, settings.value, focusedId.value)
       if (!schema) return
       return {
         ...schema,
@@ -449,7 +461,13 @@ export const useBaseGraph =(
   updateAggregator.push(liftHoveredNodeToTop)
 
   watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
-  watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
+  watch(settings, (n, o) => {
+    console.log('new settings', n)
+    console.log('old settings', o)
+    eventBus.onSettingsChange.forEach(fn => fn())
+  }, { deep: true })
+
+  // subscribe('onSettingsChange', () => console.log('settings changed'))
 
   return {
     nodes,
