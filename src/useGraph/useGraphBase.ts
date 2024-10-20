@@ -136,7 +136,7 @@ export const useBaseGraph =(
 
   // function breaks with guard clauses!!!
   const handleFocusChange = (ev: MouseEvent) => {
-    const focusableTypes = ['node', 'edge']
+    const focusableTypes: SchemaItem['graphType'][] = ['node', 'edge']
     const topItem = getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     if (!topItem || !focusableTypes.includes(topItem.graphType)) return setFocus(undefined)
 
