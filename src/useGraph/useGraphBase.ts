@@ -3,6 +3,7 @@ import {
   onMounted,
   onBeforeUnmount,
   readonly,
+  watch,
   type Ref,
 } from 'vue'
 import { onClickOutside } from '@vueuse/core';
@@ -15,7 +16,9 @@ import type {
   KeyboardEventEntries,
   SchemaItem,
   GraphOptions,
-  MappingsToEventBus
+  MappingsToEventBus,
+  Aggregator,
+  UpdateAggregator
 } from './types'
 import {
   generateSubscriber,
@@ -57,6 +60,10 @@ export type BaseGraphEvents = {
 
   /* global dom events */
   onKeydown: (ev: KeyboardEvent) => void;
+
+  /* reactivity events */
+  onThemeChange: () => void;
+  onSettingsChange: () => void;
 }
 
 const defaultSettings = {} as const
@@ -93,15 +100,15 @@ export const useBaseGraph =(
     onMouseMove: [],
     onDblClick: [],
     onKeydown: [],
+    onThemeChange: [],
+    onSettingsChange: [],
   }
 
-  const subscribe = generateSubscriber(eventBus)
+  const { subscribe, unsubscribe } = generateSubscriber(eventBus)
 
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
   const focusedId = ref<GNode['id'] | GEdge['id'] | undefined>()
-
-
 
   const mouseEvents: Partial<MouseEventMap> = {
     click: (ev: MouseEvent) => {
@@ -162,22 +169,10 @@ export const useBaseGraph =(
 
   subscribe('onMouseDown', handleFocusChange)
 
-  const aggregator = ref<SchemaItem[]>([])
-  const updateAggregator: ((aggregator: SchemaItem[]) => SchemaItem[])[] = []
+  const aggregator = ref<Aggregator>([])
+  const updateAggregator: UpdateAggregator[] = []
 
   updateAggregator.push((aggregator) => {
-
-    const nodeSchemaItems = nodes.value.map((node, i) => {
-      const schema = getNodeSchematic(node, theme.value, focusedId.value)
-      const isCircle = 'radius' in schema
-      return {
-        id: node.id,
-        graphType: 'node',
-        schemaType: isCircle ? 'circle' : 'square',
-        schema,
-        priority: (i * 10) + 1000,
-      } as SchemaItem
-    })
 
     const edgeSchemaItems = edges.value.map((edge, i) => {
       const schema = getEdgeSchematic(edge, nodes.value, edges.value, theme.value, focusedId.value)
@@ -186,7 +181,16 @@ export const useBaseGraph =(
         ...schema,
         priority: i * 10
       }
-    }).filter((i) => i && i.schema) as SchemaItem[]
+    }).filter((item) => item && item.schema) as SchemaItem[]
+
+    const nodeSchemaItems = nodes.value.map((node, i) => {
+      const schema = getNodeSchematic(node, theme.value, focusedId.value)
+      if (!schema) return
+      return {
+        ...schema,
+        priority: (i * 10) + 1000,
+      }
+    }).filter((item) => item && item.schema) as SchemaItem[]
 
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)
@@ -432,6 +436,9 @@ export const useBaseGraph =(
 
   updateAggregator.push(liftHoveredNodeToTop)
 
+  watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
+  watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
+
   return {
     nodes,
     edges,
@@ -456,6 +463,7 @@ export const useBaseGraph =(
 
     eventBus,
     subscribe,
+    unsubscribe,
     updateAggregator,
     aggregator,
 

@@ -7,7 +7,7 @@ import type {
 } from "@/shapes/types"
 
 /**
- * describes the options for the useGraph composable
+ * @describes the options argument for all useGraph composition functions
  *
  * @template Theme - the type of the theme
  * @template Settings - the type of the settings
@@ -17,6 +17,9 @@ export type GraphOptions<Theme, Settings> = {
   settings: Partial<Settings>;
 }
 
+/**
+ * @describes a node in a useGraph graph instance
+ */
 export type GNode = {
   id: string,
   label: string,
@@ -24,6 +27,9 @@ export type GNode = {
   y: number,
 }
 
+/**
+ * @describes an edge in a useGraph graph instance
+ */
 export type GEdge = {
   id: string,
   to: string,
@@ -33,7 +39,19 @@ export type GEdge = {
 }
 
 /**
- * describes the event bus mappings for the useGraph composable
+ * @describes the array in which schema items are added into in order to be rendered on the canvas
+ */
+export type Aggregator = SchemaItem[]
+
+/**
+ * @describes a function that takes an aggregator and returns an aggregator with alterations to
+ * the internal contents, these functions are layered on top of each other to create a pipeline
+ * which will be invoked with a reducer each render cycle
+ */
+export type UpdateAggregator = (aggregator: Aggregator) => Aggregator
+
+/**
+ * @describes the event bus mappings for the useGraph composable
  */
 export type MappingsToEventBus<T> = Record<keyof T, any[]>
 
@@ -63,9 +81,24 @@ export type KeyboardEventMap = EventMap<KeyboardEventNames, KeyboardEvent>
 export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][]
 export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
 
+type BaseGraphTypes = 'node' | 'edge'
+type NodeAnchorGraphTypes = 'node-anchor' | 'link-preview'
+
 type SharedSchemaItemFields = {
+  /**
+   * unique identifier for the schema item
+   */
   id: string,
-  graphType: string,
+  /**
+   * the type of graph data this schema item represents
+   */
+  graphType: BaseGraphTypes | NodeAnchorGraphTypes,
+  /**
+   * determines the order in which this schema item is rendered
+   * on the canvas. The lower the number, the higher the priority, the higher the priority,
+   * the earlier the item is rendered on the canvas.
+   * (items with a lower priority score will appear visually underneath those with a higher score)
+   */
   priority: number,
 }
 
@@ -94,4 +127,7 @@ export type ArrowUTurnSchemaItem = SharedSchemaItemFields & {
   schema: UTurnArrow
 }
 
+/**
+ * @describes a schema item that can be fed into the aggregator in order to be rendered on the canvas
+ */
 export type SchemaItem = CircleSchemaItem | LineSchemaItem | SquareSchemaItem | ArrowSchemaItem | ArrowUTurnSchemaItem

@@ -1,27 +1,40 @@
-import type { UserEditableGraphOptions } from "./useUserEditableGraph"
 import type { GNode, NodeGetterOrValue, EdgeGetterOrValue } from "./types"
 import type { SupportedNodeShapes } from "./schematics/node"
 import type { TextFontWeight } from "@/shapes/types"
 
-export type BaseGraphTheme = {
-  nodeSize: NodeGetterOrValue<number>,
-  nodeBorderWidth: NodeGetterOrValue<number>,
-  nodeColor: NodeGetterOrValue<string>,
-  nodeBorderColor: NodeGetterOrValue<string>,
-  nodeFocusColor: NodeGetterOrValue<string>,
-  nodeFocusBorderColor: NodeGetterOrValue<string>,
-  nodeText: NodeGetterOrValue<string>,
-  nodeFocusTextColor: NodeGetterOrValue<string>,
-  nodeTextSize: NodeGetterOrValue<number>,
-  nodeTextColor: NodeGetterOrValue<string>,
-  nodeShape: NodeGetterOrValue<SupportedNodeShapes>,
-  edgeColor: EdgeGetterOrValue<string>,
-  edgeWidth: EdgeGetterOrValue<number>,
-  edgeTextSize: EdgeGetterOrValue<number>,
-  edgeTextColor: EdgeGetterOrValue<string>,
-  edgeFocusTextColor: EdgeGetterOrValue<string>,
-  edgeTextFontWeight: EdgeGetterOrValue<TextFontWeight>,
-  edgeFocusColor: EdgeGetterOrValue<string>,
+export type BaseGraphNodeTheme = {
+  nodeSize: number,
+  nodeBorderWidth: number,
+  nodeColor: string,
+  nodeBorderColor: string,
+  nodeFocusColor: string,
+  nodeFocusBorderColor: string,
+  nodeText: string,
+  nodeFocusTextColor: string,
+  nodeTextSize: number,
+  nodeTextColor: string,
+  nodeShape: SupportedNodeShapes,
+}
+
+export type BaseGraphEdgeTheme = {
+  edgeColor: string,
+  edgeWidth: number,
+  edgeTextSize: number,
+  edgeTextColor: string,
+  edgeFocusTextColor: string,
+  edgeTextFontWeight: TextFontWeight,
+  edgeFocusColor: string,
+}
+
+type WrapWithNodeGetter<T extends Record<string, any>> = {
+  [K in keyof T]: NodeGetterOrValue<T[K]>
+}
+
+type WrapWithEdgeGetter<T extends Record<string, any>> = {
+  [K in keyof T]: EdgeGetterOrValue<T[K]>
+}
+
+export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEdgeGetter<BaseGraphEdgeTheme> & {
   graphBgColor: string,
 }
 

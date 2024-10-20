@@ -1,5 +1,7 @@
+import type { BaseGraphEdgeTheme, BaseGraphNodeTheme, BaseGraphTheme } from './themes'
 import type { MaybeGetter, SchemaItem, GNode, GEdge, MappingsToEventBus } from './types'
 import type { BaseGraphEvents } from './useGraphBase'
+import type { PersistentGraphTheme } from './usePersistentGraph'
 
 /**
   unwraps MaybeGetter type into a value of type T
@@ -12,15 +14,13 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
 }
 
 /**
-  generates a "subscribe" function for the event bus
-  in order to registering new events
+  generates a "subscribe" and "unsubscribe" function for the event bus
+  in order to registering and deregistering graph events
 */
-export const generateSubscriber = <T extends BaseGraphEvents>(
-  eventBus: MappingsToEventBus<T>
-) => <K extends keyof T>(
-  event: K,
-  fn: T[K]
-) => eventBus[event].push(fn)
+export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: MappingsToEventBus<T>) => ({
+  subscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].push(fn),
+  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event] = eventBus[event].filter((f) => f !== fn) as T[K][],
+})
 
 /**
   generates an id. Every item on the canvas must have a unique id
@@ -83,7 +83,45 @@ export const getFromToNodes = (edge: GEdge, nodes: GNode[]) => {
 
   const from = nodes.find(node => node.label === edge.from)
   const to = nodes.find(node => node.label === edge.to)
-  if (!from || !to) throw new Error('Error')
+  if (!from || !to) throw new Error('Nodes not found')
 
   return { from, to }
 }
+
+/**
+ * gets the theme attributes for a GNode at the point in time the function is called
+ *
+ * @param theme - the theme of the useGraph instance
+ * @param node - the node to get the theme for
+ * @returns the theme attributes for the node
+ */
+export const resolveThemeForNode = (theme: BaseGraphTheme, node: GNode): BaseGraphNodeTheme => ({
+  nodeSize: getValue(theme.nodeSize, node),
+  nodeBorderWidth: getValue(theme.nodeBorderWidth, node),
+  nodeColor: getValue(theme.nodeColor, node),
+  nodeBorderColor: getValue(theme.nodeBorderColor, node),
+  nodeFocusColor: getValue(theme.nodeFocusColor, node),
+  nodeFocusBorderColor: getValue(theme.nodeFocusBorderColor, node),
+  nodeText: getValue(theme.nodeText, node),
+  nodeFocusTextColor: getValue(theme.nodeFocusTextColor, node),
+  nodeTextSize: getValue(theme.nodeTextSize, node),
+  nodeTextColor: getValue(theme.nodeTextColor, node),
+  nodeShape: getValue(theme.nodeShape, node),
+})
+
+/**
+ * gets the theme attributes for a GEdge at the point in time the function is called
+ *
+ * @param theme - the theme of the useGraph instance
+ * @param edge - the edge to get the theme for
+ * @returns the theme attributes for the edge
+ */
+export const resolveThemeForEdge = (theme: BaseGraphTheme, edge: GEdge): BaseGraphEdgeTheme => ({
+  edgeColor: getValue(theme.edgeColor, edge),
+  edgeWidth: getValue(theme.edgeWidth, edge),
+  edgeTextSize: getValue(theme.edgeTextSize, edge),
+  edgeTextColor: getValue(theme.edgeTextColor, edge),
+  edgeFocusTextColor: getValue(theme.edgeFocusTextColor, edge),
+  edgeTextFontWeight: getValue(theme.edgeTextFontWeight, edge),
+  edgeFocusColor: getValue(theme.edgeFocusColor, edge),
+})

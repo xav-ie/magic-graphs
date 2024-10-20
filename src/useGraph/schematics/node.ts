@@ -1,15 +1,18 @@
-import type { GNode } from '../types'
+import type { CircleSchemaItem, GNode, SquareSchemaItem } from '../types'
 import { getValue } from '../useGraphHelpers'
 import type { Circle, Square } from '@/shapes/types'
 import type { BaseGraphTheme } from '../themes'
 
 export type SupportedNodeShapes = 'circle' | 'square'
 
+type NodeSchemas = SquareSchemaItem | CircleSchemaItem
+type NodeSchematic = Omit<NodeSchemas, 'priority'> | undefined
+
 export const getNodeSchematic = (
   node: GNode,
   graphTheme: BaseGraphTheme,
   focusedNodeId: GNode['id'] | undefined
-) => {
+): NodeSchematic => {
   const {
     nodeFocusColor,
     nodeColor,
@@ -67,5 +70,12 @@ export const getNodeSchematic = (
     }
   }
 
-  return getValue(nodeShape, node) === 'circle' ? circleSchematic : squareSchematic
+  const nodeShapeVal = getValue(nodeShape, node)
+
+  return {
+    schema: nodeShapeVal === 'circle' ? circleSchematic : squareSchematic,
+    schemaType: nodeShapeVal,
+    id: node.id,
+    graphType: 'node',
+  }
 }

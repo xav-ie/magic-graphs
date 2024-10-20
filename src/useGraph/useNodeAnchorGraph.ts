@@ -141,13 +141,12 @@ export const useNodeAnchorGraph = (
     ...options.settings,
   }))
 
-  const eventBus: MappingsToEventBus<NodeAnchorGraphEvents> = {
-    ...graph.eventBus,
+  const eventBus: MappingsToEventBus<NodeAnchorGraphEvents> = Object.assign(graph.eventBus, {
     onNodeAnchorDragStart: [],
     onNodeAnchorDrop: [],
-  }
+  })
 
-  const subscribe = generateSubscriber(eventBus)
+  const { subscribe, unsubscribe } = generateSubscriber(eventBus)
 
   const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
@@ -361,6 +360,7 @@ export const useNodeAnchorGraph = (
 
     eventBus,
     subscribe,
+    unsubscribe,
 
     theme,
     settings,

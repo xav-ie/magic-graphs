@@ -10,9 +10,18 @@ import {
   type NodeAnchorGraphSettings,
   type NodeAnchorGraphEvents
 } from "./useNodeAnchorGraph"
-import { computed, ref, watch, type Ref } from 'vue'
+import {
+  computed,
+  ref,
+  watchEffect,
+  type Ref
+} from 'vue'
 
 export type EditSettings = {
+  /**
+   * the type of edge to add when creating an edge between nodes
+   * @default "directed"
+   */
   addedEdgeType: 'directed' | 'undirected'
 }
 
@@ -24,7 +33,7 @@ export type UserEditableGraphEvents = NodeAnchorGraphEvents
 export type UserEditableGraphTheme = NodeAnchorGraphTheme
 
 export type UserEditableGraphSettings = NodeAnchorGraphSettings & {
-  userEditable: boolean | EditSettings
+  userEditable: boolean | Partial<EditSettings>
 }
 
 export type UserEditableGraphOptions = GraphOptions<UserEditableGraphTheme, UserEditableGraphSettings>
@@ -73,7 +82,6 @@ export const useUserEditableGraph = (
 
   const handleEdgeCreation = (parentNode: GNode, anchor: NodeAnchor) => {
     if (!editSettings.value) return
-    editSettings.value
     const { x, y } = anchor
     const itemStack = graph.getDrawItemsByCoordinates(x, y)
     // @ts-expect-error findLast is real
@@ -90,7 +98,6 @@ export const useUserEditableGraph = (
   }
 
   const handleDeletion = (ev: KeyboardEvent) => {
-    if (!editSettings.value) return
     const focusedItem = graph.getFocusedItem()
     if (!focusedItem) return
     if (ev.key !== 'Backspace') return
@@ -102,9 +109,17 @@ export const useUserEditableGraph = (
     }
   }
 
-  graph.subscribe('onDblClick', handleNodeCreation)
-  graph.subscribe('onKeydown', handleDeletion)
-  graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
+  watchEffect(() => {
+    graph.unsubscribe('onDblClick', handleNodeCreation)
+    graph.unsubscribe('onKeydown', handleDeletion)
+    graph.unsubscribe('onNodeAnchorDrop', handleEdgeCreation)
+
+    if (editSettings.value) {
+      graph.subscribe('onDblClick', handleNodeCreation)
+      graph.subscribe('onKeydown', handleDeletion)
+      graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
+    }
+  })
 
   return {
     ...graph,
