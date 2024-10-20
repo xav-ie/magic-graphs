@@ -8,7 +8,7 @@ import {
   useBaseGraph,
   type BaseGraphEvents,
   type BaseGraphSettings,
-} from './useGraphBase'
+} from './useBaseGraph'
 import { generateSubscriber } from './helpers';
 import type { BaseGraphTheme } from './themes';
 import type { GNode, GraphOptions, MappingsToEventBus } from './types'
