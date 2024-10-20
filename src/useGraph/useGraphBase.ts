@@ -25,7 +25,7 @@ import {
   generateId,
   prioritizeNode,
   getRandomPointOnCanvas
-} from './useGraphHelpers';
+} from './helpers';
 import { drawShape, getLocationTextArea } from '@/shapes/draw';
 import { hitboxes } from '@/shapes/hitboxes';
 import { getNodeSchematic } from './schematics/node';

@@ -9,7 +9,7 @@
  * - Anchor Node Graph: A graph that supports the creation and event propagation of anchors around nodes.
  */
 
-import { getValue, generateSubscriber, prioritizeNode } from "./useGraphHelpers";
+import { getValue, generateSubscriber, prioritizeNode } from "./helpers";
 import {
   useDraggableGraph,
   type DraggableGraphEvents,
