@@ -67,9 +67,19 @@ export type BaseGraphEvents = {
   onSettingsChange: () => void;
 }
 
-const defaultSettings = {} as const
+export type BaseGraphSettings = {
+  /**
+   * the number of frames per second the graph should be repainted
+   * WARNING: this property can only be set at instantiation and is not reactive
+   * @default 60
+   */
+  repaintFps: number;
+}
 
-export type BaseGraphSettings = {}
+const defaultSettings = {
+  repaintFps: 60,
+} as const
+
 export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
 
 export const useBaseGraph =(
@@ -225,7 +235,7 @@ export const useBaseGraph =(
 
       eventBus.onRepaint.forEach(fn => fn(ctx))
     }
-  }, 1000 / 60 /* 60fps */)
+  }, 1000 / settings.value.repaintFps)
 
   const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
 
