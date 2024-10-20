@@ -111,6 +111,7 @@ export const usePersistentGraph = (
     const currentKey = storageKey.value
 
     // trackOptions was triggered by a change in the storage key, so we cannot update storage
+    console.log('trackOptions', previousKey, currentKey)
     if (previousKey !== currentKey) {
       previousKey = currentKey
       return
@@ -162,11 +163,6 @@ export const usePersistentGraph = (
     trackChangeEvents.forEach(event => graph.unsubscribe(event, trackGraphState))
   }
 
-  const listenForEvents = () => {
-    listenForOptionsEvents()
-    listenForGraphStateEvents()
-  }
-
   const stopListeningForEvents = () => {
     stopListeningForOptionsEvents()
     stopListeningForGraphStateEvents()
@@ -189,7 +185,7 @@ export const usePersistentGraph = (
       load()
     }
 
-    listenForEvents()
+    listenForGraphStateEvents()
 
     if (newSettings.trackSettings || newSettings.trackTheme) {
       listenForOptionsEvents()
