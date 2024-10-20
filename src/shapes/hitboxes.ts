@@ -4,7 +4,7 @@
 import type { Coordinate, Circle, Line, Square, Triangle, UTurnArrow, Rectangle, Arrow } from "./types"
 import { TEXT_DEFAULTS, LINE_DEFAULTS, TEXTAREA_DEFAULTS } from "./types"
 import { rotatePoint } from "./helpers"
-import { getLocationTextArea, getTextAreaDimension } from "./draw"
+import { getTextAreaLocation, getTextAreaDimension } from "./draw"
 
 /**
  * @param point - the point to check if it is in the shape
@@ -97,7 +97,7 @@ export const isInLineTextArea = (point: Coordinate) => (line: Line) => {
   const fullTextArea = {
     ...textArea,
     text,
-    at: getLocationTextArea(textArea).line(line),
+    at: getTextAreaLocation.line(line),
   }
   const { width, height } = getTextAreaDimension(fullTextArea);
 
@@ -115,7 +115,7 @@ export const isInArrowTextArea = (point: Coordinate) => (arrow: Arrow) => {
   const fullTextArea = {
     ...textArea,
     text,
-    at: getLocationTextArea(textArea).arrow(arrow),
+    at: getTextAreaLocation.arrow(arrow),
   }
   const { width, height } = getTextAreaDimension(fullTextArea);
 

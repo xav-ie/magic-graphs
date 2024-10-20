@@ -1,97 +1,20 @@
 /*
   This file contains helper functions for drawing shapes on the canvas.
 */
-import { getAngle } from "./helpers";
 import {
-  LINE_DEFAULTS,
   TEXT_DEFAULTS,
   TEXTAREA_DEFAULTS,
   type Line,
   type Arrow,
   type TextArea,
-  type TextAreaNoLocation,
   type Coordinate,
 } from "./types"
 import { drawCircleWithCtx } from "./draw/circle";
 import { drawSquareWithCtx } from "./draw/square";
-import { drawLineWithCtx } from "./draw/line";
+import { drawLineWithCtx, getTextAreaLocationOnLine } from "./draw/line";
 import { drawTriangleWithCtx } from "./draw/triangle";
-import { drawArrowWithCtx } from "./draw/arrow";
+import { drawArrowWithCtx, getTextAreaLocationOnArrow } from "./draw/arrow";
 import { drawUTurnArrowWithCtx } from "./draw/uturn";
-
-// given a shape that supports the text area api, get back the full text area with the location
-type LocationTextAreaGetter = Record<string, (shape: Line | Arrow) => Coordinate>
-export const getLocationTextArea = (textArea: TextAreaNoLocation): LocationTextAreaGetter => ({
-  line: (line: Line) =>  getLocationTextAreaOnLine(line),
-  arrow: (arrow: Arrow) => getLocationTextAreaOnArrow(arrow)
-})
-
-export const getLocationTextAreaOnArrow = (line: Line) => {
-  const {
-    textOffsetFromCenter,
-    start: lineStart,
-    end: lineEnd,
-    textArea,
-    width,
-    color
-  } = {
-    ...LINE_DEFAULTS,
-    ...line,
-  }
-
-  const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
-  const arrowHeadHeight = width * 2.5;
-
-  const shaftEnd = {
-    x: lineEnd.x - arrowHeadHeight * Math.cos(angle),
-    y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
-  }
-
-  const shaft = {
-    start: lineStart,
-    end: shaftEnd,
-    width,
-    color,
-    textOffsetFromCenter,
-    textArea,
-  }
-
-  return getLocationTextAreaOnLine(shaft);
-}
-
-export const getLocationTextAreaOnLine = (line: Line) => {
-  const {
-    textOffsetFromCenter,
-    start,
-    end,
-    textArea,
-  } = {
-    ...LINE_DEFAULTS,
-    ...line,
-  }
-
-  if (!textArea) return { x: 0, y: 0 }
-
-  const { text } = textArea;
-
-  const { fontSize } = {
-    ...TEXT_DEFAULTS,
-    ...text,
-  }
-
-  const theta = getAngle(start, end);
-
-  const offsetX = textOffsetFromCenter * Math.cos(theta);
-  const offsetY = textOffsetFromCenter * Math.sin(theta);
-
-  const textX = (start.x + end.x) / 2 + offsetX;
-  const textY = (start.y + end.y) / 2 + offsetY;
-
-  return {
-    x: textX - fontSize,
-    y: textY - fontSize
-  }
-}
 
 /**
  * @description parent function that returns all the draw functions for the shapes
@@ -108,6 +31,12 @@ export const drawShape = (ctx: CanvasRenderingContext2D) => ({
   drawUTurnArrow: drawUTurnArrowWithCtx(ctx),
 })
 
+// given a shape that supports the text area api, get back the full text area with the location
+export const getTextAreaLocation = {
+  line: (line: Line) =>  getTextAreaLocationOnLine(line),
+  arrow: (arrow: Arrow) => getTextAreaLocationOnArrow(arrow)
+}
+
 export const drawTextAreaWithCtx = (ctx: CanvasRenderingContext2D) => ({
   line: (line: Line) => {
     if (!line.textArea) return;
@@ -122,7 +51,7 @@ export const drawTextAreaWithCtx = (ctx: CanvasRenderingContext2D) => ({
     const fullTextArea = {
       ...textArea,
       text,
-      at: getLocationTextAreaOnLine(line),
+      at: getTextAreaLocationOnLine(line),
     }
     drawTextAreaMatte(ctx)(fullTextArea);
     queueMicrotask(() => drawText(ctx)(fullTextArea));
@@ -140,7 +69,7 @@ export const drawTextAreaWithCtx = (ctx: CanvasRenderingContext2D) => ({
     const fullTextArea = {
       ...textArea,
       text,
-      at: getLocationTextAreaOnArrow(arrow),
+      at: getTextAreaLocationOnArrow(arrow),
     }
     drawTextAreaMatte(ctx)(fullTextArea);
     queueMicrotask(() => drawText(ctx)(fullTextArea));

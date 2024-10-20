@@ -6,7 +6,7 @@ import {
   watch,
   type Ref,
 } from 'vue'
-import { onClickOutside } from '@vueuse/core';
+import { get, onClickOutside } from '@vueuse/core';
 import type {
   GNode,
   GEdge,
@@ -26,7 +26,7 @@ import {
   prioritizeNode,
   getRandomPointOnCanvas
 } from './useGraphHelpers';
-import { drawShape, getLocationTextArea } from '@/shapes/draw';
+import { drawShape, getTextAreaLocation } from '@/shapes/draw';
 import { hitboxes } from '@/shapes/hitboxes';
 import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
@@ -154,8 +154,8 @@ export const useBaseGraph =(
     )
     if ('textArea' in schema && schema.textArea?.editable ) {
 
-      const textAreaLocationArrow = getLocationTextArea(schema.textArea).arrow(schema)
-      const textAreaLocationLine = getLocationTextArea(schema.textArea).line(schema)
+      const textAreaLocationArrow = getTextAreaLocation.arrow(schema)
+      const textAreaLocationLine = getTextAreaLocation.line(schema)
       const textAreaLocation = schemaType === 'arrow' ? textAreaLocationArrow : textAreaLocationLine
 
       if (schema.textArea && isInArrowTextArea(schema)) {
