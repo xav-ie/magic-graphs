@@ -11,7 +11,7 @@ import {
   usePersistentGraph,
   type PersistentGraphOptions,
 } from './usePersistentGraph'
-import type { useBaseGraph } from './useGraphBase'
+import type { useBaseGraph } from './useBaseGraph'
 
 export const useDarkGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,

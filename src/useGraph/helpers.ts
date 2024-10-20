@@ -1,7 +1,6 @@
 import type { BaseGraphEdgeTheme, BaseGraphNodeTheme, BaseGraphTheme } from './themes'
 import type { MaybeGetter, SchemaItem, GNode, GEdge, MappingsToEventBus } from './types'
-import type { BaseGraphEvents } from './useGraphBase'
-import type { PersistentGraphTheme } from './usePersistentGraph'
+import type { BaseGraphEvents } from './useBaseGraph'
 
 /**
   unwraps MaybeGetter type into a value of type T

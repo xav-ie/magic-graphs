@@ -1,5 +1,5 @@
 import type { CircleSchemaItem, GNode, SquareSchemaItem } from '../types'
-import { getValue } from '../useGraphHelpers'
+import { getValue } from '../helpers'
 import type { Circle, Square } from '@/shapes/types'
 import type { BaseGraphTheme } from '../themes'
 

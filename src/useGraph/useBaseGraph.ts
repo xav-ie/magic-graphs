@@ -6,7 +6,7 @@ import {
   watch,
   type Ref,
 } from 'vue'
-import { get, onClickOutside } from '@vueuse/core';
+import { onClickOutside } from '@vueuse/core';
 import type {
   GNode,
   GEdge,
@@ -136,7 +136,7 @@ export const useBaseGraph =(
 
   // function breaks with guard clauses!!!
   const handleFocusChange = (ev: MouseEvent) => {
-    const focusableTypes = ['node', 'edge']
+    const focusableTypes: SchemaItem['graphType'][] = ['node', 'edge']
     const topItem = getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     if (!topItem || !focusableTypes.includes(topItem.graphType)) return setFocus(undefined)
 
@@ -149,14 +149,16 @@ export const useBaseGraph =(
     }
 
     const { schema, schemaType } = topItem
-    const { isInArrowTextArea } = hitboxes({ x: ev.offsetX, y: ev.offsetY })
+    const { isInArrowTextArea } = hitboxes({ x: ev.offsetX, y: ev.offsetY }
 
+    )
     if ('textArea' in schema && schema.textArea?.editable ) {
 
-      const textAreaLocationArrow = getTextAreaLocation.arrow(schema)
-      const textAreaLocationLine = getTextAreaLocation.line(schema)
+      const textAreaLocationArrow = getLocationTextArea(schema.textArea).arrow(schema)
+      const textAreaLocationLine = getLocationTextArea(schema.textArea).line(schema)
       const textAreaLocation = schemaType === 'arrow' ? textAreaLocationArrow : textAreaLocationLine
 
+      // TODO isInArrowTextArea doesn't cover undirected edges
       if (schema.textArea && isInArrowTextArea(schema)) {
         engageTextarea({ ...schema.textArea, at: textAreaLocation }, textInputHandler)
         return setFocus(undefined)
@@ -199,28 +201,25 @@ export const useBaseGraph =(
   const drawGraphInterval = setInterval(() => {
     if (!canvas.value) return
     const ctx = canvas.value.getContext('2d')
-    if (ctx) {
-      ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
+    if (!ctx) return
+    ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
 
-      const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
-      aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
-      const { drawLine, drawCircle, drawSquare, drawArrow, drawUTurnArrow } = drawShape(ctx)
-      for (const item of aggregator.value) {
-        if (item.schemaType === 'circle') {
-          drawCircle(item.schema)
-        } else if (item.schemaType === 'line') {
-          drawLine(item.schema)
-        } else if (item.schemaType === 'square') {
-          drawSquare(item.schema)
-        } else if (item.schemaType === 'arrow') {
-          drawArrow(item.schema)
-        }
-        else if (item.schemaType === 'uturn') {
-          drawUTurnArrow(item.schema)
-        }
-        else {
-          throw new Error('Unknown schema type')
-        }
+    const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
+    aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
+    const { drawLine, drawCircle, drawSquare, drawArrow, drawUTurnArrow } = drawShape(ctx)
+    for (const item of aggregator.value) {
+      if (item.schemaType === 'circle') {
+        drawCircle(item.schema)
+      } else if (item.schemaType === 'line') {
+        drawLine(item.schema)
+      } else if (item.schemaType === 'square') {
+        drawSquare(item.schema)
+      } else if (item.schemaType === 'arrow') {
+        drawArrow(item.schema)
+      } else if (item.schemaType === 'uturn') {
+        drawUTurnArrow(item.schema)
+      } else {
+        throw new Error('Unknown schema type')
       }
 
       eventBus.onRepaint.forEach(fn => fn(ctx))
@@ -303,6 +302,8 @@ export const useBaseGraph =(
   const getDrawItemsByCoordinates = (x: number, y: number) => {
     const point = { x, y }
     const { isInCircle, isInLine, isInSquare, isInArrow, isInUTurnArrow } = hitboxes(point)
+
+    // TODO Make sure that this works with priority
     return aggregator.value.filter(item => {
       if (item.schemaType === 'circle') {
         return isInCircle(item.schema)
@@ -418,13 +419,14 @@ export const useBaseGraph =(
     currHoveredNode = node
   })
 
-  const liftHoveredNodeToTop = (aggregator: SchemaItem[]) => {
+  const liftHoveredNodeToTop = (aggregator: Aggregator) => {
     if (!currHoveredNode) return aggregator
     prioritizeNode(currHoveredNode.id, aggregator)
     return aggregator
   }
 
-  const resetGraph = () => {
+
+  const reset = () => {
     nodes.value = []
     edges.value = []
     focusedId.value = undefined
@@ -469,6 +471,6 @@ export const useBaseGraph =(
     theme,
     settings,
 
-    resetGraph,
+    reset,
   }
 }

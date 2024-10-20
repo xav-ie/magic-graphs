@@ -63,7 +63,7 @@ const addedEdgeType = computed(() => {
 const btns = [
   {
     label: () => 'Reset Graph',
-    action: () => graph.resetGraph(),
+    action: () => graph.reset(),
     color: () => 'red-600'
   },
   {
