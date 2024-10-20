@@ -1,19 +1,12 @@
 /*
   This file contains helper functions for drawing shapes on the canvas.
 */
-import {
-  TEXT_DEFAULTS,
-  TEXTAREA_DEFAULTS,
-  type Line,
-  type Arrow,
-  type TextArea,
-  type Coordinate,
-} from "./types"
+import type { Line, Arrow } from "./types"
 import { drawCircleWithCtx } from "./draw/circle";
 import { drawSquareWithCtx } from "./draw/square";
-import { drawLineWithCtx, getTextAreaLocationOnLine } from "./draw/line";
+import { drawLineWithCtx } from "./draw/line";
 import { drawTriangleWithCtx } from "./draw/triangle";
-import { drawArrowWithCtx, getTextAreaLocationOnArrow } from "./draw/arrow";
+import { drawArrowWithCtx } from "./draw/arrow";
 import { drawUTurnArrowWithCtx } from "./draw/uturn";
 
 /**
