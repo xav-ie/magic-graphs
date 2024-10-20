@@ -26,7 +26,10 @@ const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 const graph = useDarkGraph(canvas, {
   theme: {},
   settings: {
-    userEditable: true,
+    userEditable: {},
+    persistent: {
+      storageKey: 'graph',
+    }
   }
 });
 
@@ -89,6 +92,14 @@ const btns = [
     action: () => graph.theme.value.nodeSize = Math.floor(Math.random() * (50 - 10 + 1)) + 10,
     color: () => 'pink-600'
   },
+  {
+    label: () => 'Change Storage Key ' + ` (${graph.settings.value.persistent.storageKey})`,
+    action: () => {
+      const key = graph.settings.value.persistent.storageKey;
+      graph.settings.value.persistent.storageKey = key === 'graph' ? 'graph2' : 'graph';
+    },
+    color: () => 'blue-600'
+  }
 ]
 
 </script>

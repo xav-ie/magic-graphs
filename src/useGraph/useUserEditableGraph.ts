@@ -10,9 +10,18 @@ import {
   type NodeAnchorGraphSettings,
   type NodeAnchorGraphEvents
 } from "./useNodeAnchorGraph"
-import { computed, ref, watch, watchEffect, type Ref } from 'vue'
+import {
+  computed,
+  ref,
+  watchEffect,
+  type Ref
+} from 'vue'
 
 export type EditSettings = {
+  /**
+   * the type of edge to add when creating an edge between nodes
+   * @default "directed"
+   */
   addedEdgeType: 'directed' | 'undirected'
 }
 
@@ -24,7 +33,7 @@ export type UserEditableGraphEvents = NodeAnchorGraphEvents
 export type UserEditableGraphTheme = NodeAnchorGraphTheme
 
 export type UserEditableGraphSettings = NodeAnchorGraphSettings & {
-  userEditable: boolean | EditSettings
+  userEditable: boolean | Partial<EditSettings>
 }
 
 export type UserEditableGraphOptions = GraphOptions<UserEditableGraphTheme, UserEditableGraphSettings>
@@ -101,14 +110,14 @@ export const useUserEditableGraph = (
   }
 
   watchEffect(() => {
+    graph.unsubscribe('onDblClick', handleNodeCreation)
+    graph.unsubscribe('onKeydown', handleDeletion)
+    graph.unsubscribe('onNodeAnchorDrop', handleEdgeCreation)
+
     if (editSettings.value) {
       graph.subscribe('onDblClick', handleNodeCreation)
       graph.subscribe('onKeydown', handleDeletion)
       graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
-    } else {
-      graph.unsubscribe('onDblClick', handleNodeCreation)
-      graph.unsubscribe('onKeydown', handleDeletion)
-      graph.unsubscribe('onNodeAnchorDrop', handleEdgeCreation)
     }
   })
 

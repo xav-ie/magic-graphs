@@ -1,5 +1,9 @@
-import { type Ref, type WatchCallback, type WatchHandle, computed, onMounted, ref, watch, watchEffect } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
+import {
+  ref,
+  computed,
+  watch,
+  type Ref,
+} from 'vue'
 import type { GNode, GEdge, GraphOptions } from '@/useGraph/types'
 import {
   useUserEditableGraph,
@@ -7,31 +11,50 @@ import {
   type UserEditableGraphSettings,
   type UserEditableGraphTheme
 } from './useUserEditableGraph'
-import { getValue } from './useGraphHelpers'
 
 export type PersistentGraphTheme = UserEditableGraphTheme
-export type PersistentGraphSettings = UserEditableGraphSettings & {
+export type PersistSettings = {
   /**
    * the key to use for storing the graph in local storage
+   * @default "graph"
    */
   storageKey: string,
   /**
    * whether to track theme changes
+   * @default true
    */
   trackTheme: boolean,
   /**
    * whether to track settings changes
+   * @default true
    */
   trackSettings: boolean,
 }
 
-export type PersistentGraphOptions = GraphOptions<UserEditableGraphTheme, PersistentGraphSettings>
-
-export const defaultPersistentGraphSettings = {
+export const defaultPersistSettings = {
   storageKey: 'graph',
   trackTheme: true,
   trackSettings: true,
 } as const
+
+export type PersistentGraphSettings = UserEditableGraphSettings & {
+  persistent: boolean | Partial<PersistSettings>
+}
+
+export const defaultPersistentGraphSettings = {
+  persistent: true,
+} as const
+
+export type PersistentGraphOptions = GraphOptions<UserEditableGraphTheme, PersistentGraphSettings>
+
+const resolvePersistSettings = (settings: PersistentGraphSettings) => {
+  if (settings.persistent === false) return null
+  if (settings.persistent === true) return defaultPersistSettings
+  return {
+    ...defaultPersistSettings,
+    ...settings.persistent
+  }
+}
 
 /**
  * extends the useGraph interface to include capabilities for storing and retrieving a graph from local storage.
@@ -55,39 +78,122 @@ export const usePersistentGraph = (
     ...options.settings,
   }))
 
-  const nodeStorage = useLocalStorage<GNode[]>(settings.value.storageKey + '-nodes', [])
-  const edgeStorage = useLocalStorage<GEdge[]>(settings.value.storageKey + '-edges', [])
+  const persistSettings = computed(() => resolvePersistSettings(settings.value))
+  const storageKey = computed(() => persistSettings.value?.storageKey ?? defaultPersistSettings.storageKey)
 
-  const themeStorage = useLocalStorage<PersistentGraphTheme>(settings.value.storageKey + '-theme', graph.theme.value)
-  const settingsStorage = useLocalStorage<PersistentGraphSettings>(settings.value.storageKey + '-settings', settings.value)
-
-  const trackChanges = () => {
-    nodeStorage.value = graph.nodes.value
-    edgeStorage.value = graph.edges.value
-    if (settings.value.trackTheme) {
-      themeStorage.value = graph.theme.value
-    }
-    if (settings.value.trackSettings) {
-      settingsStorage.value = settings.value
-    }
+  const nodeStorage = {
+    get: () => JSON.parse(localStorage.getItem(storageKey.value + '-nodes') ?? '[]'),
+    set: (nodes: GNode[]) => localStorage.setItem(storageKey.value + '-nodes', JSON.stringify(nodes))
   }
 
-  onMounted(() => {
-    for (const node of nodeStorage.value) {
-      graph.addNode(node, false)
-    }
-    for (const edge of edgeStorage.value) {
-      graph.addEdge(edge)
+  const edgeStorage = {
+    get: () => JSON.parse(localStorage.getItem(storageKey.value + '-edges') ?? '[]'),
+    set: (edges: GEdge[]) => localStorage.setItem(storageKey.value + '-edges', JSON.stringify(edges))
+  }
+
+  const themeStorage = {
+    get: () => JSON.parse(localStorage.getItem(storageKey.value + '-theme') ?? '{}'),
+    set: (theme: UserEditableGraphTheme) => localStorage.setItem(storageKey.value + '-theme', JSON.stringify(theme))
+  }
+
+  const settingsStorage = {
+    get: () => JSON.parse(localStorage.getItem(storageKey.value + '-settings') ?? '{}'),
+    set: (settings: UserEditableGraphSettings) => localStorage.setItem(storageKey.value + '-settings', JSON.stringify(settings))
+  }
+
+  const trackGraphState = () => {
+    nodeStorage.set(graph.nodes.value)
+    edgeStorage.set(graph.edges.value)
+  }
+
+  let previousKey = storageKey.value
+  const trackOptions = () => {
+    const currentKey = storageKey.value
+
+    // trackOptions was triggered by a change in the storage key, so we cannot update storage
+    if (previousKey !== currentKey) {
+      previousKey = currentKey
+      return
     }
 
-    graph.theme.value = Object.assign(graph.theme.value, themeStorage.value)
-    settings.value = Object.assign(settings.value, settingsStorage.value)
+    if (persistSettings.value?.trackTheme) {
+      themeStorage.set(graph.theme.value)
+    }
 
-    graph.subscribe('onStructureChange', trackChanges)
-    graph.subscribe('onNodeDrop', trackChanges)
-    graph.subscribe('onGraphReset', trackChanges)
-    graph.subscribe('onThemeChange', trackChanges)
-    graph.subscribe('onSettingsChange', trackChanges)
+    if (persistSettings.value?.trackSettings) {
+      settingsStorage.set(settings.value)
+    }
+
+    previousKey = currentKey
+  }
+
+  const load = () => {
+    graph.nodes.value = nodeStorage.get()
+    graph.edges.value = edgeStorage.get()
+
+    graph.theme.value = Object.assign(graph.theme.value, themeStorage.get())
+    settings.value = Object.assign(settings.value, settingsStorage.get())
+  }
+
+  const trackChangeEvents = [
+    'onStructureChange',
+    'onNodeDrop',
+    'onGraphReset',
+  ] as const
+
+  const trackOptionsEvents = [
+    'onThemeChange',
+    'onSettingsChange'
+  ] as const
+
+  const listenForOptionsEvents = () => {
+    trackOptionsEvents.forEach(event => graph.subscribe(event, trackOptions))
+  }
+
+  const stopListeningForOptionsEvents = () => {
+    trackOptionsEvents.forEach(event => graph.unsubscribe(event, trackOptions))
+  }
+
+  const listenForGraphStateEvents = () => {
+    trackChangeEvents.forEach(event => graph.subscribe(event, trackGraphState))
+  }
+
+  const stopListeningForGraphStateEvents = () => {
+    trackChangeEvents.forEach(event => graph.unsubscribe(event, trackGraphState))
+  }
+
+  const listenForEvents = () => {
+    listenForOptionsEvents()
+    listenForGraphStateEvents()
+  }
+
+  const stopListeningForEvents = () => {
+    stopListeningForOptionsEvents()
+    stopListeningForGraphStateEvents()
+  }
+
+  watch(persistSettings, (newSettings, oldSettings) => {
+    stopListeningForEvents()
+
+    const graphPersistenceTurnedOff = !newSettings
+    if (graphPersistenceTurnedOff) return
+
+    if (!oldSettings) {
+      load()
+    }
+
+    if (oldSettings && newSettings.storageKey !== oldSettings.storageKey) {
+      load()
+    }
+
+    listenForEvents()
+
+    if (newSettings.trackSettings || newSettings.trackTheme) {
+      listenForOptionsEvents()
+    }
+  }, {
+    immediate: true,
+    deep: true
   })
 
   return {
