@@ -178,10 +178,13 @@ export const usePersistentGraph = (
     const graphPersistenceTurnedOff = !newSettings
     if (graphPersistenceTurnedOff) return
 
+    // persistent was false, but now it is true
     if (!oldSettings) {
       load()
     }
 
+    // persistent was true, so we had to check if the storage key changed
+    // to ensure we dont load the same graph twice
     if (oldSettings && newSettings.storageKey !== oldSettings.storageKey) {
       load()
     }
