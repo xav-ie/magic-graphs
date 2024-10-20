@@ -125,7 +125,7 @@ export const drawTextAreaWithCtx = (ctx: CanvasRenderingContext2D) => ({
       at: getLocationTextAreaOnLine(line),
     }
     drawTextAreaMatte(ctx)(fullTextArea);
-    drawText(ctx)(fullTextArea);
+    queueMicrotask(() => drawText(ctx)(fullTextArea));
   },
   arrow: (arrow: Arrow) => {
     if (!arrow.textArea) return;
@@ -144,7 +144,6 @@ export const drawTextAreaWithCtx = (ctx: CanvasRenderingContext2D) => ({
     }
     drawTextAreaMatte(ctx)(fullTextArea);
     queueMicrotask(() => drawText(ctx)(fullTextArea));
-    // drawText(ctx)(fullTextArea);
   },
 })
 
