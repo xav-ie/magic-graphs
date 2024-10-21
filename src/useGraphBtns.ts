@@ -76,6 +76,12 @@ export const useGraphBtns = (graph: Graph) => {
     color: () => graph.settings.value.displayEdgeLabels ? 'green' : 'orange',
   };
 
+  const toggleEdgeLabelsEditable: GButton = {
+    label: () => graph.settings.value.edgeLabelsEditable ? 'Edge Labels Editable' : 'Edge Labels Not Editable',
+    action: () => graph.settings.value.edgeLabelsEditable = !graph.settings.value.edgeLabelsEditable,
+    color: () => graph.settings.value.edgeLabelsEditable ? 'green' : 'orange',
+  };
+
   const toggleUserEditable: GButton = {
     label: () => graph.settings.value.userEditable ? 'Editable' : 'Not Editable',
     action: () => graph.settings.value.userEditable = !graph.settings.value.userEditable,
@@ -90,13 +96,13 @@ export const useGraphBtns = (graph: Graph) => {
   };
 
   const changeNodeSize: GButton = {
-    label: () => 'Change Node Size' + ` (${graph.theme.value.nodeSize})`,
+    label: () => `Change Node Size (${graph.theme.value.nodeSize})`,
     action: () => graph.theme.value.nodeSize = Math.floor(Math.random() * (50 - 10 + 1)) + 10,
     color: () => 'pink',
   };
 
   const changeStorageKey: GButton = {
-    label: () => 'Change Storage Key ' + ` (${storageKey.value})`,
+    label: () => `Change Storage Key (${storageKey.value})`,
     action: () => {
       // @ts-expect-error
       persistSettings.value.storageKey = storageKey.value === 'graph' ? 'graph2' : 'graph';
@@ -105,13 +111,28 @@ export const useGraphBtns = (graph: Graph) => {
   };
 
   return {
-    reset,
-    toggleDraggable,
-    toggleNodeAnchors,
+    // base theme
+    changeNodeSize,
+
+    // base settings
     toggleEdgeLabelDisplay,
+    toggleEdgeLabelsEditable,
+
+    // base event
+    reset,
+
+    // draggable settings
+    toggleDraggable,
+
+    // node anchor settings
+    toggleNodeAnchors,
+
+    // user editable settings
     toggleUserEditable,
     toggleEdgeType,
-    changeNodeSize,
-    changeStorageKey
+
+
+    // persistent settings
+    changeStorageKey,
   }
 };

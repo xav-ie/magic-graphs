@@ -42,12 +42,14 @@ graph.subscribe('onStructureChange', (nodes, edges) => emit(
 
 const {
   reset,
-  changeStorageKey
+  toggleEdgeLabelDisplay,
+  toggleEdgeLabelsEditable,
 } = useGraphBtns(graph);
 
 const btns = [
   reset,
-  changeStorageKey,
+  toggleEdgeLabelDisplay,
+  toggleEdgeLabelsEditable,
 ]
 </script>
 
