@@ -28,7 +28,7 @@ import {
 } from './helpers';
 import { drawShape } from '@/shapes/draw';
 import { getTextAreaLocation } from '@/shapes/draw/text';
-import { hitboxes } from '@/shapes/hitboxes';
+import { hitboxes, isInTextarea } from '@/shapes/hitboxes';
 import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
 import { themes, type BaseGraphTheme } from './themes';
@@ -202,8 +202,10 @@ export const useBaseGraph =(
       const textAreaLocationLine = getTextAreaLocation.line(schema)
       const textAreaLocation = schemaType === 'arrow' ? textAreaLocationArrow : textAreaLocationLine
 
-      // TODO isInArrowTextArea doesn't cover undirected edges
-      if (schema.textArea && isInArrowTextArea(schema)) {
+      const isInTextareaFns = isInTextarea({ x: ev.offsetX, y: ev.offsetY })
+      const textareaSelected = schemaType === 'arrow' ? isInTextareaFns.arrow(schema) : isInTextareaFns.line(schema)
+
+      if (schema.textArea && textareaSelected) {
         engageTextarea({ ...schema.textArea, at: textAreaLocation }, textInputHandler)
         return setFocus(undefined)
       }
