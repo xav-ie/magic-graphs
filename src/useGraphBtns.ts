@@ -92,19 +92,19 @@ export const useGraphBtns = (graph: Graph) => {
     color: () => addedEdgeType.value === 'directed' ? 'blue' : 'purple',
   };
 
-  const changeDefaultEdgeWeight: GButton = {
+  const changeEdgeWeight: GButton = {
     cond: () => !!graph.settings.value.userEditable,
     label: () => {
       const editSettings = resolveEditSettings(userEditSettings.value);
       if (!editSettings) return '';
-      return `Change Default Edge Weight (${editSettings.defaultEdgeWeight})`;
+      return `Change Added Edge Weight (${editSettings.addedEdgeWeight})`;
     },
     action: () => {
       const editSettings = resolveEditSettings(userEditSettings.value);
       if (!editSettings) return;
       graph.settings.value.userEditable = {
         ...editSettings,
-        defaultEdgeWeight: getRandomInRange(1, 10),
+        addedEdgeWeight: getRandomInRange(1, 10),
       }
     },
     color: () => 'green',
@@ -151,7 +151,7 @@ export const useGraphBtns = (graph: Graph) => {
     // user editable settings
     toggleUserEditable,
     toggleEdgeType,
-    changeDefaultEdgeWeight,
+    changeEdgeWeight,
 
     // persistent settings
     changeStorageKey,

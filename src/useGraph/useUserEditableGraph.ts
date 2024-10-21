@@ -27,12 +27,12 @@ export type EditSettings = {
    * the default weight to assign to edges when created using the UI
    * @default 1
    */
-  defaultEdgeWeight: number,
+  addedEdgeWeight: number,
 }
 
 const defaultEditSettings = {
   addedEdgeType: 'directed',
-  defaultEdgeWeight: 1,
+  addedEdgeWeight: 1,
 } as const
 
 export type EditSettingsOption = Partial<EditSettings> | boolean
@@ -101,7 +101,7 @@ export const useUserEditableGraph = (
       from: parentNode.label,
       to: node.label,
       type: editSettings.value.addedEdgeType,
-      weight: editSettings.value.defaultEdgeWeight,
+      weight: editSettings.value.addedEdgeWeight,
     })
   }
 

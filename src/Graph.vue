@@ -38,7 +38,7 @@ const {
   reset,
   toggleUserEditable,
   toggleEdgeType,
-  changeDefaultEdgeWeight,
+  changeEdgeWeight,
   clearLocalStorage,
 } = useGraphBtns(graph);
 
@@ -47,7 +47,7 @@ const btns = [
   clearLocalStorage,
   toggleUserEditable,
   toggleEdgeType,
-  changeDefaultEdgeWeight,
+  changeEdgeWeight,
 ]
 
 const showBtn = (cond: (() => boolean) | undefined) => cond ? cond() : true
