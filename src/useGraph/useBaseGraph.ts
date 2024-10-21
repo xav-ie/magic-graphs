@@ -33,6 +33,7 @@ import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
 import { themes, type BaseGraphTheme } from './themes';
 import { engageTextarea } from './textarea';
+import { delta } from '@/utils/deepDelta';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -461,9 +462,8 @@ export const useBaseGraph =(
   updateAggregator.push(liftHoveredNodeToTop)
 
   watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
-  watch(settings, (n, o) => {
-    console.log('new settings', n)
-    console.log('old settings', o)
+
+  watch(settings, () => {
     eventBus.onSettingsChange.forEach(fn => fn())
   }, { deep: true })
 

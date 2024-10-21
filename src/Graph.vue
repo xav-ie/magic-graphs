@@ -7,6 +7,7 @@ import { nodesEdgesToAdjList, adjListToNodesEdges, type AdjacencyList } from './
 import { drawShape } from './shapes/draw';
 import { hitboxes } from './shapes/hitboxes';
 import type { PersistentGraphSettings } from './useGraph/usePersistentGraph';
+import { useGraphBtns } from './useGraphBtns';
 
 const canvas = ref<HTMLCanvasElement>();
 
@@ -37,72 +38,17 @@ const graph = useDarkGraph(canvas, {
 graph.subscribe('onStructureChange', (nodes, edges) => emit(
   'update:modelValue',
   nodesEdgesToAdjList(nodes, edges)
-))
+));
 
-const toggleEdgeType = () => {
-  const editSettings = graph.settings.value.userEditable;
-  if (isObject(editSettings)) {
-    const { addedEdgeType } = editSettings;
-    editSettings.addedEdgeType = addedEdgeType === 'directed' ? 'undirected' : 'directed';
-  } else {
-    graph.settings.value.userEditable = {
-      addedEdgeType: 'undirected'
-    }
-  }
-}
-
-const settings = computed(() => graph.settings.value);
-const userEditSettings = computed(() => settings.value.userEditable);
-const addedEdgeType = computed(() => {
-  if (isObject(userEditSettings.value)) {
-    return userEditSettings.value.addedEdgeType;
-  } else {
-    return 'directed';
-  }
-});
+const {
+  reset,
+  changeStorageKey
+} = useGraphBtns(graph);
 
 const btns = [
-  {
-    label: () => 'Reset Graph',
-    action: () => graph.reset(),
-    color: () => 'red-600'
-  },
-  {
-    label: () => settings.value.draggable ? 'Draggable' : 'Not Draggable',
-    action: () => graph.settings.value.draggable = !settings.value.draggable,
-    color: () => settings.value.draggable ? 'green-600' : 'orange-600'
-  },
-  {
-    label: () => settings.value.nodeAnchors ? 'Anchors' : 'No Anchors',
-    action: () => graph.settings.value.nodeAnchors = !settings.value.nodeAnchors,
-    color: () => settings.value.nodeAnchors ? 'green-600' : 'orange-600'
-  },
-  {
-    label: () => settings.value.userEditable ? 'Editable' : 'Not Editable',
-    action: () => graph.settings.value.userEditable = !settings.value.userEditable,
-    color: () => settings.value.userEditable ? 'green-600' : 'orange-600'
-  },
-  {
-    cond: () => settings.value.userEditable,
-    label: () => addedEdgeType.value === 'directed' ? 'Directed' : 'Undirected',
-    action: () => toggleEdgeType(),
-    color: () => addedEdgeType.value === 'directed' ? 'blue-600' : 'purple-600'
-  },
-  {
-    label: () => 'Change Node Size' + ` (${graph.theme.value.nodeSize})`,
-    action: () => graph.theme.value.nodeSize = Math.floor(Math.random() * (50 - 10 + 1)) + 10,
-    color: () => 'pink-600'
-  },
-  {
-    label: () => 'Change Storage Key ' + ` (${graph.settings.value.persistent.storageKey})`,
-    action: () => {
-      const key = graph.settings.value.persistent.storageKey;
-      graph.settings.value.persistent.storageKey = key === 'graph' ? 'graph2' : 'graph';
-    },
-    color: () => 'blue-600'
-  }
+  reset,
+  changeStorageKey,
 ]
-
 </script>
 
 <template>
@@ -114,7 +60,7 @@ const btns = [
       <button
           v-if="!btn.cond || btn.cond()"
           @click.stop="btn.action"
-          :class="`bg-${btn.color()} text-white px-3 py-1 rounded-lg font-bold`"
+          :class="`bg-${btn.color()}-600 text-white px-3 py-1 rounded-lg font-bold`"
         >
           {{ btn.label() }}
         </button>

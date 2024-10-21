@@ -2,32 +2,32 @@
  * recursively compare two objects and return the delta
  */
 
-const isObj = (obj) => Object.prototype.toString.call(obj) === '[object Object]'
+const isObj = (obj: any) => Object.prototype.toString.call(obj) === '[object Object]'
 
-export const delta = (obj1, obj2) => {
+export const delta = (oldObject: any, newObject: any) => {
 
-  const res = {};
+  const output: any = {};
 
-  const obj1Keys = Object.keys(obj1);
+  const oldObjectKeys = Object.keys(oldObject);
 
-  for (const key of obj1Keys) {
+  for (const key of oldObjectKeys) {
 
-    if (isObj(obj1[key])) {
-      const subObj = delta(obj1[key], obj2[key]);
-      if (subObj) res[key] = subObj;
+    if (isObj(oldObject[key])) {
+      const diffObj = delta(oldObject[key], newObject[key]);
+      if (diffObj) output[key] = diffObj;
       continue;
     }
 
-    if (Array.isArray(obj1[key])) {
-      if (JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])) res[key] = obj2[key];
+    if (Array.isArray(oldObject[key])) {
+      if (JSON.stringify(oldObject[key]) !== JSON.stringify(newObject[key])) output[key] = newObject[key];
       continue;
     }
 
-    else if (obj1[key] !== obj2[key]) res[key] = obj2[key];
+    else if (oldObject[key] !== newObject[key]) output[key] = newObject[key];
 
   }
 
-  return Object.keys(res).length ? res : null;
+  return Object.keys(output).length ? output : null;
 };
 
 
@@ -50,6 +50,10 @@ const yona = {
   },
   test: {
     hello: 'world',
+    removeMe: {
+      removeMe: 'removeMe',
+      removeMe2: {}
+    },
     test2: {
       test3:
       'secret'
@@ -72,6 +76,10 @@ const dila = {
   },
   test: {
     hello: 'world',
+    removeMe: {
+      removeMe: 'removeMe',
+      removeMe2: {}
+    },
     test2: {
       test3: 'secret changed'
     }
@@ -94,6 +102,3 @@ const expected = {
     }
   }
 };
-
-const passes = JSON.stringify(delta(yona, dila)) === JSON.stringify(expected);
-console.log(passes ? 'test passed' : 'test failed');

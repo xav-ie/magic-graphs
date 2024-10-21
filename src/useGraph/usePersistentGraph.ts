@@ -73,7 +73,7 @@ export const usePersistentGraph = (
 
   const graph = useUserEditableGraph(canvas, options)
 
-  return graph
+  // return graph
 
   const settings = ref<PersistentGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultPersistentGraphSettings,
@@ -133,8 +133,13 @@ export const usePersistentGraph = (
     graph.nodes.value = nodeStorage.get()
     graph.edges.value = edgeStorage.get()
 
-    graph.theme.value = Object.assign(graph.theme.value, themeStorage.get())
-    settings.value = Object.assign(settings.value, settingsStorage.get())
+    if (persistSettings.value?.trackTheme) {
+      graph.theme.value = Object.assign(graph.theme.value, themeStorage.get())
+    }
+
+    if (persistSettings.value?.trackSettings) {
+      settings.value = Object.assign(settings.value, settingsStorage.get())
+    }
   }
 
   const trackChangeEvents = [
