@@ -1,6 +1,7 @@
 import { isObject } from "@vueuse/core";
 import type { Graph } from "./useGraph/useGraph";
 import { computed } from "vue";
+import { resolveEditSettings } from "./useGraph/useUserEditableGraph";
 
 /**
  * @describes a button that can be added to the graph toolbar
@@ -21,14 +22,10 @@ export type GButton = {
 export const useGraphBtns = (graph: Graph) => {
 
   const toggleEdgeTypeAction = () => {
-    const editSettings = graph.settings.value.userEditable;
-    if (isObject(editSettings)) {
-      const { addedEdgeType } = editSettings;
-      editSettings.addedEdgeType = addedEdgeType === 'directed' ? 'undirected' : 'directed';
-    } else {
-      graph.settings.value.userEditable = {
-        addedEdgeType: 'undirected'
-      }
+    const editSettings = resolveEditSettings(graph.settings.value.userEditable);
+    graph.settings.value.userEditable = {
+      ...editSettings,
+      addedEdgeType: editSettings.addedEdgeType === 'directed' ? 'undirected' : 'directed',
     }
   }
 
@@ -45,11 +42,7 @@ export const useGraphBtns = (graph: Graph) => {
   });
 
   const addedEdgeType = computed(() => {
-    if (isObject(userEditSettings.value)) {
-      return userEditSettings.value.addedEdgeType;
-    } else {
-      return 'directed';
-    }
+    return resolveEditSettings(userEditSettings.value).addedEdgeType;
   });
 
   const reset: GButton = {

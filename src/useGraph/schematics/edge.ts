@@ -93,26 +93,26 @@ export const getEdgeSchematic = (
   const upDistance = edgeWidthVal * 8
   const downDistance = upDistance * 0.35
 
-  const selfDirectedEdgeLine = {
-    schema: {
-      spacing: edgeWidthVal * 1.2,
-      center: { x: from.x, y: from.y },
-      upDistance,
-      downDistance,
-      angle: largestAngularSpace,
-      lineWidth: edgeWidthVal,
-      color: colorVal,
-    },
-    schemaType: 'uturn',
-    id: edge.id,
-    graphType: 'edge',
-  } as const;
+  // returns the u-turn edge
+  if (isSelfDirecting) {
+    return {
+      schema: {
+        spacing: edgeWidthVal * 1.2,
+        center: { x: from.x, y: from.y },
+        upDistance,
+        downDistance,
+        angle: largestAngularSpace,
+        lineWidth: edgeWidthVal,
+        color: colorVal,
+      },
+      schemaType: 'uturn',
+      id: edge.id,
+      graphType: 'edge',
+    } as const;
+  }
 
+  // returns the line edge
   if (edge.type === 'undirected') {
-    // find the edge that is in the opposite direction
-    const oppositeEdge = edges.find(e => e.from === edge.to && e.to === edge.from)
-    if (!oppositeEdge) return
-    if (edge.id > oppositeEdge.id) return
     return {
       schema: {
         start: { x: from.x, y: from.y },
@@ -127,9 +127,8 @@ export const getEdgeSchematic = (
     }
   }
 
-  // console.log(graphSettings.displayEdgeLabels)
-
-  const edgeLine = {
+  // returns the arrow edge
+  return {
     schema: {
       start,
       end,
@@ -144,6 +143,4 @@ export const getEdgeSchematic = (
     id: edge.id,
     graphType: 'edge',
   } as const
-
-  return isSelfDirecting ? selfDirectedEdgeLine : edgeLine
 }

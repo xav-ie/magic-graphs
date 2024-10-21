@@ -29,9 +29,7 @@ const graph = useDarkGraph(canvas, {
   settings: {
     userEditable: {},
     displayEdgeLabels: false,
-    persistent: {
-      storageKey: 'graph',
-    }
+    persistent: false
   }
 });
 
@@ -44,23 +42,25 @@ const {
   reset,
   toggleEdgeLabelDisplay,
   toggleEdgeLabelsEditable,
+  toggleEdgeType
 } = useGraphBtns(graph);
 
 const btns = [
   reset,
   toggleEdgeLabelDisplay,
   toggleEdgeLabelsEditable,
+  toggleEdgeType
 ]
+
+const showBtn = (cond: (() => boolean) | undefined) => cond ? cond() : true
 </script>
 
 <template>
   <div :style="{ padding: `${padding}px` }">
     <div class="absolute flex gap-2 m-2">
-      <div
-        v-for="btn in btns"
-      >
+      <div v-for="btn in btns">
       <button
-          v-if="!btn.cond || btn.cond()"
+          v-if="showBtn(btn.cond)"
           @click.stop="btn.action"
           :class="`bg-${btn.color()}-600 text-white px-3 py-1 rounded-lg font-bold`"
         >

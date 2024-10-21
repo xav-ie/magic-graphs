@@ -29,11 +29,13 @@ const defaultEditSettings = {
   addedEdgeType: 'directed'
 } as const
 
+export type EditSettingsOption = Partial<EditSettings> | boolean
+
 export type UserEditableGraphEvents = NodeAnchorGraphEvents
 export type UserEditableGraphTheme = NodeAnchorGraphTheme
 
 export type UserEditableGraphSettings = NodeAnchorGraphSettings & {
-  userEditable: boolean | Partial<EditSettings>
+  userEditable: EditSettingsOption
 }
 
 export type UserEditableGraphOptions = GraphOptions<UserEditableGraphTheme, UserEditableGraphSettings>
@@ -42,12 +44,12 @@ const defaultUserEditableGraphSettings = {
   userEditable: true,
 } as const
 
-const resolveEditSettings = (settings: UserEditableGraphSettings) => {
-  if (settings.userEditable === false) return null
-  if (settings.userEditable === true) return defaultEditSettings
+export const resolveEditSettings = (settings: EditSettingsOption) => {
+  if (settings === false) return { addedEdgeType: 'undirected' } as const
+  if (settings === true) return defaultEditSettings
   return {
     ...defaultEditSettings,
-    ...settings.userEditable
+    ...settings,
   }
 }
 
@@ -73,7 +75,7 @@ export const useUserEditableGraph = (
     ...options.settings,
   }))
 
-  const editSettings = computed(() => resolveEditSettings(settings.value))
+  const editSettings = computed(() => resolveEditSettings(settings.value.userEditable))
 
   const handleNodeCreation = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev
