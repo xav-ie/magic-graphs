@@ -56,22 +56,22 @@ export const drawUTurnArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options
   })
 
   drawLine({
-    start: { x: longLegFrom.x, y: longLegFrom.y },
-    end: { x: longLegTo.x, y: longLegTo.y },
+    start: longLegFrom,
+    end: longLegTo,
     width: lineWidth,
     color
   })
 
   drawLine({
-    start: { x: shortLegFrom.x, y: shortLegFrom.y },
-    end: { x: shortLegTo.x, y: shortLegTo.y },
+    start: shortLegFrom,
+    end: shortLegTo,
     width: lineWidth,
     color
   })
 
   // draw the part that uturns
   ctx.beginPath();
-  ctx.arc(arcCenter.x, arcCenter.y, spacing, Math.PI / 2 + angle, -Math.PI / 2 + angle, true);
+  ctx.arc(arcCenter.x, arcCenter.y, spacing, Math.PI / 2 + angle + 0.05, -Math.PI / 2 + angle - 0.05, true);
   ctx.strokeStyle = color;
   ctx.stroke();
   ctx.closePath();
