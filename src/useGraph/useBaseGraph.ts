@@ -47,6 +47,8 @@ export type BaseGraphEvents = {
   onEdgeAdded: (edge: GEdge) => void;
   onEdgeRemoved: (edge: GEdge) => void;
 
+  onEdgeWeightChange: (edge: GEdge) => void;
+
   /*
     @description - this event is called when the graph needs to be redrawn
     WARNING: items drawn to the canvas using ctx won't be tied to the graph event architecture.
@@ -88,12 +90,23 @@ export type BaseGraphSettings = {
    * @default true
    */
   edgeLabelsEditable: boolean;
+  /**
+   * a setter for edge weights, takes the inputted string and returns a number that will be set as the edge weight
+   * or undefined if the edge weight should not be set
+   * @default function that attempts to parse the input as a number and if successful returns the number
+   */
+  edgeInputToWeight: (input: string) => number | undefined;
 }
 
 const defaultSettings = {
   repaintFps: 60,
   displayEdgeLabels: true,
   edgeLabelsEditable: true,
+  edgeInputToWeight: (input: string) => {
+    const trimmed = input.trim()
+    if (!trimmed) return
+    return Number(trimmed)
+  }
 } as const
 
 export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
@@ -120,6 +133,7 @@ export const useBaseGraph =(
     onNodeRemoved: [],
     onEdgeAdded: [],
     onEdgeRemoved: [],
+    onEdgeWeightChange: [],
     onRepaint: [],
     onNodeHoverChange: [],
     onGraphReset: [],
@@ -172,9 +186,10 @@ export const useBaseGraph =(
     const textInputHandler = (str: string) => {
       const edge = getEdge(topItem.id)
       if (!edge) throw new Error('Textarea only implemented for edges')
-      const weight = Number(str)
-      if (isNaN(weight)) return
-      edge.weight = weight
+      const newWeight = settings.value.edgeInputToWeight(str)
+      if (!newWeight) return
+      edge.weight = newWeight
+      eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
     }
 
     const { schema, schemaType } = topItem
