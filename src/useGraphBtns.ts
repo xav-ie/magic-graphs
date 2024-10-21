@@ -23,6 +23,7 @@ export const useGraphBtns = (graph: Graph) => {
 
   const toggleEdgeTypeAction = () => {
     const editSettings = resolveEditSettings(graph.settings.value.userEditable);
+    if (!editSettings) return;
     graph.settings.value.userEditable = {
       ...editSettings,
       addedEdgeType: editSettings.addedEdgeType === 'directed' ? 'undirected' : 'directed',
@@ -42,7 +43,9 @@ export const useGraphBtns = (graph: Graph) => {
   });
 
   const addedEdgeType = computed(() => {
-    return resolveEditSettings(userEditSettings.value).addedEdgeType;
+    const editSettings = resolveEditSettings(userEditSettings.value);
+    if (!editSettings) return null;
+    return editSettings.addedEdgeType;
   });
 
   const reset: GButton = {

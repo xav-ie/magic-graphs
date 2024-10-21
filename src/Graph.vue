@@ -27,7 +27,7 @@ const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 const graph = useDarkGraph(canvas, {
   theme: {},
   settings: {
-    userEditable: {},
+    userEditable: false,
     displayEdgeLabels: false,
     persistent: false
   }
@@ -42,14 +42,16 @@ const {
   reset,
   toggleEdgeLabelDisplay,
   toggleEdgeLabelsEditable,
-  toggleEdgeType
+  toggleUserEditable,
+  toggleEdgeType,
 } = useGraphBtns(graph);
 
 const btns = [
   reset,
-  toggleEdgeLabelDisplay,
-  toggleEdgeLabelsEditable,
-  toggleEdgeType
+  // toggleEdgeLabelDisplay,
+  // toggleEdgeLabelsEditable,
+  toggleUserEditable,
+  toggleEdgeType,
 ]
 
 const showBtn = (cond: (() => boolean) | undefined) => cond ? cond() : true

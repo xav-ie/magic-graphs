@@ -45,7 +45,7 @@ const defaultUserEditableGraphSettings = {
 } as const
 
 export const resolveEditSettings = (settings: EditSettingsOption) => {
-  if (settings === false) return { addedEdgeType: 'undirected' } as const
+  if (settings === false) return null
   if (settings === true) return defaultEditSettings
   return {
     ...defaultEditSettings,
