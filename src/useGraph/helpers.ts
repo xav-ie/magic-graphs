@@ -62,10 +62,18 @@ export const prioritizeNode = (id: SchemaItem['id'], items: SchemaItem[]) => {
   prioritize(id, nodeSchemas)
 }
 
-export const getRandomBetweenRange = (min: number, max: number) => Math.round(Math.random() * (max - min) + min);
+/**
+ * @description given two numbers, this function returns a random number between them (inclusive)
+ *
+ * @param min - the lowest number
+ * @param max - the highest number
+ * @returns a random number between min and max
+ */
+export const getRandomInRange = (min: number, max: number) => Math.round(Math.random() * (max - min) + min);
+
 export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement) => ({
-  x: getRandomBetweenRange(50, canvas.width - 50),
-  y: getRandomBetweenRange(50, canvas.height - 50),
+  x: getRandomInRange(50, canvas.width - 50),
+  y: getRandomInRange(50, canvas.height - 50),
 });
 
 /**

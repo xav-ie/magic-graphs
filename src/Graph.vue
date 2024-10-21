@@ -26,11 +26,7 @@ const canvasHeight = computed(() => (height.value / 2) - padding * 2);
 
 const graph = useDarkGraph(canvas, {
   theme: {},
-  settings: {
-    userEditable: false,
-    displayEdgeLabels: false,
-    persistent: false
-  }
+  settings: {}
 });
 
 graph.subscribe('onStructureChange', (nodes, edges) => emit(
@@ -40,18 +36,18 @@ graph.subscribe('onStructureChange', (nodes, edges) => emit(
 
 const {
   reset,
-  toggleEdgeLabelDisplay,
-  toggleEdgeLabelsEditable,
   toggleUserEditable,
   toggleEdgeType,
+  changeDefaultEdgeWeight,
+  clearLocalStorage,
 } = useGraphBtns(graph);
 
 const btns = [
   reset,
-  // toggleEdgeLabelDisplay,
-  // toggleEdgeLabelsEditable,
+  clearLocalStorage,
   toggleUserEditable,
   toggleEdgeType,
+  changeDefaultEdgeWeight,
 ]
 
 const showBtn = (cond: (() => boolean) | undefined) => cond ? cond() : true

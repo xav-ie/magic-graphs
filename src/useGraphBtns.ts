@@ -2,6 +2,7 @@ import { isObject } from "@vueuse/core";
 import type { Graph } from "./useGraph/useGraph";
 import { computed } from "vue";
 import { resolveEditSettings } from "./useGraph/useUserEditableGraph";
+import { getRandomInRange } from "./useGraph/helpers";
 
 /**
  * @describes a button that can be added to the graph toolbar
@@ -91,9 +92,27 @@ export const useGraphBtns = (graph: Graph) => {
     color: () => addedEdgeType.value === 'directed' ? 'blue' : 'purple',
   };
 
+  const changeDefaultEdgeWeight: GButton = {
+    cond: () => !!graph.settings.value.userEditable,
+    label: () => {
+      const editSettings = resolveEditSettings(userEditSettings.value);
+      if (!editSettings) return '';
+      return `Change Default Edge Weight (${editSettings.defaultEdgeWeight})`;
+    },
+    action: () => {
+      const editSettings = resolveEditSettings(userEditSettings.value);
+      if (!editSettings) return;
+      graph.settings.value.userEditable = {
+        ...editSettings,
+        defaultEdgeWeight: getRandomInRange(1, 10),
+      }
+    },
+    color: () => 'green',
+  };
+
   const changeNodeSize: GButton = {
     label: () => `Change Node Size (${graph.theme.value.nodeSize})`,
-    action: () => graph.theme.value.nodeSize = Math.floor(Math.random() * (50 - 10 + 1)) + 10,
+    action: () => graph.theme.value.nodeSize = getRandomInRange(20, 50),
     color: () => 'pink',
   };
 
@@ -104,6 +123,12 @@ export const useGraphBtns = (graph: Graph) => {
       persistSettings.value.storageKey = storageKey.value === 'graph' ? 'graph2' : 'graph';
     },
     color: () => 'blue',
+  };
+
+  const clearLocalStorage: GButton = {
+    label: () => 'Clear Local Storage',
+    action: () => localStorage.clear(),
+    color: () => 'red',
   };
 
   return {
@@ -126,9 +151,12 @@ export const useGraphBtns = (graph: Graph) => {
     // user editable settings
     toggleUserEditable,
     toggleEdgeType,
-
+    changeDefaultEdgeWeight,
 
     // persistent settings
     changeStorageKey,
+
+    // misc
+    clearLocalStorage,
   }
 };
