@@ -5,6 +5,23 @@ import { resolveEditSettings } from "./useGraph/useUserEditableGraph";
 import { getRandomInRange } from "./useGraph/helpers";
 
 /**
+ * the ids for the buttons that can be added to the graph toolbar
+ */
+export const GRAPH_BUTTON_ID = {
+  reset: 'reset',
+  draggable: 'draggable',
+  nodeAnchors: 'node-anchors',
+  edgeLabels: 'edge-labels',
+  edgeLabelsEditable: 'edge-labels-editable',
+  userEditable: 'user-editable',
+  edgeType: 'edge-type',
+  edgeWeight: 'edge-weight',
+  nodeSize: 'node-size',
+  storageKey: 'storage-key',
+  clearLocalStorage: 'clear-local-storage',
+} as const;
+
+/**
  * @describes a button that can be added to the graph toolbar
  */
 export type GButton = {
@@ -12,7 +29,7 @@ export type GButton = {
   label: () => string,
   action: () => void,
   color: () => string,
-  id: string,
+  id: typeof GRAPH_BUTTON_ID[keyof typeof GRAPH_BUTTON_ID],
 }
 
 /**
@@ -54,42 +71,42 @@ export const useGraphBtns = (graph: Graph) => {
     label: () => 'Reset',
     action: () => graph.reset(),
     color: () => 'red',
-    id: 'reset',
+    id: GRAPH_BUTTON_ID.reset,
   };
 
   const toggleDraggable: GButton = {
     label: () => graph.settings.value.draggable ? 'Draggable' : 'Not Draggable',
     action: () => graph.settings.value.draggable = !graph.settings.value.draggable,
     color: () => graph.settings.value.draggable ? 'green' : 'orange',
-    id: 'draggable',
+    id: GRAPH_BUTTON_ID.draggable,
   };
 
   const toggleNodeAnchors: GButton = {
     label: () => graph.settings.value.nodeAnchors ? 'Anchors' : 'No Anchors',
     action: () => graph.settings.value.nodeAnchors = !graph.settings.value.nodeAnchors,
     color: () => graph.settings.value.nodeAnchors ? 'green' : 'orange',
-    id: 'node-anchors',
+    id: GRAPH_BUTTON_ID.nodeAnchors,
   };
 
   const toggleEdgeLabelDisplay: GButton = {
     label: () => graph.settings.value.displayEdgeLabels ? 'Edge Labels' : 'No Edge Labels',
     action: () => graph.settings.value.displayEdgeLabels = !graph.settings.value.displayEdgeLabels,
     color: () => graph.settings.value.displayEdgeLabels ? 'green' : 'orange',
-    id: 'edge-labels',
+    id: GRAPH_BUTTON_ID.edgeLabels,
   };
 
   const toggleEdgeLabelsEditable: GButton = {
     label: () => graph.settings.value.edgeLabelsEditable ? 'Edge Labels Editable' : 'Edge Labels Not Editable',
     action: () => graph.settings.value.edgeLabelsEditable = !graph.settings.value.edgeLabelsEditable,
     color: () => graph.settings.value.edgeLabelsEditable ? 'green' : 'orange',
-    id: 'edge-labels-editable',
+    id: GRAPH_BUTTON_ID.edgeLabelsEditable,
   };
 
   const toggleUserEditable: GButton = {
     label: () => graph.settings.value.userEditable ? 'Editable' : 'Not Editable',
     action: () => graph.settings.value.userEditable = !graph.settings.value.userEditable,
     color: () => graph.settings.value.userEditable ? 'green' : 'orange',
-    id: 'user-editable',
+    id: GRAPH_BUTTON_ID.userEditable,
   };
 
   const toggleEdgeType: GButton = {
@@ -97,7 +114,7 @@ export const useGraphBtns = (graph: Graph) => {
     label: () => addedEdgeType.value === 'directed' ? 'Directed' : 'Undirected',
     action: toggleEdgeTypeAction,
     color: () => addedEdgeType.value === 'directed' ? 'blue' : 'purple',
-    id: 'edge-type',
+    id: GRAPH_BUTTON_ID.edgeType,
   };
 
   const changeEdgeWeight: GButton = {
@@ -116,14 +133,14 @@ export const useGraphBtns = (graph: Graph) => {
       }
     },
     color: () => 'green',
-    id: 'edge-weight',
+    id: GRAPH_BUTTON_ID.edgeWeight,
   };
 
   const changeNodeSize: GButton = {
     label: () => `Change Node Size (${graph.theme.value.nodeSize})`,
     action: () => graph.theme.value.nodeSize = getRandomInRange(20, 50),
     color: () => 'pink',
-    id: 'node-size',
+    id: GRAPH_BUTTON_ID.nodeSize,
   };
 
   const changeStorageKey: GButton = {
@@ -133,14 +150,14 @@ export const useGraphBtns = (graph: Graph) => {
       persistSettings.value.storageKey = storageKey.value === 'graph' ? 'graph2' : 'graph';
     },
     color: () => 'blue',
-    id: 'storage-key',
+    id: GRAPH_BUTTON_ID.storageKey,
   };
 
   const clearLocalStorage: GButton = {
     label: () => 'Clear Local Storage',
     action: () => localStorage.clear(),
     color: () => 'red',
-    id: 'clear-local-storage',
+    id: GRAPH_BUTTON_ID.clearLocalStorage,
   };
 
   return {

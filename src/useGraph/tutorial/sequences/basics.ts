@@ -1,4 +1,5 @@
 import type { TutorialStep } from "../types";
+import { GRAPH_BUTTON_ID } from "@/useGraphBtns";
 
 /**
  * pre-defined tutorial steps for basic graph editing
@@ -28,8 +29,7 @@ export const BASICS_STEPS: Record<string, TutorialStep> = {
   },
   createUndirectedEdge: {
     hint: 'Now create an undirected edge by toggling the edge type',
-    highlightElementId: 'toggle-edge-type',
-    highlightClassName: 'bg-pink-600',
+    highlightElementId: GRAPH_BUTTON_ID.edgeType,
     dismiss: {
       event: 'onEdgeAdded',
       predicate: (edge) => edge.type === 'undirected'

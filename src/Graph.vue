@@ -13,7 +13,7 @@
   import type { PersistentGraphSettings } from "./useGraph/usePersistentGraph";
   import { useGraphBtns } from "./useGraphBtns";
   import { markovSccColorizer } from "./markov-chains/sccColorizer";
-  import { useBasicsT}
+  import { useBasicsTutorial } from "./useGraph/tutorial/useTutorial";
 
   const canvas = ref<HTMLCanvasElement>();
 
@@ -38,6 +38,8 @@
   // setTimeout(() => {
   //   markovSccColorizer(graph);
   // }, 0)
+
+  useBasicsTutorial(graph);
 
   graph.subscribe("onStructureChange", (nodes, edges) =>
     emit("update:modelValue", nodesEdgesToAdjList(nodes, edges))
