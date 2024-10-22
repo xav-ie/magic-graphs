@@ -114,7 +114,7 @@ export const getEdgeSchematic = (
   
   const sumOfToAndFromNodeSize = fromNodeSize + toNodeSize
   const distanceSquaredBetweenNodes = (from.x - to.x) ** 2 + (from.y - to.y) ** 2
-  const areNodesTouching = (sumOfToAndFromNodeSize ** 2) < distanceSquaredBetweenNodes
+  const areNodesTouching = (sumOfToAndFromNodeSize ** 2) > distanceSquaredBetweenNodes
   if (areNodesTouching) return
 
   // returns the line edge
