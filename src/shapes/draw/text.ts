@@ -1,6 +1,7 @@
 import {
   type Line,
   type Arrow,
+  type UTurnArrow,
   type TextArea,
   TEXTAREA_DEFAULTS,
   TEXT_DEFAULTS
@@ -8,6 +9,7 @@ import {
 import { drawShape } from "../draw";
 import { getTextAreaLocationOnLine } from "./line";
 import { getTextAreaLocationOnArrow } from "./arrow";
+import { getTextAreaLocationOnUTurnArrow } from "./uturn";
 
 export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
   line: (line: Line) => {
@@ -46,6 +48,25 @@ export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
     drawTextAreaMatte(ctx)(fullTextArea);
     queueMicrotask(() => drawText(ctx)(fullTextArea));
   },
+  uTurn: (uTurn: UTurnArrow) => {
+    if (!uTurn.textArea) return;
+    const textArea = {
+      ...TEXTAREA_DEFAULTS,
+      ...uTurn.textArea,
+    }
+    const text = {
+      ...TEXT_DEFAULTS,
+      ...uTurn.textArea.text,
+    }
+
+    const fullTextArea = {
+      ...textArea,
+      text,
+      at: getTextAreaLocation.uTurn(uTurn),
+    }
+    drawTextAreaMatte(ctx)(fullTextArea);
+    queueMicrotask(() => drawText(ctx)(fullTextArea));
+  },
 })
 
 export type DeepRequired<T> = {
@@ -61,12 +82,14 @@ export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({
 
 export const drawTextAreaMatte = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => {
   const { width, height } = getTextAreaDimension(textArea);
+  ctx.globalAlpha = 0.75;
   drawShape(ctx).drawSquare({
     at: { x: textArea.at.x, y: textArea.at.y },
     width,
     height,
     color: textArea.color,
   })
+  ctx.globalAlpha = 1;
 }
 
 export const drawText = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => {
@@ -87,5 +110,6 @@ export const drawText = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequir
  */
 export const getTextAreaLocation = {
   line: (line: Line) =>  getTextAreaLocationOnLine(line),
-  arrow: (arrow: Arrow) => getTextAreaLocationOnArrow(arrow)
+  arrow: (arrow: Arrow) => getTextAreaLocationOnArrow(arrow),
+  uTurn: (uTurn: UTurnArrow) => getTextAreaLocationOnUTurnArrow(uTurn),
 }

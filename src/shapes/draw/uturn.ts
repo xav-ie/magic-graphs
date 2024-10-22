@@ -1,7 +1,12 @@
+import { 
+  type UTurnArrow, 
+  UTURN_ARROW_DEFAULTS, 
+  TEXT_DEFAULTS 
+} from "../types";
 import { rotatePoint } from "../helpers";
+import { drawTextArea } from './text';
 import { drawLineWithCtx } from "./line";
 import { drawTriangleWithCtx } from "./triangle";
-import { type UTurnArrow, UTURN_ARROW_DEFAULTS } from "../types";
 
 export const drawUTurnArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: UTurnArrow) => {
   const {
@@ -75,4 +80,36 @@ export const drawUTurnArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options
   ctx.strokeStyle = color;
   ctx.stroke();
   ctx.closePath();
+
+  if (options.textArea) drawTextArea(ctx).uTurn(options);
+}
+
+export const getTextAreaLocationOnUTurnArrow = (uturn: UTurnArrow) => {
+
+  const {
+    center,
+    upDistance,
+    angle,
+    textArea,
+    spacing,
+  } = {
+    ...UTURN_ARROW_DEFAULTS,
+    ...uturn
+  };
+
+  if (!textArea) return { x: 0, y: 0 }
+
+  const { text } = textArea
+
+  const { fontSize } = {
+    ...TEXT_DEFAULTS,
+    ...text,
+  }
+
+  const endPoint = rotatePoint({ x: center.x + upDistance + spacing , y: center.y }, center, angle)
+
+  return {
+    x: endPoint.x - fontSize,
+    y: endPoint.y - fontSize
+  }
 }

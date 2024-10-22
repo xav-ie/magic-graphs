@@ -196,18 +196,27 @@ export const useBaseGraph =(
 
     if ('textArea' in schema && schema.textArea?.editable ) {
 
-      const textareaLocationArrow = getTextAreaLocation.arrow(schema)
-      const textAreaLocationLine = getTextAreaLocation.line(schema)
-      const textAreaLocation = schemaType === 'arrow' ? textareaLocationArrow : textAreaLocationLine
-
-      const isInTextareaFns = isInTextarea({ x: ev.offsetX, y: ev.offsetY })
-      const textareaSelected = schemaType === 'arrow' ? isInTextareaFns.arrow(schema) : isInTextareaFns.line(schema)
-
-      if (schema.textArea && textareaSelected) {
-        engageTextarea({ ...schema.textArea, at: textAreaLocation }, textInputHandler)
-        return setFocus(undefined)
+      if (schemaType === 'arrow' || schemaType === 'line') {
+        
+        const textAreaLocationArrow = getTextAreaLocation.arrow(schema)
+        const textAreaLocationLine = getTextAreaLocation.line(schema)
+        const textAreaLocation = schemaType === 'arrow' ? textAreaLocationArrow : textAreaLocationLine
+        
+        const isInTextAreaFns = isInTextarea({ x: ev.offsetX, y: ev.offsetY })
+        const textAreaSelected = schemaType === 'arrow' ? isInTextAreaFns.arrow(schema) : isInTextAreaFns.line(schema)
+        if (schema.textArea && textAreaSelected) {
+          engageTextarea({ ...schema.textArea, at: textAreaLocation }, textInputHandler)
+          return setFocus(undefined)
+        }
+      } else if (schemaType === 'uturn') {
+        const textAreaLocationUTurn = getTextAreaLocation.uTurn(schema)
+        const isInTextAreaFns = isInTextarea({ x: ev.offsetX, y: ev.offsetY })
+        const textAreaSelected = isInTextAreaFns.uTurn(schema)
+        if (schema.textArea && textAreaSelected) {
+          engageTextarea({ ...schema.textArea, at: textAreaLocationUTurn }, textInputHandler)
+          return setFocus(undefined)
+        }
       }
-
     }
     setFocus(topItem.id)
   }
