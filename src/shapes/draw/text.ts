@@ -20,7 +20,7 @@ export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
     }
     const text = {
       ...TEXT_DEFAULTS,
-      ...line.textArea.text,
+      ...textArea.text,
     }
     const fullTextArea = {
       ...textArea,
@@ -38,7 +38,7 @@ export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
     }
     const text = {
       ...TEXT_DEFAULTS,
-      ...arrow.textArea.text,
+      ...textArea.text,
     }
     const fullTextArea = {
       ...textArea,
@@ -56,7 +56,7 @@ export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
     }
     const text = {
       ...TEXT_DEFAULTS,
-      ...uTurn.textArea.text,
+      ...textArea.text,
     }
 
     const fullTextArea = {
