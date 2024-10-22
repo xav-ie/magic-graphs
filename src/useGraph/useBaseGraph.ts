@@ -28,7 +28,7 @@ import {
 } from './helpers';
 import { drawShape } from '@/shapes/draw';
 import { getTextAreaLocation } from '@/shapes/draw/text';
-import { hitboxes } from '@/shapes/hitboxes';
+import { hitboxes, isInTextarea } from '@/shapes/hitboxes';
 import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
 import { themes, type BaseGraphTheme } from './themes';
@@ -43,6 +43,12 @@ export type BaseGraphEvents = {
   ) => void;
   onNodeAdded: (node: GNode) => void;
   onNodeRemoved: (node: GNode) => void;
+
+  onEdgeAdded: (edge: GEdge) => void;
+  onEdgeRemoved: (edge: GEdge) => void;
+
+  onEdgeWeightChange: (edge: GEdge) => void;
+
   /*
     @description - this event is called when the graph needs to be redrawn
     WARNING: items drawn to the canvas using ctx won't be tied to the graph event architecture.
@@ -74,10 +80,33 @@ export type BaseGraphSettings = {
    * @default 60
    */
   repaintFps: number;
+  /**
+   * whether to display edge labels
+   * @default true
+   */
+  displayEdgeLabels: boolean;
+  /**
+   * whether edge labels should be editable
+   * @default true
+   */
+  edgeLabelsEditable: boolean;
+  /**
+   * a setter for edge weights, takes the inputted string and returns a number that will be set as the edge weight
+   * or undefined if the edge weight should not be set
+   * @default function that attempts to parse the input as a number and if successful returns the number
+   */
+  edgeInputToWeight: (input: string) => number | undefined;
 }
 
 const defaultSettings = {
   repaintFps: 60,
+  displayEdgeLabels: true,
+  edgeLabelsEditable: true,
+  edgeInputToWeight: (input: string) => {
+    const trimmed = input.trim()
+    if (!trimmed) return
+    return Number(trimmed)
+  }
 } as const
 
 export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
@@ -102,6 +131,9 @@ export const useBaseGraph =(
     onFocusChange: [],
     onNodeAdded: [],
     onNodeRemoved: [],
+    onEdgeAdded: [],
+    onEdgeRemoved: [],
+    onEdgeWeightChange: [],
     onRepaint: [],
     onNodeHoverChange: [],
     onGraphReset: [],
@@ -154,23 +186,24 @@ export const useBaseGraph =(
     const textInputHandler = (str: string) => {
       const edge = getEdge(topItem.id)
       if (!edge) throw new Error('Textarea only implemented for edges')
-      const weight = Number(str)
-      if (isNaN(weight)) return
-      edge.weight = weight
+      const newWeight = settings.value.edgeInputToWeight(str)
+      if (!newWeight) return
+      edge.weight = newWeight
+      eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
     }
 
     const { schema, schemaType } = topItem
-    const { isInArrowTextArea } = hitboxes({ x: ev.offsetX, y: ev.offsetY }
 
-    )
     if ('textArea' in schema && schema.textArea?.editable ) {
 
-      const textAreaLocationArrow = getTextAreaLocation.arrow(schema)
+      const textareaLocationArrow = getTextAreaLocation.arrow(schema)
       const textAreaLocationLine = getTextAreaLocation.line(schema)
-      const textAreaLocation = schemaType === 'arrow' ? textAreaLocationArrow : textAreaLocationLine
+      const textAreaLocation = schemaType === 'arrow' ? textareaLocationArrow : textAreaLocationLine
 
-      // TODO isInArrowTextArea doesn't cover undirected edges
-      if (schema.textArea && isInArrowTextArea(schema)) {
+      const isInTextareaFns = isInTextarea({ x: ev.offsetX, y: ev.offsetY })
+      const textareaSelected = schemaType === 'arrow' ? isInTextareaFns.arrow(schema) : isInTextareaFns.line(schema)
+
+      if (schema.textArea && textareaSelected) {
         engageTextarea({ ...schema.textArea, at: textAreaLocation }, textInputHandler)
         return setFocus(undefined)
       }
@@ -187,7 +220,7 @@ export const useBaseGraph =(
   updateAggregator.push((aggregator) => {
 
     const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(edge, nodes.value, edges.value, theme.value, focusedId.value)
+      const schema = getEdgeSchematic(edge, nodes.value, edges.value, theme.value, settings.value, focusedId.value)
       if (!schema) return
       return {
         ...schema,
@@ -355,65 +388,37 @@ export const useBaseGraph =(
   }
 
   const addEdge = (edge: Omit<GEdge, 'id'>) => {
-    if (edge.type === 'directed') {
-      const edgeExists = edges.value.some(e => e.from === edge.from && e.to === edge.to)
-      if (edgeExists) return
-      addDirectedEdge(edge)
-    } else if (edge.type === 'undirected') {
-      // checks both directions
-      const cond = (e: GEdge) => (e.from === edge.from && e.to === edge.to) || (e.from === edge.to && e.to === edge.from)
-      const edgeExists = edges.value.some(cond)
-      if (edgeExists) return
-      addUndirectedEdge(edge)
-    } else {
-      throw new Error('Unknown edge type')
+
+    const directedEdgeCond = (e: GEdge) => e.from === edge.from && e.to === edge.to
+    const undirectedEdgeCond = (e: GEdge) => (e.from === edge.from && e.to === edge.to) || (e.from === edge.to && e.to === edge.from)
+    const edgeExists = edge.type === 'directed' ? edges.value.some(directedEdgeCond) : edges.value.some(undirectedEdgeCond)
+
+    if (edgeExists) return
+
+    const newEdge: GEdge = {
+      to: edge.to,
+      from: edge.from,
+      weight: edge.weight ?? 1,
+      type: edge.type,
+      id: generateId()
     }
 
+    edges.value.push(newEdge)
+
+    eventBus.onEdgeAdded.forEach(fn => fn(newEdge))
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-    return edge
-  }
 
-  const addDirectedEdge = (edge: Omit<GEdge, 'id'>) => {
-    edges.value.push({
-      to: edge.to,
-      from: edge.from,
-      weight: edge.weight ?? 1,
-      type: 'directed',
-      id: generateId()
-    })
-  }
-
-  const addUndirectedEdge = (edge: Omit<GEdge, 'id'>) => {
-    edges.value.push({
-      to: edge.to,
-      from: edge.from,
-      weight: edge.weight ?? 1,
-      type: 'undirected',
-      id: generateId()
-    })
-    edges.value.push({
-      to: edge.from,
-      from: edge.to,
-      weight: edge.weight ?? 1,
-      type: 'undirected',
-      id: generateId()
-    })
+    return newEdge
   }
 
   const removeEdge = (edgeId: GEdge['id']) => {
     const edge = edges.value.find(edge => edge.id === edgeId)
     if (!edge) return
-    edge.type === 'directed' ? removeDirectedEdge(edge) : removeUndirectedEdge(edge)
-    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-  }
-
-  const removeDirectedEdge = (edge: GEdge) => {
     edges.value = edges.value.filter(e => e.id !== edge.id)
-  }
 
-  const removeUndirectedEdge = (edge: GEdge) => {
-    removeDirectedEdge(edge)
-    edges.value = edges.value.filter(e => e.to !== edge.from || e.from !== edge.to)
+    eventBus.onEdgeRemoved.forEach(fn => fn(edge))
+    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    return edge
   }
 
   const setFocus = (newGItemId: GNode['id'] | GEdge['id'] | undefined) => {
@@ -449,7 +454,10 @@ export const useBaseGraph =(
   updateAggregator.push(liftHoveredNodeToTop)
 
   watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
-  watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
+
+  watch(settings, () => {
+    eventBus.onSettingsChange.forEach(fn => fn())
+  }, { deep: true })
 
   return {
     nodes,

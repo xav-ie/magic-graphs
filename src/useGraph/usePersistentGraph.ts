@@ -73,6 +73,8 @@ export const usePersistentGraph = (
 
   const graph = useUserEditableGraph(canvas, options)
 
+  // return graph
+
   const settings = ref<PersistentGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultPersistentGraphSettings,
     ...options.settings,
@@ -131,8 +133,18 @@ export const usePersistentGraph = (
     graph.nodes.value = nodeStorage.get()
     graph.edges.value = edgeStorage.get()
 
-    graph.theme.value = Object.assign(graph.theme.value, themeStorage.get())
-    settings.value = Object.assign(settings.value, settingsStorage.get())
+    // wait for the next microtask to ensure caller of useGraph has a chance to sub to onStructureChange
+    queueMicrotask(() => {
+      graph.eventBus.onStructureChange.forEach(fn => fn(graph.nodes.value, graph.edges.value))
+    })
+
+    if (persistSettings.value?.trackTheme) {
+      graph.theme.value = Object.assign(graph.theme.value, themeStorage.get())
+    }
+
+    if (persistSettings.value?.trackSettings) {
+      settings.value = Object.assign(settings.value, settingsStorage.get())
+    }
   }
 
   const trackChangeEvents = [

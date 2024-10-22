@@ -1,7 +1,14 @@
-import type { GEdge, GNode, LineSchemaItem, ArrowSchemaItem, ArrowUTurnSchemaItem } from '../types'
+import type {
+  GEdge,
+  GNode,
+  LineSchemaItem,
+  ArrowSchemaItem,
+  ArrowUTurnSchemaItem
+} from '../types'
 import { getValue, getFromToNodes } from '../helpers'
 import type { BaseGraphTheme } from '../themes'
 import { getLargestAngularSpace } from '@/shapes/helpers'
+import type { BaseGraphSettings } from '../useBaseGraph'
 
 type EdgeSchemas = LineSchemaItem | ArrowSchemaItem | ArrowUTurnSchemaItem
 type EdgeSchematic = Omit<EdgeSchemas, 'priority'> | undefined
@@ -11,6 +18,7 @@ export const getEdgeSchematic = (
   nodes: GNode[],
   edges: GEdge[],
   graphTheme: BaseGraphTheme,
+  graphSettings: BaseGraphSettings,
   focusedId: GEdge['id'] | undefined
 ): EdgeSchematic => {
 
@@ -23,7 +31,6 @@ export const getEdgeSchematic = (
 
   const fromNodeSize = getValue(graphTheme.nodeSize, from) + spacingAwayFromNode
   const toNodeSize = getValue(graphTheme.nodeSize, to) + spacingAwayFromNode
-
 
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
 
@@ -70,30 +77,12 @@ export const getEdgeSchematic = (
   const isFocused = focusedId === edge.id
   const colorVal = getValue(isFocused ? focusColor : color, edge)
 
-  const upDistance = edgeWidthVal * 8
-  const downDistance = upDistance * 0.35
-
-  const selfDirectedEdgeLine = {
-    schema: {
-      spacing: edgeWidthVal * 1.2,
-      center: { x: from.x, y: from.y },
-      upDistance,
-      downDistance,
-      angle: largestAngularSpace,
-      lineWidth: edgeWidthVal,
-      color: colorVal,
-    },
-    schemaType: 'uturn',
-    id: edge.id,
-    graphType: 'edge',
-  } as const;
-
   const edgeTextColor = isFocused ? graphTheme.edgeFocusTextColor : graphTheme.edgeTextColor
   const edgeTextColorVal = getValue(edgeTextColor, edge)
 
   const textArea = {
     color: graphTheme.graphBgColor,
-    editable: true,
+    editable: graphSettings.edgeLabelsEditable,
     text: {
       content: edge.weight.toString(),
       color: edgeTextColorVal,
@@ -102,26 +91,50 @@ export const getEdgeSchematic = (
     }
   }
 
+  const upDistance = edgeWidthVal * 8
+  const downDistance = upDistance * 0.35
+
+  // returns the u-turn edge
+  if (isSelfDirecting) {
+    return {
+      schema: {
+        spacing: edgeWidthVal * 1.2,
+        center: { x: from.x, y: from.y },
+        upDistance,
+        downDistance,
+        angle: largestAngularSpace,
+        lineWidth: edgeWidthVal,
+        color: colorVal,
+      },
+      schemaType: 'uturn',
+      id: edge.id,
+      graphType: 'edge',
+    } as const;
+  }
+  
+  const sumOfToAndFromNodeSize = fromNodeSize + toNodeSize
+  const distanceSquaredBetweenNodes = (from.x - to.x) ** 2 + (from.y - to.y) ** 2
+  const areNodesTouching = (sumOfToAndFromNodeSize ** 2) < distanceSquaredBetweenNodes
+  if (areNodesTouching) return
+
+  // returns the line edge
   if (edge.type === 'undirected') {
-    // find the edge that is in the opposite direction
-    const oppositeEdge = edges.find(e => e.from === edge.to && e.to === edge.from)
-    if (!oppositeEdge) return
-    if (edge.id > oppositeEdge.id) return
     return {
       schema: {
         start: { x: from.x, y: from.y },
         end: { x: to.x, y: to.y },
         color: colorVal,
         width: edgeWidthVal,
-        textArea,
+        textArea: graphSettings.displayEdgeLabels ? textArea : undefined,
       },
       schemaType: 'line',
       id: edge.id,
       graphType: 'edge',
     }
   }
-
-  const edgeLine = {
+  
+  // returns the arrow edge
+  return {
     schema: {
       start,
       end,
@@ -130,18 +143,11 @@ export const getEdgeSchematic = (
       // TODO - must take into account of actual node size.
       // TODO - 32 is approx default node size but wont work if node size is different
       textOffsetFromCenter: 32,
-      textArea,
+      textArea: graphSettings.displayEdgeLabels ? textArea : undefined,
     },
     schemaType: 'arrow',
     id: edge.id,
     graphType: 'edge',
   } as const
 
-
-  if (isSelfDirecting) return selfDirectedEdgeLine
-  else {
-    const sumOfToAndFromNodeSize = fromNodeSize + toNodeSize
-    const distanceSquaredBetweenNodes = (from.x - to.x) ** 2 + (from.y - to.y) ** 2
-    if (sumOfToAndFromNodeSize ** 2 < distanceSquaredBetweenNodes) return edgeLine
-  }
 }

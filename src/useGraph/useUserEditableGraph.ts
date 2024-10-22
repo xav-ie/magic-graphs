@@ -22,18 +22,26 @@ export type EditSettings = {
    * the type of edge to add when creating an edge between nodes
    * @default "directed"
    */
-  addedEdgeType: 'directed' | 'undirected'
+  addedEdgeType: 'directed' | 'undirected',
+  /**
+   * the default weight to assign to edges when created using the UI
+   * @default 1
+   */
+  addedEdgeWeight: number,
 }
 
 const defaultEditSettings = {
-  addedEdgeType: 'directed'
+  addedEdgeType: 'directed',
+  addedEdgeWeight: 1,
 } as const
+
+export type EditSettingsOption = Partial<EditSettings> | boolean
 
 export type UserEditableGraphEvents = NodeAnchorGraphEvents
 export type UserEditableGraphTheme = NodeAnchorGraphTheme
 
 export type UserEditableGraphSettings = NodeAnchorGraphSettings & {
-  userEditable: boolean | Partial<EditSettings>
+  userEditable: EditSettingsOption
 }
 
 export type UserEditableGraphOptions = GraphOptions<UserEditableGraphTheme, UserEditableGraphSettings>
@@ -42,12 +50,12 @@ const defaultUserEditableGraphSettings = {
   userEditable: true,
 } as const
 
-const resolveEditSettings = (settings: UserEditableGraphSettings) => {
-  if (settings.userEditable === false) return null
-  if (settings.userEditable === true) return defaultEditSettings
+export const resolveEditSettings = (settings: EditSettingsOption) => {
+  if (settings === false) return null
+  if (settings === true) return defaultEditSettings
   return {
     ...defaultEditSettings,
-    ...settings.userEditable
+    ...settings,
   }
 }
 
@@ -73,7 +81,7 @@ export const useUserEditableGraph = (
     ...options.settings,
   }))
 
-  const editSettings = computed(() => resolveEditSettings(settings.value))
+  const editSettings = computed(() => resolveEditSettings(settings.value.userEditable))
 
   const handleNodeCreation = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev
@@ -93,7 +101,7 @@ export const useUserEditableGraph = (
       from: parentNode.label,
       to: node.label,
       type: editSettings.value.addedEdgeType,
-      weight: 1,
+      weight: editSettings.value.addedEdgeWeight,
     })
   }
 

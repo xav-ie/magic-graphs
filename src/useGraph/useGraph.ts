@@ -11,7 +11,11 @@ import {
   usePersistentGraph,
   type PersistentGraphOptions,
 } from './usePersistentGraph'
-import type { useBaseGraph } from './useBaseGraph'
+
+export const useGraph = (
+  canvas: Ref<HTMLCanvasElement | undefined | null>,
+  options: Partial<PersistentGraphOptions> = {},
+) => usePersistentGraph(canvas, options)
 
 export const useDarkGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -24,5 +28,4 @@ export const useDarkGraph = (
   settings: options.settings,
 })
 
-export type Graph = ReturnType<typeof useBaseGraph>
-export type DarkGraph = ReturnType<typeof useDarkGraph>
+export type Graph = ReturnType<typeof useGraph>
