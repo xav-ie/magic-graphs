@@ -5,40 +5,6 @@
 export type Color = string;
 
 /**
- * tailwinds 500 level color palette
- */
-export const TAILWIND_500_COLORS = {
-  RED: '#EF4444',
-  ORANGE: '#F97316',
-  AMBER: '#F59E0B',
-  YELLOW: '#EAB308',
-  LIME: '#84CC16',
-  GREEN: '#22C55E',
-  EMERALD: '#10B981',
-  TEAL: '#14B8A6',
-  CYAN: '#06B6D4',
-  SKY: '#0EA5E9',
-  BLUE: '#3B82F6',
-  INDIGO: '#6366F1',
-  VIOLET: '#8B5CF6',
-  PURPLE: '#A855F7',
-  FUCHSIA: '#D946EF',
-  PINK: '#EC4899',
-  ROSE: '#F43F5E',
-  STONE: '#9CA3AF',
-  NEUTRAL: '#6B7280',
-  ZINC: '#4B5563',
-  GRAY: '#374151',
-  SLATE: '#1F2937',
-} as const;
-
-/**
- * color used to represent transient states
- * pulled from the tailwind color palette
- */
-export const TRANSIENT_COLOR = '#030712'
-
-/**
  * all tailwind gray colors
  */
 export const GRAY_50 = '#f9fafb';
@@ -234,3 +200,148 @@ export const VIOLET_600 = '#7c3aed';
 export const VIOLET_700 = '#6d28d9';
 export const VIOLET_800 = '#5b21b6';
 export const VIOLET_900 = '#4c1d95';
+
+/**
+ * all tailwind purple colors
+ */
+export const PURPLE_50 = '#faf5ff';
+export const PURPLE_100 = '#f3e8ff';
+export const PURPLE_200 = '#e9d5ff';
+export const PURPLE_300 = '#d8b4fe';
+export const PURPLE_400 = '#c084fc';
+export const PURPLE_500 = '#a855f7';
+export const PURPLE_600 = '#9333ea';
+export const PURPLE_700 = '#7e22ce';
+export const PURPLE_800 = '#6b21a8';
+export const PURPLE_900 = '#581c87';
+
+/**
+ * all tailwind fuchsia colors
+ */
+export const FUCHSIA_50 = '#fdf4ff';
+export const FUCHSIA_100 = '#fae8ff';
+export const FUCHSIA_200 = '#f5d0fe';
+export const FUCHSIA_300 = '#f0abfc';
+export const FUCHSIA_400 = '#e879f9';
+export const FUCHSIA_500 = '#d946ef';
+export const FUCHSIA_600 = '#c026d3';
+export const FUCHSIA_700 = '#a21caf';
+export const FUCHSIA_800 = '#86198f';
+export const FUCHSIA_900 = '#701a75';
+
+/**
+ * all tailwind pink colors
+ */
+export const PINK_50 = '#fdf2f8';
+export const PINK_100 = '#fce7f3';
+export const PINK_200 = '#fbcfe8';
+export const PINK_300 = '#f9a8d4';
+export const PINK_400 = '#f472b6';
+export const PINK_500 = '#ec4899';
+export const PINK_600 = '#db2777';
+export const PINK_700 = '#be185d';
+export const PINK_800 = '#9d174d';
+export const PINK_900 = '#831843';
+
+/**
+ * all tailwind rose colors
+ */
+export const ROSE_50 = '#fff1f2';
+export const ROSE_100 = '#ffe4e6';
+export const ROSE_200 = '#fecdd3';
+export const ROSE_300 = '#fda4af';
+export const ROSE_400 = '#fb7185';
+export const ROSE_500 = '#f43f5e';
+export const ROSE_600 = '#e11d48';
+export const ROSE_700 = '#be123c';
+export const ROSE_800 = '#9f1239';
+export const ROSE_900 = '#881337';
+
+/**
+ * all tailwind stone colors
+ */
+export const STONE_50 = '#f5f7fa';
+export const STONE_100 = '#e4e7eb';
+export const STONE_200 = '#cbd2d9';
+export const STONE_300 = '#9fa6b2';
+export const STONE_400 = '#6b7280';
+export const STONE_500 = '#4b5563';
+export const STONE_600 = '#374151';
+export const STONE_700 = '#252f3f';
+export const STONE_800 = '#161e2e';
+export const STONE_900 = '#0d131e';
+
+/**
+ * all tailwind neutral colors
+ */
+export const NEUTRAL_50 = '#f9fafb';
+export const NEUTRAL_100 = '#f4f5f7';
+export const NEUTRAL_200 = '#e5e7eb';
+export const NEUTRAL_300 = '#d2d6dc';
+export const NEUTRAL_400 = '#9fa6b2';
+export const NEUTRAL_500 = '#6b7280';
+export const NEUTRAL_600 = '#4b5563';
+export const NEUTRAL_700 = '#374151';
+export const NEUTRAL_800 = '#252f3f';
+export const NEUTRAL_900 = '#161e2e';
+
+/**
+ * all tailwind zinc colors
+ */
+export const ZINC_50 = '#f9fafb';
+export const ZINC_100 = '#f4f5f7';
+export const ZINC_200 = '#e5e7eb';
+export const ZINC_300 = '#d2d6dc';
+export const ZINC_400 = '#9fa6b2';
+export const ZINC_500 = '#6b7280';
+export const ZINC_600 = '#4b5563';
+export const ZINC_700 = '#374151';
+export const ZINC_800 = '#252f3f';
+export const ZINC_900 = '#161e2e';
+
+/**
+ * all tailwind slate colors
+ */
+export const SLATE_50 = '#f4f5f7';
+export const SLATE_100 = '#e5e7eb';
+export const SLATE_200 = '#d2d6dc';
+export const SLATE_300 = '#9fa6b2';
+export const SLATE_400 = '#6b7280';
+export const SLATE_500 = '#4b5563';
+export const SLATE_600 = '#374151';
+export const SLATE_700 = '#252f3f';
+export const SLATE_800 = '#161e2e';
+export const SLATE_900 = '#0d131e';
+
+/**
+ * tailwinds 500 level color palette
+ */
+export const TAILWIND_500_COLORS = {
+  RED: RED_500,
+  ORANGE: ORANGE_500,
+  AMBER: AMBER_500,
+  YELLOW: YELLOW_500,
+  LIME: LIME_500,
+  GREEN: GREEN_500,
+  EMERALD: EMERALD_500,
+  TEAL: TEAL_500,
+  CYAN: CYAN_500,
+  SKY: SKY_500,
+  BLUE: BLUE_500,
+  INDIGO: INDIGO_500,
+  VIOLET: VIOLET_500,
+  PURPLE: PURPLE_500,
+  FUCHSIA: FUCHSIA_500,
+  PINK: PINK_500,
+  ROSE: ROSE_500,
+  STONE: STONE_500,
+  NEUTRAL: NEUTRAL_500,
+  ZINC: ZINC_500,
+  GRAY: GRAY_500,
+  SLATE: SLATE_500,
+} as const;
+
+/**
+ * color used to represent transient states
+ */
+export const TRANSIENT_COLOR = '#030712'

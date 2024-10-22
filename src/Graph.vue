@@ -31,7 +31,7 @@ const graph = useDarkGraph(canvas, {
 });
 
 setTimeout(() => {
-  markovSccColorizer(graph);
+  // markovSccColorizer(graph);
 }, 0)
 
 graph.subscribe('onStructureChange', (nodes, edges) => emit(
