@@ -60,40 +60,7 @@
   ];
 
   useGraphTutorial(graph, [
-    // {
-    //   hint: 'Double click anywhere to add a node',
-    //   dismiss: 'onNodeAdded'
-    // },
-    // {
-    //   hint: 'Drag a node to move it',
-    //   dismiss: 'onNodeDrop'
-    // },
-    {
-      hint: "Create an edge by dragging an anchor onto another node",
-      dismiss: "onEdgeAdded",
-    },
-    {
-      hint: "Now create an undirected edge by toggling the edge type",
-      highlightElementId: toggleEdgeType.id,
-      highlightClassName: 'bg-pink-600',
-      dismiss: {
-        event: "onEdgeAdded",
-        predicate: (edge) => edge.type === "undirected",
-      },
-    },
-    {
-      hint: "Edit the edge weight by clicking on it and typing a number",
-      dismiss: "onEdgeWeightChange",
-    },
-    {
-      hint: "Remove an edge or node by clicking on it and hitting backspace/delete",
-      dismiss: "onNodeRemoved",
-    },
-    {
-      hint: "Now have fun!",
-      dismiss: "onCron",
-      after: 3000,
-    },
+
   ]);
 
   const showBtn = (cond: (() => boolean) | undefined) => (cond ? cond() : true);

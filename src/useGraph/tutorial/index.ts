@@ -1,46 +1,13 @@
 import { onMounted } from "vue";
 import type { Graph } from "../useGraph";
-import type { UserEditableGraphEvents } from "../useUserEditableGraph";
+import { DEFAULT_HIGHLIGHT_CLASS_NAME } from "./types";
+import type {
+  TutorialSequence,
+  ElementHighlightOptions,
+  GraphEventName,
+} from "./types";
 
-type EventMap = UserEditableGraphEvents;
-type GraphEventName = keyof EventMap;
-
-type FunctionArgs<T extends Function> = T extends (...args: infer R) => any ? R : any
-
-type Highlighter = {
-  highlightElementId?: string;
-  highlightClassName?: string;
-}
-
-// css class defined in App.vue, should move later
-const DEFAULT_HIGHLIGHT_CLASS_NAME = 'element-highlight'
-
-type TutorialStepForEvent<T extends GraphEventName> = {
-  hint: string;
-  /**
-   * if provided, a special effect will be applied to the element with this id
-   */
-  highlightElementId?: string;
-  dismiss: T | {
-    event: T,
-    predicate: (...args: FunctionArgs<EventMap[T]>) => boolean
-  };
-};
-
-type CronStep = {
-  hint: string,
-  dismiss: 'onCron',
-  /**
-   * time to wait before the next step, in milliseconds
-   */
-  after: number,
-};
-
-type TutorialStep = ({
-  [K in GraphEventName]: TutorialStepForEvent<K>
-}[GraphEventName] | CronStep) & Highlighter;
-
-export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialStep[]) => {
+export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequence) => {
 
   const h1 = document.createElement('h1');
   h1.style.opacity = '0'
@@ -68,7 +35,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialStep[])
     h1.style.opacity = '0';
   }
 
-  const applyHighlight = (highlight: Highlighter) => {
+  const applyHighlight = (highlight: ElementHighlightOptions) => {
 
     const {
       highlightElementId: elementId,
@@ -84,7 +51,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialStep[])
   }
 
   const nextStep = () => {
-    const step = tutorialSequency.shift();
+    const step = tutorialSequence.shift();
 
     if (!step) {
       removeText()
