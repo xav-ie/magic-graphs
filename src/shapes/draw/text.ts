@@ -82,14 +82,12 @@ export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({
 
 export const drawTextAreaMatte = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => {
   const { width, height } = getTextAreaDimension(textArea);
-  ctx.globalAlpha = 0.6;
   drawShape(ctx).drawSquare({
     at: { x: textArea.at.x, y: textArea.at.y },
     width,
     height,
     color: textArea.color,
   })
-  ctx.globalAlpha = 1;
 }
 
 export const drawText = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => {
