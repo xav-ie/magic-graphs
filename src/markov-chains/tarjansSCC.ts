@@ -14,7 +14,7 @@ export function getStronglyConnectedComponents(adjList: AdjacencyList) {
   // iterate through the indexToNode map
   for (let i = 0; i < indexToNode.size; i++) {
     const node = indexToNode.get(i);
-    if (!node) throw new Error('node not found');
+    if (node === undefined) throw new Error('node not found');
     const neighbors = adjList[node];
     const neighborsIndices = neighbors.map((neighbor) => {
       const index = nodeToIndex.get(neighbor);
@@ -27,8 +27,10 @@ export function getStronglyConnectedComponents(adjList: AdjacencyList) {
   const { components: result } = scc(matrix);
 
   const components = result.map((component) => {
-    return component.map((index: any) => {
-      return indexToNode.get(index);
+    return component.map((index) => {
+      const node = indexToNode.get(index);
+      if (node === undefined) throw new Error('node not found');
+      return node;
     });
   });
 
@@ -56,11 +58,11 @@ function scc(adjList: number[][]) {
 
   // The strongConnect function
   var count = 0
-  var components = []
-  var sccAdjList = []
+  var components: number[][] = []
+  var sccAdjList: number[][] = []
 
-  function strongConnect(v) {
-    // To avoid running out of stack space, this emulates the recursive behaviour of the normal algorithm, effectively using T as the call stack.
+  function strongConnect(v: number) {
+    // To avoid running out of stack space, this emulates the recursive behavior of the normal algorithm, effectively using T as the call stack.
     var S = [v], T = [v]
     index[v] = lowValue[v] = count
     active[v] = true
@@ -95,7 +97,7 @@ function scc(adjList: number[][]) {
         if (lowValue[v] === index[v]) { // TODO: It /might/ be true that T is always a prefix of S (at this point!!!), and if so, this could be used here.
           var component = []
           var links = [], linkCount = 0
-          for (var i = S.length - 1; i >= 0; --i) {
+          for (let i = S.length - 1; i >= 0; --i) {
             var w = S[i]
             active[w] = false
             component.push(w)
@@ -109,7 +111,7 @@ function scc(adjList: number[][]) {
           }
           components.push(component)
           var allLinks = new Array(linkCount)
-          for (var i = 0; i < links.length; i++) {
+          for (let i = 0; i < links.length; i++) {
             for (var j = 0; j < links[i].length; j++) {
               allLinks[--linkCount] = links[i][j]
             }
@@ -121,7 +123,7 @@ function scc(adjList: number[][]) {
     }
   }
 
-  //Run strong connect starting from each vertex
+  // Run strong connect starting from each vertex
   for (var i = 0; i < numVertices; ++i) {
     if (index[i] < 0) {
       strongConnect(i)
@@ -133,7 +135,7 @@ function scc(adjList: number[][]) {
   for (var i = 0; i < sccAdjList.length; i++) {
     var e = sccAdjList[i]
     if (e.length === 0) continue
-    e.sort(function (a, b) { return a - b; })
+    e.sort(function (a: number, b: number) { return a - b; })
     newE = [e[0]]
     for (var j = 1; j < e.length; j++) {
       if (e[j] !== e[j - 1]) {
