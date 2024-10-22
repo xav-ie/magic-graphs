@@ -19,6 +19,6 @@ const graph = ref<Record<number, number[]>>({ 1: [2], 2: [1], 3: [] })
 <template>
   <div class="bg-[#282c34] w-[100vw] h-[100vh] text-white relative">
     <Graph v-model="graph" />
-    <CodeEditor :graph="graph" />
+    <!-- <CodeEditor :graph="graph" /> -->
   </div>
 </template>

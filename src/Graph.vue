@@ -9,6 +9,7 @@ import { hitboxes } from './shapes/hitboxes';
 import type { PersistentGraphSettings } from './useGraph/usePersistentGraph';
 import { useGraphBtns } from './useGraphBtns';
 import { markovSccColorizer } from './markov-chains/sccColorizer';
+import { useGraphTutorial } from './useGraph/tutorial';
 
 const canvas = ref<HTMLCanvasElement>();
 
@@ -23,7 +24,7 @@ const emit = defineEmits<{
 const padding = 20;
 const { width, height } = useWindowSize();
 const canvasWidth = computed(() => width.value - padding * 2);
-const canvasHeight = computed(() => (height.value / 2) - padding * 2);
+const canvasHeight = computed(() => (height.value) - padding * 2);
 
 const graph = useDarkGraph(canvas, {
   theme: {},
@@ -31,8 +32,23 @@ const graph = useDarkGraph(canvas, {
 });
 
 setTimeout(() => {
-  // markovSccColorizer(graph);
+  markovSccColorizer(graph);
 }, 0)
+
+useGraphTutorial(graph, [
+  {
+    hint: 'Double click to add a node',
+    dismiss: 'onNodeAdded'
+  },
+  {
+    hint: 'Drag a node to move it',
+    dismiss: 'onNodeDrop'
+  },
+  {
+    hint: 'Connect two nodes by dragging an anchor to another node',
+    dismiss: 'onEdgeAdded'
+  }
+]);
 
 graph.subscribe('onStructureChange', (nodes, edges) => emit(
   'update:modelValue',
