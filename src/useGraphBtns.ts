@@ -12,6 +12,7 @@ export type GButton = {
   label: () => string,
   action: () => void,
   color: () => string,
+  id: string,
 }
 
 /**
@@ -53,36 +54,42 @@ export const useGraphBtns = (graph: Graph) => {
     label: () => 'Reset',
     action: () => graph.reset(),
     color: () => 'red',
+    id: 'reset',
   };
 
   const toggleDraggable: GButton = {
     label: () => graph.settings.value.draggable ? 'Draggable' : 'Not Draggable',
     action: () => graph.settings.value.draggable = !graph.settings.value.draggable,
     color: () => graph.settings.value.draggable ? 'green' : 'orange',
+    id: 'draggable',
   };
 
   const toggleNodeAnchors: GButton = {
     label: () => graph.settings.value.nodeAnchors ? 'Anchors' : 'No Anchors',
     action: () => graph.settings.value.nodeAnchors = !graph.settings.value.nodeAnchors,
     color: () => graph.settings.value.nodeAnchors ? 'green' : 'orange',
+    id: 'node-anchors',
   };
 
   const toggleEdgeLabelDisplay: GButton = {
     label: () => graph.settings.value.displayEdgeLabels ? 'Edge Labels' : 'No Edge Labels',
     action: () => graph.settings.value.displayEdgeLabels = !graph.settings.value.displayEdgeLabels,
     color: () => graph.settings.value.displayEdgeLabels ? 'green' : 'orange',
+    id: 'edge-labels',
   };
 
   const toggleEdgeLabelsEditable: GButton = {
     label: () => graph.settings.value.edgeLabelsEditable ? 'Edge Labels Editable' : 'Edge Labels Not Editable',
     action: () => graph.settings.value.edgeLabelsEditable = !graph.settings.value.edgeLabelsEditable,
     color: () => graph.settings.value.edgeLabelsEditable ? 'green' : 'orange',
+    id: 'edge-labels-editable',
   };
 
   const toggleUserEditable: GButton = {
     label: () => graph.settings.value.userEditable ? 'Editable' : 'Not Editable',
     action: () => graph.settings.value.userEditable = !graph.settings.value.userEditable,
     color: () => graph.settings.value.userEditable ? 'green' : 'orange',
+    id: 'user-editable',
   };
 
   const toggleEdgeType: GButton = {
@@ -90,6 +97,7 @@ export const useGraphBtns = (graph: Graph) => {
     label: () => addedEdgeType.value === 'directed' ? 'Directed' : 'Undirected',
     action: toggleEdgeTypeAction,
     color: () => addedEdgeType.value === 'directed' ? 'blue' : 'purple',
+    id: 'edge-type',
   };
 
   const changeEdgeWeight: GButton = {
@@ -108,12 +116,14 @@ export const useGraphBtns = (graph: Graph) => {
       }
     },
     color: () => 'green',
+    id: 'edge-weight',
   };
 
   const changeNodeSize: GButton = {
     label: () => `Change Node Size (${graph.theme.value.nodeSize})`,
     action: () => graph.theme.value.nodeSize = getRandomInRange(20, 50),
     color: () => 'pink',
+    id: 'node-size',
   };
 
   const changeStorageKey: GButton = {
@@ -123,12 +133,14 @@ export const useGraphBtns = (graph: Graph) => {
       persistSettings.value.storageKey = storageKey.value === 'graph' ? 'graph2' : 'graph';
     },
     color: () => 'blue',
+    id: 'storage-key',
   };
 
   const clearLocalStorage: GButton = {
     label: () => 'Clear Local Storage',
     action: () => localStorage.clear(),
     color: () => 'red',
+    id: 'clear-local-storage',
   };
 
   return {

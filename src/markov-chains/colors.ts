@@ -344,4 +344,4 @@ export const TAILWIND_500_COLORS = {
 /**
  * color used to represent transient states
  */
-export const TRANSIENT_COLOR = '#030712'
+export const TRANSIENT_COLOR = GRAY_900;

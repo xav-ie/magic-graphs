@@ -1,19 +1,40 @@
 import { onMounted } from "vue";
 import type { Graph } from "../useGraph";
+import type { UserEditableGraphEvents } from "../useUserEditableGraph";
 
-type GraphEvent = keyof Graph['eventBus'];
+type EventMap = UserEditableGraphEvents;
+type GraphEventName = keyof EventMap;
 
-type TutorialStep = {
+type FunctionArgs<T extends Function> = T extends (...args: infer R) => any ? R : any
+
+type TutorialStepForEvent<T extends GraphEventName> = {
+  hint: string;
+  dismiss: T | {
+    event: T;
+    predicate: (...args: FunctionArgs<EventMap[T]>) => boolean
+  };
+};
+
+type CronStep = {
   hint: string,
-  dismiss: GraphEvent,
+  dismiss: 'onCron',
+  /**
+   * in milliseconds
+   */
+  after: number,
 }
 
-type TutorialSequence = TutorialStep[];
+type TutorialStep = {
+  [K in GraphEventName]: TutorialStepForEvent<K>
+}[GraphEventName] | CronStep;
 
-export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialSequence) => {
+export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialStep[]) => {
 
   const h1 = document.createElement('h1');
   h1.style.opacity = '0'
+  h1.style.width = '100%';
+  h1.style.textAlign = 'center';
+  h1.style.userSelect = 'none';
   h1.classList.add(
     'text-4xl',
     'text-center',
@@ -26,8 +47,6 @@ export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialSequenc
     'duration-300',
   );
 
-  document.body.appendChild(h1);
-
   const addText = (text: string) => {
     h1.innerText = text;
     h1.style.opacity = '1';
@@ -39,15 +58,47 @@ export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialSequenc
 
   const nextStep = () => {
     const step = tutorialSequency.shift();
-    if (!step) return removeText();
-    setTimeout(() => addText(step.hint), 500);
-    const proceed = () => {
-      graph.unsubscribe(step.dismiss, proceed);
+
+    if (!step) {
+      removeText()
+      setTimeout(h1.remove, 1000);
+      return;
+    }
+
+    setTimeout(() => addText(step.hint), 1500);
+
+    if (step.dismiss === 'onCron') {
+      setTimeout(() => {
+        removeText();
+        nextStep();
+      }, step.after);
+      return;
+    }
+
+    const goNext = (eventName: GraphEventName) => {
+      graph.unsubscribe(eventName, proceed);
       removeText();
       nextStep();
     }
-    graph.subscribe(step.dismiss, proceed);
+
+    const proceed = (...args: any[]) => {
+      if (typeof step.dismiss !== 'string') {
+        const predicate = step.dismiss.predicate(...args);
+        if (predicate) goNext(step.dismiss.event);
+        return;
+      }
+      goNext(step.dismiss);
+    }
+
+    const dismissEvent = typeof step.dismiss === 'string' ? step.dismiss : step.dismiss.event;
+    graph.subscribe(dismissEvent, proceed);
   }
 
-  onMounted(nextStep);
+  onMounted(() => {
+    if (!graph.canvas.value) throw new Error('canvas element not found in dom');
+    const parent = graph.canvas.value.parentElement;
+    if (!parent) throw new Error('canvas parent element not found in dom');
+    parent.appendChild(h1);
+    nextStep();
+  });
 }
