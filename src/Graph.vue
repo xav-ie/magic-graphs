@@ -8,6 +8,7 @@ import { drawShape } from './shapes/draw';
 import { hitboxes } from './shapes/hitboxes';
 import type { PersistentGraphSettings } from './useGraph/usePersistentGraph';
 import { useGraphBtns } from './useGraphBtns';
+import { sccColorizer } from './markov-chains/sccColorizer';
 
 const canvas = ref<HTMLCanvasElement>();
 
@@ -28,6 +29,10 @@ const graph = useDarkGraph(canvas, {
   theme: {},
   settings: {}
 });
+
+setTimeout(() => {
+  console.log(sccColorizer(graph));
+}, 500)
 
 graph.subscribe('onStructureChange', (nodes, edges) => emit(
   'update:modelValue',
