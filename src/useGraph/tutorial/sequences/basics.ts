@@ -35,6 +35,14 @@ export const BASICS_STEPS: Record<string, TutorialStep> = {
       predicate: (edge) => edge.type === 'undirected'
     }
   },
+  createSelfDirectedEdge: {
+    hint: 'You can even create self directed edges! Make sure you are in "directed" mode and drag an anchor inwards',
+    highlightElementId: GRAPH_BUTTON_ID.edgeType,
+    dismiss: {
+      event: 'onEdgeAdded',
+      predicate: (edge) => edge.to === edge.from
+    }
+  },
   editEdgeWeight: {
     hint: 'Edit the edge weight by clicking on it and typing a number',
     dismiss: 'onEdgeWeightChange'

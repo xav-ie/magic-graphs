@@ -11,6 +11,7 @@ const BASICS_SEQUENCE: TutorialSequence = [
   BASICS_STEPS.moveNode,
   BASICS_STEPS.createEdge,
   BASICS_STEPS.createUndirectedEdge,
+  BASICS_STEPS.createSelfDirectedEdge,
   BASICS_STEPS.editEdgeWeight,
   BASICS_STEPS.removeElement,
   BASICS_STEPS.goodbye

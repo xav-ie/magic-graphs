@@ -394,6 +394,7 @@ export const useBaseGraph =(
     const edgeExists = edge.type === 'directed' ? edges.value.some(directedEdgeCond) : edges.value.some(undirectedEdgeCond)
 
     if (edgeExists) return
+    if (edge.type === 'undirected' && edge.from === edge.to) return
 
     const newEdge: GEdge = {
       to: edge.to,
