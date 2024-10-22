@@ -105,7 +105,6 @@ export type UTurnArrow = {
   lineWidth: number,
   color?: string,
   textArea?: TextAreaNoLocation
-  textOffsetFromCenter?: number,
 } 
 
 export const UTURN_ARROW_DEFAULTS = {
