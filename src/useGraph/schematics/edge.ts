@@ -32,6 +32,9 @@ export const getEdgeSchematic = (
   const fromNodeSize = getValue(graphTheme.nodeSize, from) + spacingAwayFromNode
   const toNodeSize = getValue(graphTheme.nodeSize, to) + spacingAwayFromNode
 
+  const fromNodeBorderWidth = getValue(graphTheme.nodeBorderWidth, from)
+  const toNodeBorderWidth = getValue(graphTheme.nodeBorderWidth, to)
+
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
 
   const epiCenter = {
@@ -112,7 +115,7 @@ export const getEdgeSchematic = (
     } as const;
   }
   
-  const sumOfToAndFromNodeSize = fromNodeSize + toNodeSize
+  const sumOfToAndFromNodeSize = fromNodeSize + fromNodeBorderWidth / 2 + toNodeSize + toNodeBorderWidth / 2
   const distanceSquaredBetweenNodes = (from.x - to.x) ** 2 + (from.y - to.y) ** 2
   const areNodesTouching = (sumOfToAndFromNodeSize ** 2) > distanceSquaredBetweenNodes
   if (areNodesTouching) return
