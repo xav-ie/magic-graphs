@@ -108,6 +108,7 @@ export const getEdgeSchematic = (
         angle: largestAngularSpace,
         lineWidth: edgeWidthVal,
         color: colorVal,
+        textArea: graphSettings.displayEdgeLabels ? textArea : undefined,
       },
       schemaType: 'uturn',
       id: edge.id,

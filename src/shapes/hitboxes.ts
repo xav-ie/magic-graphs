@@ -31,6 +31,7 @@ export const hitboxes = (point: Coordinate) => ({
 export const isInTextarea = (point: Coordinate) => ({
   line: isInLineTextArea(point),
   arrow: isInArrowTextArea(point),
+  uTurn: isInUTurnArrowTextArea(point),
 })
 
 /**
@@ -129,6 +130,25 @@ export const isInArrowTextArea = (point: Coordinate) => (arrow: Arrow) => {
     text,
     at: getTextAreaLocation.arrow(arrow),
   }
+  const { width, height } = getTextAreaDimension(fullTextArea);
+
+  return isInSquare(point)({
+    at: fullTextArea.at,
+    width,
+    height
+  });
+}
+
+export const isInUTurnArrowTextArea = (point: Coordinate) => (uTurn: UTurnArrow) => {
+  if (!uTurn.textArea) return false;
+  const textArea = { ...TEXTAREA_DEFAULTS, ...uTurn.textArea };
+  const text = { ...TEXT_DEFAULTS, ...textArea.text };
+  const fullTextArea = {
+    ...textArea,
+    text,
+    at: getTextAreaLocation.uTurn(uTurn),
+  }
+
   const { width, height } = getTextAreaDimension(fullTextArea);
 
   return isInSquare(point)({

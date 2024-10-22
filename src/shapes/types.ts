@@ -104,8 +104,8 @@ export type UTurnArrow = {
   angle: number,
   lineWidth: number,
   color?: string,
-  text?: Text
-}
+  textArea?: TextAreaNoLocation
+} 
 
 export const UTURN_ARROW_DEFAULTS = {
   color: 'black',

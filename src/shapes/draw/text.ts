@@ -1,6 +1,7 @@
 import {
   type Line,
   type Arrow,
+  type UTurnArrow,
   type TextArea,
   TEXTAREA_DEFAULTS,
   TEXT_DEFAULTS
@@ -8,6 +9,7 @@ import {
 import { drawShape } from "../draw";
 import { getTextAreaLocationOnLine } from "./line";
 import { getTextAreaLocationOnArrow } from "./arrow";
+import { getTextAreaLocationOnUTurnArrow } from "./uturn";
 
 export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
   line: (line: Line) => {
@@ -18,7 +20,7 @@ export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
     }
     const text = {
       ...TEXT_DEFAULTS,
-      ...line.textArea.text,
+      ...textArea.text,
     }
     const fullTextArea = {
       ...textArea,
@@ -36,12 +38,31 @@ export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
     }
     const text = {
       ...TEXT_DEFAULTS,
-      ...arrow.textArea.text,
+      ...textArea.text,
     }
     const fullTextArea = {
       ...textArea,
       text,
       at: getTextAreaLocation.arrow(arrow),
+    }
+    drawTextAreaMatte(ctx)(fullTextArea);
+    queueMicrotask(() => drawText(ctx)(fullTextArea));
+  },
+  uTurn: (uTurn: UTurnArrow) => {
+    if (!uTurn.textArea) return;
+    const textArea = {
+      ...TEXTAREA_DEFAULTS,
+      ...uTurn.textArea,
+    }
+    const text = {
+      ...TEXT_DEFAULTS,
+      ...textArea.text,
+    }
+
+    const fullTextArea = {
+      ...textArea,
+      text,
+      at: getTextAreaLocation.uTurn(uTurn),
     }
     drawTextAreaMatte(ctx)(fullTextArea);
     queueMicrotask(() => drawText(ctx)(fullTextArea));
@@ -87,5 +108,6 @@ export const drawText = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequir
  */
 export const getTextAreaLocation = {
   line: (line: Line) =>  getTextAreaLocationOnLine(line),
-  arrow: (arrow: Arrow) => getTextAreaLocationOnArrow(arrow)
+  arrow: (arrow: Arrow) => getTextAreaLocationOnArrow(arrow),
+  uTurn: (uTurn: UTurnArrow) => getTextAreaLocationOnUTurnArrow(uTurn),
 }
