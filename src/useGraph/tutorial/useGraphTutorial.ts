@@ -7,6 +7,13 @@ import type {
   GraphEventName,
 } from "./types";
 
+/**
+ * creates functionality for an interactive tutorial sequence for a graph
+ *
+ * @param graph the useGraph instance to apply the tutorial to
+ * @param tutorialSequence the sequence of tutorial steps to apply
+ * @returns // TODO make it return controls for the tutorial
+ */
 export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequence) => {
 
   const h1 = document.createElement('h1');

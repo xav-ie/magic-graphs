@@ -13,7 +13,7 @@
   import type { PersistentGraphSettings } from "./useGraph/usePersistentGraph";
   import { useGraphBtns } from "./useGraphBtns";
   import { markovSccColorizer } from "./markov-chains/sccColorizer";
-  import { useGraphTutorial } from "./useGraph/tutorial";
+  import { useBasicsT}
 
   const canvas = ref<HTMLCanvasElement>();
 
@@ -58,10 +58,6 @@
     toggleEdgeType,
     changeEdgeWeight,
   ];
-
-  useGraphTutorial(graph, [
-
-  ]);
 
   const showBtn = (cond: (() => boolean) | undefined) => (cond ? cond() : true);
 </script>
