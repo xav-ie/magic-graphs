@@ -491,5 +491,7 @@ export const useBaseGraph =(
     settings,
 
     reset,
+
+    canvas,
   }
 }
