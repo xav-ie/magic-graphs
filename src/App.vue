@@ -22,3 +22,23 @@ const graph = ref<Record<number, number[]>>({ 1: [2], 2: [1], 3: [] })
     <!-- <CodeEditor :graph="graph" /> -->
   </div>
 </template>
+
+<style>
+
+/* class for exclusive use by useGraphTutorial, should be move out to css file at some point */
+.element-highlight {
+  animation: highlight 1s infinite;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: #f6ad55;
+  }
+  50% {
+    background-color: #ed8936;
+  }
+  100% {
+    background-color: #f6ad55;
+  }
+}
+</style>

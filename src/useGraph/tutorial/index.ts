@@ -7,10 +7,22 @@ type GraphEventName = keyof EventMap;
 
 type FunctionArgs<T extends Function> = T extends (...args: infer R) => any ? R : any
 
+type Highlighter = {
+  highlightElementId?: string;
+  highlightClassName?: string;
+}
+
+// css class defined in App.vue, should move later
+const DEFAULT_HIGHLIGHT_CLASS_NAME = 'element-highlight'
+
 type TutorialStepForEvent<T extends GraphEventName> = {
   hint: string;
+  /**
+   * if provided, a special effect will be applied to the element with this id
+   */
+  highlightElementId?: string;
   dismiss: T | {
-    event: T;
+    event: T,
     predicate: (...args: FunctionArgs<EventMap[T]>) => boolean
   };
 };
@@ -19,14 +31,14 @@ type CronStep = {
   hint: string,
   dismiss: 'onCron',
   /**
-   * in milliseconds
+   * time to wait before the next step, in milliseconds
    */
   after: number,
-}
+};
 
-type TutorialStep = {
+type TutorialStep = ({
   [K in GraphEventName]: TutorialStepForEvent<K>
-}[GraphEventName] | CronStep;
+}[GraphEventName] | CronStep) & Highlighter;
 
 export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialStep[]) => {
 
@@ -56,6 +68,21 @@ export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialStep[])
     h1.style.opacity = '0';
   }
 
+  const applyHighlight = (highlight: Highlighter) => {
+
+    const {
+      highlightElementId: elementId,
+      highlightClassName = DEFAULT_HIGHLIGHT_CLASS_NAME
+    } = highlight;
+
+    if (!elementId) return () => { };
+    const element = document.getElementById(elementId);
+    if (!element) throw new Error(`element with id ${elementId} not found`);
+
+    element.classList.add(highlightClassName);
+    return () => element.classList.remove(highlightClassName);
+  }
+
   const nextStep = () => {
     const step = tutorialSequency.shift();
 
@@ -65,7 +92,12 @@ export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialStep[])
       return;
     }
 
-    setTimeout(() => addText(step.hint), 1500);
+    let currentHighlightRemover: () => void;
+
+    setTimeout(() => {
+      addText(step.hint);
+      if (step?.highlightElementId) currentHighlightRemover = applyHighlight(step);
+    }, 1500);
 
     if (step.dismiss === 'onCron') {
       setTimeout(() => {
@@ -78,6 +110,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequency: TutorialStep[])
     const goNext = (eventName: GraphEventName) => {
       graph.unsubscribe(eventName, proceed);
       removeText();
+      currentHighlightRemover?.();
       nextStep();
     }
 
