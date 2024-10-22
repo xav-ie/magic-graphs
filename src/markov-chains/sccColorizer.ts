@@ -2,6 +2,8 @@ import type { Graph } from "@/useGraph/useGraph"
 import { nodesEdgesToAdjList } from '@/graphConverters';
 import {
   TAILWIND_500_COLORS as color,
+  GRAY_800,
+  GRAY_900,
   TRANSIENT_COLOR,
   type Color
 } from "./colors";
@@ -25,6 +27,7 @@ export const markovSccColorizer = (
 ) => {
 
   const adjList = computed(() => nodesEdgesToAdjList(graph.nodes.value, graph.edges.value));
+
   const { markovClasses, nodeToConnectedComponentMap } = useMarkovChainSCC(adjList);
   const transientStates = computed(() => markovClasses.value.transientClasses.flat());
 
@@ -40,5 +43,5 @@ export const markovSccColorizer = (
   graph.theme.value.nodeAnchorColor = getColor;
   graph.theme.value.nodeAnchorColorWhenParentFocused = getColor;
   graph.theme.value.nodeFocusBorderColor = getColor;
-  graph.theme.value.nodeFocusColor = '#1f2937';
+  graph.theme.value.nodeFocusColor = GRAY_800;
 }

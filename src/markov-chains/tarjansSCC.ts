@@ -1,48 +1,150 @@
 import type { AdjacencyList } from "@/graphConverters";
 
-export const getStronglyConnectedComponents = (adjList: AdjacencyList): number[][] => {
-  const numNodes = Object.keys(adjList).length;
-  const ids: number[] = new Array(numNodes + 1).fill(-1);  // unique ids assigned to each node
-  const low: number[] = new Array(numNodes + 1).fill(-1);  // lowest id reachable from the node
-  const onStack: boolean[] = new Array(numNodes + 1).fill(false); // boolean array to check if node is in the stack
-  const stack: number[] = [];
-  let id = 0;
-  const sccs: number[][] = [];
+export function getStronglyConnectedComponents(adjList: AdjacencyList) {
+  const nodeToIndex = new Map<number, number>();
+  const indexToNode = new Map<number, number>();
 
-  const dfs = (at: number) => {
-    stack.push(at);
-    onStack[at] = true;
-    ids[at] = low[at] = id++;
+  const nodes = Object.keys(adjList).map(Number);
+  nodes.forEach((node, index) => {
+    nodeToIndex.set(node, index);
+    indexToNode.set(index, node);
+  });
 
-    for (const to of adjList[at]) {
-      if (ids[to] === -1) {
-        dfs(to);
-        low[at] = Math.min(low[at], low[to]);
-      } else if (onStack[to]) {
-        low[at] = Math.min(low[at], ids[to]);
+  const matrix = []
+  // iterate through the indexToNode map
+  for (let i = 0; i < indexToNode.size; i++) {
+    const node = indexToNode.get(i);
+    if (!node) throw new Error('node not found');
+    const neighbors = adjList[node];
+    const neighborsIndices = neighbors.map((neighbor) => {
+      const index = nodeToIndex.get(neighbor);
+      if (index === undefined) throw new Error('index not found');
+      return index;
+    });
+    matrix.push(neighborsIndices);
+  }
+
+  const { components: result } = scc(matrix);
+
+  const components = result.map((component) => {
+    return component.map((index: any) => {
+      return indexToNode.get(index);
+    });
+  });
+
+  return components;
+}
+
+function scc(adjList: number[][]) {
+  var numVertices = adjList.length;
+  var index = new Array(numVertices)
+  var lowValue = new Array(numVertices)
+  var active = new Array(numVertices)
+  var child = new Array(numVertices)
+  var scc = new Array(numVertices)
+  var sccLinks = new Array(numVertices)
+
+  //Initialize tables
+  for (var i = 0; i < numVertices; ++i) {
+    index[i] = -1
+    lowValue[i] = 0
+    active[i] = false
+    child[i] = 0
+    scc[i] = -1
+    sccLinks[i] = []
+  }
+
+  // The strongConnect function
+  var count = 0
+  var components = []
+  var sccAdjList = []
+
+  function strongConnect(v) {
+    // To avoid running out of stack space, this emulates the recursive behaviour of the normal algorithm, effectively using T as the call stack.
+    var S = [v], T = [v]
+    index[v] = lowValue[v] = count
+    active[v] = true
+    count += 1
+    while (T.length > 0) {
+      v = T[T.length - 1]
+      var e = adjList[v]
+      if (child[v] < e.length) { // If we're not done iterating over the children, first try finishing that.
+        for (var i = child[v]; i < e.length; ++i) { // Start where we left off.
+          var u = e[i]
+          if (index[u] < 0) {
+            index[u] = lowValue[u] = count
+            active[u] = true
+            count += 1
+            S.push(u)
+            T.push(u)
+            break // First recurse, then continue here (with the same child!).
+            // There is a slight change to Tarjan's algorithm here.
+            // Normally, after having recursed, we set lowValue like we do for an active child (although some variants of the algorithm do it slightly differently).
+            // Here, we only do so if the child we recursed on is still active.
+            // The reasoning is that if it is no longer active, it must have had a lowValue equal to its own index, which means that it is necessarily higher than our lowValue.
+          } else if (active[u]) {
+            lowValue[v] = Math.min(lowValue[v], lowValue[u]) | 0
+          }
+          if (scc[u] >= 0) {
+            // Node v is not yet assigned an scc, but once it is that scc can apparently reach scc[u].
+            sccLinks[v].push(scc[u])
+          }
+        }
+        child[v] = i // Remember where we left off.
+      } else { // If we're done iterating over the children, check whether we have an scc.
+        if (lowValue[v] === index[v]) { // TODO: It /might/ be true that T is always a prefix of S (at this point!!!), and if so, this could be used here.
+          var component = []
+          var links = [], linkCount = 0
+          for (var i = S.length - 1; i >= 0; --i) {
+            var w = S[i]
+            active[w] = false
+            component.push(w)
+            links.push(sccLinks[w])
+            linkCount += sccLinks[w].length
+            scc[w] = components.length
+            if (w === v) {
+              S.length = i
+              break
+            }
+          }
+          components.push(component)
+          var allLinks = new Array(linkCount)
+          for (var i = 0; i < links.length; i++) {
+            for (var j = 0; j < links[i].length; j++) {
+              allLinks[--linkCount] = links[i][j]
+            }
+          }
+          sccAdjList.push(allLinks)
+        }
+        T.pop() // Now we're finished exploring this particular node (normally corresponds to the return statement)
       }
-    }
-
-    // on recursive callback, if we're at the root (start of an SCC)
-    if (ids[at] === low[at]) {
-      const scc: number[] = [];
-      while (stack.length > 0) {
-        const node = stack.pop()!;
-        onStack[node] = false;
-        low[node] = ids[at];
-        scc.push(node);
-        if (node === at) break;
-      }
-      sccs.push(scc);
     }
   }
 
-  // dfs every unvisited node
-  for (const node in adjList) {
-    if (ids[+node] === -1) {
-      dfs(+node);
+  //Run strong connect starting from each vertex
+  for (var i = 0; i < numVertices; ++i) {
+    if (index[i] < 0) {
+      strongConnect(i)
     }
   }
 
-  return sccs;
+  // Compact sccAdjList
+  var newE
+  for (var i = 0; i < sccAdjList.length; i++) {
+    var e = sccAdjList[i]
+    if (e.length === 0) continue
+    e.sort(function (a, b) { return a - b; })
+    newE = [e[0]]
+    for (var j = 1; j < e.length; j++) {
+      if (e[j] !== e[j - 1]) {
+        newE.push(e[j])
+      }
+    }
+    sccAdjList[i] = newE
+  }
+
+  return {
+    components: components,
+    adjacencyList: sccAdjList
+  }
 }

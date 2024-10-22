@@ -177,3 +177,60 @@ export const CYAN_600 = '#0891b2';
 export const CYAN_700 = '#0e7490';
 export const CYAN_800 = '#155e75';
 export const CYAN_900 = '#164e63';
+
+/**
+ * all tailwind sky colors
+ */
+export const SKY_50 = '#f0f9ff';
+export const SKY_100 = '#e0f2fe';
+export const SKY_200 = '#bae6fd';
+export const SKY_300 = '#7dd3fc';
+export const SKY_400 = '#38bdf8';
+export const SKY_500 = '#0ea5e9';
+export const SKY_600 = '#0284c7';
+export const SKY_700 = '#0369a1';
+export const SKY_800 = '#075985';
+export const SKY_900 = '#0c4a6e';
+
+
+/**
+ * all tailwind blue colors
+ */
+export const BLUE_50 = '#eff6ff';
+export const BLUE_100 = '#dbeafe';
+export const BLUE_200 = '#bfdbfe';
+export const BLUE_300 = '#93c5fd';
+export const BLUE_400 = '#60a5fa';
+export const BLUE_500 = '#3b82f6';
+export const BLUE_600 = '#2563eb';
+export const BLUE_700 = '#1d4ed8';
+export const BLUE_800 = '#1e40af';
+export const BLUE_900 = '#1e3a8a';
+
+/**
+ * all tailwind indigo colors
+ */
+export const INDIGO_50 = '#eef2ff';
+export const INDIGO_100 = '#e0e7ff';
+export const INDIGO_200 = '#c7d2fe';
+export const INDIGO_300 = '#a5b4fc';
+export const INDIGO_400 = '#818cf8';
+export const INDIGO_500 = '#6366f1';
+export const INDIGO_600 = '#4f46e5';
+export const INDIGO_700 = '#4338ca';
+export const INDIGO_800 = '#3730a3';
+export const INDIGO_900 = '#312e81';
+
+/**
+ * all tailwind violet colors,
+ */
+export const VIOLET_50 = '#f5f3ff';
+export const VIOLET_100 = '#ede9fe';
+export const VIOLET_200 = '#ddd6fe';
+export const VIOLET_300 = '#c4b5fd';
+export const VIOLET_400 = '#a78bfa';
+export const VIOLET_500 = '#8b5cf6';
+export const VIOLET_600 = '#7c3aed';
+export const VIOLET_700 = '#6d28d9';
+export const VIOLET_800 = '#5b21b6';
+export const VIOLET_900 = '#4c1d95';
