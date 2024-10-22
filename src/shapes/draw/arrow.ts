@@ -40,7 +40,8 @@ export const drawArrowWithCtx = (ctx: CanvasRenderingContext2D) => (options: Arr
 
   const shaft = {
     start: lineStart,
-    end: shaftEnd,
+    // make sure there is overlap with triangle when drawing (Issue #24)
+    end: { x: shaftEnd.x + Math.cos(angle), y: shaftEnd.y + Math.sin(angle) },
     width,
     color,
   }
