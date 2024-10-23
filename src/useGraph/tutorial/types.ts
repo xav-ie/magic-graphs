@@ -35,12 +35,12 @@ export type PreconditionOptions = {
 }
 
 /**
- * css class defined in App.vue, should move later
+ * css class defined in App.vue, should move later, used as default for ElementHighlightOptions -> highlightElement.className
  */
 export const DEFAULT_HIGHLIGHT_CLASS_NAME = 'element-highlight'
 
 /**
- * describes a step in a tutorial sequence
+ * describes a step in a tutorial sequence for graph events defined in the useGraph event map
  */
 export type TutorialStepForEvent<T extends GraphEventName> = {
   /**
@@ -97,8 +97,14 @@ export type IntervalStep = {
   interval: number,
 }
 
+/**
+ * describes a step in a tutorial sequence
+ */
 export type TutorialStep = ({
   [K in GraphEventName]: TutorialStepForEvent<K>
 }[GraphEventName] | TimeoutStep) & ElementHighlightOptions & PreconditionOptions;
 
+/**
+ * describes a list of tutorial steps that will be executed in order from index 0 to n - 1
+ */
 export type TutorialSequence = TutorialStep[];
