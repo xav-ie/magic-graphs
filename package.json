@@ -16,7 +16,6 @@
     "@vueuse/core": "^11.1.0",
     "codemirror": "^6.0.1",
     "codemirror-readonly-ranges": "^0.1.0-alpha.2",
-    "strongly-connected-components": "^1.0.1",
     "vue": "^3.4.29",
     "vue-codemirror": "^6.1.1"
   },
