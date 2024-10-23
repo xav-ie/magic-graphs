@@ -8,12 +8,12 @@ import { GRAPH_BUTTON_ID } from "@/useGraphBtns";
 export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (graph: Graph) => ({
   greeting: {
     hint: 'Welcome to the graph editor tutorial',
-    dismiss: 'onCron',
+    dismiss: 'onTimeout',
     after: 3000
   },
   goodbye: {
     hint: 'Have fun editing graphs!',
-    dismiss: 'onCron',
+    dismiss: 'onTimeout',
     after: 3000
   },
   createNode: {
@@ -30,7 +30,7 @@ export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (gra
   },
   createUndirectedEdge: {
     hint: 'Now create an undirected edge by toggling the edge type',
-    highlightElementId: GRAPH_BUTTON_ID.edgeType,
+    highlightElement: GRAPH_BUTTON_ID.edgeType,
     dismiss: {
       event: 'onEdgeAdded',
       predicate: (edge) => edge.type === 'undirected'
@@ -38,7 +38,7 @@ export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (gra
   },
   createSelfDirectedEdge: {
     hint: 'You can even create self directed edges! Make sure you are in "directed" mode and drag an anchor inwards',
-    highlightElementId: GRAPH_BUTTON_ID.edgeType,
+    highlightElement: GRAPH_BUTTON_ID.edgeType,
     dismiss: {
       event: 'onEdgeAdded',
       predicate: (edge) => edge.to === edge.from

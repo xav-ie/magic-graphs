@@ -42,19 +42,23 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
     h1.style.opacity = '0';
   }
 
-  const applyHighlight = (highlight: ElementHighlightOptions) => {
-
+  const applyHighlight = (highlightInput: ElementHighlightOptions) => {
+    const { highlightElement: highlight } = highlightInput;
+    if (!highlight) return () => { };
     const {
-      highlightElementId: elementId,
-      highlightClassName = DEFAULT_HIGHLIGHT_CLASS_NAME
-    } = highlight;
+      id,
+      className,
+    } = {
+      id: typeof highlight === 'string' ? highlight : highlight.id,
+      className: (typeof highlight === 'string' || !highlight?.className) ? DEFAULT_HIGHLIGHT_CLASS_NAME : highlight.className,
+    };
 
-    if (!elementId) return () => { };
-    const element = document.getElementById(elementId);
-    if (!element) throw new Error(`element with id ${elementId} not found`);
+    if (!id) return () => { };
+    const element = document.getElementById(id);
+    if (!element) throw new Error(`element with id ${id} not found`);
 
-    element.classList.add(highlightClassName);
-    return () => element.classList.remove(highlightClassName);
+    element.classList.add(className);
+    return () => element.classList.remove(className);
   }
 
   const nextStep = () => {
@@ -70,10 +74,10 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
 
     setTimeout(() => {
       addText(step.hint);
-      if (step?.highlightElementId) currentHighlightRemover = applyHighlight(step);
+      if (step?.highlightElement) currentHighlightRemover = applyHighlight(step);
     }, 1500);
 
-    if (step.dismiss === 'onCron') {
+    if (step.dismiss === 'onTimeout') {
       setTimeout(() => {
         removeText();
         nextStep();
