@@ -6,7 +6,7 @@ export type GraphEventName = keyof EventMap;
 export type FunctionArgs<T extends Function> = T extends (...args: infer R) => any ? R : any
 
 /**
- * options for highlighting an element or string id of the element to highlight
+ * describes options for highlighting an element or string id of the element to highlight
  */
 export type ElementHighlightOptions = {
   highlightElement?: string | {
@@ -39,10 +39,25 @@ export type PreconditionOptions = {
  */
 export const DEFAULT_HIGHLIGHT_CLASS_NAME = 'element-highlight'
 
+/**
+ * describes a step in a tutorial sequence
+ */
 export type TutorialStepForEvent<T extends GraphEventName> = {
+  /**
+   * the hint to display to the user in order to complete the step
+   */
   hint: string;
+  /**
+   * the event that triggers a dismiss inquiry, if its just the event itself (T), then the step will be dismissed
+   * upon invocation of the event via event bus, if its an object, then the step will be dismissed upon invocation
+   * of the event and only if the predicate returns true
+   */
   dismiss: T | {
     event: T,
+    /**
+     * @param args the arguments passed to the event handler as defined in the event map
+     * @returns true if the step should be dismissed
+     */
     predicate: (...args: FunctionArgs<EventMap[T]>) => boolean
   };
 };
