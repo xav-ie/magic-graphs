@@ -42,6 +42,12 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
     h1.style.opacity = '0';
   }
 
+  /**
+   * applies a highlight to an element
+   *
+   * @param highlightInput the options for highlighting an element
+   * @returns a function to remove the highlight
+   */
   const applyHighlight = (highlightInput: ElementHighlightOptions) => {
     const { highlightElement: highlight } = highlightInput;
     if (!highlight) return () => { };
@@ -61,10 +67,10 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
     return () => element.classList.remove(className);
   }
 
+  const DELAY_UNTIL_NEXT_STEP = 1000;
+
   const nextStep = () => {
     const step = tutorialSequence.shift();
-
-    const DELAY_UNTIL_NEXT_STEP = 1000;
 
     if (!step) {
       removeText()
@@ -100,19 +106,32 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
     } : step.dismiss;
 
     if (dismissEvent === 'onInterval') {
-      return dismissPredicate
+      const intervalTime = 'interval' in step ? step.interval : 1000;
+      let iteration = 0;
+      const interval = setInterval(() => {
+        if (dismissPredicate(++iteration)) {
+          clearInterval(interval);
+          removeText();
+          currentHighlightRemover?.();
+          nextStep();
+        }
+      }, intervalTime);
+      return
     }
 
-    const proceed = (...args: any[]) => {
+    /**
+     * must remain defined names and not anonymous to not create multiple function references
+     */
+    const eventFired = (...args: any[]) => {
       const predicate = dismissPredicate?.(...args);
       if (!predicate) return;
-      graph.unsubscribe(dismissEvent, proceed);
+      graph.unsubscribe(dismissEvent, eventFired);
       removeText();
       currentHighlightRemover?.();
       nextStep();
     }
 
-    graph.subscribe(dismissEvent, proceed);
+    graph.subscribe(dismissEvent, eventFired);
   }
 
   onMounted(() => {
