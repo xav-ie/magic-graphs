@@ -64,9 +64,16 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
   const nextStep = () => {
     const step = tutorialSequence.shift();
 
+    const DELAY_UNTIL_NEXT_STEP = 1000;
+
     if (!step) {
       removeText()
       setTimeout(h1.remove, 1000);
+      return;
+    }
+
+    if (step.precondition?.(graph)) {
+      nextStep();
       return;
     }
 
@@ -75,33 +82,36 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
     setTimeout(() => {
       addText(step.hint);
       if (step?.highlightElement) currentHighlightRemover = applyHighlight(step);
-    }, 1500);
+    }, DELAY_UNTIL_NEXT_STEP);
 
     if (step.dismiss === 'onTimeout') {
       setTimeout(() => {
         removeText();
         nextStep();
-      }, step.after);
+      }, step.after + DELAY_UNTIL_NEXT_STEP);
       return;
     }
 
-    const goNext = (eventName: GraphEventName) => {
-      graph.unsubscribe(eventName, proceed);
+    const {
+      event: dismissEvent,
+      predicate: dismissPredicate
+    } = typeof step.dismiss === 'string' ? {
+      event: step.dismiss,
+    } : step.dismiss;
+
+    if (dismissEvent === 'onInterval') {
+      return dismissPredicate
+    }
+
+    const proceed = (...args: any[]) => {
+      const predicate = dismissPredicate?.(...args);
+      if (!predicate) return;
+      graph.unsubscribe(dismissEvent, proceed);
       removeText();
       currentHighlightRemover?.();
       nextStep();
     }
 
-    const proceed = (...args: any[]) => {
-      if (typeof step.dismiss !== 'string') {
-        const predicate = step.dismiss.predicate(...args);
-        if (predicate) goNext(step.dismiss.event);
-        return;
-      }
-      goNext(step.dismiss);
-    }
-
-    const dismissEvent = typeof step.dismiss === 'string' ? step.dismiss : step.dismiss.event;
     graph.subscribe(dismissEvent, proceed);
   }
 

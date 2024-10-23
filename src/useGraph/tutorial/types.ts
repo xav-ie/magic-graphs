@@ -1,4 +1,5 @@
 import type { UserEditableGraphEvents } from '@/useGraph/useUserEditableGraph';
+import type { Graph } from '../useGraph';
 
 export type EventMap = UserEditableGraphEvents;
 export type GraphEventName = keyof EventMap;
@@ -31,7 +32,7 @@ export type ElementHighlightOptions = {
  * already met, so the step will be skipped
  */
 export type PreconditionOptions = {
-  precondition?: () => boolean
+  precondition?: (graph: Graph) => boolean
 }
 
 /**
@@ -102,7 +103,7 @@ export type IntervalStep = {
  */
 export type TutorialStep = ({
   [K in GraphEventName]: TutorialStepForEvent<K>
-}[GraphEventName] | TimeoutStep) & ElementHighlightOptions & PreconditionOptions;
+}[GraphEventName] | TimeoutStep | IntervalStep) & ElementHighlightOptions & PreconditionOptions;
 
 /**
  * describes a list of tutorial steps that will be executed in order from index 0 to n - 1
