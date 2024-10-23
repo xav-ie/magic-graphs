@@ -1,3 +1,4 @@
+import type { Graph } from "@/useGraph/useGraph";
 import type { TutorialSequence } from "../types";
 import { BASICS_STEPS } from "./basics";
 
@@ -5,21 +6,35 @@ import { BASICS_STEPS } from "./basics";
  * pre-defined sequence for basic graph editing.
  * re-arrange the steps to change the order of the tutorial
  */
-const BASICS_SEQUENCE: TutorialSequence = [
-  BASICS_STEPS.greeting,
-  BASICS_STEPS.createNode,
-  BASICS_STEPS.moveNode,
-  BASICS_STEPS.createEdge,
-  BASICS_STEPS.createUndirectedEdge,
-  BASICS_STEPS.createSelfDirectedEdge,
-  BASICS_STEPS.editEdgeWeight,
-  BASICS_STEPS.removeElement,
-  BASICS_STEPS.goodbye
-]
+const BASICS_SEQUENCE: (graph: Graph) => TutorialSequence = (graph: Graph) => {
+  const {
+    greeting,
+    createNode,
+    moveNode,
+    createEdge,
+    createUndirectedEdge,
+    createSelfDirectedEdge,
+    editEdgeWeight,
+    removeElement,
+    goodbye,
+  } = BASICS_STEPS(graph);
+
+  return [
+    greeting,
+    createNode,
+    moveNode,
+    createEdge,
+    createUndirectedEdge,
+    createSelfDirectedEdge,
+    editEdgeWeight,
+    removeElement,
+    goodbye
+  ]
+}
 
 /**
  * contains pre-defined sequences for common use cases
  */
-export const SEQUENCES: Record<string, TutorialSequence> = {
-  basics: BASICS_SEQUENCE
-}
+export const SEQUENCES: (graph: Graph) => Record<string, TutorialSequence> = (graph: Graph) => ({
+  basics: BASICS_SEQUENCE(graph)
+});

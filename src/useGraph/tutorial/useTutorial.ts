@@ -9,4 +9,4 @@ import type { Graph } from "../useGraph";
  * @param graph the useGraph instance to apply the tutorial to
  * @returns // TODO make it return controls for the tutorial
  */
-export const useBasicsTutorial = (graph: Graph) => useGraphTutorial(graph, SEQUENCES.basics);
+export const useBasicsTutorial = (graph: Graph) => useGraphTutorial(graph, SEQUENCES(graph).basics);

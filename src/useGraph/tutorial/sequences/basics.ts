@@ -1,10 +1,11 @@
+import type { Graph } from "@/useGraph/useGraph";
 import type { TutorialStep } from "../types";
 import { GRAPH_BUTTON_ID } from "@/useGraphBtns";
 
 /**
  * pre-defined tutorial steps for basic graph editing
  */
-export const BASICS_STEPS: Record<string, TutorialStep> = {
+export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (graph: Graph) => ({
   greeting: {
     hint: 'Welcome to the graph editor tutorial',
     dismiss: 'onCron',
@@ -51,4 +52,4 @@ export const BASICS_STEPS: Record<string, TutorialStep> = {
     hint: 'Remove an edge or node by clicking on it and hitting backspace/delete',
     dismiss: 'onNodeRemoved' // TODO expand api to include onEdgeRemoved
   }
-}
+});
