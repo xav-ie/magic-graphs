@@ -57,8 +57,6 @@ export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEd
   graphBgColor: string,
 }
 
-const INITIAL_THEME_MAP = new Map<keyof GraphTheme, BaseGraphTheme>()
-
 export const DEFAULT_THEME: BaseGraphTheme = {
   nodeSize: 35,
   nodeBorderWidth: 8,
