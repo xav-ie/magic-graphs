@@ -47,10 +47,10 @@ export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (gra
     hint: 'Edit the edge weight by clicking on it and typing a number',
     dismiss: 'onEdgeWeightChange'
   },
-  removeElement: getRemoveElementStep(graph),
+  removeElement: getRemoveNodeOrEdgeStep(graph),
 });
 
-const getRemoveElementStep = (graph: Graph): TutorialStep => {
+const getRemoveNodeOrEdgeStep = (graph: Graph): TutorialStep => {
   let stepPassed = false;
   const completeStep = () => stepPassed = true;
   return {
