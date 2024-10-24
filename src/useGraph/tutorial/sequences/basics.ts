@@ -18,7 +18,7 @@ export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (gra
   },
   createNode: {
     hint: 'Double click anywhere to add a node',
-    dismiss: 'onNodeAdded'
+    dismiss: 'onNodeAdded',
   },
   moveNode: {
     hint: 'Drag a node to move it',

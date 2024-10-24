@@ -84,7 +84,7 @@ export type TimeoutStep = {
  */
 export type IntervalStep = {
   hint: string,
-  dismiss: {
+  dismiss: 'onInterval' | {
     event: 'onInterval',
     /**
      * @param iteration the number of times the interval has been called
@@ -94,9 +94,12 @@ export type IntervalStep = {
   },
   /**
    * time to wait before the next evaluation, in milliseconds
+   * @default 1000 milliseconds
    */
-  interval: number,
+  interval?: number,
 }
+
+export const DEFAULT_INTERVAL = 1000;
 
 /**
  * describes a step in a tutorial sequence

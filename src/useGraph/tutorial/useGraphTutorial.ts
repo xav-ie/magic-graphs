@@ -1,10 +1,12 @@
-import { onMounted } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import type { Graph } from "../useGraph";
-import { DEFAULT_HIGHLIGHT_CLASS_NAME } from "./types";
+import {
+  DEFAULT_HIGHLIGHT_CLASS_NAME,
+  DEFAULT_INTERVAL
+} from "./types";
 import type {
   TutorialSequence,
   ElementHighlightOptions,
-  GraphEventName,
 } from "./types";
 
 /**
@@ -16,30 +18,21 @@ import type {
  */
 export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequence) => {
 
-  const h1 = document.createElement('h1');
-  h1.style.opacity = '0'
-  h1.style.width = '100%';
-  h1.style.textAlign = 'center';
-  h1.style.userSelect = 'none';
-  h1.classList.add(
-    'text-4xl',
-    'text-center',
-    'text-white',
-    'font-bold',
-    'absolute',
-    'bottom-[10%]',
-    'absolute',
-    'transition-opacity',
-    'duration-300',
-  );
+  /**
+   * the current step in the tutorial sequence,
+   * can be reactively set to skip to a specific step
+   */
+  const currentStep = ref(0);
+
+  const textHintElement = createTextHintElement();
 
   const addText = (text: string) => {
-    h1.innerText = text;
-    h1.style.opacity = '1';
+    textHintElement.innerText = text;
+    textHintElement.style.opacity = '1';
   }
 
   const removeText = () => {
-    h1.style.opacity = '0';
+    textHintElement.style.opacity = '0';
   }
 
   /**
@@ -74,7 +67,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
 
     if (!step) {
       removeText()
-      setTimeout(h1.remove, 1000);
+      setTimeout(textHintElement.remove, 1000);
       return;
     }
 
@@ -103,10 +96,11 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
       predicate: dismissPredicate
     } = typeof step.dismiss === 'string' ? {
       event: step.dismiss,
+      predicate: () => true
     } : step.dismiss;
 
     if (dismissEvent === 'onInterval') {
-      const intervalTime = 'interval' in step ? step.interval : 1000;
+      const intervalTime = 'interval' in step ? step.interval : DEFAULT_INTERVAL;
       let iteration = 0;
       const interval = setInterval(() => {
         if (dismissPredicate(++iteration)) {
@@ -138,7 +132,37 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
     if (!graph.canvas.value) throw new Error('canvas element not found in dom');
     const parent = graph.canvas.value.parentElement;
     if (!parent) throw new Error('canvas parent element not found in dom');
-    parent.appendChild(h1);
+    parent.appendChild(textHintElement);
     nextStep();
   });
+
+  onUnmounted(() => {
+    textHintElement.remove();
+  });
+}
+
+/**
+ * create a new dom node for displaying text hints
+ *
+ * @returns a html element for displaying text hints
+ */
+const createTextHintElement = () => {
+  const h1 = document.createElement('h1');
+  h1.style.opacity = '0'
+  h1.style.width = '100%';
+  h1.style.textAlign = 'center';
+  h1.style.userSelect = 'none';
+  h1.classList.add(
+    'text-4xl',
+    'text-center',
+    'text-white',
+    'font-bold',
+    'absolute',
+    'bottom-[10%]',
+    'absolute',
+    'transition-opacity',
+    'duration-300',
+  );
+
+  return h1;
 }
