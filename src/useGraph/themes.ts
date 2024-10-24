@@ -1,6 +1,12 @@
 import type { GNode, NodeGetterOrValue, EdgeGetterOrValue } from "./types"
 import type { SupportedNodeShapes } from "./schematics/node"
 import type { TextFontWeight } from "@/shapes/types"
+import {
+  BLACK,
+  WHITE,
+  BLUE_600,
+  GRAY_50,
+} from "@/utils/colors"
 
 export type BaseGraphNodeTheme = {
   nodeSize: number,
@@ -41,23 +47,23 @@ export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEd
 export const DEFAULT_THEME: BaseGraphTheme = {
   nodeSize: 35,
   nodeBorderWidth: 8,
-  nodeColor: 'white',
-  nodeBorderColor: 'black',
-  nodeFocusBorderColor: 'blue',
-  nodeFocusColor: 'white',
+  nodeColor: WHITE,
+  nodeBorderColor: BLACK,
+  nodeFocusBorderColor: BLUE_600,
+  nodeFocusColor: WHITE,
   nodeText: ({ label }: GNode) => label,
   nodeTextSize: 24,
-  nodeTextColor: 'black',
-  nodeFocusTextColor: 'black',
+  nodeTextColor: BLACK,
+  nodeFocusTextColor: BLACK,
   nodeShape: 'circle',
-  edgeColor: 'black',
+  edgeColor: BLACK,
   edgeWidth: 10,
   edgeTextSize: 20,
   edgeTextFontWeight: 'bold',
-  edgeTextColor: 'black',
-  edgeFocusColor: 'blue',
-  edgeFocusTextColor: 'black',
-  graphBgColor: 'white',
+  edgeTextColor: BLACK,
+  edgeFocusColor: BLUE_600,
+  edgeFocusTextColor: BLACK,
+  graphBgColor: GRAY_50,
 } as const
 
 // TODO replace any with the type of the top level theme

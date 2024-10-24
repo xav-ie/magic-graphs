@@ -25,10 +25,7 @@
     (e: "update:modelValue", value: AdjacencyList): void;
   }>();
 
-  const padding = 20;
   const { width, height } = useWindowSize();
-  const canvasWidth = computed(() => width.value - padding * 2);
-  const canvasHeight = computed(() => height.value - padding * 2);
 
   const graph = useDarkGraph(canvas, {
     theme: {},
@@ -39,7 +36,13 @@
   //   markovSccColorizer(graph);
   // }, 0)
 
-  useBasicsTutorial(graph);
+  const {
+    currentStep,
+    skipStep,
+    previousStep,
+    endTutorial,
+    restartTutorial,
+  } = useBasicsTutorial(graph);
 
   graph.subscribe("onStructureChange", (nodes, edges) =>
     emit("update:modelValue", nodesEdgesToAdjList(nodes, edges))
@@ -65,7 +68,14 @@
 </script>
 
 <template>
-  <div :style="{ padding: `${padding}px` }">
+  <div
+    :class="[
+      'relative',
+      `w-[${width}px]`,
+      `h-[${height}px]`,
+    ]"
+  >
+
     <div class="absolute flex gap-2 m-2">
       <div v-for="btn in btns">
         <button
@@ -80,11 +90,49 @@
         </button>
       </div>
     </div>
-    <canvas
-      :width="canvasWidth"
-      :height="canvasHeight"
-      ref="canvas"
-      class="rounded-xl"
-    ></canvas>
+
+    <div class="bottom-0 absolute flex gap-2 m-2">
+      <button
+        @click="previousStep"
+        :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
+      >
+        <span class="select-none">
+          Previous
+        </span>
+      </button>
+      <button
+        @click="skipStep"
+        :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
+      >
+        <span class="select-none">
+          Skip
+        </span>
+      </button>
+      <button
+        @click="endTutorial"
+        :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
+      >
+        <span class="select-none">
+          End
+        </span>
+      </button>
+      <button
+        @click="restartTutorial"
+        :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
+      >
+        <span class="select-none">
+          Restart
+        </span>
+      </button>
+    </div>
+
+    <div>
+      <canvas
+        :width="width"
+        :height="height"
+        ref="canvas"
+        :class="`w-[${width}px] h-[${height}px]`"
+      ></canvas>
+    </div>
   </div>
 </template>

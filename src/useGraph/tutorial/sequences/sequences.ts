@@ -20,17 +20,6 @@ const BASICS_SEQUENCE: (graph: Graph) => TutorialSequence = (graph: Graph) => {
   } = BASICS_STEPS(graph);
 
   return [
-    {
-      hint: 'Test test',
-      dismiss: {
-        event: 'onInterval',
-        predicate: (iteration) => {
-          console.log('iteration', iteration);
-          return iteration > 5;
-        },
-      },
-      interval: 500
-    },
     greeting,
     createNode,
     moveNode,

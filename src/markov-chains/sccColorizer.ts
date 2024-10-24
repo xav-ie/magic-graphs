@@ -3,10 +3,9 @@ import { nodesEdgesToAdjList } from '@/graphConverters';
 import {
   TAILWIND_500_COLORS as color,
   GRAY_800,
-  GRAY_900,
-  TRANSIENT_COLOR,
   type Color
-} from "./colors";
+} from "@/utils/colors";
+import { TRANSIENT_COLOR } from "./colors";
 import { computed } from "vue";
 import { useMarkovChainSCC } from "./useSCC";
 import type { GNode } from "@/useGraph/types";

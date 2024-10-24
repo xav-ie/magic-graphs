@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import type { Graph } from "../useGraph";
 import {
   DEFAULT_HIGHLIGHT_CLASS_NAME,
@@ -35,35 +35,10 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
     textHintElement.style.opacity = '0';
   }
 
-  /**
-   * applies a highlight to an element
-   *
-   * @param highlightInput the options for highlighting an element
-   * @returns a function to remove the highlight
-   */
-  const applyHighlight = (highlightInput: ElementHighlightOptions) => {
-    const { highlightElement: highlight } = highlightInput;
-    if (!highlight) return () => { };
-    const {
-      id,
-      className,
-    } = {
-      id: typeof highlight === 'string' ? highlight : highlight.id,
-      className: (typeof highlight === 'string' || !highlight?.className) ? DEFAULT_HIGHLIGHT_CLASS_NAME : highlight.className,
-    };
-
-    if (!id) return () => { };
-    const element = document.getElementById(id);
-    if (!element) throw new Error(`element with id ${id} not found`);
-
-    element.classList.add(className);
-    return () => element.classList.remove(className);
-  }
-
   const DELAY_UNTIL_NEXT_STEP = 1000;
 
-  const nextStep = () => {
-    const step = tutorialSequence.shift();
+  const runCurrentStep = () => {
+    const step = tutorialSequence[currentStep.value];
 
     if (!step) {
       removeText()
@@ -72,7 +47,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
     }
 
     if (step.precondition?.(graph)) {
-      nextStep();
+      currentStep.value++;
       return;
     }
 
@@ -86,7 +61,8 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
     if (step.dismiss === 'onTimeout') {
       setTimeout(() => {
         removeText();
-        nextStep();
+        currentHighlightRemover?.();
+        currentStep.value++;
       }, step.after + DELAY_UNTIL_NEXT_STEP);
       return;
     }
@@ -103,12 +79,11 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
       const intervalTime = 'interval' in step ? step.interval : DEFAULT_INTERVAL;
       let iteration = 0;
       const interval = setInterval(() => {
-        if (dismissPredicate(++iteration)) {
-          clearInterval(interval);
-          removeText();
-          currentHighlightRemover?.();
-          nextStep();
-        }
+        if (!dismissPredicate(++iteration)) return;
+        clearInterval(interval);
+        removeText();
+        currentHighlightRemover?.();
+        currentStep.value++;
       }, intervalTime);
       return
     }
@@ -122,23 +97,33 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
       graph.unsubscribe(dismissEvent, eventFired);
       removeText();
       currentHighlightRemover?.();
-      nextStep();
+      currentStep.value++;
     }
 
     graph.subscribe(dismissEvent, eventFired);
   }
+
+  watch(currentStep, runCurrentStep);
 
   onMounted(() => {
     if (!graph.canvas.value) throw new Error('canvas element not found in dom');
     const parent = graph.canvas.value.parentElement;
     if (!parent) throw new Error('canvas parent element not found in dom');
     parent.appendChild(textHintElement);
-    nextStep();
+    runCurrentStep();
   });
 
   onUnmounted(() => {
     textHintElement.remove();
   });
+
+  return {
+    currentStep,
+    skipStep: () => currentStep.value++,
+    previousStep: () => currentStep.value--,
+    endTutorial: () => currentStep.value = tutorialSequence.length,
+    restartTutorial: () => currentStep.value = 0,
+  }
 }
 
 /**
@@ -165,4 +150,29 @@ const createTextHintElement = () => {
   );
 
   return h1;
+}
+
+/**
+   * applies a highlight to an element
+   *
+   * @param highlightInput the options for highlighting an element
+   * @returns a function to remove the highlight
+   */
+const applyHighlight = (highlightInput: ElementHighlightOptions) => {
+  const { highlightElement: highlight } = highlightInput;
+  if (!highlight) return () => { };
+  const {
+    id,
+    className,
+  } = {
+    id: typeof highlight === 'string' ? highlight : highlight.id,
+    className: (typeof highlight === 'string' || !highlight?.className) ? DEFAULT_HIGHLIGHT_CLASS_NAME : highlight.className,
+  };
+
+  if (!id) return () => { };
+  const element = document.getElementById(id);
+  if (!element) throw new Error(`element with id ${id} not found`);
+
+  element.classList.add(className);
+  return () => element.classList.remove(className);
 }
