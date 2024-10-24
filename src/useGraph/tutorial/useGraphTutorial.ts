@@ -14,9 +14,9 @@ import {
 } from "./types";
 import type {
   TutorialSequence,
-  ElementHighlightOptions,
   IntervalStep,
   GraphEventStep,
+  TutorialStep,
 } from "./types";
 
 /**
@@ -88,14 +88,16 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
 
     if (!step) return;
 
+    step.onInit?.();
+
     if (step.precondition?.(graph)) {
       currentStep.value++;
       return;
     }
 
+    if (step?.highlightElement) cleanupHighlight = applyHighlight(step);
     stepSetupTimeoutID = setTimeout(() => {
       addText(step.hint);
-      if (step?.highlightElement) cleanupHighlight = applyHighlight(step);
     }, DELAY_UNTIL_NEXT_STEP);
 
     cleanupStep = executeStep(step.dismiss !== 'onTimeout' ? step : {
@@ -105,9 +107,11 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
     });
   }
 
-  const initiateNewStep = () => {
-    if (currentStep.value < 0) return currentStep.value = 0;
-    if (currentStep.value > sequence.value.length) return currentStep.value = sequence.value.length
+  const initiateNewStep = (newStepIndex: number, prevStepIndex: number) => {
+    if (newStepIndex < 0) return currentStep.value = 0;
+    if (newStepIndex > sequence.value.length) return currentStep.value = sequence.value.length
+    const prevStep = sequence.value[prevStepIndex];
+    prevStep?.onDismiss?.();
     cleanupStep?.();
     cleanupHighlight?.();
     removeText();
@@ -116,7 +120,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
   }
 
   watch(currentStep, initiateNewStep);
-  watch(sequence, initiateNewStep);
+  watch(sequence, () => initiateNewStep(currentStep.value, currentStep.value));
 
   onMounted(() => {
     if (!graph.canvas.value) throw new Error('canvas element not found in dom');
@@ -171,11 +175,11 @@ const createTextHintElement = () => {
 /**
    * applies a highlight to an element
    *
-   * @param highlightInput the options for highlighting an element
+   * @param tutorialStep the step containing the highlight element
    * @returns a function to remove the highlight
    */
-const applyHighlight = (highlightInput: ElementHighlightOptions) => {
-  const { highlightElement: highlight } = highlightInput;
+const applyHighlight = (tutorialStep: TutorialStep) => {
+  const { highlightElement: highlight } = tutorialStep;
   if (!highlight) return () => { };
   const {
     id,

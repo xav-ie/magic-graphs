@@ -14,6 +14,7 @@
   import { useGraphBtns } from "./useGraphBtns";
   import { markovSccColorizer } from "./markov-chains/sccColorizer";
   import { useBasicsTutorial } from "./useGraph/tutorial/useTutorial";
+import { useUserPreferredTheme } from "./useGraph/themes";
 
   const canvas = ref<HTMLCanvasElement>();
 
@@ -67,6 +68,8 @@
   ];
 
   const showBtn = (cond: (() => boolean) | undefined) => (cond ? cond() : true);
+
+  useUserPreferredTheme(graph);
 </script>
 
 <template>

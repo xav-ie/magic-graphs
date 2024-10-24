@@ -197,11 +197,11 @@ export const useBaseGraph =(
     if ('textArea' in schema && schema.textArea?.editable ) {
 
       if (schemaType === 'arrow' || schemaType === 'line') {
-        
+
         const textAreaLocationArrow = getTextAreaLocation.arrow(schema)
         const textAreaLocationLine = getTextAreaLocation.line(schema)
         const textAreaLocation = schemaType === 'arrow' ? textAreaLocationArrow : textAreaLocationLine
-        
+
         const isInTextAreaFns = isInTextarea({ x: ev.offsetX, y: ev.offsetY })
         const textAreaSelected = schemaType === 'arrow' ? isInTextAreaFns.arrow(schema) : isInTextAreaFns.line(schema)
         if (schema.textArea && textAreaSelected) {
@@ -281,12 +281,18 @@ export const useBaseGraph =(
 
   const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
 
+  const changeCanvasColor = () => {
+    if (!canvas.value) return
+    canvas.value.style.backgroundColor = theme.value.graphBgColor
+  }
+
   onMounted(() => {
     if (!canvas.value) {
       throw new Error('Canvas element not found')
     }
 
     canvas.value.style.backgroundColor = theme.value.graphBgColor
+    subscribe('onThemeChange', changeCanvasColor)
 
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.addEventListener(event, listeners)

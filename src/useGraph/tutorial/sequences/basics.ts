@@ -8,8 +8,7 @@ import { GRAPH_BUTTON_ID } from "@/useGraphBtns";
 export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (graph: Graph) => ({
   greeting: {
     hint: 'Welcome to the graph editor tutorial',
-    dismiss: 'onTimeout',
-    after: 3000
+    dismiss: 'onClick',
   },
   goodbye: {
     hint: 'Have fun editing graphs!',

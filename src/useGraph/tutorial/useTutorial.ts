@@ -7,6 +7,11 @@ import type { Graph } from "../useGraph";
  * for educating users on basic graph UI interactions
  *
  * @param graph the useGraph instance to apply the tutorial to
- * @returns // TODO make it return controls for the tutorial
+ * @returns an object containing controls for the tutorial
  */
 export const useBasicsTutorial = (graph: Graph) => useGraphTutorial(graph, SEQUENCES(graph).basics);
+
+/**
+ * describes the control interface for the basics tutorial
+ */
+export type TutorialControls = ReturnType<typeof useBasicsTutorial>;

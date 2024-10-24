@@ -3,10 +3,28 @@ import type { SupportedNodeShapes } from "./schematics/node"
 import type { TextFontWeight } from "@/shapes/types"
 import {
   BLACK,
-  WHITE,
   BLUE_600,
   GRAY_50,
+  GRAY_200,
+  GRAY_900,
+  GRAY_800,
+  BLUE_900,
+  BLUE_100,
+  GREEN_600,
+  GRAY_600,
+  WHITE,
+  GRAY_700,
+  STONE_900,
+  STONE_700,
+  STONE_600,
+  RED_600,
+  RED_500,
+  RED_700,
+  RED_800,
 } from "@/utils/colors"
+import type { Graph } from "./useGraph"
+import { useDark } from "@vueuse/core"
+import { watch } from "vue"
 
 export type BaseGraphNodeTheme = {
   nodeSize: number,
@@ -47,23 +65,23 @@ export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEd
 export const DEFAULT_THEME: BaseGraphTheme = {
   nodeSize: 35,
   nodeBorderWidth: 8,
-  nodeColor: WHITE,
-  nodeBorderColor: BLACK,
+  nodeColor: GRAY_50,
+  nodeBorderColor: GRAY_800,
   nodeFocusBorderColor: BLUE_600,
-  nodeFocusColor: WHITE,
+  nodeFocusColor: BLUE_100,
   nodeText: ({ label }: GNode) => label,
   nodeTextSize: 24,
-  nodeTextColor: BLACK,
-  nodeFocusTextColor: BLACK,
+  nodeTextColor: GRAY_900,
+  nodeFocusTextColor: GRAY_900,
   nodeShape: 'circle',
-  edgeColor: BLACK,
+  edgeColor: GRAY_800,
   edgeWidth: 10,
   edgeTextSize: 20,
   edgeTextFontWeight: 'bold',
-  edgeTextColor: BLACK,
+  edgeTextColor: GRAY_900,
   edgeFocusColor: BLUE_600,
   edgeFocusTextColor: BLACK,
-  graphBgColor: GRAY_50,
+  graphBgColor: GRAY_200,
 } as const
 
 // TODO replace any with the type of the top level theme
@@ -72,22 +90,46 @@ export type GraphThemes = Record<string, any>
 // ISSUE #17 GITHUB
 const resolveTheme = () => {}
 
+const REDDISH_GRAY = 'rgb(100, 60, 70)'
+
 export const themes = {
-  default: DEFAULT_THEME,
+  default: {
+    ...DEFAULT_THEME,
+    nodeAnchorColor: BLACK,
+    nodeAnchorColorWhenParentFocused: BLUE_900,
+  },
   dark: {
-    nodeBorderColor: 'rgb(25, 25, 25)',
-    nodeColor: 'rgb(50, 50, 60)',
-    nodeTextColor: 'white',
-    nodeFocusBorderColor: 'rgb(200, 0, 0)',
-    nodeFocusColor: 'rgb(100, 60, 70)',
-    nodeFocusTextColor: 'white',
-    nodeAnchorColor: 'rgb(30, 30, 40)',
-    nodeAnchorColorWhenParentFocused: 'rgb(170, 0, 0)',
-    edgeColor: 'rgb(25, 25, 25)',
-    edgeFocusColor: 'rgb(200, 0, 0)',
+    nodeBorderColor: BLACK,
+    nodeColor: STONE_600,
+    nodeTextColor: WHITE,
+    nodeFocusBorderColor: RED_700,
+    nodeFocusColor: REDDISH_GRAY,
+    nodeFocusTextColor: WHITE,
+    nodeAnchorColor: GRAY_900,
+    nodeAnchorColorWhenParentFocused: RED_800,
+    edgeColor: STONE_900,
+    edgeFocusColor: RED_700,
     // TODO BOOO!!!!
-    edgeTextColor: 'white',
-    edgeFocusTextColor: 'white',
-    graphBgColor: 'rgb(75, 85, 99)' // tailwind bg-gray-600
+    edgeTextColor: WHITE,
+    edgeFocusTextColor: WHITE,
+    graphBgColor: GRAY_600,
   },
 } as const
+
+/**
+ * WARNING - EXPERIMENTAL
+ * uses the user's system preference to toggle between dark and light mode on the graph
+ *
+ * @param graph the graph instance
+ */
+export const useUserPreferredTheme = (graph: Graph) => {
+  const isDark = useDark()
+  watch(isDark, () => {
+    const currTheme = graph.theme.value
+    if (isDark.value) {
+      Object.assign(currTheme, themes.dark)
+    } else {
+      Object.assign(currTheme, themes.default)
+    }
+  }, { immediate: true })
+}
