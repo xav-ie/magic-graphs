@@ -1,23 +1,24 @@
+import type { Graph } from "@/useGraph/useGraph";
 import type { TutorialStep } from "../types";
 import { GRAPH_BUTTON_ID } from "@/useGraphBtns";
 
 /**
  * pre-defined tutorial steps for basic graph editing
  */
-export const BASICS_STEPS: Record<string, TutorialStep> = {
+export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (graph: Graph) => ({
   greeting: {
     hint: 'Welcome to the graph editor tutorial',
-    dismiss: 'onCron',
+    dismiss: 'onTimeout',
     after: 3000
   },
   goodbye: {
     hint: 'Have fun editing graphs!',
-    dismiss: 'onCron',
+    dismiss: 'onTimeout',
     after: 3000
   },
   createNode: {
     hint: 'Double click anywhere to add a node',
-    dismiss: 'onNodeAdded'
+    dismiss: 'onNodeAdded',
   },
   moveNode: {
     hint: 'Drag a node to move it',
@@ -29,7 +30,7 @@ export const BASICS_STEPS: Record<string, TutorialStep> = {
   },
   createUndirectedEdge: {
     hint: 'Now create an undirected edge by toggling the edge type',
-    highlightElementId: GRAPH_BUTTON_ID.edgeType,
+    highlightElement: GRAPH_BUTTON_ID.edgeType,
     dismiss: {
       event: 'onEdgeAdded',
       predicate: (edge) => edge.type === 'undirected'
@@ -37,7 +38,7 @@ export const BASICS_STEPS: Record<string, TutorialStep> = {
   },
   createSelfDirectedEdge: {
     hint: 'You can even create self directed edges! Make sure you are in "directed" mode and drag an anchor inwards',
-    highlightElementId: GRAPH_BUTTON_ID.edgeType,
+    highlightElement: GRAPH_BUTTON_ID.edgeType,
     dismiss: {
       event: 'onEdgeAdded',
       predicate: (edge) => edge.to === edge.from
@@ -51,4 +52,4 @@ export const BASICS_STEPS: Record<string, TutorialStep> = {
     hint: 'Remove an edge or node by clicking on it and hitting backspace/delete',
     dismiss: 'onNodeRemoved' // TODO expand api to include onEdgeRemoved
   }
-}
+});

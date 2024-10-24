@@ -35,8 +35,8 @@ export const engageTextarea = (textAreaSchema: TextArea, handler: (str: string) 
   // create a text input
   const input = document.createElement('textarea');
   input.style.position = 'absolute';
-  input.style.left = `${x + (SIZE / 2)}px`;
-  input.style.top = `${y + (SIZE / 2)}px`;
+  input.style.left = `${x}px`;
+  input.style.top = `${y}px`;
   input.style.width = `${SIZE}px`;
   input.style.height = `${SIZE}px`;
   input.style.zIndex = '1000';
