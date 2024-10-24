@@ -32,6 +32,7 @@ import { hitboxes, isInTextarea } from '@/shapes/hitboxes';
 import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
 import { themes, type BaseGraphTheme } from './themes';
+import { INITIAL_THEME_MAP } from './theme/types';
 import { engageTextarea } from './textarea';
 
 export type BaseGraphEvents = {
@@ -505,6 +506,7 @@ export const useBaseGraph =(
     aggregator,
 
     theme,
+    themeMap: INITIAL_THEME_MAP,
     settings,
 
     reset,

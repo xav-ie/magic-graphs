@@ -1,17 +1,15 @@
-import type { UnwrapRef } from "vue"
-import type { Graph } from "../useGraph"
+import type { NodeAnchorGraphTheme } from "../useNodeAnchorGraph"
 
-export type GraphTheme = UnwrapRef<Graph['theme']>
+export type GraphTheme = NodeAnchorGraphTheme
+export type GraphThemeKey = keyof GraphTheme
 
-export type ThemeKey = keyof GraphTheme
-
-export type ThemeMapEntry<T extends ThemeKey> = {
+export type ThemeMapEntry<T extends GraphThemeKey> = {
   value: GraphTheme[T],
   useThemeId: string,
 }
 
 export type FullThemeMap = {
-  [K in ThemeKey]: ThemeMapEntry<K>[]
+  [K in GraphThemeKey]: ThemeMapEntry<K>[]
 }
 
 export type PartialThemeMap = Partial<FullThemeMap>
