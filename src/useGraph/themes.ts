@@ -19,7 +19,7 @@ import {
 } from "@/utils/colors"
 import type { Graph } from "./useGraph"
 import { useDark } from "@vueuse/core"
-import { watch } from "vue"
+import { watch, type UnwrapRef } from "vue"
 
 export type BaseGraphNodeTheme = {
   nodeSize: number,
@@ -56,6 +56,8 @@ type WrapWithEdgeGetter<T extends Record<string, any>> = {
 export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEdgeGetter<BaseGraphEdgeTheme> & {
   graphBgColor: string,
 }
+
+const INITIAL_THEME_MAP = new Map<keyof GraphTheme, BaseGraphTheme>()
 
 export const DEFAULT_THEME: BaseGraphTheme = {
   nodeSize: 35,

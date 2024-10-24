@@ -15,6 +15,7 @@
   import { markovSccColorizer } from "./markov-chains/sccColorizer";
   import { useBasicsTutorial } from "./useGraph/tutorial/useTutorial";
 import { useUserPreferredTheme } from "./useGraph/themes";
+import { useTheme } from "./useGraph/theme/useTheme";
 
   const canvas = ref<HTMLCanvasElement>();
 
@@ -46,6 +47,8 @@ import { useUserPreferredTheme } from "./useGraph/themes";
     endTutorial,
     restartTutorial,
   } = useBasicsTutorial(graph);
+
+  const { setTheme, removeTheme } = useTheme(graph, 'custom');
 
   graph.subscribe("onStructureChange", (nodes, edges) =>
     emit("update:modelValue", nodesEdgesToAdjList(nodes, edges))
