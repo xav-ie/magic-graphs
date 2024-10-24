@@ -24,7 +24,8 @@ import {
   generateSubscriber,
   generateId,
   prioritizeNode,
-  getRandomPointOnCanvas
+  getRandomPointOnCanvas,
+  getThemeResolver
 } from './helpers';
 import { drawShape } from '@/shapes/draw';
 import { getTextAreaLocation } from '@/shapes/draw/text';
@@ -121,6 +122,8 @@ export const useBaseGraph =(
     ...themes.default,
     ...options.theme,
   })
+
+  const getTheme = getThemeResolver(theme, INITIAL_THEME_MAP)
 
   const settings = ref<BaseGraphSettings>({
     ...defaultSettings,
@@ -472,10 +475,7 @@ export const useBaseGraph =(
   updateAggregator.push(liftHoveredNodeToTop)
 
   watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
-
-  watch(settings, () => {
-    eventBus.onSettingsChange.forEach(fn => fn())
-  }, { deep: true })
+  watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
 
   return {
     nodes,

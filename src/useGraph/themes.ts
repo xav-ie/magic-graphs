@@ -19,7 +19,7 @@ import {
 } from "@/utils/colors"
 import type { Graph } from "./useGraph"
 import { useDark } from "@vueuse/core"
-import { watch, type UnwrapRef } from "vue"
+import { watch } from "vue"
 
 export type BaseGraphNodeTheme = {
   nodeSize: number,
