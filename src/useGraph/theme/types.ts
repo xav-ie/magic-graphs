@@ -5,42 +5,47 @@ export type GraphTheme = UnwrapRef<Graph['theme']>
 
 export type ThemeKey = keyof GraphTheme
 
+export type ThemeMapEntry<T extends ThemeKey> = {
+  value: GraphTheme[T],
+  useThemeId: string,
+}
+
 export type FullThemeMap = {
-  [K in ThemeKey]: GraphTheme[K][]
+  [K in ThemeKey]: ThemeMapEntry<K>[]
 }
 
 export type PartialThemeMap = Partial<FullThemeMap>
 
-export const themeMap: FullThemeMap = {
+export const INITIAL_THEME_MAP: FullThemeMap = {
   /**
    * base themes
    */
-  nodeSize: [] as GraphTheme['nodeSize'][],
-  nodeBorderWidth: [] as GraphTheme['nodeBorderWidth'][],
-  nodeColor: [] as GraphTheme['nodeColor'][],
-  nodeBorderColor: [] as GraphTheme['nodeBorderColor'][],
-  nodeFocusColor: [] as GraphTheme['nodeFocusColor'][],
-  nodeFocusBorderColor: [] as GraphTheme['nodeFocusBorderColor'][],
-  nodeText: [] as GraphTheme['nodeText'][],
-  nodeFocusTextColor: [] as GraphTheme['nodeFocusTextColor'][],
-  nodeTextSize: [] as GraphTheme['nodeTextSize'][],
-  nodeTextColor: [] as GraphTheme['nodeTextColor'][],
-  nodeShape: [] as GraphTheme['nodeShape'][],
-  edgeColor: [] as GraphTheme['edgeColor'][],
-  edgeWidth: [] as GraphTheme['edgeWidth'][],
-  edgeTextSize: [] as GraphTheme['edgeTextSize'][],
-  edgeTextColor: [] as GraphTheme['edgeTextColor'][],
-  edgeFocusTextColor: [] as GraphTheme['edgeFocusTextColor'][],
-  edgeTextFontWeight: [] as GraphTheme['edgeTextFontWeight'][],
-  edgeFocusColor: [] as GraphTheme['edgeFocusColor'][],
-  graphBgColor: [] as GraphTheme['graphBgColor'][],
+  nodeSize: [] as ThemeMapEntry<'nodeSize'>[],
+  nodeBorderWidth: [] as ThemeMapEntry<'nodeBorderWidth'>[],
+  nodeColor: [] as ThemeMapEntry<'nodeColor'>[],
+  nodeBorderColor: [] as ThemeMapEntry<'nodeBorderColor'>[],
+  nodeFocusColor: [] as ThemeMapEntry<'nodeFocusColor'>[],
+  nodeFocusBorderColor: [] as ThemeMapEntry<'nodeFocusBorderColor'>[],
+  nodeText: [] as ThemeMapEntry<'nodeText'>[],
+  nodeFocusTextColor: [] as ThemeMapEntry<'nodeFocusTextColor'>[],
+  nodeTextSize: [] as ThemeMapEntry<'nodeTextSize'>[],
+  nodeTextColor: [] as ThemeMapEntry<'nodeTextColor'>[],
+  nodeShape: [] as ThemeMapEntry<'nodeShape'>[],
+  edgeColor: [] as ThemeMapEntry<'edgeColor'>[],
+  edgeWidth: [] as ThemeMapEntry<'edgeWidth'>[],
+  edgeTextSize: [] as ThemeMapEntry<'edgeTextSize'>[],
+  edgeTextColor: [] as ThemeMapEntry<'edgeTextColor'>[],
+  edgeFocusTextColor: [] as ThemeMapEntry<'edgeFocusTextColor'>[],
+  edgeTextFontWeight: [] as ThemeMapEntry<'edgeTextFontWeight'>[],
+  edgeFocusColor: [] as ThemeMapEntry<'edgeFocusColor'>[],
+  graphBgColor: [] as ThemeMapEntry<'graphBgColor'>[],
 
   /**
    * node anchor themes
    */
-  nodeAnchorColor: [] as GraphTheme['nodeAnchorColor'][],
-  nodeAnchorColorWhenParentFocused: [] as GraphTheme['nodeAnchorColorWhenParentFocused'][],
-  nodeAnchorRadius: [] as GraphTheme['nodeAnchorRadius'][],
-  linkPreviewColor: [] as GraphTheme['linkPreviewColor'][],
-  linkPreviewWidth: [] as GraphTheme['linkPreviewWidth'][],
+  nodeAnchorRadius: [] as ThemeMapEntry<'nodeAnchorRadius'>[],
+  nodeAnchorColor: [] as ThemeMapEntry<'nodeAnchorColor'>[],
+  nodeAnchorColorWhenParentFocused: [] as ThemeMapEntry<'nodeAnchorColorWhenParentFocused'>[],
+  linkPreviewColor: [] as ThemeMapEntry<'linkPreviewColor'>[],
+  linkPreviewWidth: [] as ThemeMapEntry<'linkPreviewWidth'>[],
 }
