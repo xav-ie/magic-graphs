@@ -1,4 +1,12 @@
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import {
+  computed,
+  onMounted,
+  onUnmounted,
+  ref,
+  toRef,
+  watch,
+  type MaybeRef
+} from "vue";
 import type { Graph } from "../useGraph";
 import {
   DEFAULT_HIGHLIGHT_CLASS_NAME,
@@ -7,6 +15,8 @@ import {
 import type {
   TutorialSequence,
   ElementHighlightOptions,
+  IntervalStep,
+  GraphEventStep,
 } from "./types";
 
 /**
@@ -16,13 +26,14 @@ import type {
  * @param tutorialSequence the sequence of tutorial steps to apply
  * @returns // TODO make it return controls for the tutorial
  */
-export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequence) => {
+export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<TutorialSequence>) => {
 
   /**
    * the current step in the tutorial sequence,
    * can be reactively set to skip to a specific step
    */
   const currentStep = ref(0);
+  const sequence = toRef(tutorialSequence);
 
   const textHintElement = createTextHintElement();
 
@@ -37,35 +48,11 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
 
   const DELAY_UNTIL_NEXT_STEP = 1000;
 
-  const runCurrentStep = () => {
-    const step = tutorialSequence[currentStep.value];
+  let stepSetupTimeoutID: number;
+  let cleanupHighlight: () => void;
+  let cleanupStep: () => void;
 
-    if (!step) {
-      removeText()
-      setTimeout(textHintElement.remove, 1000);
-      return;
-    }
-
-    if (step.precondition?.(graph)) {
-      currentStep.value++;
-      return;
-    }
-
-    let currentHighlightRemover: () => void;
-
-    setTimeout(() => {
-      addText(step.hint);
-      if (step?.highlightElement) currentHighlightRemover = applyHighlight(step);
-    }, DELAY_UNTIL_NEXT_STEP);
-
-    if (step.dismiss === 'onTimeout') {
-      setTimeout(() => {
-        removeText();
-        currentHighlightRemover?.();
-        currentStep.value++;
-      }, step.after + DELAY_UNTIL_NEXT_STEP);
-      return;
-    }
+  const executeStep = (step: GraphEventStep | IntervalStep) => {
 
     const {
       event: dismissEvent,
@@ -79,13 +66,9 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
       const intervalTime = 'interval' in step ? step.interval : DEFAULT_INTERVAL;
       let iteration = 0;
       const interval = setInterval(() => {
-        if (!dismissPredicate(++iteration)) return;
-        clearInterval(interval);
-        removeText();
-        currentHighlightRemover?.();
-        currentStep.value++;
+        if (dismissPredicate(++iteration)) currentStep.value++;
       }, intervalTime);
-      return
+      return () => clearInterval(interval);
     }
 
     /**
@@ -93,17 +76,47 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
      */
     const eventFired = (...args: any[]) => {
       const predicate = dismissPredicate?.(...args);
-      if (!predicate) return;
-      graph.unsubscribe(dismissEvent, eventFired);
-      removeText();
-      currentHighlightRemover?.();
-      currentStep.value++;
+      if (predicate) currentStep.value++;
     }
 
     graph.subscribe(dismissEvent, eventFired);
+    return () => graph.unsubscribe(dismissEvent, eventFired);
   }
 
-  watch(currentStep, runCurrentStep);
+  const runCurrentStep = () => {
+    const step = sequence.value[currentStep.value];
+
+    if (!step) return;
+
+    if (step.precondition?.(graph)) {
+      currentStep.value++;
+      return;
+    }
+
+    stepSetupTimeoutID = setTimeout(() => {
+      addText(step.hint);
+      if (step?.highlightElement) cleanupHighlight = applyHighlight(step);
+    }, DELAY_UNTIL_NEXT_STEP);
+
+    cleanupStep = executeStep(step.dismiss !== 'onTimeout' ? step : {
+      hint: step.hint,
+      dismiss: 'onInterval',
+      interval: step.after,
+    });
+  }
+
+  const initiateNewStep = () => {
+    if (currentStep.value < 0) return currentStep.value = 0;
+    if (currentStep.value > sequence.value.length) return currentStep.value = sequence.value.length
+    cleanupStep?.();
+    cleanupHighlight?.();
+    removeText();
+    clearTimeout(stepSetupTimeoutID);
+    runCurrentStep();
+  }
+
+  watch(currentStep, initiateNewStep);
+  watch(sequence, initiateNewStep);
 
   onMounted(() => {
     if (!graph.canvas.value) throw new Error('canvas element not found in dom');
@@ -118,11 +131,14 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: TutorialSequenc
   });
 
   return {
-    currentStep,
+    currentStepIndex: currentStep,
+    currentStep: computed(() => sequence.value[currentStep.value]),
+    sequence,
     skipStep: () => currentStep.value++,
     previousStep: () => currentStep.value--,
-    endTutorial: () => currentStep.value = tutorialSequence.length,
+    endTutorial: () => currentStep.value = sequence.value.length,
     restartTutorial: () => currentStep.value = 0,
+    isTutorialOver: computed(() => currentStep.value >= sequence.value.length),
   }
 }
 
@@ -138,7 +154,7 @@ const createTextHintElement = () => {
   h1.style.textAlign = 'center';
   h1.style.userSelect = 'none';
   h1.classList.add(
-    'text-4xl',
+    'text-3xl',
     'text-center',
     'text-white',
     'font-bold',

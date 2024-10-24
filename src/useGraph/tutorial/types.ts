@@ -23,8 +23,6 @@ export type ElementHighlightOptions = {
 }
 
 /**
- * TODO implement PreconditionOptions!
- *
  * describes the precondition option for a tutorial step
  * a precondition allows the implementer to run a function before the step is shown
  * its boolean return acts just as a predicate would act as defined in base tutorial step
@@ -76,8 +74,6 @@ export type TimeoutStep = {
 };
 
 /**
- * TODO implement IntervalStep!
- *
  * describes a step that will resolve after a set amount of time conditioned upon
  * the predicate returning true, if false the step will be re-evaluated after the interval
  * so on and so forth until the predicate returns true
@@ -102,11 +98,20 @@ export type IntervalStep = {
 export const DEFAULT_INTERVAL = 1000;
 
 /**
+ * describes a step in a tutorial sequence for a graph event
+ */
+export type GraphEventStep = {
+  [K in GraphEventName]: TutorialStepForEvent<K>
+}[GraphEventName];
+
+/**
  * describes a step in a tutorial sequence
  */
-export type TutorialStep = ({
-  [K in GraphEventName]: TutorialStepForEvent<K>
-}[GraphEventName] | TimeoutStep | IntervalStep) & ElementHighlightOptions & PreconditionOptions;
+export type TutorialStep = (
+  GraphEventStep |
+  TimeoutStep |
+  IntervalStep
+) & ElementHighlightOptions & PreconditionOptions;
 
 /**
  * describes a list of tutorial steps that will be executed in order from index 0 to n - 1

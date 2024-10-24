@@ -13,7 +13,7 @@ const BASICS_SEQUENCE: (graph: Graph) => TutorialSequence = (graph: Graph) => {
     moveNode,
     createEdge,
     createUndirectedEdge,
-    createSelfDirectedEdge,
+    // createSelfDirectedEdge,
     editEdgeWeight,
     removeElement,
     goodbye,
@@ -25,7 +25,7 @@ const BASICS_SEQUENCE: (graph: Graph) => TutorialSequence = (graph: Graph) => {
     moveNode,
     createEdge,
     createUndirectedEdge,
-    createSelfDirectedEdge,
+    // createSelfDirectedEdge,
     editEdgeWeight,
     removeElement,
     goodbye

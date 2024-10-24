@@ -37,7 +37,9 @@
   // }, 0)
 
   const {
+    currentStepIndex,
     currentStep,
+    sequence,
     skipStep,
     previousStep,
     endTutorial,
@@ -68,14 +70,7 @@
 </script>
 
 <template>
-  <div
-    :class="[
-      'relative',
-      `w-[${width}px]`,
-      `h-[${height}px]`,
-    ]"
-  >
-
+  <div :class="['relative', `w-[${width}px]`, `h-[${height}px]`]">
     <div class="absolute flex gap-2 m-2">
       <div v-for="btn in btns">
         <button
@@ -96,34 +91,38 @@
         @click="previousStep"
         :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
       >
-        <span class="select-none">
-          Previous
-        </span>
+        <span class="select-none">Previous Step</span>
       </button>
       <button
         @click="skipStep"
         :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
       >
-        <span class="select-none">
-          Skip
-        </span>
+        <span class="select-none">Skip Step</span>
       </button>
       <button
         @click="endTutorial"
         :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
       >
-        <span class="select-none">
-          End
-        </span>
+        <span class="select-none">End Tutorial</span>
       </button>
       <button
         @click="restartTutorial"
         :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
       >
-        <span class="select-none">
-          Restart
-        </span>
+        <span class="select-none">Restart Tutorial</span>
       </button>
+
+      <div class="flex gap-2">
+        <span class="select-none">
+          {{ currentStepIndex + 1 }} / {{ sequence.length }}
+        </span>
+      </div>
+
+      <div v-if="currentStep" class="flex gap-2">
+        <span class="select-none">
+          {{ currentStep.hint }}
+        </span>
+        </div>
     </div>
 
     <div>
