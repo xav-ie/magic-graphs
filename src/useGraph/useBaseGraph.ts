@@ -188,6 +188,7 @@ export const useBaseGraph =(
       if (!edge) throw new Error('Textarea only implemented for edges')
       const newWeight = settings.value.edgeInputToWeight(str)
       if (!newWeight) return
+      if (edge.weight === newWeight) return
       edge.weight = newWeight
       eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
     }

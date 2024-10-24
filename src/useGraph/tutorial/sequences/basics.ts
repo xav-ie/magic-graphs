@@ -47,8 +47,26 @@ export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (gra
     hint: 'Edit the edge weight by clicking on it and typing a number',
     dismiss: 'onEdgeWeightChange'
   },
-  removeElement: {
-    hint: 'Remove an edge or node by clicking on it and hitting backspace/delete',
-    dismiss: 'onNodeRemoved' // TODO expand api to include onEdgeRemoved
-  }
+  removeElement: getRemoveElementStep(graph),
 });
+
+const getRemoveElementStep = (graph: Graph): TutorialStep => {
+  let stepPassed = false;
+  const completeStep = () => stepPassed = true;
+  return {
+    hint: 'Remove an edge or node by clicking on it and hitting backspace/delete',
+    dismiss: {
+      event: 'onInterval',
+      predicate: () => stepPassed
+    },
+    onInit: () => {
+      stepPassed = false;
+      graph.subscribe('onEdgeRemoved', completeStep);
+      graph.subscribe('onNodeRemoved', completeStep);
+    },
+    onDismiss: () => {
+      graph.unsubscribe('onEdgeRemoved', completeStep);
+      graph.unsubscribe('onNodeRemoved', completeStep);
+    },
+  }
+};
