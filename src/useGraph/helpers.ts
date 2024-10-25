@@ -14,8 +14,19 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
   return value
 }
 
+/**
+ * slightly modified extract utility useful for removing the never type from the extracts output
+ */
 type SpecialExtract<T, U> = T extends U ? T : () => void;
+
+/**
+ * extracts the parameters out of a graph theme properties getter function
+ */
 type ThemeParams<T extends GraphThemeKey> = Parameters<SpecialExtract<GraphTheme[T], Function>>
+
+/**
+ * if the theme properties getter has no parameters, return an empty array, otherwise return the parameters
+ */
 type ResolvedThemeParams<T extends GraphThemeKey> = ThemeParams<T> extends [] ? [] : Exclude<ThemeParams<T>, []>
 
 export const getThemeResolver = (
@@ -31,6 +42,7 @@ export const getThemeResolver = (
   const entries = themeMap[prop]
   const themeValue = entries.length === 0 ? theme.value[prop] : entries[entries.length - 1].value
   if (!themeValue) throw new Error(`Theme value for ${prop} not found`)
+  // casting to assist with inference
   return getValue<GraphTheme[T], K>(themeValue, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
 }
 
@@ -39,8 +51,12 @@ export const getThemeResolver = (
   in order to registering and deregistering graph events
 */
 export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: MappingsToEventBus<T>) => ({
-  subscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].push(fn),
-  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event] = eventBus[event].filter((f) => f !== fn) as T[K][],
+  subscribe: <K extends keyof T>(event: K, fn: T[K]) => {
+    eventBus[event].push(fn)
+  },
+  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => {
+    eventBus[event] = eventBus[event].filter((f) => f !== fn) as T[K][]
+  },
 })
 
 /**
