@@ -15,6 +15,7 @@
   import { markovSccColorizer } from "./markov-chains/sccColorizer";
   import { useBasicsTutorial } from "./useGraph/tutorial/useTutorial";
 import { useUserPreferredTheme } from "./useGraph/themes";
+import { useTheme } from "./useGraph/theme/useTheme";
 
   const canvas = ref<HTMLCanvasElement>();
 

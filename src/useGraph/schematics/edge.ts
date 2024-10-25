@@ -5,8 +5,10 @@ import type {
   ArrowSchemaItem,
   ArrowUTurnSchemaItem
 } from '../types'
-import { getValue, getFromToNodes } from '../helpers'
-import type { BaseGraphTheme } from '../themes'
+import {
+  getFromToNodes,
+  type ThemeGetter
+} from '../helpers'
 import { getLargestAngularSpace } from '@/shapes/helpers'
 import type { BaseGraphSettings } from '../useBaseGraph'
 
@@ -17,7 +19,7 @@ export const getEdgeSchematic = (
   edge: GEdge,
   nodes: GNode[],
   edges: GEdge[],
-  graphTheme: BaseGraphTheme,
+  getTheme: ThemeGetter,
   graphSettings: BaseGraphSettings,
   focusedId: GEdge['id'] | undefined
 ): EdgeSchematic => {
@@ -29,11 +31,11 @@ export const getEdgeSchematic = (
 
   const spacingAwayFromNode = 3
 
-  const fromNodeSize = getValue(graphTheme.nodeSize, from) + spacingAwayFromNode
-  const toNodeSize = getValue(graphTheme.nodeSize, to) + spacingAwayFromNode
+  const fromNodeSize = getTheme('nodeSize', from) + spacingAwayFromNode
+  const toNodeSize = getTheme('nodeSize', to) + spacingAwayFromNode
 
-  const fromNodeBorderWidth = getValue(graphTheme.nodeBorderWidth, from)
-  const toNodeBorderWidth = getValue(graphTheme.nodeBorderWidth, to)
+  const fromNodeBorderWidth = getTheme('nodeBorderWidth', from)
+  const toNodeBorderWidth = getTheme('nodeBorderWidth', to)
 
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
 
@@ -45,9 +47,9 @@ export const getEdgeSchematic = (
   const start = { x: from.x, y: from.y }
   const end = epiCenter
 
-  const edgeWidthVal = getValue(graphTheme.edgeWidth, edge)
+  const edgeWidth = getTheme('edgeWidth', edge)
 
-  const bidirectionalEdgeSpacing = edgeWidthVal * 1.2
+  const bidirectionalEdgeSpacing = edgeWidth * 1.2
 
   if (isBidirectional) {
     start.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
@@ -73,41 +75,46 @@ export const getEdgeSchematic = (
     )
   )
 
-  const {
-    edgeFocusColor: focusColor,
-    edgeColor: color,
-  } = graphTheme
-  const isFocused = focusedId === edge.id
-  const colorVal = getValue(isFocused ? focusColor : color, edge)
+  const defaultColor = getTheme('edgeColor', edge)
+  const focusColor = getTheme('edgeFocusColor', edge)
 
-  const edgeTextColor = isFocused ? graphTheme.edgeFocusTextColor : graphTheme.edgeTextColor
-  const edgeTextColorVal = getValue(edgeTextColor, edge)
+  const isFocused = focusedId === edge.id
+  const color = isFocused ? focusColor : defaultColor
+
+  const defaultEdgeTextColor = getTheme('edgeTextColor', edge)
+  const focusEdgeTextColor = getTheme('edgeFocusTextColor', edge)
+  const edgeTextColor = isFocused ? focusEdgeTextColor : defaultEdgeTextColor
+
+  const graphBgColor = getTheme('graphBgColor')
+
+  const edgeTextSize = getTheme('edgeTextSize', edge)
+  const edgeTextFontWeight = getTheme('edgeTextFontWeight', edge)
 
   const textArea = {
-    color: graphTheme.graphBgColor,
+    color: graphBgColor,
     editable: graphSettings.edgeLabelsEditable,
     text: {
       content: edge.weight.toString(),
-      color: edgeTextColorVal,
-      fontSize: getValue(graphTheme.edgeTextSize, edge),
-      fontWeight: getValue(graphTheme.edgeTextFontWeight, edge),
+      color: edgeTextColor,
+      fontSize: edgeTextSize,
+      fontWeight: edgeTextFontWeight,
     }
   }
 
-  const upDistance = edgeWidthVal * 8
+  const upDistance = edgeWidth * 8
   const downDistance = upDistance * 0.35
 
   // returns the u-turn edge
   if (isSelfDirecting) {
     return {
       schema: {
-        spacing: edgeWidthVal * 1.2,
+        spacing: edgeWidth * 1.2,
         center: { x: from.x, y: from.y },
         upDistance,
         downDistance,
         angle: largestAngularSpace,
-        lineWidth: edgeWidthVal,
-        color: colorVal,
+        lineWidth: edgeWidth,
+        color: color,
         textArea: graphSettings.displayEdgeLabels ? textArea : undefined,
       },
       schemaType: 'uturn',
@@ -115,7 +122,7 @@ export const getEdgeSchematic = (
       graphType: 'edge',
     } as const;
   }
-  
+
   const sumOfToAndFromNodeSize = fromNodeSize + fromNodeBorderWidth / 2 + toNodeSize + toNodeBorderWidth / 2
   const distanceSquaredBetweenNodes = (from.x - to.x) ** 2 + (from.y - to.y) ** 2
   const areNodesTouching = (sumOfToAndFromNodeSize ** 2) > distanceSquaredBetweenNodes
@@ -127,8 +134,8 @@ export const getEdgeSchematic = (
       schema: {
         start: { x: from.x, y: from.y },
         end: { x: to.x, y: to.y },
-        color: colorVal,
-        width: edgeWidthVal,
+        color: color,
+        width: edgeWidth,
         textArea: graphSettings.displayEdgeLabels ? textArea : undefined,
       },
       schemaType: 'line',
@@ -136,14 +143,14 @@ export const getEdgeSchematic = (
       graphType: 'edge',
     }
   }
-  
+
   // returns the arrow edge
   return {
     schema: {
       start,
       end,
-      color: colorVal,
-      width: getValue(graphTheme.edgeWidth, edge),
+      color: color,
+      width: edgeWidth,
       // TODO - must take into account of actual node size.
       // TODO - 32 is approx default node size but wont work if node size is different
       textOffsetFromCenter: 32,
@@ -153,5 +160,4 @@ export const getEdgeSchematic = (
     id: edge.id,
     graphType: 'edge',
   } as const
-
 }

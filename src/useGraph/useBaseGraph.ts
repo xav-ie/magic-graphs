@@ -24,7 +24,8 @@ import {
   generateSubscriber,
   generateId,
   prioritizeNode,
-  getRandomPointOnCanvas
+  getRandomPointOnCanvas,
+  getThemeResolver,
 } from './helpers';
 import { drawShape } from '@/shapes/draw';
 import { getTextAreaLocation } from '@/shapes/draw/text';
@@ -33,6 +34,7 @@ import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
 import { themes, type BaseGraphTheme } from './themes';
 import { engageTextarea } from './textarea';
+import { getInitialThemeMap } from './theme/types';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -120,6 +122,9 @@ export const useBaseGraph =(
     ...themes.default,
     ...options.theme,
   })
+
+  const themeMap = getInitialThemeMap()
+  const getTheme = getThemeResolver(theme, themeMap)
 
   const settings = ref<BaseGraphSettings>({
     ...defaultSettings,
@@ -230,7 +235,14 @@ export const useBaseGraph =(
   updateAggregator.push((aggregator) => {
 
     const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(edge, nodes.value, edges.value, theme.value, settings.value, focusedId.value)
+      const schema = getEdgeSchematic(
+        edge,
+        nodes.value,
+        edges.value,
+        getTheme,
+        settings.value,
+        focusedId.value
+      )
       if (!schema) return
       return {
         ...schema,
@@ -239,7 +251,7 @@ export const useBaseGraph =(
     }).filter((item) => item && item.schema) as SchemaItem[]
 
     const nodeSchemaItems = nodes.value.map((node, i) => {
-      const schema = getNodeSchematic(node, theme.value, focusedId.value)
+      const schema = getNodeSchematic(node, getTheme, focusedId.value)
       if (!schema) return
       return {
         ...schema,
@@ -471,10 +483,7 @@ export const useBaseGraph =(
   updateAggregator.push(liftHoveredNodeToTop)
 
   watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
-
-  watch(settings, () => {
-    eventBus.onSettingsChange.forEach(fn => fn())
-  }, { deep: true })
+  watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
 
   return {
     nodes,
@@ -505,6 +514,8 @@ export const useBaseGraph =(
     aggregator,
 
     theme,
+    getTheme,
+    themeMap,
     settings,
 
     reset,

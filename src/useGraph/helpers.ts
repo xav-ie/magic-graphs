@@ -1,5 +1,22 @@
-import type { BaseGraphEdgeTheme, BaseGraphNodeTheme, BaseGraphTheme } from './themes'
-import type { MaybeGetter, SchemaItem, GNode, GEdge, MappingsToEventBus } from './types'
+import type { Ref } from 'vue'
+import type {
+  FullThemeMap,
+  GraphTheme,
+  GraphThemeKey
+} from './theme/types'
+import type {
+  BaseGraphEdgeTheme,
+  BaseGraphNodeTheme,
+  BaseGraphTheme
+} from './themes'
+import type {
+  MaybeGetter,
+  SchemaItem,
+  GNode,
+  GEdge,
+  MappingsToEventBus,
+  UnwrapMaybeGetter
+} from './types'
 import type { BaseGraphEvents } from './useBaseGraph'
 
 /**
@@ -13,12 +30,53 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
 }
 
 /**
+ * slightly modified extract utility useful for removing the never type from the extracts output
+ */
+type SpecialExtract<T, U> = T extends U ? T : () => void;
+
+/**
+ * extracts the parameters out of a graph theme properties getter function
+ */
+type ThemeParams<T extends GraphThemeKey> = Parameters<SpecialExtract<GraphTheme[T], Function>>
+
+/**
+ * if the theme properties getter has no parameters, return an empty array, otherwise return the parameters
+ */
+type ResolvedThemeParams<T extends GraphThemeKey> = ThemeParams<T> extends [] ? [] : Exclude<ThemeParams<T>, []>
+
+export const getThemeResolver = (
+  theme: Ref<Partial<GraphTheme>>,
+  themeMap: FullThemeMap,
+) => <
+  T extends GraphThemeKey,
+  K extends ResolvedThemeParams<T>
+>(
+  prop: T,
+  ...args: K
+) => {
+    const entries = themeMap[prop]
+    const themeValue = entries.length === 0 ? theme.value[prop] : entries[entries.length - 1].value
+    if (!themeValue) throw new Error(`theme value for ${prop} not found`)
+    // casting to assist with inference
+    return getValue<GraphTheme[T], K>(themeValue, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
+  }
+
+/**
+ * describes the function that gets a value from a theme inquiry
+ */
+export type ThemeGetter = ReturnType<typeof getThemeResolver>
+
+/**
   generates a "subscribe" and "unsubscribe" function for the event bus
   in order to registering and deregistering graph events
 */
 export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: MappingsToEventBus<T>) => ({
-  subscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].push(fn),
-  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event] = eventBus[event].filter((f) => f !== fn) as T[K][],
+  subscribe: <K extends keyof T>(event: K, fn: T[K]) => {
+    eventBus[event].push(fn)
+  },
+  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => {
+    eventBus[event] = eventBus[event].filter((f) => f !== fn) as T[K][]
+  },
 })
 
 /**
@@ -71,9 +129,9 @@ export const prioritizeNode = (id: SchemaItem['id'], items: SchemaItem[]) => {
  */
 export const getRandomInRange = (min: number, max: number) => Math.round(Math.random() * (max - min) + min);
 
-export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement) => ({
-  x: getRandomInRange(50, canvas.width - 50),
-  y: getRandomInRange(50, canvas.height - 50),
+export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement, buffer = 50) => ({
+  x: getRandomInRange(buffer, canvas.width - buffer),
+  y: getRandomInRange(buffer, canvas.height - buffer),
 });
 
 /**
@@ -98,37 +156,37 @@ export const getFromToNodes = (edge: GEdge, nodes: GNode[]) => {
 /**
  * gets the theme attributes for a GNode at the point in time the function is called
  *
- * @param theme - the theme of the useGraph instance
+ * @param getTheme - the theme getter function
  * @param node - the node to get the theme for
  * @returns the theme attributes for the node
  */
-export const resolveThemeForNode = (theme: BaseGraphTheme, node: GNode): BaseGraphNodeTheme => ({
-  nodeSize: getValue(theme.nodeSize, node),
-  nodeBorderWidth: getValue(theme.nodeBorderWidth, node),
-  nodeColor: getValue(theme.nodeColor, node),
-  nodeBorderColor: getValue(theme.nodeBorderColor, node),
-  nodeFocusColor: getValue(theme.nodeFocusColor, node),
-  nodeFocusBorderColor: getValue(theme.nodeFocusBorderColor, node),
-  nodeText: getValue(theme.nodeText, node),
-  nodeFocusTextColor: getValue(theme.nodeFocusTextColor, node),
-  nodeTextSize: getValue(theme.nodeTextSize, node),
-  nodeTextColor: getValue(theme.nodeTextColor, node),
-  nodeShape: getValue(theme.nodeShape, node),
+export const resolveThemeForNode = (getTheme: ThemeGetter, node: GNode): BaseGraphNodeTheme => ({
+  nodeSize: getTheme('nodeSize', node),
+  nodeBorderWidth: getTheme('nodeBorderWidth', node),
+  nodeColor: getTheme('nodeColor', node),
+  nodeBorderColor: getTheme('nodeBorderColor', node),
+  nodeFocusColor: getTheme('nodeFocusColor', node),
+  nodeFocusBorderColor: getTheme('nodeFocusBorderColor', node),
+  nodeTextSize: getTheme('nodeTextSize', node),
+  nodeTextColor: getTheme('nodeTextColor', node),
+  nodeFocusTextColor: getTheme('nodeFocusTextColor', node),
+  nodeText: getTheme('nodeText', node),
+  nodeShape: getTheme('nodeShape', node),
 })
 
 /**
  * gets the theme attributes for a GEdge at the point in time the function is called
  *
- * @param theme - the theme of the useGraph instance
+ * @param getTheme - the theme getter function
  * @param edge - the edge to get the theme for
  * @returns the theme attributes for the edge
  */
-export const resolveThemeForEdge = (theme: BaseGraphTheme, edge: GEdge): BaseGraphEdgeTheme => ({
-  edgeColor: getValue(theme.edgeColor, edge),
-  edgeWidth: getValue(theme.edgeWidth, edge),
-  edgeTextSize: getValue(theme.edgeTextSize, edge),
-  edgeTextColor: getValue(theme.edgeTextColor, edge),
-  edgeFocusTextColor: getValue(theme.edgeFocusTextColor, edge),
-  edgeTextFontWeight: getValue(theme.edgeTextFontWeight, edge),
-  edgeFocusColor: getValue(theme.edgeFocusColor, edge),
+export const resolveThemeForEdge = (getTheme: ThemeGetter, edge: GEdge): BaseGraphEdgeTheme => ({
+  edgeWidth: getTheme('edgeWidth', edge),
+  edgeColor: getTheme('edgeColor', edge),
+  edgeTextSize: getTheme('edgeTextSize', edge),
+  edgeTextColor: getTheme('edgeTextColor', edge),
+  edgeFocusColor: getTheme('edgeFocusColor', edge),
+  edgeFocusTextColor: getTheme('edgeFocusTextColor', edge),
+  edgeTextFontWeight: getTheme('edgeTextFontWeight', edge),
 })

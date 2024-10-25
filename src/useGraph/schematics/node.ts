@@ -1,7 +1,6 @@
 import type { CircleSchemaItem, GNode, SquareSchemaItem } from '../types'
-import { getValue } from '../helpers'
+import type { ThemeGetter } from '../helpers'
 import type { Circle, Square } from '@/shapes/types'
-import type { BaseGraphTheme } from '../themes'
 
 export type SupportedNodeShapes = 'circle' | 'square'
 
@@ -10,71 +9,68 @@ type NodeSchematic = Omit<NodeSchemas, 'priority'> | undefined
 
 export const getNodeSchematic = (
   node: GNode,
-  graphTheme: BaseGraphTheme,
+  getTheme: ThemeGetter,
   focusedNodeId: GNode['id'] | undefined
 ): NodeSchematic => {
-  const {
-    nodeFocusColor,
-    nodeColor,
-    nodeBorderColor,
-    nodeFocusBorderColor,
-    nodeSize,
-    nodeBorderWidth,
-    nodeText,
-    nodeTextSize,
-    nodeTextColor,
-    nodeFocusTextColor,
-    nodeShape,
-  } = graphTheme
 
-  const fillColor = node.id === focusedNodeId ? nodeFocusColor : nodeColor
-  const borderColor = node.id === focusedNodeId ? nodeFocusBorderColor : nodeBorderColor
-  const textColor = node.id === focusedNodeId ? nodeFocusTextColor : nodeTextColor
+  const defaultColor = getTheme('nodeColor', node)
+  const focusColor = getTheme('nodeFocusColor', node)
+  const defaultBorderColor = getTheme('nodeBorderColor', node)
+  const focusBorderColor = getTheme('nodeFocusBorderColor', node)
+  const size = getTheme('nodeSize', node)
+  const borderWidth = getTheme('nodeBorderWidth', node)
+  const text = getTheme('nodeText', node)
+  const textSize = getTheme('nodeTextSize', node)
+  const defaultTextColor = getTheme('nodeTextColor', node)
+  const focusTextColor = getTheme('nodeFocusTextColor', node)
+  const shape = getTheme('nodeShape', node)
+
+  const color = node.id === focusedNodeId ? focusColor : defaultColor
+  const borderColor = node.id === focusedNodeId ? focusBorderColor : defaultBorderColor
+  const textColor = node.id === focusedNodeId ? focusTextColor : defaultTextColor
 
   const circleSchematic: Circle = {
     at: {
       x: node.x,
       y: node.y
     },
-    radius: getValue(nodeSize, node),
-    color: getValue(fillColor, node),
+    radius: size,
+    color: color,
     stroke: {
-      color: getValue(borderColor, node),
-      width: getValue(nodeBorderWidth, node),
+      color: borderColor,
+      width: borderWidth,
     },
     text: {
-      content: getValue(nodeText, node),
-      fontSize: getValue(nodeTextSize, node),
+      content: text,
+      fontSize: textSize,
       fontWeight: 'bold',
-      color: getValue(textColor, node),
+      color: textColor,
     }
   }
 
   const squareSchematic: Square = {
     at: {
-      x: node.x - getValue(nodeSize, node),
-      y: node.y - getValue(nodeSize, node)
+      x: node.x - size,
+      y: node.y - size
     },
-    width: getValue(nodeSize, node) * 2,
-    height: getValue(nodeSize, node) * 2,
-    color: getValue(fillColor, node),
+    width: size * 2,
+    height: size * 2,
+    color: color,
     stroke: {
-      color: getValue(borderColor, node),
-      width: getValue(nodeBorderWidth, node),
+      color: borderColor,
+      width: borderWidth,
     },
     text: {
-      content: getValue(nodeText, node),
-      fontSize: getValue(nodeTextSize, node),
+      content: text,
+      fontSize: textSize,
       fontWeight: 'bold',
-      color: getValue(textColor, node),
+      color: textColor,
     }
   }
 
-  const nodeShapeVal = getValue(nodeShape, node)
-
   return {
-    schema: nodeShapeVal === 'circle' ? circleSchematic : squareSchematic,
-    schemaType: nodeShapeVal,
+    schema: shape === 'circle' ? circleSchematic : squareSchematic,
+    schemaType: shape,
     id: node.id,
     graphType: 'node',
   }

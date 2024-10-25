@@ -4,8 +4,6 @@ import type { Graph } from '../useGraph';
 export type EventMap = UserEditableGraphEvents;
 export type GraphEventName = keyof EventMap;
 
-export type FunctionArgs<T extends Function> = T extends (...args: infer R) => any ? R : any
-
 /**
  * css class defined in App.vue, should move later, used as default for ElementHighlightOptions -> highlightElement.className
  */
@@ -30,7 +28,7 @@ export type TutorialStepForEvent<T extends GraphEventName> = {
      * @param args the arguments passed to the event handler as defined in the event map
      * @returns true if the step should be dismissed
      */
-    predicate: (...args: FunctionArgs<EventMap[T]>) => boolean
+    predicate: (...args: Parameters<EventMap[T]>) => boolean
   };
 };
 
