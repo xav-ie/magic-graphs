@@ -127,3 +127,5 @@ export type TutorialStep = (
  * describes a list of tutorial steps that will be executed in order from index 0 to n - 1
  */
 export type TutorialSequence = TutorialStep[];
+
+export const TUTORIAL_USETHEME_ID = 'tutorial'
