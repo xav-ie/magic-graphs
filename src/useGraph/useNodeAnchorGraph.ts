@@ -9,18 +9,32 @@
  * - Anchor Node Graph: A graph that supports the creation and event propagation of anchors around nodes.
  */
 
-import { getValue, generateSubscriber, prioritizeNode } from "./helpers";
+import { generateSubscriber, prioritizeNode } from "./helpers";
 import {
   useDraggableGraph,
   type DraggableGraphEvents,
   type DraggableGraphSettings,
   type DraggableGraphTheme
 } from "./useDraggableGraph";
-import type { SchemaItem, LineSchemaItem, GNode, GEdge, NodeGetterOrValue, MaybeGetter, GraphOptions, MappingsToEventBus } from "./types";
-import type { BaseGraphTheme } from "./themes";
-import { ref, readonly, type Ref, watchEffect } from 'vue'
+import type {
+  SchemaItem,
+  LineSchemaItem,
+  GNode,
+  GEdge,
+  NodeGetterOrValue,
+  MaybeGetter,
+  GraphOptions,
+  MappingsToEventBus
+} from "./types";
+import {
+  ref,
+  readonly,
+  watchEffect,
+  type Ref,
+} from 'vue'
 import { hitboxes } from "../shapes/hitboxes";
 import type { Circle } from "@/shapes/types";
+import { BLACK } from "@/utils/colors";
 
 export type NodeAnchor = {
   /**
@@ -37,17 +51,19 @@ export type NodeAnchor = {
   direction: 'north' | 'east' | 'south' | 'west',
 }
 
-type DefaultNodeGraphThemeGetter = <T extends BaseGraphTheme>(theme: T, edges: GEdge[]) => ExclusiveNodeAnchorGraphTheme
+type DraggableGraph = ReturnType<typeof useDraggableGraph>
+
+type DefaultNodeGraphThemeGetter = (graph: DraggableGraph) => ExclusiveNodeAnchorGraphTheme
 
 /**
  * @description default options for the anchor node graph
- * @param theme - the options passed to the base useGraph composition function
+ * @param getTheme - the function to retrieve the theme value
+ * @param theme - the theme of the graph
  * @param edges - the edges of the graph
  * @returns the default options for the anchor node graph
  */
-const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = <T extends BaseGraphTheme>(
-  theme: T,
-  edges: GEdge[],
+const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = (
+  graph: DraggableGraph,
 ) => ({
   /**
    * @description calculates the radius of the default node anchor - scales with 2 * sqrt(nodeSize)
@@ -55,25 +71,25 @@ const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = <T extends BaseGraph
    * @returns the radius of the node anchor
    */
   nodeAnchorRadius: (node: GNode) => {
-    const nodeSize = getValue(theme.nodeSize, node)
+    const nodeSize = graph.getTheme('nodeSize', node)
     return Math.ceil(Math.sqrt(nodeSize) * 2)
   },
   /**
    * the color of the node anchor
    */
-  nodeAnchorColor: 'black',
+  nodeAnchorColor: BLACK,
   /**
    * the color of the node anchor when the parent node is focused
    */
-  nodeAnchorColorWhenParentFocused: theme.nodeFocusBorderColor,
+  nodeAnchorColorWhenParentFocused: graph.theme.value.nodeFocusBorderColor,
   /**
    * the color of the link preview
    */
-  linkPreviewColor: getValue(theme.edgeColor, edges[0]),
+  linkPreviewColor: graph.getTheme('edgeColor', graph.edges.value[0]),
   /**
    * the width of the link preview
    */
-  linkPreviewWidth: getValue(theme.edgeWidth, edges[0]),
+  linkPreviewWidth: graph.getTheme('edgeWidth', graph.edges.value[0]),
 })
 
 export type ExclusiveNodeAnchorGraphTheme = {
@@ -132,7 +148,7 @@ export const useNodeAnchorGraph = (
   const graph = useDraggableGraph(canvas, options)
 
   const theme = ref<NodeAnchorGraphTheme>(Object.assign(graph.theme.value, {
-    ...defaultNodeAnchorTheme(graph.theme.value, graph.edges.value),
+    ...defaultNodeAnchorTheme(graph),
     ...options.theme,
   }))
 
@@ -158,19 +174,15 @@ export const useNodeAnchorGraph = (
       !settings.value.nodeAnchors
     ) return []
 
-    const {
-      nodeAnchorRadius: anchorRadius,
-      nodeAnchorColor: anchorColor,
-      nodeAnchorColorWhenParentFocused: anchorColorWhenParentFocused,
-    } = theme.value
+    const { getTheme } = graph
 
-    const anchorColorVal = getValue(anchorColor, parentNode.value)
-    const anchorColorWhenParentFocusedVal = getValue(anchorColorWhenParentFocused, parentNode.value)
-    const isParentFocused = parentNode.value.id === graph.focusedId.value
-    const color = isParentFocused ? anchorColorWhenParentFocusedVal : anchorColorVal
+    const defaultColor = getTheme('nodeAnchorColor', parentNode.value)
+    const focusedColor = getTheme('nodeAnchorColorWhenParentFocused', parentNode.value)
+    const isFocused = parentNode.value.id === graph.focusedId.value
+    const color = isFocused ? focusedColor : defaultColor
 
     const anchors = getAnchors(parentNode.value)
-    const radius = getValue(anchorRadius, parentNode.value)
+    const radius = getTheme('nodeAnchorRadius', parentNode.value)
 
     const circles: Circle[] = []
     for (const anchor of anchors) {
@@ -190,10 +202,11 @@ export const useNodeAnchorGraph = (
    * @returns an array of anchors for the given node
    */
   const getAnchors = (node: GNode): NodeAnchor[] => {
-    const anchorRadiusVal = getValue(theme.value.nodeAnchorRadius, node)
-    const nodeSizeVal = getValue(graph.theme.value.nodeSize, node)
-    const nodeBorderWidthVal = getValue(graph.theme.value.nodeBorderWidth, node)
-    const offset = nodeSizeVal - (anchorRadiusVal / 3) + (nodeBorderWidthVal / 2)
+    const { getTheme } = graph
+    const anchorRadius = getTheme('nodeAnchorRadius', node)
+    const nodeSize = getTheme('nodeSize', node)
+    const nodeBorderWidth = getTheme('nodeBorderWidth', node)
+    const offset = nodeSize - (anchorRadius / 3) + (nodeBorderWidth / 2)
     return [
       {
         x: node.x,
@@ -231,7 +244,7 @@ export const useNodeAnchorGraph = (
       const { isInCircle } = hitboxes(point)
       return isInCircle({
         at: { x: anchor.x, y: anchor.y },
-        radius: getValue(theme.value.nodeAnchorRadius, node),
+        radius: graph.getTheme('nodeAnchorRadius', node),
       })
     })
   }
@@ -241,9 +254,9 @@ export const useNodeAnchorGraph = (
     const { x, y } = activeAnchor.value
     const start = { x: parentNode.value.x, y: parentNode.value.y }
     const end = { x, y }
-    const { linkPreviewColor, linkPreviewWidth } = theme.value
-    const color = getValue(linkPreviewColor, parentNode.value, activeAnchor.value)
-    const width = getValue(linkPreviewWidth, parentNode.value, activeAnchor.value)
+    const { getTheme } = graph
+    const color = getTheme('linkPreviewColor', parentNode.value, activeAnchor.value)
+    const width = getTheme('linkPreviewWidth', parentNode.value, activeAnchor.value)
     const schema: Omit<LineSchemaItem, 'priority'> = {
       id: 'link-preview',
       graphType: 'link-preview',
