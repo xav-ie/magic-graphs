@@ -1,3 +1,6 @@
+
+// WARNING - TOTALLY DEPRECATED AT THIS POINT. MUST CONVERT TO USING NEW APIs
+
 import { toRef } from 'vue';
 import { nodesEdgesToAdjList } from './graphConverters';
 import type { GNode, GEdge } from '@/useGraph/types';

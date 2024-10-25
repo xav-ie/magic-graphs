@@ -26,7 +26,6 @@ import {
   prioritizeNode,
   getRandomPointOnCanvas,
   getThemeResolver,
-  getValue
 } from './helpers';
 import { drawShape } from '@/shapes/draw';
 import { getTextAreaLocation } from '@/shapes/draw/text';

@@ -1,7 +1,22 @@
 import type { Ref } from 'vue'
-import type { FullThemeMap, GraphTheme, GraphThemeKey } from './theme/types'
-import type { BaseGraphEdgeTheme, BaseGraphNodeTheme, BaseGraphTheme } from './themes'
-import type { MaybeGetter, SchemaItem, GNode, GEdge, MappingsToEventBus, NodeGetterOrValue, UnwrapMaybeGetter } from './types'
+import type {
+  FullThemeMap,
+  GraphTheme,
+  GraphThemeKey
+} from './theme/types'
+import type {
+  BaseGraphEdgeTheme,
+  BaseGraphNodeTheme,
+  BaseGraphTheme
+} from './themes'
+import type {
+  MaybeGetter,
+  SchemaItem,
+  GNode,
+  GEdge,
+  MappingsToEventBus,
+  UnwrapMaybeGetter
+} from './types'
 import type { BaseGraphEvents } from './useBaseGraph'
 
 /**
@@ -39,12 +54,12 @@ export const getThemeResolver = (
   prop: T,
   ...args: K
 ) => {
-  const entries = themeMap[prop]
-  const themeValue = entries.length === 0 ? theme.value[prop] : entries[entries.length - 1].value
-  if (!themeValue) throw new Error(`theme value for ${prop} not found`)
-  // casting to assist with inference
-  return getValue<GraphTheme[T], K>(themeValue, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
-}
+    const entries = themeMap[prop]
+    const themeValue = entries.length === 0 ? theme.value[prop] : entries[entries.length - 1].value
+    if (!themeValue) throw new Error(`theme value for ${prop} not found`)
+    // casting to assist with inference
+    return getValue<GraphTheme[T], K>(themeValue, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
+  }
 
 /**
  * describes the function that gets a value from a theme inquiry
@@ -114,9 +129,9 @@ export const prioritizeNode = (id: SchemaItem['id'], items: SchemaItem[]) => {
  */
 export const getRandomInRange = (min: number, max: number) => Math.round(Math.random() * (max - min) + min);
 
-export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement) => ({
-  x: getRandomInRange(50, canvas.width - 50),
-  y: getRandomInRange(50, canvas.height - 50),
+export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement, buffer = 50) => ({
+  x: getRandomInRange(buffer, canvas.width - buffer),
+  y: getRandomInRange(buffer, canvas.height - buffer),
 });
 
 /**
@@ -141,37 +156,37 @@ export const getFromToNodes = (edge: GEdge, nodes: GNode[]) => {
 /**
  * gets the theme attributes for a GNode at the point in time the function is called
  *
- * @param theme - the theme of the useGraph instance
+ * @param getTheme - the theme getter function
  * @param node - the node to get the theme for
  * @returns the theme attributes for the node
  */
-export const resolveThemeForNode = (theme: BaseGraphTheme, node: GNode): BaseGraphNodeTheme => ({
-  nodeSize: getValue(theme.nodeSize, node),
-  nodeBorderWidth: getValue(theme.nodeBorderWidth, node),
-  nodeColor: getValue(theme.nodeColor, node),
-  nodeBorderColor: getValue(theme.nodeBorderColor, node),
-  nodeFocusColor: getValue(theme.nodeFocusColor, node),
-  nodeFocusBorderColor: getValue(theme.nodeFocusBorderColor, node),
-  nodeText: getValue(theme.nodeText, node),
-  nodeFocusTextColor: getValue(theme.nodeFocusTextColor, node),
-  nodeTextSize: getValue(theme.nodeTextSize, node),
-  nodeTextColor: getValue(theme.nodeTextColor, node),
-  nodeShape: getValue(theme.nodeShape, node),
+export const resolveThemeForNode = (getTheme: ThemeGetter, node: GNode): BaseGraphNodeTheme => ({
+  nodeSize: getTheme('nodeSize', node),
+  nodeBorderWidth: getTheme('nodeBorderWidth', node),
+  nodeColor: getTheme('nodeColor', node),
+  nodeBorderColor: getTheme('nodeBorderColor', node),
+  nodeFocusColor: getTheme('nodeFocusColor', node),
+  nodeFocusBorderColor: getTheme('nodeFocusBorderColor', node),
+  nodeTextSize: getTheme('nodeTextSize', node),
+  nodeTextColor: getTheme('nodeTextColor', node),
+  nodeFocusTextColor: getTheme('nodeFocusTextColor', node),
+  nodeText: getTheme('nodeText', node),
+  nodeShape: getTheme('nodeShape', node),
 })
 
 /**
  * gets the theme attributes for a GEdge at the point in time the function is called
  *
- * @param theme - the theme of the useGraph instance
+ * @param getTheme - the theme getter function
  * @param edge - the edge to get the theme for
  * @returns the theme attributes for the edge
  */
-export const resolveThemeForEdge = (theme: BaseGraphTheme, edge: GEdge): BaseGraphEdgeTheme => ({
-  edgeColor: getValue(theme.edgeColor, edge),
-  edgeWidth: getValue(theme.edgeWidth, edge),
-  edgeTextSize: getValue(theme.edgeTextSize, edge),
-  edgeTextColor: getValue(theme.edgeTextColor, edge),
-  edgeFocusTextColor: getValue(theme.edgeFocusTextColor, edge),
-  edgeTextFontWeight: getValue(theme.edgeTextFontWeight, edge),
-  edgeFocusColor: getValue(theme.edgeFocusColor, edge),
+export const resolveThemeForEdge = (getTheme: ThemeGetter, edge: GEdge): BaseGraphEdgeTheme => ({
+  edgeWidth: getTheme('edgeWidth', edge),
+  edgeColor: getTheme('edgeColor', edge),
+  edgeTextSize: getTheme('edgeTextSize', edge),
+  edgeTextColor: getTheme('edgeTextColor', edge),
+  edgeFocusColor: getTheme('edgeFocusColor', edge),
+  edgeFocusTextColor: getTheme('edgeFocusTextColor', edge),
+  edgeTextFontWeight: getTheme('edgeTextFontWeight', edge),
 })

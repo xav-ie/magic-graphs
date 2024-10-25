@@ -48,15 +48,6 @@ import { useTheme } from "./useGraph/theme/useTheme";
     restartTutorial,
   } = useBasicsTutorial(graph);
 
-  const { setTheme, removeTheme, removeAllThemes } = useTheme(graph, 'custom');
-
-  setTheme('nodeColor', 'red');
-  setTheme('edgeColor', 'blue');
-
-  setTimeout(() => {
-    removeAllThemes();
-  }, 5000);
-
   graph.subscribe("onStructureChange", (nodes, edges) =>
     emit("update:modelValue", nodesEdgesToAdjList(nodes, edges))
   );
