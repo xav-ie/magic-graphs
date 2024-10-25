@@ -236,7 +236,14 @@ export const useBaseGraph =(
   updateAggregator.push((aggregator) => {
 
     const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(edge, nodes.value, edges.value, theme.value, settings.value, focusedId.value)
+      const schema = getEdgeSchematic(
+        edge,
+        nodes.value,
+        edges.value,
+        getTheme,
+        settings.value,
+        focusedId.value
+      )
       if (!schema) return
       return {
         ...schema,

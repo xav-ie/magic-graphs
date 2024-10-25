@@ -48,12 +48,13 @@ import { useTheme } from "./useGraph/theme/useTheme";
     restartTutorial,
   } = useBasicsTutorial(graph);
 
-  const { setTheme, removeTheme } = useTheme(graph, 'custom');
+  const { setTheme, removeTheme, removeAllThemes } = useTheme(graph, 'custom');
 
   setTheme('nodeColor', 'red');
+  setTheme('edgeColor', 'blue');
 
   setTimeout(() => {
-    removeTheme('nodeColor');
+    removeAllThemes();
   }, 5000);
 
   graph.subscribe("onStructureChange", (nodes, edges) =>
