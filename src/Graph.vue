@@ -50,6 +50,12 @@ import { useTheme } from "./useGraph/theme/useTheme";
 
   const { setTheme, removeTheme } = useTheme(graph, 'custom');
 
+  setTheme('nodeColor', 'red');
+
+  setTimeout(() => {
+    removeTheme('nodeColor');
+  }, 5000);
+
   graph.subscribe("onStructureChange", (nodes, edges) =>
     emit("update:modelValue", nodesEdgesToAdjList(nodes, edges))
   );

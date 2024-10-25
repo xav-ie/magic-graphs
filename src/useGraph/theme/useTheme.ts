@@ -10,6 +10,7 @@ export const useTheme = (graph: Graph, id: string) => {
   const setTheme = <T extends GraphThemeKey>(prop: T, value: GraphTheme[T]) => {
     removeTheme(prop)
     const themeMapEntries = graph.themeMap[prop]
+    console.log('setting theme', prop, value)
     themeMapEntries.push({
       value,
       useThemeId: id
@@ -18,7 +19,9 @@ export const useTheme = (graph: Graph, id: string) => {
 
   const removeTheme = (prop: GraphThemeKey) => {
     const themeMapEntries = graph.themeMap[prop]
-    themeMapEntries.filter(entry => entry.useThemeId === id)
+    console.log('removing theme', prop, themeMapEntries)
+    const index = themeMapEntries.findIndex(entry => entry.useThemeId === id)
+    if (index !== -1) themeMapEntries.splice(index, 1)
   }
 
   const removeAllThemes = () => {

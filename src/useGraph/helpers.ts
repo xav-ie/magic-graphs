@@ -41,10 +41,15 @@ export const getThemeResolver = (
 ) => {
   const entries = themeMap[prop]
   const themeValue = entries.length === 0 ? theme.value[prop] : entries[entries.length - 1].value
-  if (!themeValue) throw new Error(`Theme value for ${prop} not found`)
+  if (!themeValue) throw new Error(`theme value for ${prop} not found`)
   // casting to assist with inference
   return getValue<GraphTheme[T], K>(themeValue, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
 }
+
+/**
+ * describes the function that gets a value from a theme inquiry
+ */
+export type ThemeGetter = ReturnType<typeof getThemeResolver>
 
 /**
   generates a "subscribe" and "unsubscribe" function for the event bus

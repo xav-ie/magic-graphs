@@ -127,9 +127,6 @@ export const useBaseGraph =(
   const themeMap = getInitialThemeMap()
   const getTheme = getThemeResolver(theme, themeMap)
 
-  const t = getTheme('nodeSize', {} as GNode)
-  const s = getValue(theme.value.graphBgColor)
-
   const settings = ref<BaseGraphSettings>({
     ...defaultSettings,
     ...options.settings,
@@ -248,7 +245,7 @@ export const useBaseGraph =(
     }).filter((item) => item && item.schema) as SchemaItem[]
 
     const nodeSchemaItems = nodes.value.map((node, i) => {
-      const schema = getNodeSchematic(node, theme.value, focusedId.value)
+      const schema = getNodeSchematic(node, getTheme, focusedId.value)
       if (!schema) return
       return {
         ...schema,
