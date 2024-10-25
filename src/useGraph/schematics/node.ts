@@ -1,5 +1,5 @@
 import type { CircleSchemaItem, GNode, SquareSchemaItem } from '../types'
-import { getValue } from '../helpers'
+import { getThemeResolver, getValue } from '../helpers'
 import type { Circle, Square } from '@/shapes/types'
 import type { BaseGraphTheme } from '../themes'
 
@@ -8,8 +8,11 @@ export type SupportedNodeShapes = 'circle' | 'square'
 type NodeSchemas = SquareSchemaItem | CircleSchemaItem
 type NodeSchematic = Omit<NodeSchemas, 'priority'> | undefined
 
+type ThemeGetter = ReturnType<typeof getThemeResolver>
+
 export const getNodeSchematic = (
   node: GNode,
+  // getTheme: ThemeGetter,
   graphTheme: BaseGraphTheme,
   focusedNodeId: GNode['id'] | undefined
 ): NodeSchematic => {

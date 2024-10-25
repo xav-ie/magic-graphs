@@ -14,7 +14,7 @@ export type FullThemeMap = {
 
 export type PartialThemeMap = Partial<FullThemeMap>
 
-export const INITIAL_THEME_MAP: FullThemeMap = {
+export const getInitialThemeMap: () => FullThemeMap = () => ({
   /**
    * base themes
    */
@@ -46,4 +46,4 @@ export const INITIAL_THEME_MAP: FullThemeMap = {
   nodeAnchorColorWhenParentFocused: [] as ThemeMapEntry<'nodeAnchorColorWhenParentFocused'>[],
   linkPreviewColor: [] as ThemeMapEntry<'linkPreviewColor'>[],
   linkPreviewWidth: [] as ThemeMapEntry<'linkPreviewWidth'>[],
-}
+})

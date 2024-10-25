@@ -1,7 +1,7 @@
 import type { Ref } from 'vue'
 import type { FullThemeMap, GraphTheme, GraphThemeKey } from './theme/types'
 import type { BaseGraphEdgeTheme, BaseGraphNodeTheme, BaseGraphTheme } from './themes'
-import type { MaybeGetter, SchemaItem, GNode, GEdge, MappingsToEventBus, NodeGetterOrValue } from './types'
+import type { MaybeGetter, SchemaItem, GNode, GEdge, MappingsToEventBus, NodeGetterOrValue, UnwrapMaybeGetter } from './types'
 import type { BaseGraphEvents } from './useBaseGraph'
 
 /**
@@ -14,12 +14,16 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
   return value
 }
 
+type SpecialExtract<T, U> = T extends U ? T : () => void;
+type ThemeParams<T extends GraphThemeKey> = Parameters<SpecialExtract<GraphTheme[T], Function>>
+type ResolvedThemeParams<T extends GraphThemeKey> = ThemeParams<T> extends [] ? [] : Exclude<ThemeParams<T>, []>
+
 export const getThemeResolver = (
   theme: Ref<Partial<GraphTheme>>,
-  themeMap: FullThemeMap
+  themeMap: FullThemeMap,
 ) => <
   T extends GraphThemeKey,
-  K extends Parameters<Extract<GraphTheme[T], Function>>
+  K extends ResolvedThemeParams<T>
 >(
   prop: T,
   ...args: K
@@ -27,7 +31,7 @@ export const getThemeResolver = (
   const entries = themeMap[prop]
   const themeValue = entries.length === 0 ? theme.value[prop] : entries[entries.length - 1].value
   if (!themeValue) throw new Error(`Theme value for ${prop} not found`)
-  return getValue<GraphTheme[T], K>(themeValue, ...args)
+  return getValue<GraphTheme[T], K>(themeValue, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
 }
 
 /**

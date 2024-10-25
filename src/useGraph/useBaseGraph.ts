@@ -25,7 +25,8 @@ import {
   generateId,
   prioritizeNode,
   getRandomPointOnCanvas,
-  getThemeResolver
+  getThemeResolver,
+  getValue
 } from './helpers';
 import { drawShape } from '@/shapes/draw';
 import { getTextAreaLocation } from '@/shapes/draw/text';
@@ -33,8 +34,8 @@ import { hitboxes, isInTextarea } from '@/shapes/hitboxes';
 import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
 import { themes, type BaseGraphTheme } from './themes';
-import { INITIAL_THEME_MAP } from './theme/types';
 import { engageTextarea } from './textarea';
+import { getInitialThemeMap } from './theme/types';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -123,7 +124,11 @@ export const useBaseGraph =(
     ...options.theme,
   })
 
-  const getTheme = getThemeResolver(theme, INITIAL_THEME_MAP)
+  const themeMap = getInitialThemeMap()
+  const getTheme = getThemeResolver(theme, themeMap)
+
+  const t = getTheme('nodeSize', {} as GNode)
+  const s = getValue(theme.value.graphBgColor)
 
   const settings = ref<BaseGraphSettings>({
     ...defaultSettings,
@@ -506,7 +511,8 @@ export const useBaseGraph =(
     aggregator,
 
     theme,
-    themeMap: INITIAL_THEME_MAP,
+    getTheme,
+    themeMap,
     settings,
 
     reset,

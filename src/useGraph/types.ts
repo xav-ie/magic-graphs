@@ -56,13 +56,20 @@ export type UpdateAggregator = (aggregator: Aggregator) => Aggregator
 export type MappingsToEventBus<T> = Record<keyof T, any[]>
 
 /**
+ * @describes taking some data that may be a plain value or a function that returns that value
+ *
   @template T - the type of the value
-  @template K - the type of the arguments
+  @template K - the type of the arguments necessary in order to resolve the value
 */
 export type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
 
 export type NodeGetterOrValue<T> = MaybeGetter<T, [GNode]>
 export type EdgeGetterOrValue<T> = MaybeGetter<T, [GEdge]>
+
+/**
+ * @describes a type that reverses MaybeGetter back into a value
+ */
+export type UnwrapMaybeGetter<T> = T extends MaybeGetter<infer U, infer _> ? U : T
 
 type EventNames = keyof HTMLElementEventMap
 
