@@ -4,8 +4,9 @@ import type {
   GraphTheme,
   GraphThemeKey,
 } from "./types";
+import { generateId } from '../helpers'
 
-export const useTheme = (graph: Graph, id: string) => {
+export const useTheme = (graph: Graph, id: string = generateId()) => {
 
   const setTheme = <T extends GraphThemeKey>(prop: T, value: GraphTheme[T]) => {
     removeTheme(prop)
