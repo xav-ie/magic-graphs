@@ -1,7 +1,5 @@
 import {
   computed,
-  onMounted,
-  onUnmounted,
   ref,
   toRef,
   watch,
@@ -24,7 +22,7 @@ import type {
  *
  * @param graph the useGraph instance to apply the tutorial to
  * @param tutorialSequence the sequence of tutorial steps to apply
- * @returns // TODO make it return controls for the tutorial
+ * @returns controls for the tutorial sequence
  */
 export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<TutorialSequence>) => {
 
@@ -34,19 +32,6 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
    */
   const stepIndex = ref(0);
   const sequence = toRef(tutorialSequence);
-
-  const textHintElement = createTextHintElement();
-
-  const addText = (text: string) => {
-    textHintElement.innerText = text;
-    textHintElement.style.opacity = '1';
-  }
-
-  const removeText = () => {
-    textHintElement.style.opacity = '0';
-  }
-
-  const DELAY_UNTIL_NEXT_STEP = 1000;
 
   let stepSetupTimeoutID: number;
   let cleanupHighlight: () => void;
@@ -96,9 +81,6 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
     }
 
     if (step?.highlightElement) cleanupHighlight = applyHighlight(step);
-    stepSetupTimeoutID = setTimeout(() => {
-      addText(step.hint);
-    }, DELAY_UNTIL_NEXT_STEP);
 
     cleanupStep = executeStep(step.dismiss !== 'onTimeout' ? step : {
       hint: step.hint,
@@ -114,25 +96,13 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
     prevStep?.onDismiss?.();
     cleanupStep?.();
     cleanupHighlight?.();
-    removeText();
-    clearTimeout(stepSetupTimeoutID);
     runCurrentStep();
   }
 
   watch(stepIndex, initiateNewStep);
   watch(sequence, () => initiateNewStep(stepIndex.value, stepIndex.value));
 
-  onMounted(() => {
-    if (!graph.canvas.value) throw new Error('canvas element not found in dom');
-    const parent = graph.canvas.value.parentElement;
-    if (!parent) throw new Error('canvas parent element not found in dom');
-    parent.appendChild(textHintElement);
-    runCurrentStep();
-  });
-
-  onUnmounted(() => {
-    textHintElement.remove();
-  });
+  runCurrentStep();
 
   return {
     currentStepIndex: stepIndex,
@@ -145,32 +115,6 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
     restartTutorial: () => stepIndex.value = 0,
     isTutorialOver: computed(() => stepIndex.value >= sequence.value.length),
   }
-}
-
-/**
- * create a new dom node for displaying text hints
- *
- * @returns a html element for displaying text hints
- */
-const createTextHintElement = () => {
-  const h1 = document.createElement('h1');
-  h1.style.opacity = '0'
-  h1.style.width = '100%';
-  h1.style.textAlign = 'center';
-  h1.style.userSelect = 'none';
-  h1.classList.add(
-    'text-3xl',
-    'text-center',
-    'text-white',
-    'font-bold',
-    'absolute',
-    'bottom-[10%]',
-    'absolute',
-    'transition-opacity',
-    'duration-300',
-  );
-
-  return h1;
 }
 
 /**

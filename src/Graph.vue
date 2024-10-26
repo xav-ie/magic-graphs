@@ -53,6 +53,7 @@
 
 <template>
   <div :class="['relative', `w-[${width}px]`, `h-[${height}px]`]">
+
     <div class="absolute flex gap-2 m-2">
       <GraphBtns :btns="btns" />
     </div>
@@ -61,7 +62,7 @@
       <TutorialControls :tutorial="tutorialControls" />
     </div>
 
-    <div class="absolute bottom-48">
+    <div class="absolute w-full bottom-[10%] grid place-items-center">
       <TutorialHint :tutorial="tutorialControls" />
     </div>
 

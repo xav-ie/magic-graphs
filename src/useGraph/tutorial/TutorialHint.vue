@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { computed, ref, watch } from "vue";
   import type { TutorialControls } from "./useTutorial";
+  import { DELAY_UNTIL_NEXT_STEP } from "./types";
 
   const { tutorial } = defineProps<{
     tutorial: TutorialControls;
@@ -11,9 +12,9 @@
   const hint = computed(() => tutorial.currentStep.value?.hint ?? "");
   const displayedHint = ref("");
 
-  const transitionDurationMs = 1000;
-
   let activeTimeout: NodeJS.Timeout;
+
+  const transitionDuration = 300;
 
   watch(
     hint,
@@ -23,7 +24,7 @@
       activeTimeout = setTimeout(() => {
         displayedHint.value = hint.value;
         opacity.value = 1;
-      }, transitionDurationMs);
+      }, transitionDuration + DELAY_UNTIL_NEXT_STEP);
     },
     { immediate: true }
   );
@@ -31,12 +32,17 @@
 
 <template>
   <div
-    :class="['transition-opacity', `duration-[${transitionDurationMs}]`]"
+    :class="[
+      'transition-opacity',
+      `duration-[${transitionDuration}ms]`,
+      'select-none',
+      'text-center',
+    ]"
     :style="{
       opacity,
     }"
   >
-    <h1 class="text-3xl color-green-500">
+    <h1 class="text-3xl font-bold">
       {{ displayedHint }}
     </h1>
   </div>

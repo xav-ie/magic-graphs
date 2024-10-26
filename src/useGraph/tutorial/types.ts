@@ -127,3 +127,8 @@ export type TutorialStep = (
  * describes a list of tutorial steps that will be executed in order from index 0 to n - 1
  */
 export type TutorialSequence = TutorialStep[];
+
+/**
+ * time to wait (in milliseconds) between the dismissal of a step and the initialization of the next step
+ */
+export const DELAY_UNTIL_NEXT_STEP = 1000;
