@@ -128,7 +128,10 @@ export type TutorialStep = (
  */
 export type TutorialSequence = TutorialStep[];
 
+
 /**
  * time to wait (in milliseconds) between the dismissal of a step and the initialization of the next step
  */
 export const DELAY_UNTIL_NEXT_STEP = 1000;
+
+export const TUTORIAL_USETHEME_ID = 'tutorial'

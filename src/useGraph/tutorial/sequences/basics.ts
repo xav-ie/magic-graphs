@@ -1,6 +1,7 @@
 import type { Graph } from "@/useGraph/useGraph";
 import type { TutorialStep } from "../types";
 import { GRAPH_BUTTON_ID } from "@/useGraph/button/types";
+import { TUTORIAL_USETHEME_ID } from '../types';
 import { useTheme } from "@/useGraph/theme/useTheme";
 import { PURPLE_700, RED_700 } from "@/utils/colors";
 
@@ -55,7 +56,7 @@ export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (gra
 const getRemoveNodeOrEdgeStep = (graph: Graph): TutorialStep => {
   let stepPassed = false;
   const completeStep = () => stepPassed = true;
-  const { setTheme, removeAllThemes } = useTheme(graph, 'tutorial');
+  const { setTheme, removeAllThemes } = useTheme(graph, TUTORIAL_USETHEME_ID);
   return {
     hint: 'Remove an edge or node by clicking on it and hitting backspace/delete',
     dismiss: {
