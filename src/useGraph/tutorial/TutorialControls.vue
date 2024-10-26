@@ -6,7 +6,6 @@
     tutorial: TutorialControls;
   }>();
 
-  const hint = computed(() => tutorial.currentStep.value?.hint);
   const progress = computed(
     () =>
       `${tutorial.currentStepIndex.value + 1} / ${
@@ -43,16 +42,7 @@
 
   <div class="flex gap-2">
     <span class="select-none">
-      {{ progress }}
-    </span>
-  </div>
-
-  <div
-    v-if="hint"
-    class="flex gap-2"
-  >
-    <span class="select-none">
-      {{ hint }}
+      step {{ progress }} -> isTutorialOver: {{ tutorial.isTutorialOver }}
     </span>
   </div>
 </template>
