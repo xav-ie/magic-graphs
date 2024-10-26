@@ -1,7 +1,5 @@
 import {
   computed,
-  onMounted,
-  onUnmounted,
   ref,
   toRef,
   watch,
@@ -24,7 +22,7 @@ import type {
  *
  * @param graph the useGraph instance to apply the tutorial to
  * @param tutorialSequence the sequence of tutorial steps to apply
- * @returns // TODO make it return controls for the tutorial
+ * @returns controls for the tutorial sequence
  */
 export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<TutorialSequence>) => {
 
@@ -32,21 +30,8 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
    * the current step in the tutorial sequence,
    * can be reactively set to skip to a specific step
    */
-  const currentStep = ref(0);
+  const stepIndex = ref(0);
   const sequence = toRef(tutorialSequence);
-
-  const textHintElement = createTextHintElement();
-
-  const addText = (text: string) => {
-    textHintElement.innerText = text;
-    textHintElement.style.opacity = '1';
-  }
-
-  const removeText = () => {
-    textHintElement.style.opacity = '0';
-  }
-
-  const DELAY_UNTIL_NEXT_STEP = 1000;
 
   let stepSetupTimeoutID: number;
   let cleanupHighlight: () => void;
@@ -66,7 +51,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
       const intervalTime = 'interval' in step ? step.interval : DEFAULT_INTERVAL;
       let iteration = 0;
       const interval = setInterval(() => {
-        if (dismissPredicate(++iteration)) currentStep.value++;
+        if (dismissPredicate(++iteration)) stepIndex.value++;
       }, intervalTime);
       return () => clearInterval(interval);
     }
@@ -76,7 +61,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
      */
     const eventFired = (...args: any[]) => {
       const predicate = dismissPredicate?.(...args);
-      if (predicate) currentStep.value++;
+      if (predicate) stepIndex.value++;
     }
 
     graph.subscribe(dismissEvent, eventFired);
@@ -84,21 +69,18 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
   }
 
   const runCurrentStep = () => {
-    const step = sequence.value[currentStep.value];
+    const step = sequence.value[stepIndex.value];
 
     if (!step) return;
 
     step.onInit?.();
 
     if (step.precondition?.(graph)) {
-      currentStep.value++;
+      stepIndex.value++;
       return;
     }
 
     if (step?.highlightElement) cleanupHighlight = applyHighlight(step);
-    stepSetupTimeoutID = setTimeout(() => {
-      addText(step.hint);
-    }, DELAY_UNTIL_NEXT_STEP);
 
     cleanupStep = executeStep(step.dismiss !== 'onTimeout' ? step : {
       hint: step.hint,
@@ -108,68 +90,31 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
   }
 
   const initiateNewStep = (newStepIndex: number, prevStepIndex: number) => {
-    if (newStepIndex < 0) return currentStep.value = 0;
-    if (newStepIndex > sequence.value.length) return currentStep.value = sequence.value.length
+    if (newStepIndex < 0) return stepIndex.value = 0;
+    if (newStepIndex > sequence.value.length) return stepIndex.value = sequence.value.length
     const prevStep = sequence.value[prevStepIndex];
     prevStep?.onDismiss?.();
     cleanupStep?.();
     cleanupHighlight?.();
-    removeText();
-    clearTimeout(stepSetupTimeoutID);
     runCurrentStep();
   }
 
-  watch(currentStep, initiateNewStep);
-  watch(sequence, () => initiateNewStep(currentStep.value, currentStep.value));
+  watch(stepIndex, initiateNewStep);
+  watch(sequence, () => initiateNewStep(stepIndex.value, stepIndex.value));
 
-  onMounted(() => {
-    if (!graph.canvas.value) throw new Error('canvas element not found in dom');
-    const parent = graph.canvas.value.parentElement;
-    if (!parent) throw new Error('canvas parent element not found in dom');
-    parent.appendChild(textHintElement);
-    runCurrentStep();
-  });
-
-  onUnmounted(() => {
-    textHintElement.remove();
-  });
+  runCurrentStep();
 
   return {
-    currentStepIndex: currentStep,
-    currentStep: computed(() => sequence.value[currentStep.value]),
+    currentStepIndex: stepIndex,
+    // added undefined because stepIndex is +1 out of bounds when tutorial is over
+    currentStep: computed<TutorialStep | undefined>(() => sequence.value[stepIndex.value]),
     sequence,
-    skipStep: () => currentStep.value++,
-    previousStep: () => currentStep.value--,
-    endTutorial: () => currentStep.value = sequence.value.length,
-    restartTutorial: () => currentStep.value = 0,
-    isTutorialOver: computed(() => currentStep.value >= sequence.value.length),
+    skipStep: () => stepIndex.value++,
+    previousStep: () => stepIndex.value--,
+    endTutorial: () => stepIndex.value = sequence.value.length,
+    restartTutorial: () => stepIndex.value = 0,
+    isTutorialOver: computed(() => stepIndex.value >= sequence.value.length),
   }
-}
-
-/**
- * create a new dom node for displaying text hints
- *
- * @returns a html element for displaying text hints
- */
-const createTextHintElement = () => {
-  const h1 = document.createElement('h1');
-  h1.style.opacity = '0'
-  h1.style.width = '100%';
-  h1.style.textAlign = 'center';
-  h1.style.userSelect = 'none';
-  h1.classList.add(
-    'text-3xl',
-    'text-center',
-    'text-white',
-    'font-bold',
-    'absolute',
-    'bottom-[10%]',
-    'absolute',
-    'transition-opacity',
-    'duration-300',
-  );
-
-  return h1;
 }
 
 /**
