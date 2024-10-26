@@ -1,17 +1,15 @@
 <script setup lang="ts">
   import { ref } from "vue";
-  import { useDarkGraph } from "@graph/useGraph";
   import { useWindowSize } from "@vueuse/core";
-  import {
-    nodesEdgesToAdjList,
-    type AdjacencyList,
-  } from "@graph/converters";
-  import { useBasicsTutorial } from "@/graphs/tutorials/useTutorial";
-  import { useUserPreferredTheme } from "./useGraph/themes";
-  import { useGraphBtns } from "@/useGraph/button/useGraphBtns";
-  import GraphBtns from "@/useGraph/button/GraphBtns.vue";
-  import TutorialControls from "@/useGraph/tutorial/TutorialControls.vue";
-  import TutorialHint from "./useGraph/tutorial/TutorialHint.vue";
+  import { useGraph } from "@graph/useGraph";
+  import { nodesEdgesToAdjList } from "@graph/converters";
+  import type { AdjacencyList } from "@graph/converters";
+  import { useBasicsTutorial } from "@graph/tutorials/useTutorial";
+  import TutorialControls from "@graph/tutorials/TutorialControls.vue";
+  import TutorialHint from "@graph/tutorials/TutorialHint.vue";
+  import { useUserPreferredTheme } from "@graph/themes/useUserPreferredTheme";
+  import { useGraphBtns } from "@graph/buttons/useGraphBtns";
+  import GraphBtns from "@graph/buttons/GraphBtns.vue";
 
   const canvas = ref<HTMLCanvasElement>();
 
@@ -21,7 +19,7 @@
 
   const { width, height } = useWindowSize();
 
-  const graph = useDarkGraph(canvas, {
+  const graph = useGraph(canvas, {
     theme: {},
     settings: {},
   });

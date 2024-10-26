@@ -1,4 +1,4 @@
-import type { Circle } from "../types";
+import type { Circle } from "@shape/types";
 
 export const drawCircleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Circle) => {
   const { at, radius, color = 'black' } = options;

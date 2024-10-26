@@ -1,6 +1,12 @@
 /**
   This file contains helper functions for hit boxes on the canvas.
-*/
+  */
+
+import {
+  TEXT_DEFAULTS,
+  LINE_DEFAULTS,
+  TEXTAREA_DEFAULTS
+} from "@shape/types"
 import type {
   Coordinate,
   Circle,
@@ -10,10 +16,9 @@ import type {
   UTurnArrow,
   Rectangle,
   Arrow
-} from "./types"
-import { TEXT_DEFAULTS, LINE_DEFAULTS, TEXTAREA_DEFAULTS } from "./types"
-import { rotatePoint } from "./helpers"
-import { getTextAreaDimension, getTextAreaLocation } from "./draw/text"
+} from "@shape/types"
+import { rotatePoint } from "@shape/helpers"
+import { getTextAreaDimension, getTextAreaLocation } from "@shape/draw/text"
 
 /**
  * @param point - the point to check if it is in the shape

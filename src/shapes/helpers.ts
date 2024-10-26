@@ -1,4 +1,4 @@
-import type { Coordinate } from "./types"
+import type { Coordinate } from "@shape/types"
 
 /**
  * @description rotates a point around a center point by a given angle in radians

@@ -61,7 +61,15 @@ export type Rectangle = {
   text?: Text
 }
 
+export const RECTANGLE_DEFAULTS = {
+  color: 'black',
+} as const
+
 export type Square = Rectangle
+
+export const SQUARE_DEFAULTS = {
+  color: 'black',
+} as const
 
 export type Line = {
   start: Coordinate,
@@ -105,7 +113,7 @@ export type UTurnArrow = {
   lineWidth: number,
   color?: string,
   textArea?: TextAreaNoLocation
-} 
+}
 
 export const UTURN_ARROW_DEFAULTS = {
   color: 'black',

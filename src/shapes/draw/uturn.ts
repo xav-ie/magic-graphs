@@ -1,9 +1,9 @@
-import { 
-  type UTurnArrow, 
-  UTURN_ARROW_DEFAULTS, 
-  TEXT_DEFAULTS 
-} from "../types";
-import { rotatePoint } from "../helpers";
+import {
+  UTURN_ARROW_DEFAULTS,
+  TEXT_DEFAULTS
+} from "@shape/types";
+import type { UTurnArrow } from "@shape/types";
+import { rotatePoint } from "@shape/helpers";
 import { drawTextArea } from './text';
 import { drawLineWithCtx } from "./line";
 import { drawTriangleWithCtx } from "./triangle";

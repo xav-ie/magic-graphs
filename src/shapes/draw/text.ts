@@ -1,12 +1,14 @@
 import {
-  type Line,
-  type Arrow,
-  type UTurnArrow,
-  type TextArea,
   TEXTAREA_DEFAULTS,
   TEXT_DEFAULTS
-} from "../types";
-import { drawShape } from "../draw";
+} from "@shape/types";
+import type {
+  Line,
+  Arrow,
+  UTurnArrow,
+  TextArea,
+} from "@shape/types";
+import { drawShape } from "@shape/draw";
 import { getTextAreaLocationOnLine } from "./line";
 import { getTextAreaLocationOnArrow } from "./arrow";
 import { getTextAreaLocationOnUTurnArrow } from "./uturn";
