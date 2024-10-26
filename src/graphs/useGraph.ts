@@ -6,8 +6,8 @@
  */
 
 import type { Ref } from 'vue'
-import { themes } from '@/graphs/themes'
-import { useUserPreferredTheme } from '@/graphs/themes/useUserPreferredTheme'
+import { themes } from '@graph/themes'
+import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
 import { usePersistentGraph } from '@graph/compositions/usePersistentGraph'
 import type { PersistentGraphOptions } from '@graph/compositions/usePersistentGraph'
 

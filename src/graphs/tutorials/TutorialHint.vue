@@ -1,5 +1,9 @@
 <script setup lang="ts">
-  import { computed, ref, watch } from "vue";
+  import {
+    computed,
+    ref,
+    watch
+  } from "vue";
   import type { TutorialControls } from "./useTutorial";
   import { DELAY_UNTIL_NEXT_STEP } from "./types";
 
