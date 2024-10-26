@@ -11,6 +11,7 @@
   import { useGraphBtns } from "@/useGraph/button/useGraphBtns";
   import GraphBtns from "@/useGraph/button/GraphBtns.vue";
   import TutorialControls from "@/useGraph/tutorial/TutorialControls.vue";
+  import TutorialHint from "./useGraph/tutorial/TutorialHint.vue";
 
   const canvas = ref<HTMLCanvasElement>();
 
@@ -58,6 +59,10 @@
 
     <div class="bottom-0 absolute flex gap-2 m-2">
       <TutorialControls :tutorial="tutorialControls" />
+    </div>
+
+    <div class="absolute bottom-48">
+      <TutorialHint :tutorial="tutorialControls" />
     </div>
 
     <div>

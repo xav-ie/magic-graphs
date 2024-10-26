@@ -32,7 +32,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
    * the current step in the tutorial sequence,
    * can be reactively set to skip to a specific step
    */
-  const currentStep = ref(0);
+  const stepIndex = ref(0);
   const sequence = toRef(tutorialSequence);
 
   const textHintElement = createTextHintElement();
@@ -66,7 +66,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
       const intervalTime = 'interval' in step ? step.interval : DEFAULT_INTERVAL;
       let iteration = 0;
       const interval = setInterval(() => {
-        if (dismissPredicate(++iteration)) currentStep.value++;
+        if (dismissPredicate(++iteration)) stepIndex.value++;
       }, intervalTime);
       return () => clearInterval(interval);
     }
@@ -76,7 +76,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
      */
     const eventFired = (...args: any[]) => {
       const predicate = dismissPredicate?.(...args);
-      if (predicate) currentStep.value++;
+      if (predicate) stepIndex.value++;
     }
 
     graph.subscribe(dismissEvent, eventFired);
@@ -84,14 +84,14 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
   }
 
   const runCurrentStep = () => {
-    const step = sequence.value[currentStep.value];
+    const step = sequence.value[stepIndex.value];
 
     if (!step) return;
 
     step.onInit?.();
 
     if (step.precondition?.(graph)) {
-      currentStep.value++;
+      stepIndex.value++;
       return;
     }
 
@@ -108,8 +108,8 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
   }
 
   const initiateNewStep = (newStepIndex: number, prevStepIndex: number) => {
-    if (newStepIndex < 0) return currentStep.value = 0;
-    if (newStepIndex > sequence.value.length) return currentStep.value = sequence.value.length
+    if (newStepIndex < 0) return stepIndex.value = 0;
+    if (newStepIndex > sequence.value.length) return stepIndex.value = sequence.value.length
     const prevStep = sequence.value[prevStepIndex];
     prevStep?.onDismiss?.();
     cleanupStep?.();
@@ -119,8 +119,8 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
     runCurrentStep();
   }
 
-  watch(currentStep, initiateNewStep);
-  watch(sequence, () => initiateNewStep(currentStep.value, currentStep.value));
+  watch(stepIndex, initiateNewStep);
+  watch(sequence, () => initiateNewStep(stepIndex.value, stepIndex.value));
 
   onMounted(() => {
     if (!graph.canvas.value) throw new Error('canvas element not found in dom');
@@ -135,14 +135,15 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
   });
 
   return {
-    currentStepIndex: currentStep,
-    currentStep: computed(() => sequence.value[currentStep.value]),
+    currentStepIndex: stepIndex,
+    // added undefined because stepIndex is +1 out of bounds when tutorial is over
+    currentStep: computed<TutorialStep | undefined>(() => sequence.value[stepIndex.value]),
     sequence,
-    skipStep: () => currentStep.value++,
-    previousStep: () => currentStep.value--,
-    endTutorial: () => currentStep.value = sequence.value.length,
-    restartTutorial: () => currentStep.value = 0,
-    isTutorialOver: computed(() => currentStep.value >= sequence.value.length),
+    skipStep: () => stepIndex.value++,
+    previousStep: () => stepIndex.value--,
+    endTutorial: () => stepIndex.value = sequence.value.length,
+    restartTutorial: () => stepIndex.value = 0,
+    isTutorialOver: computed(() => stepIndex.value >= sequence.value.length),
   }
 }
 
