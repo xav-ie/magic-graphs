@@ -40,7 +40,7 @@
     <span class="select-none">Restart Tutorial</span>
   </button>
 
-  <div class="flex gap-2">
+  <div class="flex gap-2 dark:text-white">
     <span class="select-none">
       step {{ progress }} -> isTutorialOver: {{ tutorial.isTutorialOver }}
     </span>

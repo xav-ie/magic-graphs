@@ -60,7 +60,7 @@
       <TutorialControls :tutorial="tutorialControls" />
     </div>
 
-    <div class="absolute w-full bottom-[10%] grid place-items-center">
+    <div class="absolute w-full dark:text-white bottom-[10%] grid place-items-center">
       <TutorialHint :tutorial="tutorialControls" />
     </div>
 
