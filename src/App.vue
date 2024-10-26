@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import Graph from './Graph.vue';
-import CodeEditor from './CodeEditor.vue';
+import Graph from './TestGraph.vue';
+import CodeEditor from './products/search-visualizer/CodeEditor.vue';
 
 const weightedGraph = {
   1: [{ node: 2, weight: 4 }, { node: 4, weight: 2 }],

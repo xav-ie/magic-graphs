@@ -6,16 +6,21 @@
  */
 
 import { type Ref } from 'vue'
-import { themes } from './themes'
+import { themes } from '@graph/theme'
+import { useUserPreferredTheme } from '@graph/theme/useUserPreferredTheme'
 import {
   usePersistentGraph,
   type PersistentGraphOptions,
-} from './usePersistentGraph'
+} from '@graph/usePersistentGraph'
 
 export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<PersistentGraphOptions> = {},
-) => usePersistentGraph(canvas, options)
+) => {
+  const graph = usePersistentGraph(canvas, options)
+  useUserPreferredTheme(graph)
+  return graph
+}
 
 export const useDarkGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -27,5 +32,3 @@ export const useDarkGraph = (
   },
   settings: options.settings,
 })
-
-export type Graph = ReturnType<typeof useGraph>

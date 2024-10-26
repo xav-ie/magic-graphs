@@ -32,7 +32,10 @@ import { getTextAreaLocation } from '@/shapes/draw/text';
 import { hitboxes, isInTextarea } from '@/shapes/hitboxes';
 import { getNodeSchematic } from './schematics/node';
 import { getEdgeSchematic } from './schematics/edge';
-import { themes, type BaseGraphTheme } from './themes';
+import {
+  themes,
+  type BaseGraphTheme,
+} from '@graph/theme/index';
 import { engageTextarea } from './textarea';
 import { getInitialThemeMap } from './theme/types';
 

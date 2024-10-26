@@ -1,12 +1,12 @@
 <script setup lang="ts">
   import { ref } from "vue";
-  import { useDarkGraph } from "@/useGraph/useGraph";
+  import { useDarkGraph } from "@graph/useGraph";
   import { useWindowSize } from "@vueuse/core";
   import {
     nodesEdgesToAdjList,
     type AdjacencyList,
-  } from "./graphConverters";
-  import { useBasicsTutorial } from "./useGraph/tutorial/useTutorial";
+  } from "@graph/converters";
+  import { useBasicsTutorial } from "@graph/tutorial/useTutorial";
   import { useUserPreferredTheme } from "./useGraph/themes";
   import { useGraphBtns } from "@/useGraph/button/useGraphBtns";
   import GraphBtns from "@/useGraph/button/GraphBtns.vue";

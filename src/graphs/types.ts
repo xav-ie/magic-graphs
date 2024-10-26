@@ -4,7 +4,18 @@ import type {
   Square,
   Arrow,
   UTurnArrow
-} from "@/shapes/types"
+} from "@shape/types"
+import { useGraph } from "@graph/useGraph";
+
+/**
+ * @describes the useGraph composition function
+ */
+export type UseGraph = typeof useGraph
+
+/**
+ * @describes an instance of the useGraph composition function
+ */
+export type Graph = ReturnType<UseGraph>
 
 /**
  * @describes the options argument for all useGraph composition functions
