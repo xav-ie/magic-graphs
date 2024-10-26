@@ -1,36 +1,10 @@
 import { isObject } from "@vueuse/core";
-import type { Graph } from "./useGraph/useGraph";
+import type { Graph } from "@/useGraph/useGraph";
 import { computed } from "vue";
-import { resolveEditSettings } from "./useGraph/useUserEditableGraph";
-import { getRandomInRange } from "./useGraph/helpers";
-
-/**
- * the ids for the buttons that can be added to the graph toolbar
- */
-export const GRAPH_BUTTON_ID = {
-  reset: 'reset',
-  draggable: 'draggable',
-  nodeAnchors: 'node-anchors',
-  edgeLabels: 'edge-labels',
-  edgeLabelsEditable: 'edge-labels-editable',
-  userEditable: 'user-editable',
-  edgeType: 'edge-type',
-  edgeWeight: 'edge-weight',
-  nodeSize: 'node-size',
-  storageKey: 'storage-key',
-  clearLocalStorage: 'clear-local-storage',
-} as const;
-
-/**
- * @describes a button that can be added to the graph toolbar
- */
-export type GButton = {
-  cond?: () => boolean,
-  label: () => string,
-  action: () => void,
-  color: () => string,
-  id: typeof GRAPH_BUTTON_ID[keyof typeof GRAPH_BUTTON_ID],
-}
+import { resolveEditSettings } from "@/useGraph/useUserEditableGraph";
+import { getRandomInRange } from "@/useGraph/helpers";
+import type { GButton } from "./types";
+import { GRAPH_BUTTON_ID } from "./types";
 
 /**
  * a one stop shop for the dials you need to control your graph

@@ -1,6 +1,6 @@
 import type { Graph } from "@/useGraph/useGraph";
 import type { TutorialStep } from "../types";
-import { GRAPH_BUTTON_ID } from "@/useGraphBtns";
+import { GRAPH_BUTTON_ID } from "@/useGraph/button/types";
 import { useTheme } from "@/useGraph/theme/useTheme";
 import { PURPLE_700, RED_700 } from "@/utils/colors";
 
