@@ -14,8 +14,9 @@
   import { useGraphBtns } from "./useGraphBtns";
   import { markovSccColorizer } from "./markov-chains/sccColorizer";
   import { useBasicsTutorial } from "./useGraph/tutorial/useTutorial";
-import { useUserPreferredTheme } from "./useGraph/themes";
-import { useTheme } from "./useGraph/theme/useTheme";
+  import { useUserPreferredTheme } from "./useGraph/themes";
+  import { useTheme } from "./useGraph/theme/useTheme";
+  import TutorialControls from "@/useGraph/tutorial/TutorialControls.vue";
 
   const canvas = ref<HTMLCanvasElement>();
 
@@ -38,15 +39,7 @@ import { useTheme } from "./useGraph/theme/useTheme";
   //   markovSccColorizer(graph);
   // }, 0)
 
-  const {
-    currentStepIndex,
-    currentStep,
-    sequence,
-    skipStep,
-    previousStep,
-    endTutorial,
-    restartTutorial,
-  } = useBasicsTutorial(graph);
+  const tutorialControls = useBasicsTutorial(graph);
 
   graph.subscribe("onStructureChange", (nodes, edges) =>
     emit("update:modelValue", nodesEdgesToAdjList(nodes, edges))
@@ -91,42 +84,7 @@ import { useTheme } from "./useGraph/theme/useTheme";
     </div>
 
     <div class="bottom-0 absolute flex gap-2 m-2">
-      <button
-        @click="previousStep"
-        :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
-      >
-        <span class="select-none">Previous Step</span>
-      </button>
-      <button
-        @click="skipStep"
-        :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
-      >
-        <span class="select-none">Skip Step</span>
-      </button>
-      <button
-        @click="endTutorial"
-        :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
-      >
-        <span class="select-none">End Tutorial</span>
-      </button>
-      <button
-        @click="restartTutorial"
-        :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
-      >
-        <span class="select-none">Restart Tutorial</span>
-      </button>
-
-      <div class="flex gap-2">
-        <span class="select-none">
-          {{ currentStepIndex + 1 }} / {{ sequence.length }}
-        </span>
-      </div>
-
-      <div v-if="currentStep" class="flex gap-2">
-        <span class="select-none">
-          {{ currentStep.hint }}
-        </span>
-        </div>
+      <TutorialControls :tutorial="tutorialControls" />
     </div>
 
     <div>
