@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { GButton } from "./types";
+  import type { GButton } from "@graph/buttons/types";
 
   const { btns } = defineProps<{
     btns: GButton[];

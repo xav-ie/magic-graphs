@@ -1,10 +1,10 @@
-import { isObject } from "@vueuse/core";
-import type { Graph } from "@/useGraph/useGraph";
 import { computed } from "vue";
-import { resolveEditSettings } from "@/useGraph/useUserEditableGraph";
-import { getRandomInRange } from "@/useGraph/helpers";
-import type { GButton } from "./types";
-import { GRAPH_BUTTON_ID } from "./types";
+import { isObject } from "@vueuse/core";
+import type { Graph } from "@graph/types";
+import { resolveEditSettings } from "@graph/compositions/useUserEditableGraph";
+import { getRandomInRange } from "@graph/helpers";
+import { GRAPH_BUTTON_ID } from "@graph/buttons/types";
+import type { GButton } from "@graph/buttons/types";
 
 /**
  * a one stop shop for the dials you need to control your graph
