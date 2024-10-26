@@ -1,17 +1,18 @@
 import {
   ref,
   readonly,
-  type Ref,
   watchEffect
 } from 'vue'
-import {
-  useBaseGraph,
-  type BaseGraphEvents,
-  type BaseGraphSettings,
-} from './useBaseGraph'
-import { generateSubscriber } from './helpers';
-import type { BaseGraphTheme } from './themes';
-import type { GNode, GraphOptions, MappingsToEventBus } from './types'
+import type { Ref } from 'vue'
+import { useBaseGraph } from '@graph/compositions/useBaseGraph'
+import type { BaseGraphEvents, BaseGraphSettings } from '@graph/compositions/useBaseGraph'
+import { generateSubscriber } from '@graph/helpers';
+import type { BaseGraphTheme } from '@graph/themes';
+import type {
+  GNode,
+  GraphOptions,
+  MappingsToEventBus
+} from '@graph/types'
 
 export type DraggableGraphEvents = BaseGraphEvents & {
   onNodeDragStart: (node: GNode) => void;

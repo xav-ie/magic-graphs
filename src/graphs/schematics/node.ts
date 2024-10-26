@@ -1,6 +1,10 @@
-import type { CircleSchemaItem, GNode, SquareSchemaItem } from '../types'
-import type { ThemeGetter } from '../helpers'
-import type { Circle, Square } from '@/shapes/types'
+import type {
+  CircleSchemaItem,
+  GNode,
+  SquareSchemaItem
+} from '@graph/types'
+import type { ThemeGetter } from '@graph/helpers'
+import type { Circle, Square } from '@shape/types'
 
 export type SupportedNodeShapes = 'circle' | 'square'
 

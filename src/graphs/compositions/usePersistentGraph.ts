@@ -2,15 +2,19 @@ import {
   ref,
   computed,
   watch,
-  type Ref,
 } from 'vue'
-import type { GNode, GEdge, GraphOptions } from '@/useGraph/types'
-import {
-  useUserEditableGraph,
-  type UserEditableGraphOptions,
-  type UserEditableGraphSettings,
-  type UserEditableGraphTheme
-} from './useUserEditableGraph'
+import type { Ref } from 'vue'
+import type {
+  GNode,
+  GEdge,
+  GraphOptions
+} from '@graph/types'
+import { useUserEditableGraph } from '@graph/compositions/useUserEditableGraph'
+import type {
+  UserEditableGraphOptions,
+  UserEditableGraphSettings,
+  UserEditableGraphTheme
+} from '@graph/compositions/useUserEditableGraph'
 
 export type PersistentGraphTheme = UserEditableGraphTheme
 export type PersistSettings = {

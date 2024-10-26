@@ -4,8 +4,8 @@ import {
   onBeforeUnmount,
   readonly,
   watch,
-  type Ref,
 } from 'vue'
+import type { Ref } from 'vue'
 import { onClickOutside } from '@vueuse/core';
 import type {
   GNode,
@@ -19,25 +19,23 @@ import type {
   MappingsToEventBus,
   Aggregator,
   UpdateAggregator
-} from './types'
+} from '@graph/types'
 import {
   generateSubscriber,
   generateId,
   prioritizeNode,
   getRandomPointOnCanvas,
   getThemeResolver,
-} from './helpers';
-import { drawShape } from '@/shapes/draw';
-import { getTextAreaLocation } from '@/shapes/draw/text';
+} from '@graph/helpers';
+import { getNodeSchematic } from '@graph/schematics/node';
+import { getEdgeSchematic } from '@graph/schematics/edge';
+import { themes } from '@graph/themes';
+import type { BaseGraphTheme } from '@graph/themes'
+import { engageTextarea } from '@graph/textarea';
+import { getInitialThemeMap } from '@graph/themes/types';
+import { drawShape } from '@shape/draw';
+import { getTextAreaLocation } from '@shape/draw/text';
 import { hitboxes, isInTextarea } from '@/shapes/hitboxes';
-import { getNodeSchematic } from './schematics/node';
-import { getEdgeSchematic } from './schematics/edge';
-import {
-  themes,
-  type BaseGraphTheme,
-} from '@/graphs/themes/index';
-import { engageTextarea } from './textarea';
-import { getInitialThemeMap } from './theme/types';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */

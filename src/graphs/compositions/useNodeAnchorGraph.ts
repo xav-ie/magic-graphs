@@ -7,15 +7,21 @@
  * - Link Preview: The line that appears between the parent node and the anchor when the anchor is being dragged.
  * - Active Anchor: The anchor that is currently being dragged.
  * - Anchor Node Graph: A graph that supports the creation and event propagation of anchors around nodes.
- */
+*/
 
-import { generateSubscriber, prioritizeNode } from "./helpers";
 import {
-  useDraggableGraph,
-  type DraggableGraphEvents,
-  type DraggableGraphSettings,
-  type DraggableGraphTheme
-} from "./useDraggableGraph";
+  ref,
+  readonly,
+  watchEffect,
+} from 'vue'
+import type { Ref } from 'vue'
+import { generateSubscriber, prioritizeNode } from "@graph/helpers";
+import { useDraggableGraph } from "@graph/compositions/useDraggableGraph";
+import type {
+  DraggableGraphEvents,
+  DraggableGraphSettings,
+  DraggableGraphTheme,
+} from "@graph/compositions/useDraggableGraph";
 import type {
   SchemaItem,
   LineSchemaItem,
@@ -25,16 +31,10 @@ import type {
   MaybeGetter,
   GraphOptions,
   MappingsToEventBus
-} from "./types";
-import {
-  ref,
-  readonly,
-  watchEffect,
-  type Ref,
-} from 'vue'
-import { hitboxes } from "../shapes/hitboxes";
-import type { Circle } from "@/shapes/types";
-import { BLACK } from "@/utils/colors";
+} from "@graph/types";
+import { hitboxes } from "@shape/hitboxes";
+import type { Circle } from "@shape/types";
+import { BLACK } from "@utils/colors";
 
 export type NodeAnchor = {
   /**

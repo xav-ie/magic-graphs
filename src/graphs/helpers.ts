@@ -7,7 +7,7 @@ import type {
 import type {
   BaseGraphEdgeTheme,
   BaseGraphNodeTheme,
-} from '@graph/themes/index'
+} from '@graph/themes'
 import type {
   MaybeGetter,
   SchemaItem,

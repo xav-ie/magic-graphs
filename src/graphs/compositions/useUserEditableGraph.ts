@@ -6,20 +6,20 @@ import {
   computed,
   ref,
   watchEffect,
-  type Ref
 } from 'vue'
+import type { Ref } from 'vue'
 import type {
   SchemaItem,
   GNode,
   GraphOptions
 } from "@graph/types"
-import {
-  useNodeAnchorGraph,
-  type NodeAnchorGraphTheme,
-  type NodeAnchor,
-  type NodeAnchorGraphSettings,
-  type NodeAnchorGraphEvents
-} from "@graph/useNodeAnchorGraph"
+import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
+import type {
+  NodeAnchorGraphTheme,
+  NodeAnchor,
+  NodeAnchorGraphSettings,
+  NodeAnchorGraphEvents
+} from "@graph/compositions/useNodeAnchorGraph"
 
 export type EditSettings = {
   /**

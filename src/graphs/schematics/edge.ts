@@ -4,13 +4,11 @@ import type {
   LineSchemaItem,
   ArrowSchemaItem,
   ArrowUTurnSchemaItem
-} from '../types'
-import {
-  getFromToNodes,
-  type ThemeGetter
-} from '../helpers'
-import { getLargestAngularSpace } from '@/shapes/helpers'
-import type { BaseGraphSettings } from '../useBaseGraph'
+} from '@graph/types'
+import { getFromToNodes } from '@graph/helpers'
+import type { ThemeGetter } from '@graph/helpers'
+import type { BaseGraphSettings } from '@graph/compositions/useBaseGraph'
+import { getLargestAngularSpace } from '@shape/helpers'
 
 type EdgeSchemas = LineSchemaItem | ArrowSchemaItem | ArrowUTurnSchemaItem
 type EdgeSchematic = Omit<EdgeSchemas, 'priority'> | undefined
