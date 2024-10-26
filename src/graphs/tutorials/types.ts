@@ -1,5 +1,5 @@
-import type { UserEditableGraphEvents } from '@/useGraph/useUserEditableGraph';
-import type { Graph } from '../useGraph';
+import type { Graph } from '@graph/types';
+import type { UserEditableGraphEvents } from '@graph/compositions/useUserEditableGraph';
 
 export type EventMap = UserEditableGraphEvents;
 export type GraphEventName = keyof EventMap;

@@ -5,13 +5,11 @@
  * Consumers of the useGraph API import from this file.
  */
 
-import { type Ref } from 'vue'
-import { themes } from '@graph/theme'
-import { useUserPreferredTheme } from '@graph/theme/useUserPreferredTheme'
-import {
-  usePersistentGraph,
-  type PersistentGraphOptions,
-} from '@graph/usePersistentGraph'
+import type { Ref } from 'vue'
+import { themes } from '@/graphs/themes'
+import { useUserPreferredTheme } from '@/graphs/themes/useUserPreferredTheme'
+import { usePersistentGraph } from '@graph/compositions/usePersistentGraph'
+import type { PersistentGraphOptions } from '@graph/compositions/usePersistentGraph'
 
 export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,

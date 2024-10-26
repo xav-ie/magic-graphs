@@ -2,20 +2,24 @@
  * @module useUserEditableGraph
  */
 
-import type { SchemaItem, GNode, GraphOptions } from "./types"
-import {
-  useNodeAnchorGraph,
-  type NodeAnchorGraphTheme,
-  type NodeAnchor,
-  type NodeAnchorGraphSettings,
-  type NodeAnchorGraphEvents
-} from "./useNodeAnchorGraph"
 import {
   computed,
   ref,
   watchEffect,
   type Ref
 } from 'vue'
+import type {
+  SchemaItem,
+  GNode,
+  GraphOptions
+} from "@graph/types"
+import {
+  useNodeAnchorGraph,
+  type NodeAnchorGraphTheme,
+  type NodeAnchor,
+  type NodeAnchorGraphSettings,
+  type NodeAnchorGraphEvents
+} from "@graph/useNodeAnchorGraph"
 
 export type EditSettings = {
   /**

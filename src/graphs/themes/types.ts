@@ -1,4 +1,4 @@
-import type { NodeAnchorGraphTheme } from "../useNodeAnchorGraph"
+import type { NodeAnchorGraphTheme } from "@graph/compositions/useNodeAnchorGraph"
 
 export type GraphTheme = NodeAnchorGraphTheme
 export type GraphThemeKey = keyof GraphTheme

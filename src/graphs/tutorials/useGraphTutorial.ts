@@ -3,19 +3,16 @@ import {
   ref,
   toRef,
   watch,
-  type MaybeRef
 } from "vue";
-import type { Graph } from "../useGraph";
-import {
-  DEFAULT_HIGHLIGHT_CLASS_NAME,
-  DEFAULT_INTERVAL
-} from "./types";
+import type { MaybeRef } from "vue";
+import type { Graph } from "@graph/types";
+import { DEFAULT_HIGHLIGHT_CLASS_NAME, DEFAULT_INTERVAL } from "@graph/tutorials/types";
 import type {
   TutorialSequence,
   IntervalStep,
   GraphEventStep,
   TutorialStep,
-} from "./types";
+} from "@graph/tutorials/types";
 
 /**
  * creates functionality for an interactive tutorial sequence for a graph
@@ -33,7 +30,6 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
   const stepIndex = ref(0);
   const sequence = toRef(tutorialSequence);
 
-  let stepSetupTimeoutID: number;
   let cleanupHighlight: () => void;
   let cleanupStep: () => void;
 

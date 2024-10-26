@@ -3,12 +3,11 @@ import type {
   FullThemeMap,
   GraphTheme,
   GraphThemeKey
-} from './theme/types'
+} from '@graph/themes/types'
 import type {
   BaseGraphEdgeTheme,
   BaseGraphNodeTheme,
-  BaseGraphTheme
-} from './themes'
+} from '@graph/themes/index'
 import type {
   MaybeGetter,
   SchemaItem,
@@ -16,8 +15,8 @@ import type {
   GEdge,
   MappingsToEventBus,
   UnwrapMaybeGetter
-} from './types'
-import type { BaseGraphEvents } from './useBaseGraph'
+} from '@graph/types'
+import type { BaseGraphEvents } from '@graph/compositions/useBaseGraph'
 
 /**
   unwraps MaybeGetter type into a value of type T

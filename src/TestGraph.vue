@@ -6,7 +6,7 @@
     nodesEdgesToAdjList,
     type AdjacencyList,
   } from "@graph/converters";
-  import { useBasicsTutorial } from "@graph/tutorial/useTutorial";
+  import { useBasicsTutorial } from "@/graphs/tutorials/useTutorial";
   import { useUserPreferredTheme } from "./useGraph/themes";
   import { useGraphBtns } from "@/useGraph/button/useGraphBtns";
   import GraphBtns from "@/useGraph/button/GraphBtns.vue";

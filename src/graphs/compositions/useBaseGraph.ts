@@ -35,7 +35,7 @@ import { getEdgeSchematic } from './schematics/edge';
 import {
   themes,
   type BaseGraphTheme,
-} from '@graph/theme/index';
+} from '@/graphs/themes/index';
 import { engageTextarea } from './textarea';
 import { getInitialThemeMap } from './theme/types';
 

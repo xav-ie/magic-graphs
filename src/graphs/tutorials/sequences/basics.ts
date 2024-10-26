@@ -1,8 +1,8 @@
-import type { Graph } from "@/useGraph/useGraph";
-import type { TutorialStep } from "../types";
-import { GRAPH_BUTTON_ID } from "@/useGraph/button/types";
-import { useTheme } from "@/useGraph/theme/useTheme";
-import { PURPLE_700, RED_700 } from "@/utils/colors";
+import type { Graph } from "@graph/types";
+import type { TutorialStep } from "@graph/tutorials/types";
+import { GRAPH_BUTTON_ID } from "@graph/buttons/types";
+import { useTheme } from "@graph/themes/useTheme";
+import { PURPLE_700, RED_700 } from "@utils/colors";
 
 /**
  * pre-defined tutorial steps for basic graph editing

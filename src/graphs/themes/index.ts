@@ -1,6 +1,10 @@
-import type { GNode, NodeGetterOrValue, EdgeGetterOrValue } from "./types"
-import type { SupportedNodeShapes } from "./schematics/node"
-import type { TextFontWeight } from "@/shapes/types"
+import type {
+  GNode,
+  NodeGetterOrValue,
+  EdgeGetterOrValue
+} from "@graph/types"
+import type { SupportedNodeShapes } from "@graph/schematics/node"
+import type { TextFontWeight } from "@shape/types"
 import {
   BLACK,
   WHITE,
@@ -16,10 +20,7 @@ import {
   BLUE_900,
   RED_700,
   RED_800,
-} from "@/utils/colors"
-import type { Graph } from "./useGraph"
-import { useDark } from "@vueuse/core"
-import { watch } from "vue"
+} from "@utils/colors"
 
 export type BaseGraphNodeTheme = {
   nodeSize: number,

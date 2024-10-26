@@ -1,7 +1,7 @@
 import { watch } from "vue"
 import { useDark } from "@vueuse/core"
-import type { Graph } from "@graph/useGraph"
-import { themes } from "./index"
+import type { Graph } from "@graph/types"
+import { themes } from "@graph/themes/index"
 
 /**
  * WARNING - EXPERIMENTAL
