@@ -1,9 +1,9 @@
 import { onUnmounted } from "vue";
-import type { Graph } from "../useGraph";
+import type { Graph } from "@graph/types";
 import type {
   GraphTheme,
   GraphThemeKey,
-} from "./types";
+} from "@graph/themes/types";
 
 export const useTheme = (graph: Graph, id: string) => {
 
