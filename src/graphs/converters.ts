@@ -1,4 +1,9 @@
-import type { GNode, GEdge } from '@graph/types';
+import type {
+  GNode,
+  GEdge,
+  Graph
+} from '@graph/types';
+import { onUnmounted, ref } from 'vue';
 
 export type AdjacencyList = Record<string, string[]>;
 
@@ -21,6 +26,28 @@ export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes.red
     });
   return acc;
 }, {});
+
+/**
+ * a reactively updated adjacency list based on the graph's nodes and edges
+ *
+ * @param graph - the graph instance
+ * @returns a ref to the adjacency list
+ */
+export const useAdjacencyList = (graph: Graph) => {
+  const adjList = ref<AdjacencyList>({});
+
+  const makeAdjList = () => {
+    const { nodes, edges } = graph;
+    adjList.value = nodesEdgesToAdjList(nodes.value, edges.value);
+  }
+
+  makeAdjList();
+
+  graph.subscribe('onStructureChange', makeAdjList);
+  onUnmounted(() => graph.unsubscribe('onStructureChange', makeAdjList));
+
+  return adjList;
+};
 
 export const adjListToNodesEdges = (adjList: AdjacencyList) => {
   const nodes = Object.keys(adjList).map(() => ({} as GNode));

@@ -1,36 +1,39 @@
 <script setup lang="ts">
   import { ref, computed, watch } from "vue";
   import { useLocalStorage } from "@vueuse/core";
-  import type { AdjacencyList } from "@graph/converters";
+  import { useAdjacencyList } from "@graph/converters";
+  import { useGraph } from "@graph/useGraph";
   import type { Trace } from "./types";
   import { algos } from "./algos";
   import CodeEditor from "./components/CodeEditor.vue";
   import TraceOutput from "./components/TraceOutput.vue";
+  import Graph from "@graph/Graph.vue";
 
   const trace = ref<Trace>([]);
 
-  const props = defineProps<{
-    graph: AdjacencyList;
-  }>();
+  const graphEl = ref<HTMLCanvasElement>();
+  const setGraphEl = (el: HTMLCanvasElement | undefined) => {
+    graphEl.value = el;
+  };
+
+  const graph = useGraph(graphEl);
+  const adjacencyList = useAdjacencyList(graph);
 
   /**
    * a graph with traps to collect the traversal trace
    */
   const trappedGraph = computed(
     () =>
-      new Proxy(
-        { ...props.graph },
-        {
-          get(target, prop, receiver) {
-            trace.value.push(prop);
-            if (trace.value.length > 100)
-              throw new Error("Infinite loop detected");
-            if (!Reflect.has(target, prop))
-              throw new Error(`Node "${prop.toString()}" not found in graph`);
-            return Reflect.get(target, prop, receiver);
-          },
-        }
-      )
+      new Proxy(adjacencyList.value, {
+        get(target, prop, receiver) {
+          trace.value.push(prop);
+          if (trace.value.length > 100)
+            throw new Error("Infinite loop detected");
+          if (!Reflect.has(target, prop))
+            throw new Error(`Node "${prop.toString()}" not found in graph`);
+          return Reflect.get(target, prop, receiver);
+        },
+      })
   );
 
   const argName = "graph";
@@ -86,29 +89,36 @@
 </script>
 
 <template>
+  <div class="w-full h-full relative">
 
+    <!-- graph -->
+    <div class="h-[50%]">
+      <Graph @graph-ref="setGraphEl" />
+    </div>
 
+    <!-- switch out algorithm -->
+    <div class="h-[5%] flex items-center gap-3 px-3 py-2 bg-gray-500">
+      <button
+        v-for="(algo, algoName) in algos"
+        @click="decoratedAlgorithm = getDecoratedAlgorithm(algo)"
+        :key="algoName"
+        class="text-white bg-gray-700 px-5 py-1 font-bold text-md rounded-full hover:bg-gray-800"
+      >
+        {{ algoName }}
+      </button>
+    </div>
 
-  <!-- switch out algorithm -->
-  <div class="flex gap-3 px-3 py-2 bg-[#282c34]">
-    <button
-      v-for="(algo, algoName) in algos"
-      @click="decoratedAlgorithm = getDecoratedAlgorithm(algo)"
-      :key="algoName"
-      class="bg-gray-700 px-5 py-1 font-bold text-md rounded-full hover:bg-gray-800"
-    >
-      {{ algoName }}
-    </button>
-  </div>
+    <!-- code editor -->
+    <div class="h-[45%] text-lg">
+      <CodeEditor v-model="decoratedAlgorithm" />
+    </div>
 
-  <!-- code editor -->
-  <CodeEditor />
-
-  <!-- traversal trace output -->
-  <div class="px-6 py-2 bg-gray-900 pt-8 pb-12 rounded-t-2xl">
-    <TraceOutput
-      :trace="trace"
-      :error="algorithmError"
-    />
+    <!-- traversal trace output -->
+    <div class="absolute bottom-0 h-[10%] w-full">
+      <TraceOutput
+        :trace="trace"
+        :error="algorithmError"
+      />
+    </div>
   </div>
 </template>

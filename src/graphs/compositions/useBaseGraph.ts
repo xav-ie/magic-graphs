@@ -300,9 +300,9 @@ export const useBaseGraph =(
     canvas.value.style.backgroundColor = theme.value.graphBgColor
   }
 
-  onMounted(() => {
+  const initCanvas = () => {
     if (!canvas.value) {
-      throw new Error('Canvas element not found')
+      throw new Error('canvas element not found')
     }
 
     canvas.value.style.backgroundColor = theme.value.graphBgColor
@@ -315,7 +315,9 @@ export const useBaseGraph =(
     for (const [event, listeners] of Object.entries(keyboardEvents) as KeyboardEventEntries) {
       document.addEventListener(event, listeners)
     }
-  })
+  }
+
+  onMounted(initCanvas)
 
   onBeforeUnmount(() => {
     if (!canvas.value) {

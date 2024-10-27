@@ -45,7 +45,8 @@ type FuncExtract<T, U> = ModifiedExtract<T, U, () => void>
 type ThemeParams<T extends GraphThemeKey> = Parameters<FuncExtract<GraphTheme[T], Function>>
 
 /**
- * if the theme properties getter has no parameters, return an empty array, otherwise return the parameters
+ * if the theme properties getter has no parameters
+ * return an empty array, otherwise return the parameters
  */
 type ResolvedThemeParams<T extends GraphThemeKey> = ThemeParams<T> extends [] ? [] : Exclude<ThemeParams<T>, []>
 
@@ -80,7 +81,7 @@ export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: Mappings
     eventBus[event].push(fn)
   },
   unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => {
-    eventBus[event] = eventBus[event].filter((f) => f !== fn) as T[K][]
+    eventBus[event] = eventBus[event].filter((f: T[K]) => f !== fn)
   },
 })
 
@@ -153,7 +154,7 @@ export const getFromToNodes = (edge: GEdge, nodes: GNode[]) => {
 
   const from = nodes.find(node => node.label === edge.from)
   const to = nodes.find(node => node.label === edge.to)
-  if (!from || !to) throw new Error('Nodes not found')
+  if (!from || !to) throw new Error('nodes not found')
 
   return { from, to }
 }
