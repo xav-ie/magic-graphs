@@ -418,12 +418,19 @@ export const useBaseGraph =(
 
   const addEdge = (edge: Omit<GEdge, 'id'>) => {
 
-    const directedEdgeCond = (e: GEdge) => e.from === edge.from && e.to === edge.to
-    const undirectedEdgeCond = (e: GEdge) => (e.from === edge.from && e.to === edge.to) || (e.from === edge.to && e.to === edge.from)
-    const edgeExists = edge.type === 'directed' ? edges.value.some(directedEdgeCond) : edges.value.some(undirectedEdgeCond)
+    const undirectedEdgeOnPath = edges.value.find(e => {
+      const connectedToFrom = e.to === edge.to && e.from === edge.from
+      const connectedFromTo = e.to === edge.from && e.from === edge.to
+      return (connectedToFrom || connectedFromTo) && e.type === 'undirected'
+    })
 
-    if (edgeExists) return
-    if (edge.type === 'undirected' && edge.from === edge.to) return
+    if (undirectedEdgeOnPath) return
+
+    const directedEdgeOnPath = edges.value.find(e => {
+      return e.to === edge.to && e.from === edge.from
+    })
+
+    if (directedEdgeOnPath) return
 
     const newEdge: GEdge = {
       to: edge.to,
