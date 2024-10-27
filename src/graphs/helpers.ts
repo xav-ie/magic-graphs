@@ -30,14 +30,19 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
 }
 
 /**
- * slightly modified extract utility useful for removing the never type from the extracts output
+ * slightly modified extract utility useful for replacing the never type with R.
  */
-type SpecialExtract<T, U> = T extends U ? T : () => void;
+type ModifiedExtract<T, U, R = never> = T extends U ? T : R
+
+/**
+ * implements ModifiedExtract with a noop function as the replacement type.
+ */
+type FuncExtract<T, U> = ModifiedExtract<T, U, () => void>
 
 /**
  * extracts the parameters out of a graph theme properties getter function
  */
-type ThemeParams<T extends GraphThemeKey> = Parameters<SpecialExtract<GraphTheme[T], Function>>
+type ThemeParams<T extends GraphThemeKey> = Parameters<FuncExtract<GraphTheme[T], Function>>
 
 /**
  * if the theme properties getter has no parameters, return an empty array, otherwise return the parameters
