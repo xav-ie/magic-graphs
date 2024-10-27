@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import { ref } from "vue";
-  import { useWindowSize } from "@vueuse/core";
   import { useGraph } from "@graph/useGraph";
   import { nodesEdgesToAdjList } from "@graph/converters";
   import type { AdjacencyList } from "@graph/converters";
@@ -10,21 +9,28 @@
   import { useUserPreferredTheme } from "@graph/themes/useUserPreferredTheme";
   import { useGraphBtns } from "@graph/buttons/useGraphBtns";
   import GraphBtns from "@graph/buttons/GraphBtns.vue";
+  import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
+  import Graph from "@graph/Graph.vue";
+  import { getRandomInRange } from "@graph/helpers";
+  import colors from "@utils/colors";
 
-  const canvas = ref<HTMLCanvasElement>();
+  const graphElement = ref<HTMLCanvasElement>();
 
   const emit = defineEmits<{
     (e: "update:modelValue", value: AdjacencyList): void;
   }>();
 
-  const { width, height } = useWindowSize();
-
-  const graph = useGraph(canvas, {
-    theme: {},
-    settings: {},
-  });
+  const graph = useGraph(graphElement);
 
   const tutorialControls = useBasicsTutorial(graph);
+
+  const { toggleColorize, isColorized } = useBFSColorizer(graph);
+  const colorizeBtn = {
+    label: () => (isColorized.value ? "Stop Colorizing" : "Colorize"),
+    color: () => (isColorized.value ? "red" : "pink"),
+    action: toggleColorize,
+    id: "toggle-bfs-colorize" as any,
+  };
 
   graph.subscribe("onStructureChange", (nodes, edges) =>
     emit("update:modelValue", nodesEdgesToAdjList(nodes, edges))
@@ -36,6 +42,7 @@
     toggleEdgeType,
     changeEdgeWeight,
     clearLocalStorage,
+    crazyBtn,
   } = useGraphBtns(graph);
 
   const btns = [
@@ -44,33 +51,32 @@
     toggleUserEditable,
     toggleEdgeType,
     changeEdgeWeight,
+    colorizeBtn,
+
+    crazyBtn,
   ];
 
   useUserPreferredTheme(graph);
 </script>
 
 <template>
-  <div :class="['relative', `w-[${width}px]`, `h-[${height}px]`]">
+  <div class="relative w-full h-full">
+
+    <div class="w-full h-full absolute">
+      <Graph @graph-ref="(el) => graphElement = el" />
+    </div>
 
     <div class="absolute flex gap-2 m-2">
       <GraphBtns :btns="btns" />
     </div>
 
-    <div class="bottom-0 absolute flex gap-2 m-2">
+    <!-- <div class="bottom-0 absolute flex gap-2 m-2">
       <TutorialControls :tutorial="tutorialControls" />
     </div>
 
     <div class="absolute w-full dark:text-white bottom-[10%] grid place-items-center">
       <TutorialHint :tutorial="tutorialControls" />
-    </div>
+    </div> -->
 
-    <div>
-      <canvas
-        :width="width"
-        :height="height"
-        ref="canvas"
-        :class="`w-[${width}px] h-[${height}px]`"
-      ></canvas>
-    </div>
   </div>
 </template>

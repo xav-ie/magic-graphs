@@ -8,8 +8,6 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-
       "@utils/*": ["./src/utils/*"],
       "@colors": ["./src/utils/colors.ts"],
 

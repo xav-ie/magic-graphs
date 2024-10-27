@@ -134,7 +134,19 @@ export const useGraphBtns = (graph: Graph) => {
     id: GRAPH_BUTTON_ID.clearLocalStorage,
   };
 
+  const crazyBtn: GButton = {
+    label: () => 'Clone Search Visualizer Graph',
+    action: () => graph.settings.value.persistent = {
+      storageKey: "search-visualizer-graph"
+    },
+    color: () => 'amber',
+    id: 'temp',
+  };
+
   return {
+
+    crazyBtn,
+
     // base theme
     changeNodeSize,
 

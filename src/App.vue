@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import TestGraph from './TestGraph.vue';
+import SearchVisualizer from '@product/search-visualizer/Main.vue'
 
-const graph = ref()
 </script>
 
 <template>
-  <TestGraph v-model="graph" />
+  <div class="w-[100vw] h-[100vh] relative">
+    <TestGraph />
+    <SearchVisualizer />
+  </div>
 </template>
 
 <style>

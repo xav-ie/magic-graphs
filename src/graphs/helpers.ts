@@ -19,7 +19,8 @@ import type {
 import type { BaseGraphEvents } from '@graph/compositions/useBaseGraph'
 
 /**
-  unwraps MaybeGetter type into a value of type T
+  unwraps MaybeGetter type into a value of type T.
+  @returns UnwrapMaybeGetter<MaybeGetter<T, K>> <-> T
 */
 export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
   if (typeof value === 'function') {
@@ -29,17 +30,23 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
 }
 
 /**
- * slightly modified extract utility useful for removing the never type from the extracts output
+ * slightly modified extract utility useful for replacing the never type with R.
  */
-type SpecialExtract<T, U> = T extends U ? T : () => void;
+type ModifiedExtract<T, U, R = never> = T extends U ? T : R
+
+/**
+ * implements ModifiedExtract with a noop function as the replacement type.
+ */
+type FuncExtract<T, U> = ModifiedExtract<T, U, () => void>
 
 /**
  * extracts the parameters out of a graph theme properties getter function
  */
-type ThemeParams<T extends GraphThemeKey> = Parameters<SpecialExtract<GraphTheme[T], Function>>
+type ThemeParams<T extends GraphThemeKey> = Parameters<FuncExtract<GraphTheme[T], Function>>
 
 /**
- * if the theme properties getter has no parameters, return an empty array, otherwise return the parameters
+ * if the theme properties getter has no parameters
+ * return an empty array, otherwise return the parameters
  */
 type ResolvedThemeParams<T extends GraphThemeKey> = ThemeParams<T> extends [] ? [] : Exclude<ThemeParams<T>, []>
 
@@ -74,7 +81,7 @@ export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: Mappings
     eventBus[event].push(fn)
   },
   unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => {
-    eventBus[event] = eventBus[event].filter((f) => f !== fn) as T[K][]
+    eventBus[event] = eventBus[event].filter((f: T[K]) => f !== fn)
   },
 })
 
@@ -147,7 +154,7 @@ export const getFromToNodes = (edge: GEdge, nodes: GNode[]) => {
 
   const from = nodes.find(node => node.label === edge.from)
   const to = nodes.find(node => node.label === edge.to)
-  if (!from || !to) throw new Error('Nodes not found')
+  if (!from || !to) throw new Error('nodes not found')
 
   return { from, to }
 }

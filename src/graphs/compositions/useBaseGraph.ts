@@ -35,7 +35,7 @@ import { engageTextarea } from '@graph/textarea';
 import { getInitialThemeMap } from '@graph/themes/types';
 import { drawShape } from '@shape/draw';
 import { getTextAreaLocation } from '@shape/draw/text';
-import { hitboxes, isInTextarea } from '@/shapes/hitboxes';
+import { hitboxes, isInTextarea } from '@shape/hitboxes';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -300,9 +300,9 @@ export const useBaseGraph =(
     canvas.value.style.backgroundColor = theme.value.graphBgColor
   }
 
-  onMounted(() => {
+  const initCanvas = () => {
     if (!canvas.value) {
-      throw new Error('Canvas element not found')
+      throw new Error('canvas element not found')
     }
 
     canvas.value.style.backgroundColor = theme.value.graphBgColor
@@ -315,7 +315,9 @@ export const useBaseGraph =(
     for (const [event, listeners] of Object.entries(keyboardEvents) as KeyboardEventEntries) {
       document.addEventListener(event, listeners)
     }
-  })
+  }
+
+  onMounted(initCanvas)
 
   onBeforeUnmount(() => {
     if (!canvas.value) {

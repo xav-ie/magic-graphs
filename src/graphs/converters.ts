@@ -1,26 +1,53 @@
-import type { GNode, GEdge } from '@graph/types';
+import type {
+  GNode,
+  GEdge,
+  Graph
+} from '@graph/types';
+import { onUnmounted, ref } from 'vue';
 
-export type AdjacencyList = Record<number, number[]>;
+export type AdjacencyList = Record<string, string[]>;
 
 export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes.reduce<AdjacencyList>((acc, node) => {
-  acc[Number(node.label)] = edges
+  acc[node.label] = edges
     .filter(edge => {
       if (edge.type === 'undirected') {
-        return Number(edge.from) === Number(node.label) || Number(edge.to) === Number(node.label);
+        return (edge.from) === (node.label) || (edge.to) === (node.label);
       }
-      return Number(edge.from) === Number(node.label)
+      return (edge.from) === (node.label)
     })
     .map(edge => {
       if (edge.type === 'undirected') {
-        if (Number(edge.from) === Number(node.label)) {
-          return Number(edge.to)
+        if ((edge.from) === (node.label)) {
+          return (edge.to)
         }
-        return Number(edge.from)
+        return (edge.from)
       }
-      return Number(edge.to)
+      return (edge.to)
     });
   return acc;
 }, {});
+
+/**
+ * a reactively updated adjacency list based on the graph's nodes and edges
+ *
+ * @param graph - the graph instance
+ * @returns a ref to the adjacency list
+ */
+export const useAdjacencyList = (graph: Graph) => {
+  const adjList = ref<AdjacencyList>({});
+
+  const makeAdjList = () => {
+    const { nodes, edges } = graph;
+    adjList.value = nodesEdgesToAdjList(nodes.value, edges.value);
+  }
+
+  makeAdjList();
+
+  graph.subscribe('onStructureChange', makeAdjList);
+  onUnmounted(() => graph.unsubscribe('onStructureChange', makeAdjList));
+
+  return adjList;
+};
 
 export const adjListToNodesEdges = (adjList: AdjacencyList) => {
   const nodes = Object.keys(adjList).map(() => ({} as GNode));
