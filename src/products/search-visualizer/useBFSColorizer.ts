@@ -4,11 +4,11 @@ import {
   onUnmounted,
 } from 'vue';
 import type { GNode, Graph } from '@graph/types';
+import { getValue } from '@graph/helpers';
 import { useTheme } from '@graph/themes/useTheme';
 import colors from '@colors';
 import { SEARCH_VISUALIZER_THEME_ID } from './types';
 import { useBFSLevels } from './useBFSLevels';
-import { getValue } from '@/graphs/helpers';
 
 const defaultColorPalette = [
   colors.RED_600,
@@ -26,13 +26,13 @@ type BFSColorizerOptions = {
   colorPalette: string[],
 }
 
-export const bfsNodeColorizer = (
+export const useBFSColorizer = (
   graph: Graph,
   optionArg: Partial<BFSColorizerOptions> = {}
 ) => {
 
   const defaultOptions: BFSColorizerOptions = {
-    startNode: graph.nodes.value[0]?.id ?? 1,
+    startNode: graph.nodes.value[0]?.label ?? '1',
     colorPalette: defaultColorPalette,
   }
 
@@ -49,6 +49,7 @@ export const bfsNodeColorizer = (
     const startNodeInGraph = graph.nodes.value.find(node => node.id === startNode.value);
     if (!startNodeInGraph) {
       const [ newStartNode ] = graph.nodes.value;
+      console.log('start node removed, shifting to', newStartNode.label);
       startNode.value = newStartNode.label;
     }
   }
@@ -63,11 +64,13 @@ export const bfsNodeColorizer = (
 
   const colorize = () => {
     setTheme('nodeBorderColor', color);
+    setTheme('nodeAnchorColor', color);
     isColorized.value = true;
   }
 
   const decolorize = () => {
     removeTheme('nodeBorderColor');
+    removeTheme('nodeAnchorColor');
     isColorized.value = false;
   }
 

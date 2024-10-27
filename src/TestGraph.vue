@@ -10,6 +10,7 @@
   import { useUserPreferredTheme } from "@graph/themes/useUserPreferredTheme";
   import { useGraphBtns } from "@graph/buttons/useGraphBtns";
   import GraphBtns from "@graph/buttons/GraphBtns.vue";
+  import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
 
   const canvas = ref<HTMLCanvasElement>();
 
@@ -25,6 +26,14 @@
   });
 
   const tutorialControls = useBasicsTutorial(graph);
+
+  const { toggleColorize, isColorized } = useBFSColorizer(graph);
+  const colorizeBtn = {
+    label: () => (isColorized.value ? "Stop Colorizing" : "Colorize"),
+    color: () => (isColorized.value ? "red" : "pink"),
+    action: toggleColorize,
+    id: "toggle-bfs-colorize" as any,
+  };
 
   graph.subscribe("onStructureChange", (nodes, edges) =>
     emit("update:modelValue", nodesEdgesToAdjList(nodes, edges))
@@ -44,6 +53,7 @@
     toggleUserEditable,
     toggleEdgeType,
     changeEdgeWeight,
+    colorizeBtn,
   ];
 
   useUserPreferredTheme(graph);

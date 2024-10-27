@@ -35,7 +35,7 @@ import { engageTextarea } from '@graph/textarea';
 import { getInitialThemeMap } from '@graph/themes/types';
 import { drawShape } from '@shape/draw';
 import { getTextAreaLocation } from '@shape/draw/text';
-import { hitboxes, isInTextarea } from '@/shapes/hitboxes';
+import { hitboxes, isInTextarea } from '@shape/hitboxes';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */

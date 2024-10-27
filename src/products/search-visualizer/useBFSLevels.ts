@@ -24,8 +24,9 @@ export const useBFSLevels = (graph: Graph, startNodeInput: GNode['label']) => {
   const startNode = ref(startNodeInput);
 
   const computeBfsLevels = () => {
+    bfsLevelRecord.value = {};
     const adjList = nodesEdgesToAdjList(graph.nodes.value, graph.edges.value)
-    if (!adjList[startNode.value]) return
+    if (!adjList[startNode.value]) return console.log('start node not found in graph', startNode.value);
 
     let queue = [startNode.value];
     const visited = new Set(queue);
