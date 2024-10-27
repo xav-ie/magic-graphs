@@ -86,15 +86,18 @@
 </script>
 
 <template>
+
+
+
   <!-- switch out algorithm -->
   <div class="flex gap-3 px-3 py-2 bg-[#282c34]">
     <button
-      v-for="(val, key) in algos"
-      @click="decoratedAlgorithm = getDecoratedAlgorithm(val)"
-      :key="key"
+      v-for="(algo, algoName) in algos"
+      @click="decoratedAlgorithm = getDecoratedAlgorithm(algo)"
+      :key="algoName"
       class="bg-gray-700 px-5 py-1 font-bold text-md rounded-full hover:bg-gray-800"
     >
-      {{ key }}
+      {{ algoName }}
     </button>
   </div>
 

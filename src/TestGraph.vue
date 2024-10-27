@@ -11,19 +11,16 @@
   import { useGraphBtns } from "@graph/buttons/useGraphBtns";
   import GraphBtns from "@graph/buttons/GraphBtns.vue";
   import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
+  import Graph from "@graph/Graph.vue";
 
-  const canvas = ref<HTMLCanvasElement>();
+  const graphElement = ref<HTMLCanvasElement>();
+  const { width, height } = useWindowSize();
 
   const emit = defineEmits<{
     (e: "update:modelValue", value: AdjacencyList): void;
   }>();
 
-  const { width, height } = useWindowSize();
-
-  const graph = useGraph(canvas, {
-    theme: {},
-    settings: {},
-  });
+  const graph = useGraph(graphElement);
 
   const tutorialControls = useBasicsTutorial(graph);
 
@@ -61,7 +58,6 @@
 
 <template>
   <div :class="['relative', `w-[${width}px]`, `h-[${height}px]`]">
-
     <div class="absolute flex gap-2 m-2">
       <GraphBtns :btns="btns" />
     </div>
@@ -74,13 +70,10 @@
       <TutorialHint :tutorial="tutorialControls" />
     </div> -->
 
-    <div>
-      <canvas
-        :width="width"
-        :height="height"
-        ref="canvas"
-        :class="`w-[${width}px] h-[${height}px]`"
-      ></canvas>
-    </div>
+    <Graph
+      @graph-ref="(el) => graphElement = el"
+      :width="width"
+      :height="height"
+    />
   </div>
 </template>
