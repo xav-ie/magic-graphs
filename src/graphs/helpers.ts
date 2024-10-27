@@ -19,7 +19,8 @@ import type {
 import type { BaseGraphEvents } from '@graph/compositions/useBaseGraph'
 
 /**
-  unwraps MaybeGetter type into a value of type T
+  unwraps MaybeGetter type into a value of type T.
+  @returns UnwrapMaybeGetter<MaybeGetter<T, K>> <-> T
 */
 export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
   if (typeof value === 'function') {
