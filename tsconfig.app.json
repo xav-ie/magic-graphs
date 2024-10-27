@@ -11,6 +11,7 @@
       "@/*": ["./src/*"],
 
       "@utils/*": ["./src/utils/*"],
+      "@colors": ["./src/utils/colors.ts"],
 
       "@graph/*": ["./src/graphs/*"],
       "@shape/*": ["./src/shapes/*"],

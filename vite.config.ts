@@ -13,6 +13,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
 
       '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
+      '@colors': fileURLToPath(new URL('./src/utils/colors.ts', import.meta.url)),
 
       '@graph': fileURLToPath(new URL('./src/graphs', import.meta.url)),
       '@shape': fileURLToPath(new URL('./src/shapes', import.meta.url)),
