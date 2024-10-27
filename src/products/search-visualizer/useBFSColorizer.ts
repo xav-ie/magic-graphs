@@ -21,36 +21,22 @@ const defaultColorPalette = [
   colors.PURPLE_600,
 ];
 
-type BFSColorizerOptions = {
-  startNode: GNode['label'],
-  colorPalette: string[],
-}
-
-export const useBFSColorizer = (
-  graph: Graph,
-  optionArg: Partial<BFSColorizerOptions> = {}
-) => {
-
-  const defaultOptions: BFSColorizerOptions = {
-    startNode: graph.nodes.value[0]?.label ?? '1',
-    colorPalette: defaultColorPalette,
-  }
-
-  const options = {
-    ...defaultOptions,
-    ...optionArg
-  }
+export const useBFSColorizer = (graph: Graph) => {
 
   const isColorized = ref(false);
   const { setTheme, removeTheme } = useTheme(graph, SEARCH_VISUALIZER_THEME_ID);
-  const { bfsLevelRecord, startNode } = useBFSLevels(graph, options.startNode);
+  const { bfsLevelRecord, startNode } = useBFSLevels(graph, graph.nodes.value[0]?.label);
 
   const shiftStartNodeIfNecessary = () => {
+    if (startNode.value === undefined) {
+      const [ newStartNode ] = graph.nodes.value;
+      if (newStartNode) startNode.value = newStartNode.label;
+    }
+
     const startNodeInGraph = graph.nodes.value.find(node => node.id === startNode.value);
     if (!startNodeInGraph) {
       const [ newStartNode ] = graph.nodes.value;
-      console.log('start node removed, shifting to', newStartNode.label);
-      startNode.value = newStartNode.label;
+      startNode.value = newStartNode ? newStartNode.label : undefined;
     }
   }
 
@@ -58,7 +44,7 @@ export const useBFSColorizer = (
     const level = bfsLevelRecord.value[node.label];
     // disjoint from bfs tree
     if (level === undefined) return getValue(graph.theme.value.nodeBorderColor, node);
-    const colors = options.colorPalette;
+    const colors = defaultColorPalette;
     return colors[level % colors.length];
   }
 
@@ -79,7 +65,11 @@ export const useBFSColorizer = (
   })
 
   graph.subscribe('onNodeRemoved', shiftStartNodeIfNecessary);
-  onUnmounted(() => graph.unsubscribe('onNodeRemoved', shiftStartNodeIfNecessary));
+  graph.subscribe('onNodeAdded', shiftStartNodeIfNecessary);
+  onUnmounted(() => {
+    graph.unsubscribe('onNodeRemoved', shiftStartNodeIfNecessary);
+    graph.unsubscribe('onNodeAdded', shiftStartNodeIfNecessary);
+  });
 
   return {
     isColorized,

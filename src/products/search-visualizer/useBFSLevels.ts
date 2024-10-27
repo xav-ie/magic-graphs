@@ -1,10 +1,9 @@
 import {
   ref,
-  toRef,
+  watch,
   onUnmounted,
   readonly,
 } from 'vue';
-import type { MaybeRefOrGetter } from 'vue';
 import type { GNode, Graph } from '@graph/types';
 import { nodesEdgesToAdjList } from '@graph/converters';
 
@@ -18,15 +17,16 @@ export type BFSLevelRecord = Record<GNode['label'], number>;
  * @param startNodeInput start node to compute BFS levels from
  * @returns bfsLevelRecord reactive record of node id -> bfs level and a reactive start node
  */
-export const useBFSLevels = (graph: Graph, startNodeInput: GNode['label']) => {
+export const useBFSLevels = (graph: Graph, startNodeInput?: GNode['label']) => {
 
   const bfsLevelRecord = ref<BFSLevelRecord>({});
-  const startNode = ref(startNodeInput);
+  const startNode = ref<GNode['label'] | undefined>(startNodeInput);
 
   const computeBfsLevels = () => {
     bfsLevelRecord.value = {};
+    if (!startNode.value) return;
     const adjList = nodesEdgesToAdjList(graph.nodes.value, graph.edges.value)
-    if (!adjList[startNode.value]) return console.log('start node not found in graph', startNode.value);
+    if (!adjList[startNode.value]) return;
 
     let queue = [startNode.value];
     const visited = new Set(queue);
@@ -55,6 +55,7 @@ export const useBFSLevels = (graph: Graph, startNodeInput: GNode['label']) => {
 
   graph.subscribe('onStructureChange', computeBfsLevels);
   onUnmounted(() => graph.unsubscribe('onStructureChange', computeBfsLevels));
+  watch(startNode, computeBfsLevels);
 
   return {
     bfsLevelRecord: readonly(bfsLevelRecord),
