@@ -13,7 +13,10 @@ const props = defineProps<{
   graph: AdjacencyList;
 }>();
 
-const graphProxy = computed(() => new Proxy({ ...props.graph }, {
+/**
+ * a graph with traps to collect the traversal trace
+ */
+const trappedGraph = computed(() => new Proxy({ ...props.graph }, {
   get(target, prop, receiver) {
     trace.value.push(prop);
     if (trace.value.length > 100) throw new Error('Infinite loop detected');
@@ -56,14 +59,15 @@ const runAlgorithm = () => {
   try {
     algorithmError.value = '';
     trace.value = [];
-    algorithmFunc.value(graphProxy.value);
+    algorithmFunc.value(trappedGraph.value);
   } catch (error) {
     if (error && error instanceof Error) algorithmError.value = `${error.name}: ${error.message}`
+    else algorithmError.value = 'An unknown error occurred';
   }
 }
 
 watch(decoratedAlgorithm, runAlgorithm);
-watch(graphProxy, runAlgorithm);
+watch(trappedGraph, runAlgorithm);
 </script>
 
 <template>

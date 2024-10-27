@@ -1,23 +1,23 @@
 import type { GNode, GEdge } from '@graph/types';
 
-export type AdjacencyList = Record<number, number[]>;
+export type AdjacencyList = Record<string, string[]>;
 
 export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes.reduce<AdjacencyList>((acc, node) => {
-  acc[Number(node.label)] = edges
+  acc[node.label] = edges
     .filter(edge => {
       if (edge.type === 'undirected') {
-        return Number(edge.from) === Number(node.label) || Number(edge.to) === Number(node.label);
+        return (edge.from) === (node.label) || (edge.to) === (node.label);
       }
-      return Number(edge.from) === Number(node.label)
+      return (edge.from) === (node.label)
     })
     .map(edge => {
       if (edge.type === 'undirected') {
-        if (Number(edge.from) === Number(node.label)) {
-          return Number(edge.to)
+        if ((edge.from) === (node.label)) {
+          return (edge.to)
         }
-        return Number(edge.from)
+        return (edge.from)
       }
-      return Number(edge.to)
+      return (edge.to)
     });
   return acc;
 }, {});

@@ -1,16 +1,23 @@
+import { ref, toRef } from 'vue';
+import { nodesEdgesToAdjList } from '@graph/converters';
+import type { GNode, GEdge, Graph } from '@graph/types';
+import { useTheme } from '@graph/themes/useTheme';
+import colors from '@colors';
+import { SEARCH_VISUALIZER_THEME_ID } from './types';
 
-// WARNING - TOTALLY DEPRECATED AT THIS POINT. MUST CONVERT TO USING NEW APIs
-
-import { toRef } from 'vue';
-import { nodesEdgesToAdjList } from './graphConverters';
-import type { GNode, GEdge } from '@/useGraph/types';
-import type { Graph } from '@/useGraph/useGraph';
-import { getValue } from '@/useGraph/helpers';
-
-const defaultColorPalette = ['red', 'green', 'blue', 'yellow', 'purple', 'orange'];
+const defaultColorPalette = [
+  colors.RED_600,
+  colors.ORANGE_600,
+  colors.YELLOW_600,
+  colors.GREEN_600,
+  colors.TEAL_600,
+  colors.BLUE_600,
+  colors.INDIGO_600,
+  colors.PURPLE_600,
+];
 
 type BFSColorizerOptions = {
-  startNode: GNode['id'],
+  startNode: GNode['label'],
   colorPalette: string[],
 }
 
@@ -19,7 +26,13 @@ export const bfsNodeColorizer = (
   optionArg: Partial<BFSColorizerOptions> = {}
 ) => {
 
-  let isColorized = false;
+  const isColorized = ref(false);
+
+  const {
+    setTheme,
+    removeTheme,
+    removeAllThemes
+  } = useTheme(graph, SEARCH_VISUALIZER_THEME_ID);
 
   const defaultOptions: BFSColorizerOptions = {
     startNode: graph.nodes.value[0]?.id ?? 1,
@@ -31,45 +44,7 @@ export const bfsNodeColorizer = (
     ...optionArg
   });
 
-  const preserveGraphOptionsState = {
-    nodeBorderColor: graph.options.value.nodeBorderColor,
-  }
 
-  // node id -> bfs level
-  let bfsLevelRecord: Record<GNode['id'], number> = {};
-
-  const computeBfsLevels = (nodes: GNode[], edges: GEdge[]) => {
-    const adjList = nodesEdgesToAdjList(nodes, edges);
-    bfsLevelRecord = {};
-
-    if (!adjList[options.value.startNode]) {
-      return
-    }
-
-    let queue = [options.value.startNode];
-    const visited = new Set(queue);
-
-    let currentLevel = 0;
-
-    while (queue.length > 0) {
-      const nextQueue = [];
-
-      for (const node of queue) {
-        bfsLevelRecord[node] = currentLevel;
-
-        for (const neighbor of adjList[node]) {
-          if (!visited.has(neighbor)) {
-            visited.add(neighbor);
-            nextQueue.push(neighbor);
-          }
-        }
-      }
-
-      queue = [];
-      queue.push(...nextQueue);
-      currentLevel++;
-    }
-  }
 
   graph.subscribe('onStructureChange', computeBfsLevels);
   graph.subscribe('onNodeRemoved', (node) => {
