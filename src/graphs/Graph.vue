@@ -56,7 +56,7 @@
 
 <template>
   <div
-    ref="parent"
+    ref="parentEl"
     :class="parentClasses"
   >
     <canvas
