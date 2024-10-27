@@ -1,4 +1,4 @@
-export const implementations = {
+export const algos = {
   ['BFS']: `const visited = new Set()
   const q = [1]
   while (q.length > 0) {
