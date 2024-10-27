@@ -1,11 +1,6 @@
 <script setup lang="ts">
-  import {
-    ref,
-    useAttrs,
-    watch,
-    computed,
-    onMounted,
-  } from "vue";
+  import { ref, useAttrs, watch, computed, onMounted, onUnmounted } from "vue";
+  import type { WatchHandle } from "vue";
   import { useElementSize } from "@vueuse/core";
 
   const canvasWidth = ref(0);
@@ -24,25 +19,38 @@
 
   const parentClasses = computed<string | string[]>(() => {
     if (!classAttr) return DEFAULT_PARENT_CLASSES;
-    if (Array.isArray(classAttr) || typeof classAttr === "string") return classAttr;
-    throw new Error("invalid class attribute");
-  })
+    else if (Array.isArray(classAttr)) return classAttr;
+    else if (typeof classAttr === "string") return classAttr;
+    else throw new Error("invalid class attribute");
+  });
 
   const emitRef = (el: HTMLCanvasElement | undefined) => emit("graphRef", el);
 
-  const parent = ref<HTMLDivElement | null>(null);
-  const { height: parentWidth, width: parentHeight } = useElementSize(parent);
+  const parentEl = ref<HTMLDivElement>();
+  const { height: parentWidth, width: parentHeight } = useElementSize(parentEl);
 
   const setCanvasSize = () => {
-    if (!parent.value) return;
-    const { width, height } = parent.value.getBoundingClientRect();
-    canvasWidth.value = width || height;
+    if (!parentEl.value) throw new Error("parent element not found");
+    const { width, height } = parentEl.value.getBoundingClientRect();
+    canvasWidth.value = width;
     canvasHeight.value = height;
   };
 
+  let stopParentWidthWatch: WatchHandle;
+  let stopParentHeightWatch: WatchHandle;
+
   onMounted(() => {
-    watch(parentHeight, setCanvasSize, { immediate: true });
-    watch(parentWidth, setCanvasSize, { immediate: true });
+    stopParentWidthWatch = watch(parentHeight, setCanvasSize, {
+      immediate: true,
+    });
+    stopParentHeightWatch = watch(parentWidth, setCanvasSize, {
+      immediate: true,
+    });
+  });
+
+  onUnmounted(() => {
+    stopParentWidthWatch();
+    stopParentHeightWatch();
   });
 </script>
 
