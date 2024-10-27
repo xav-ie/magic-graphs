@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import { ref } from "vue";
-  import { useWindowSize } from "@vueuse/core";
   import { useGraph } from "@graph/useGraph";
   import { nodesEdgesToAdjList } from "@graph/converters";
   import type { AdjacencyList } from "@graph/converters";
@@ -12,9 +11,9 @@
   import GraphBtns from "@graph/buttons/GraphBtns.vue";
   import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
   import Graph from "@graph/Graph.vue";
+import { getRandomInRange } from "@graph/helpers";
 
   const graphElement = ref<HTMLCanvasElement>();
-  const { width, height } = useWindowSize();
 
   const emit = defineEmits<{
     (e: "update:modelValue", value: AdjacencyList): void;
@@ -57,7 +56,12 @@
 </script>
 
 <template>
-  <div :class="['relative', `w-[${width}px]`, `h-[${height}px]`]">
+  <div class="relative w-full h-full">
+
+    <div class="w-full h-full absolute">
+      <Graph @graph-ref="(el) => graphElement = el" />
+    </div>
+
     <div class="absolute flex gap-2 m-2">
       <GraphBtns :btns="btns" />
     </div>
@@ -70,10 +74,5 @@
       <TutorialHint :tutorial="tutorialControls" />
     </div> -->
 
-    <Graph
-      @graph-ref="(el) => graphElement = el"
-      :width="width"
-      :height="height"
-    />
   </div>
 </template>

@@ -6,7 +6,9 @@ const graph = ref()
 </script>
 
 <template>
-  <TestGraph v-model="graph" />
+  <div class="w-[100vw] h-[100vh] relative">
+    <TestGraph v-model="graph" />
+  </div>
 </template>
 
 <style>
