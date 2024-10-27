@@ -1,7 +1,17 @@
-import type { Square } from "../types";
+import type { Square } from "@shape/types";
+import { SQUARE_DEFAULTS } from "@shape/types";
 
 export const drawSquareWithCtx = (ctx: CanvasRenderingContext2D) => (options: Square) => {
-  const { at, width, height, color = 'black' } = options;
+  const {
+    at,
+    width,
+    height,
+    color
+  } = {
+    ...SQUARE_DEFAULTS,
+    ...options
+  };
+
   ctx.beginPath();
   ctx.rect(at.x, at.y, width, height);
   ctx.fillStyle = color;

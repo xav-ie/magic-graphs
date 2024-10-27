@@ -1,4 +1,5 @@
-import { type Arrow, ARROW_DEFAULTS } from '../types';
+import { ARROW_DEFAULTS } from '@shape/types';
+import type { Arrow } from '@shape/types';
 import { drawLineWithCtx, getTextAreaLocationOnLine } from './line';
 import { drawTriangleWithCtx } from './triangle';
 import { drawTextArea } from './text';

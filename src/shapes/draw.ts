@@ -1,13 +1,13 @@
 /*
   This file contains helper functions for drawing shapes on the canvas.
 */
-import type { Line, Arrow } from "./types"
-import { drawCircleWithCtx } from "./draw/circle";
-import { drawSquareWithCtx } from "./draw/square";
-import { drawLineWithCtx } from "./draw/line";
-import { drawTriangleWithCtx } from "./draw/triangle";
-import { drawArrowWithCtx } from "./draw/arrow";
-import { drawUTurnArrowWithCtx } from "./draw/uturn";
+import type { Line, Arrow } from "@shape/types"
+import { drawCircleWithCtx } from "@shape/draw/circle";
+import { drawSquareWithCtx } from "@shape/draw/square";
+import { drawLineWithCtx } from "@shape/draw/line";
+import { drawTriangleWithCtx } from "@shape/draw/triangle";
+import { drawArrowWithCtx } from "@shape/draw/arrow";
+import { drawUTurnArrowWithCtx } from "@shape/draw/uturn";
 
 /**
  * @description parent function that returns all the draw functions for the shapes

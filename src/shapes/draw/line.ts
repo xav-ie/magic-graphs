@@ -1,5 +1,6 @@
-import { type Line, LINE_DEFAULTS, TEXT_DEFAULTS } from '../types';
-import { getAngle } from '../helpers';
+import { LINE_DEFAULTS, TEXT_DEFAULTS } from '@shape/types';
+import type { Line } from '@shape/types';
+import { getAngle } from '@shape/helpers';
 import { drawTextArea } from './text';
 
 export const drawLineWithCtx = (ctx: CanvasRenderingContext2D) => (options: Line) => {
