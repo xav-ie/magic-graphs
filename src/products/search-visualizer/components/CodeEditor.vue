@@ -3,9 +3,9 @@
   import { Codemirror } from "vue-codemirror";
   import { javascript } from "@codemirror/lang-javascript";
   import { oneDark } from "@codemirror/theme-one-dark";
-  import readOnlyRangesExtension from "codemirror-readonly-ranges";
   import type { EditorState } from "@codemirror/state";
-import { CODE_MIRROR_DARK_BACKGROUND } from "../colors";
+  import readOnlyRangesExtension from "codemirror-readonly-ranges";
+  import { CODE_MIRROR_DARK_BACKGROUND } from "../colors";
 
   const code = defineModel<string>();
 
@@ -21,9 +21,18 @@ import { CODE_MIRROR_DARK_BACKGROUND } from "../colors";
   ];
 
   const extensions = computed(() => [
-    javascript(), // adds javascript syntax highlighting
-    oneDark, // adds dark theme
-    readOnlyRangesExtension(getReadOnlyRanges), // makes certain lines read-only
+    /**
+     * adds javascript syntax highlighting
+     */
+    javascript(),
+    /**
+     * adds dark theme
+     */
+    oneDark,
+    /**
+     * makes certain lines read-only
+     */
+    readOnlyRangesExtension(getReadOnlyRanges),
   ]);
 </script>
 
@@ -36,13 +45,15 @@ import { CODE_MIRROR_DARK_BACKGROUND } from "../colors";
     />
 
     <!-- background matte -->
-    <div :class="[
-      'absolute',
-      'top-0',
-      'w-full',
-      'h-full',
-      '-z-10',
-      `bg-[${CODE_MIRROR_DARK_BACKGROUND}]`,
-    ]"></div>
+    <div
+      :class="[
+        'absolute',
+        'top-0',
+        'w-full',
+        'h-full',
+        '-z-10',
+        `bg-[${CODE_MIRROR_DARK_BACKGROUND}]`,
+      ]"
+    ></div>
   </div>
 </template>
