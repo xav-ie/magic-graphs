@@ -20,7 +20,7 @@ import {
   BLUE_900,
   RED_700,
   RED_800,
-} from "@utils/colors"
+} from "@colors"
 
 export type BaseGraphNodeTheme = {
   nodeSize: number,

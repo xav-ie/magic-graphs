@@ -12,7 +12,7 @@
   import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
   import Graph from "@graph/Graph.vue";
   import { getRandomInRange } from "@graph/helpers";
-  import colors from "@utils/colors";
+  import colors from "@colors";
 
   const graphElement = ref<HTMLCanvasElement>();
 

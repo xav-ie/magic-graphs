@@ -34,7 +34,7 @@ import type {
 } from "@graph/types";
 import { hitboxes } from "@shape/hitboxes";
 import type { Circle } from "@shape/types";
-import { BLACK } from "@utils/colors";
+import { BLACK } from "@colors";
 
 export type NodeAnchor = {
   /**
