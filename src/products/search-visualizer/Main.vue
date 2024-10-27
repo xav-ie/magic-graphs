@@ -12,11 +12,14 @@
   const trace = ref<Trace>([]);
 
   const graphEl = ref<HTMLCanvasElement>();
-  const setGraphEl = (el: HTMLCanvasElement | undefined) => {
-    graphEl.value = el;
-  };
 
-  const graph = useGraph(graphEl);
+  const graph = useGraph(graphEl, {
+    settings: {
+      persistent: {
+        storageKey: "search-visualizer-graph",
+      }
+    }
+  });
   const adjacencyList = useAdjacencyList(graph);
 
   /**
@@ -92,20 +95,41 @@
   <div class="w-full h-full relative">
 
     <!-- graph -->
-    <div class="h-[50%]">
-      <Graph @graph-ref="setGraphEl" />
-    </div>
-
-    <!-- switch out algorithm -->
-    <div class="h-[5%] flex items-center gap-3 px-3 py-2 bg-gray-500">
-      <button
-        v-for="(algo, algoName) in algos"
-        @click="decoratedAlgorithm = getDecoratedAlgorithm(algo)"
-        :key="algoName"
-        class="text-white bg-gray-700 px-5 py-1 font-bold text-md rounded-full hover:bg-gray-800"
+    <div class="h-[50%] relative">
+      <Graph @graph-ref="(el) => graphEl = el" />
+      <!-- switch out algorithm -->
+      <div
+        :class="[
+          'absolute',
+          'bottom-0',
+          'h-[5%]',
+          'flex',
+          'items-center',
+          'gap-3',
+          'pb-7',
+          'pl-3',
+          'select-none',
+        ]"
       >
-        {{ algoName }}
-      </button>
+        <button
+          v-for="(algo, algoName) in algos"
+          @click="decoratedAlgorithm = getDecoratedAlgorithm(algo)"
+          :key="algoName"
+          :class="[
+            'text-white',
+            'bg-gray-800',
+            'px-5',
+            'py-1',
+            'font-bold',
+            'text-md',
+            'rounded-full',
+            'hover:bg-gray-900',
+            'focus:bg-gray-900',
+          ]"
+        >
+          {{ algoName }}
+        </button>
+      </div>
     </div>
 
     <!-- code editor -->

@@ -6,7 +6,7 @@ import SearchVisualizer from '@product/search-visualizer/Main.vue'
 
 <template>
   <div class="w-[100vw] h-[100vh] relative">
-    <!-- <TestGraph /> -->
+    <TestGraph />
     <SearchVisualizer />
   </div>
 </template>

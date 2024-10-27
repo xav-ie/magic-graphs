@@ -42,4 +42,6 @@ export const algos = {
   ['Weighted BFS']: WEIGHTED_BFS,
   ['Weighted DFS']: WEIGHTED_DFS,
   ['Custom']: `graph['1']`
-}
+} as const
+
+export type AlgoName = keyof typeof algos

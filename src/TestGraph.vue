@@ -11,7 +11,8 @@
   import GraphBtns from "@graph/buttons/GraphBtns.vue";
   import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
   import Graph from "@graph/Graph.vue";
-import { getRandomInRange } from "@graph/helpers";
+  import { getRandomInRange } from "@graph/helpers";
+  import colors from "@utils/colors";
 
   const graphElement = ref<HTMLCanvasElement>();
 
@@ -41,6 +42,7 @@ import { getRandomInRange } from "@graph/helpers";
     toggleEdgeType,
     changeEdgeWeight,
     clearLocalStorage,
+    crazyBtn,
   } = useGraphBtns(graph);
 
   const btns = [
@@ -50,6 +52,8 @@ import { getRandomInRange } from "@graph/helpers";
     toggleEdgeType,
     changeEdgeWeight,
     colorizeBtn,
+
+    crazyBtn,
   ];
 
   useUserPreferredTheme(graph);
