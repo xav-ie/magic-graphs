@@ -134,4 +134,4 @@ export type TutorialSequence = TutorialStep[];
  */
 export const DELAY_UNTIL_NEXT_STEP = 1000;
 
-export const TUTORIAL_USETHEME_ID = 'tutorial'
+export const TUTORIAL_THEME_ID = 'tutorial'
