@@ -2,6 +2,7 @@ import {
   ref,
   toRef,
   onUnmounted,
+  readonly,
 } from 'vue';
 import type { MaybeRefOrGetter } from 'vue';
 import type { GNode, Graph } from '@graph/types';
@@ -17,10 +18,10 @@ export type BFSLevelRecord = Record<GNode['label'], number>;
  * @param startNodeInput start node to compute BFS levels from
  * @returns bfsLevelRecord reactive record of node id -> bfs level and a reactive start node
  */
-export const useBfsLevels = (graph: Graph, startNodeInput: MaybeRefOrGetter<GNode['label']>) => {
+export const useBFSLevels = (graph: Graph, startNodeInput: GNode['label']) => {
 
   const bfsLevelRecord = ref<BFSLevelRecord>({});
-  const startNode = toRef(startNodeInput);
+  const startNode = ref(startNodeInput);
 
   const computeBfsLevels = () => {
     const adjList = nodesEdgesToAdjList(graph.nodes.value, graph.edges.value)
@@ -55,7 +56,7 @@ export const useBfsLevels = (graph: Graph, startNodeInput: MaybeRefOrGetter<GNod
   onUnmounted(() => graph.unsubscribe('onStructureChange', computeBfsLevels));
 
   return {
-    bfsLevelRecord,
+    bfsLevelRecord: readonly(bfsLevelRecord),
     startNode,
   }
 }

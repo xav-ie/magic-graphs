@@ -1,9 +1,14 @@
-import { ref, toRef } from 'vue';
-import { nodesEdgesToAdjList } from '@graph/converters';
-import type { GNode, GEdge, Graph } from '@graph/types';
+import {
+  ref,
+  watch,
+  onUnmounted,
+} from 'vue';
+import type { GNode, Graph } from '@graph/types';
 import { useTheme } from '@graph/themes/useTheme';
 import colors from '@colors';
 import { SEARCH_VISUALIZER_THEME_ID } from './types';
+import { useBFSLevels } from './useBFSLevels';
+import { getValue } from '@/graphs/helpers';
 
 const defaultColorPalette = [
   colors.RED_600,
@@ -26,66 +31,57 @@ export const bfsNodeColorizer = (
   optionArg: Partial<BFSColorizerOptions> = {}
 ) => {
 
-  const isColorized = ref(false);
-
-  const {
-    setTheme,
-    removeTheme,
-    removeAllThemes
-  } = useTheme(graph, SEARCH_VISUALIZER_THEME_ID);
-
   const defaultOptions: BFSColorizerOptions = {
     startNode: graph.nodes.value[0]?.id ?? 1,
     colorPalette: defaultColorPalette,
   }
 
-  const options = toRef({
+  const options = {
     ...defaultOptions,
     ...optionArg
-  });
+  }
 
+  const isColorized = ref(false);
+  const { setTheme, removeTheme } = useTheme(graph, SEARCH_VISUALIZER_THEME_ID);
+  const { bfsLevelRecord, startNode } = useBFSLevels(graph, options.startNode);
 
-
-  graph.subscribe('onStructureChange', computeBfsLevels);
-  graph.subscribe('onNodeRemoved', (node) => {
-    if (options.value.startNode === node.id && graph.nodes.value.length > 0) {
-      setStartNode(graph.nodes.value[0].id);
+  const shiftStartNodeIfNecessary = () => {
+    const startNodeInGraph = graph.nodes.value.find(node => node.id === startNode.value);
+    if (!startNodeInGraph) {
+      const [ newStartNode ] = graph.nodes.value;
+      startNode.value = newStartNode.label;
     }
-  });
+  }
+
+  const color = (node: GNode) => {
+    const level = bfsLevelRecord.value[node.label];
+    // disjoint from bfs tree
+    if (level === undefined) return getValue(graph.theme.value.nodeBorderColor, node);
+    const colors = options.colorPalette;
+    return colors[level % colors.length];
+  }
 
   const colorize = () => {
-    graph.options.value.nodeBorderColor = (node) => {
-      isColorized = true;
-      const level = bfsLevelRecord[node.label];
-      // not in bfs tree
-      if (level === undefined) {
-        return getValue(preserveGraphOptionsState.nodeBorderColor, node);
-      }
-      const colors = options.value.colorPalette;
-      return colors[level % colors.length];
-    };
+    setTheme('nodeBorderColor', color);
+    isColorized.value = true;
   }
 
   const decolorize = () => {
-    isColorized = false;
-    graph.options.value.nodeBorderColor = preserveGraphOptionsState.nodeBorderColor;
+    removeTheme('nodeBorderColor');
+    isColorized.value = false;
   }
 
-  const setStartNode = (nodeId: GNode['id']) => {
-    options.value.startNode = nodeId;
-    computeBfsLevels(graph.nodes.value, graph.edges.value);
-  }
+  watch(isColorized, () => {
+    isColorized.value ? colorize() : decolorize();
+  })
 
-  const setColorPalette = (colorPalette: string[]) => {
-    options.value.colorPalette = colorPalette;
-  }
+  graph.subscribe('onNodeRemoved', shiftStartNodeIfNecessary);
+  onUnmounted(() => graph.unsubscribe('onNodeRemoved', shiftStartNodeIfNecessary));
 
   return {
+    isColorized,
     colorize,
     decolorize,
-    toggleColorize: () => isColorized ? decolorize() : colorize(),
-    isColorized: () => isColorized,
-    setStartNode,
-    setColorPalette,
+    toggleColorize: () => isColorized.value = !isColorized.value,
   }
 }
