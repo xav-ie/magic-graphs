@@ -123,12 +123,12 @@ export const useUserEditableGraph = (
       }
     }
 
-    if (graph.marqueedItems.size > 0) {
-      for (const item of graph.marqueedItems) {
-        const node = graph.getNode(item.id)
-        if (node) graph.removeNode(node.id)
-        const edge = graph.getEdge(item.id)
-        if (edge) graph.removeEdge(edge.id)
+    if (graph.marqueedItemIDs.size > 0) {
+      for (const id of graph.marqueedItemIDs) {
+        const node = graph.getNode(id)
+        if (node) graph.removeNode(id)
+        const edge = graph.getEdge(id)
+        if (edge) graph.removeEdge(id)
       }
     }
   }
