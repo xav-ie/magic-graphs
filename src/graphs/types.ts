@@ -118,7 +118,7 @@ export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][
 export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
 
 type BaseGraphTypes = 'node' | 'edge'
-type MarqueeGraphTypes = 'selection-box'
+type MarqueeGraphTypes = 'marquee-selection-box'
 type NodeAnchorGraphTypes = 'node-anchor' | 'link-preview'
 
 type SharedSchemaItemFields = {

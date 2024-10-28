@@ -14,6 +14,11 @@ type SelectionBox = {
   bottomRight: { x: number; y: number }
 }
 
+const MARQUEE_SAMPLING_RATE = 20;
+const MARQUEE_SELECTION_BORDER_COLOR = colors.WHITE
+const MARQUEE_SELECTION_BG_COLOR = colors.WHITE + '10'
+const MARQUEE_THEME_ID = 'use-marquee-graph'
+
 export const useMarqueeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<NodeAnchorGraphOptions> = {},
@@ -22,7 +27,7 @@ export const useMarqueeGraph = (
   const selectionBox = ref<SelectionBox | undefined>()
   const graph = useNodeAnchorGraph(canvas, options)
 
-  const { setTheme, removeTheme } = useTheme(graph, 'use-marquee-graph')
+  const { setTheme, removeTheme } = useTheme(graph, MARQUEE_THEME_ID)
 
   graph.subscribe('onMouseDown', (event) => {
     const { offsetX: x, offsetY: y } = event
@@ -53,9 +58,6 @@ export const useMarqueeGraph = (
   const marqueedItemIDs = new Set<string>()
 
   const updateSelectedItems = () => {
-
-    const SAMPLING_RATE = 20;
-
     if (!selectionBox.value) return
 
     sampledPoints.clear()
@@ -67,8 +69,8 @@ export const useMarqueeGraph = (
     const y1 = Math.min(topLeft.y, bottomRight.y)
     const y2 = Math.max(topLeft.y, bottomRight.y)
 
-    for (let x = x1 + (SAMPLING_RATE / 2); x < x2; x += SAMPLING_RATE) {
-      for (let y = y1 + (SAMPLING_RATE / 2); y < y2; y += SAMPLING_RATE) {
+    for (let x = x1 + (MARQUEE_SAMPLING_RATE / 2); x < x2; x += MARQUEE_SAMPLING_RATE) {
+      for (let y = y1 + (MARQUEE_SAMPLING_RATE / 2); y < y2; y += MARQUEE_SAMPLING_RATE) {
         sampledPoints.add({ x, y })
 
         const [topItem] = graph.getDrawItemsByCoordinates(x, y)
@@ -83,11 +85,12 @@ export const useMarqueeGraph = (
 
   const drawSampledPoints = (ctx: CanvasRenderingContext2D) => {
     if (!selectionBox.value) return
+    const drawCirce = drawCircleWithCtx(ctx)
     for (const { x, y } of sampledPoints) {
-      drawCircleWithCtx(ctx)({
+      drawCirce({
         at: { x, y },
         radius: 1,
-        color: colors.WHITE + '10',
+        color: MARQUEE_SELECTION_BG_COLOR,
       })
     }
   }
@@ -106,17 +109,17 @@ export const useMarqueeGraph = (
       },
       width: bottomRight.x - topLeft.x,
       height: bottomRight.y - topLeft.y,
-      color: colors.WHITE + '10',
+      color: MARQUEE_SELECTION_BG_COLOR,
       stroke: {
-        color: colors.WHITE,
+        color: MARQUEE_SELECTION_BORDER_COLOR,
         width: 1,
       }
     }
 
     const boxSchemaItem: RectangleSchemaItem = {
-      id: 'selection-box',
+      id: 'marquee-selection-box',
       schemaType: 'rect',
-      graphType: 'selection-box',
+      graphType: 'marquee-selection-box',
       schema: rect,
       priority: Infinity,
     }
@@ -153,9 +156,7 @@ export const useMarqueeGraph = (
 
   setTheme('edgeColor', colorMarqueedEdges)
 
-  onClickOutside(canvas, () => {
-    marqueedItemIDs.clear()
-  })
+  onClickOutside(canvas, () => marqueedItemIDs.clear())
 
   return {
     ...graph,
