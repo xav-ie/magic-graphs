@@ -20,6 +20,7 @@ import type {
   NodeAnchorGraphSettings,
   NodeAnchorGraphEvents
 } from "@graph/compositions/useNodeAnchorGraph"
+import { useMarqueeGraph } from './useMarqueeGraph'
 
 export type EditSettings = {
   /**
@@ -78,7 +79,7 @@ export const useUserEditableGraph = (
   options: Partial<UserEditableGraphOptions> = {}
 ) => {
 
-  const graph = useNodeAnchorGraph(canvas, options)
+  const graph = useMarqueeGraph(canvas, options)
 
   const settings = ref<UserEditableGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultUserEditableGraphSettings,

@@ -35,7 +35,7 @@ import { engageTextarea } from '@graph/textarea';
 import { getInitialThemeMap } from '@graph/themes/types';
 import { drawShape } from '@shape/draw';
 import { getTextAreaLocation } from '@shape/draw/text';
-import { hitboxes, isInTextarea } from '@shape/hitboxes';
+import { hitboxes, isInRectangle, isInTextarea } from '@shape/hitboxes';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -273,7 +273,16 @@ export const useBaseGraph =(
 
     const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
     aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
-    const { drawLine, drawCircle, drawSquare, drawArrow, drawUTurnArrow } = drawShape(ctx)
+
+    const {
+      drawLine,
+      drawCircle,
+      drawSquare,
+      drawRectangle,
+      drawArrow,
+      drawUTurnArrow,
+    } = drawShape(ctx)
+
     for (const item of aggregator.value) {
       if (item.schemaType === 'circle') {
         drawCircle(item.schema)
@@ -281,6 +290,8 @@ export const useBaseGraph =(
         drawLine(item.schema)
       } else if (item.schemaType === 'square') {
         drawSquare(item.schema)
+      } else if (item.schemaType === 'rect') {
+        drawRectangle(item.schema)
       } else if (item.schemaType === 'arrow') {
         drawArrow(item.schema)
       } else if (item.schemaType === 'uturn') {
@@ -376,7 +387,14 @@ export const useBaseGraph =(
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
     const point = { x, y }
-    const { isInCircle, isInLine, isInSquare, isInArrow, isInUTurnArrow } = hitboxes(point)
+    const {
+      isInCircle,
+      isInLine,
+      isInSquare,
+      isInArrow,
+      isInUTurnArrow,
+      isInRectangle
+    } = hitboxes(point)
 
     // TODO Make sure that this works with priority
     return aggregator.value.filter(item => {
@@ -386,6 +404,8 @@ export const useBaseGraph =(
         return isInLine(item.schema)
       } if (item.schemaType === 'square') {
         return isInSquare(item.schema)
+      } if (item.schemaType === 'rect') {
+        return isInRectangle(item.schema)
       } if (item.schemaType === 'arrow') {
         return isInArrow(item.schema)
       } if (item.schemaType === 'uturn') {

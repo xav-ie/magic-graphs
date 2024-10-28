@@ -28,6 +28,7 @@ export const hitboxes = (point: Coordinate) => ({
   isInCircle: isInCircle(point),
   isInLine: isInLine(point),
   isInSquare: isInSquare(point),
+  isInRectangle: isInRectangle(point),
   isInTriangle: isInTriangle(point),
   isInArrow: isInLine(point),
   isInUTurnArrow: isInUTurnArrow(point),
