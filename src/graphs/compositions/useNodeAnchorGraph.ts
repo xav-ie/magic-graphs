@@ -177,6 +177,7 @@ export const useNodeAnchorGraph = (
     const { getTheme } = graph
 
     const defaultColor = getTheme('nodeAnchorColor', parentNode.value)
+    console.log(defaultColor, graph.themeMap.nodeAnchorColor)
     const focusedColor = getTheme('nodeAnchorColorWhenParentFocused', parentNode.value)
     const isFocused = parentNode.value.id === graph.focusedId.value
     const color = isFocused ? focusedColor : defaultColor

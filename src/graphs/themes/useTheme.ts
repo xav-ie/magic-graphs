@@ -5,7 +5,7 @@ import type {
   GraphThemeKey,
 } from "@graph/themes/types";
 
-export const useTheme = (graph: Graph, id: string) => {
+export const useTheme = <G extends { themeMap: Graph['themeMap'] }>(graph: G, id: string) => {
 
   const setTheme = <T extends GraphThemeKey>(prop: T, value: GraphTheme[T]) => {
     removeTheme(prop)
