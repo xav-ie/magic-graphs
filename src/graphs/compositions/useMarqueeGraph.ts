@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
-import type { Circle, Rectangle } from '@shape/types'
-import type { Aggregator, GNode, RectangleSchemaItem } from '@graph/types'
+import type { Circle, Line, Rectangle } from '@shape/types'
+import type { Aggregator, GEdge, GNode, RectangleSchemaItem, SchemaItem } from '@graph/types'
 import colors from '@colors'
 import { useNodeAnchorGraph, type NodeAnchorGraphOptions } from './useNodeAnchorGraph'
 import { drawCircleWithCtx } from '@shape/draw/circle'
@@ -18,20 +18,23 @@ export const useMarqueeGraph = (
 
   const selectionBox = ref<SelectionBox | undefined>()
   const graph = useNodeAnchorGraph(canvas, options)
-  const preservedNodeAnchorSettingsState = ref(graph.settings.value.nodeAnchors)
 
   graph.subscribe('onMouseDown', (event) => {
     const { offsetX: x, offsetY: y } = event
     const [topItem] = graph.getDrawItemsByCoordinates(x, y)
     if (topItem) return
-    preservedNodeAnchorSettingsState.value = graph.settings.value.nodeAnchors
-    graph.settings.value.nodeAnchors = false
+
+    graph.themeMap.nodeAnchorColor.push({
+      useThemeId: 'use-marquee-graph',
+      value: colors.TRANSPARENT,
+    })
+
     selectionBox.value = { topLeft: { x, y }, bottomRight: { x, y } }
   })
 
   graph.subscribe('onMouseUp', () => {
     selectionBox.value = undefined
-    graph.settings.value.nodeAnchors = preservedNodeAnchorSettingsState.value
+    graph.themeMap.nodeAnchorColor.filter(({ useThemeId }) => useThemeId !== 'use-marquee-graph')
   })
 
   graph.subscribe('onMouseMove', (event) => {
@@ -40,17 +43,17 @@ export const useMarqueeGraph = (
     selectionBox.value.bottomRight = { x, y }
   })
 
-  const samplingPoints = new Set<{ x: number, y: number }>()
-  const itemIDs = new Set<GNode['id']>()
+  const sampledPoints = new Set<{ x: number, y: number }>()
+  const marqueedItems = new Set<GNode | GEdge>()
 
   const updateSelectedItems = () => {
 
     const SAMPLING_RATE = 20;
 
-    if (!selectionBox.value) return itemIDs
+    if (!selectionBox.value) return
 
-    samplingPoints.clear()
-    itemIDs.clear()
+    sampledPoints.clear()
+    marqueedItems.clear()
 
     const { topLeft, bottomRight } = selectionBox.value
     const x1 = Math.min(topLeft.x, bottomRight.x)
@@ -58,23 +61,27 @@ export const useMarqueeGraph = (
     const y1 = Math.min(topLeft.y, bottomRight.y)
     const y2 = Math.max(topLeft.y, bottomRight.y)
 
-    for (let x = x1 + 10; x < x2; x += SAMPLING_RATE) {
-      for (let y = y1 + 10; y < y2; y += SAMPLING_RATE) {
+    for (let x = x1 + (SAMPLING_RATE / 2); x < x2; x += SAMPLING_RATE) {
+      for (let y = y1 + (SAMPLING_RATE / 2); y < y2; y += SAMPLING_RATE) {
+        sampledPoints.add({ x, y })
+
         const [topItem] = graph.getDrawItemsByCoordinates(x, y)
-        samplingPoints.add({ x, y })
         if (!topItem) continue
-        if (topItem.graphType === 'node' || topItem.graphType === 'edge') {
-          itemIDs.add(topItem.id)
+
+        if (topItem.graphType === 'node') {
+          const node = graph.getNode(topItem.id)
+          if (node) marqueedItems.add(node)
+        } else if (topItem.graphType === 'edge') {
+          const edge = graph.getEdge(topItem.id)
+          if (edge) marqueedItems.add(edge)
         }
       }
     }
-
-    return itemIDs
   }
 
   graph.subscribe('onRepaint', (ctx) => {
     if (!selectionBox.value) return
-    for (const { x, y } of samplingPoints) {
+    for (const { x, y } of sampledPoints) {
       drawCircleWithCtx(ctx)({
         at: { x, y },
         radius: 1,
@@ -116,23 +123,33 @@ export const useMarqueeGraph = (
     return aggregator
   })
 
-  const decorateSelectedItems = (aggregator: Aggregator) => {
+  const decorateMarqueedItems = (aggregator: Aggregator) => {
     return aggregator.map((item) => {
       if (item.graphType !== 'node' && item.graphType !== 'edge') {
         return item;
       }
 
-      if (!itemIDs.has(item.id)) {
+      const nodeItem = graph.getNode(item.id)
+      if (nodeItem && marqueedItems.has(nodeItem)) {
+        (item.schema as Circle).color = colors.BLUE_800;
         return item;
       }
 
-      (item.schema as Circle).color = colors.BLUE_800;
+      const edgeItem = graph.getEdge(item.id)
+      if (edgeItem && marqueedItems.has(edgeItem)) {
+        (item.schema as Line).color = colors.BLUE_800;
+        return item;
+      }
 
-      return item
+      return item;
     })
   }
 
-  graph.updateAggregator.push(decorateSelectedItems)
+  graph.updateAggregator.push(decorateMarqueedItems)
 
-  return graph
+  return {
+    ...graph,
+    selectionBox,
+    marqueedItems,
+  }
 }

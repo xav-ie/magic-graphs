@@ -4,6 +4,7 @@ import {
   onBeforeUnmount,
   readonly,
   watch,
+  computed,
 } from 'vue'
 import type { Ref } from 'vue'
 import { onClickOutside } from '@vueuse/core';
@@ -377,13 +378,21 @@ export const useBaseGraph =(
     }
   }
 
-  const getNode = (id: GNode['id']) => {
-    return nodes.value.find(node => node.id === id)
-  }
+  const nodeIdToNodeMap = computed(() => {
+    const map = new Map<GNode['id'], GNode>()
+    for (const node of nodes.value) map.set(node.id, node)
+    return map
+  })
 
-  const getEdge = (id: GEdge['id']) => {
-    return edges.value.find(edge => edge.id === id)
-  }
+  const edgeIdToEdgeMap = computed(() => {
+    const map = new Map<GEdge['id'], GEdge>()
+    for (const edge of edges.value) map.set(edge.id, edge)
+    return map
+  })
+
+  const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
+  const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
+
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
     const point = { x, y }
@@ -517,16 +526,21 @@ export const useBaseGraph =(
 
   return {
     nodes,
+    getNode,
+
     edges,
+    getEdge,
+
     addNode,
     moveNode,
-    getNode,
-    getEdge,
-    getNodeByCoordinates,
-    getDrawItemsByCoordinates,
     removeNode,
+
     addEdge,
     removeEdge,
+
+    getNodeByCoordinates,
+    getDrawItemsByCoordinates,
+
     getFocusedItem: () => {
       if (!focusedId.value) return
       const node = getNode(focusedId.value)

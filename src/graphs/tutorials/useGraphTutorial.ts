@@ -105,7 +105,7 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
     // added undefined because stepIndex is +1 out of bounds when tutorial is over
     currentStep: computed<TutorialStep | undefined>(() => sequence.value[stepIndex.value]),
     sequence,
-    skipStep: () => stepIndex.value++,
+    nextStep: () => stepIndex.value++,
     previousStep: () => stepIndex.value--,
     endTutorial: () => stepIndex.value = sequence.value.length,
     restartTutorial: () => stepIndex.value = 0,
