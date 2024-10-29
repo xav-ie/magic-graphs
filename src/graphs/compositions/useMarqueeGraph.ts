@@ -75,6 +75,7 @@ export const useMarqueeGraph = (
     const { surfaceArea } = getSelectionBoxProps(selectionBox.value)
     if (surfaceArea > 200) disableNodeCreationNextTick()
     selectionBox.value = undefined
+    sampledPoints.clear()
     removeTheme('nodeAnchorColor')
   }
 
