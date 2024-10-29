@@ -7,6 +7,7 @@ import { isInTextarea } from "@shape/hitboxes";
 import { engageTextarea } from "@graph/textarea";
 import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
+import { getValue } from "@graph/helpers";
 
 type Id = SchemaItem['id']
 type MaybeId = Id | undefined
@@ -107,14 +108,20 @@ export const useFocusGraph = (
     throw new Error('focused item not found, is FOCUSABLE_GRAPH_TYPES is exhaustive?')
   })
 
+  setTheme('nodeColor', (node) => {
+    if (node.id !== focusedItemId.value) return
+    return getValue(graph.theme.value.nodeFocusColor, node)
+  })
 
-  const nodeColor = (node: GNode) => 'blue'
-  const nodeBorderColor = (node: GNode) => node.id === focusedItemId.value ? 'red' : 'black'
-  const edgeColor = (edge: GEdge) => edge.id === focusedItemId.value ? 'red' : 'black'
+  setTheme('nodeBorderColor', (node) => {
+    if (node.id !== focusedItemId.value) return
+    return getValue(graph.theme.value.nodeFocusBorderColor, node)
+  })
 
-  setTheme('nodeColor', 'blue')
-  setTheme('nodeBorderColor', nodeBorderColor)
-  setTheme('edgeFocusColor', edgeColor)
+  setTheme('edgeFocusColor', (edge) => {
+    if (edge.id !== focusedItemId.value) return
+    return getValue(graph.theme.value.edgeFocusColor, edge)
+  })
 
   const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
   onUnmounted(stopClickOutsideListener)

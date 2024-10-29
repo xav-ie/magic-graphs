@@ -189,16 +189,12 @@ export const useMarqueeGraph = (
 
   const colorMarqueedNodeBorders = (node: GNode) => {
     const isMarqueed = marqueedItemIDs.has(node.id)
-    const defaultColor = graph.theme.value.nodeBorderColor
-    const focusColor = graph.theme.value.nodeFocusBorderColor
-    return getValue(isMarqueed ? focusColor : defaultColor, node)
+    if (isMarqueed) return getValue(graph.theme.value.nodeFocusBorderColor, node)
   }
 
   const colorMarqueedEdges = (edge: GEdge) => {
     const isMarqueed = marqueedItemIDs.has(edge.id)
-    const defaultColor = graph.theme.value.edgeColor
-    const focusColor = graph.theme.value.edgeFocusColor
-    return getValue(isMarqueed ? focusColor : defaultColor, edge)
+    if (isMarqueed) return getValue(graph.theme.value.edgeFocusColor, edge)
   }
 
   setTheme('nodeColor', colorMarqueedNodes)
