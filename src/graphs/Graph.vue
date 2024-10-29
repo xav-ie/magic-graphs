@@ -5,6 +5,7 @@
   import colors from "@utils/colors";
   import { drawLineWithCtx } from "@shape/draw/line";
   import type { Graph } from "@graph/types";
+import GraphSpinner from "./GraphSpinner.vue";
 
   /**
    * how many multiples larger the graph is relative to the size of the parents
@@ -17,6 +18,8 @@
 
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
+
+  const loadingGraph = ref(true);
 
   const bgCanvas = ref<HTMLCanvasElement>();
 
@@ -109,6 +112,7 @@
     parentEl.value.scrollTop = (canvasHeight.value / 2) - (parentEl.value.clientHeight / 2);
     parentEl.value.scrollLeft = (canvasWidth.value / 2) - (parentEl.value.clientWidth / 2);
     parentEl.value.addEventListener("scroll", currentPosition);
+    loadingGraph.value = false;
   }, 100);
 
   const xCoord = ref(0);
@@ -144,6 +148,13 @@
     class="h-full w-full overflow-auto relative"
   >
 
+    <div
+      v-if="loadingGraph"
+      class="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+      :style="{ backgroundColor: bgColor }"
+    >
+      <!-- <GraphSpinner /> -->
+    </div>
 
     <canvas
       :width="canvasWidth"
@@ -166,6 +177,7 @@
         'pointer-events-none',
       ]"
     ></canvas>
+
   </div>
 </template>
 

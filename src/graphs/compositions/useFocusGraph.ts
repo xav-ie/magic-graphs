@@ -32,10 +32,11 @@ export const useFocusGraph = (
 
   const graph = useBaseGraph(canvas, options);
 
-  const { setTheme, removeTheme } = useTheme(graph, FOCUS_THEME_ID)
+  const { setTheme } = useTheme(graph, FOCUS_THEME_ID)
   const focusedItemId = ref<MaybeId>()
 
   const setFocus = (newId: MaybeId) => {
+    console.log('setFocus', newId)
     if (focusedItemId.value === newId) return
     graph.eventBus.onFocusChange.forEach(fn => fn(newId, focusedItemId.value))
     focusedItemId.value = newId
@@ -118,7 +119,7 @@ export const useFocusGraph = (
     return getValue(graph.theme.value.nodeFocusBorderColor, node)
   })
 
-  setTheme('edgeFocusColor', (edge) => {
+  setTheme('edgeColor', (edge) => {
     if (edge.id !== focusedItemId.value) return
     return getValue(graph.theme.value.edgeFocusColor, edge)
   })

@@ -85,7 +85,7 @@ const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = (
   /**
    * the color of the link preview
    */
-  linkPreviewColor: graph.getTheme('edgeColor', graph.edges.value[0]),
+  linkPreviewColor: graph.edges.value[0] ? graph.getTheme('edgeColor', graph.edges.value[0]) : BLACK,
   /**
    * the width of the link preview
    */
