@@ -14,24 +14,16 @@ type NodeSchematic = Omit<NodeSchemas, 'priority'> | undefined
 export const getNodeSchematic = (
   node: GNode,
   getTheme: ThemeGetter,
-  focusedNodeId: GNode['id'] | undefined
 ): NodeSchematic => {
 
-  const defaultColor = getTheme('nodeColor', node)
-  const focusColor = getTheme('nodeFocusColor', node)
-  const defaultBorderColor = getTheme('nodeBorderColor', node)
-  const focusBorderColor = getTheme('nodeFocusBorderColor', node)
+  const color = getTheme('nodeColor', node)
+  const borderColor = getTheme('nodeBorderColor', node)
   const size = getTheme('nodeSize', node)
   const borderWidth = getTheme('nodeBorderWidth', node)
   const text = getTheme('nodeText', node)
   const textSize = getTheme('nodeTextSize', node)
-  const defaultTextColor = getTheme('nodeTextColor', node)
-  const focusTextColor = getTheme('nodeFocusTextColor', node)
+  const textColor = getTheme('nodeTextColor', node)
   const shape = getTheme('nodeShape', node)
-
-  const color = node.id === focusedNodeId ? focusColor : defaultColor
-  const borderColor = node.id === focusedNodeId ? focusBorderColor : defaultBorderColor
-  const textColor = node.id === focusedNodeId ? focusTextColor : defaultTextColor
 
   const circleSchematic: Circle = {
     at: {

@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
-import { onClickOutside } from '@vueuse/core'
+import { onClickOutside, set } from '@vueuse/core'
 import colors from '@colors'
 import type {
   GEdge,
@@ -40,6 +40,9 @@ export const useMarqueeGraph = (
 
   const { setTheme, removeTheme } = useTheme(graph, MARQUEE_THEME_ID)
 
+  const hideNodeAnchors = () => setTheme('nodeAnchorColor', colors.TRANSPARENT)
+  const showNodeAnchors = () => removeTheme('nodeAnchorColor')
+
   const getSelectionBoxProps = (box: SelectionBox) => {
     const { topLeft, bottomRight } = box
     const x1 = Math.min(topLeft.x, bottomRight.x)
@@ -60,10 +63,11 @@ export const useMarqueeGraph = (
   }
 
   const engageSelectionBox = (event: MouseEvent) => {
+    marqueedItemIDs.clear()
     const { offsetX: x, offsetY: y } = event
     const [topItem] = graph.getDrawItemsByCoordinates(x, y)
     if (topItem) return
-    setTheme('nodeAnchorColor', colors.TRANSPARENT)
+    hideNodeAnchors()
     selectionBox.value = {
       topLeft: { x, y },
       bottomRight: { x, y }
@@ -77,7 +81,7 @@ export const useMarqueeGraph = (
     selectionBox.value = undefined
     sampledPoints.clear()
     coordinateCache.clear()
-    removeTheme('nodeAnchorColor')
+    showNodeAnchors()
   }
 
   const coordinateCache = new Map<string, SchemaItem>()

@@ -19,7 +19,6 @@ export const getEdgeSchematic = (
   edges: GEdge[],
   getTheme: ThemeGetter,
   graphSettings: BaseGraphSettings,
-  focusedId: GEdge['id'] | undefined
 ): EdgeSchematic => {
 
   const { from, to } = getFromToNodes(edge, nodes)
@@ -73,15 +72,8 @@ export const getEdgeSchematic = (
     )
   )
 
-  const defaultColor = getTheme('edgeColor', edge)
-  const focusColor = getTheme('edgeFocusColor', edge)
-
-  const isFocused = focusedId === edge.id
-  const color = isFocused ? focusColor : defaultColor
-
-  const defaultEdgeTextColor = getTheme('edgeTextColor', edge)
-  const focusEdgeTextColor = getTheme('edgeFocusTextColor', edge)
-  const edgeTextColor = isFocused ? focusEdgeTextColor : defaultEdgeTextColor
+  const color = getTheme('edgeColor', edge)
+  const edgeTextColor = getTheme('edgeTextColor', edge)
 
   const graphBgColor = getTheme('graphBgColor')
 
