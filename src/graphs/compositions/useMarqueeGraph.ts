@@ -1,15 +1,22 @@
-import { computed, ref, watch } from 'vue'
+import { ref } from 'vue'
 import type { Ref } from 'vue'
-import type { Circle, Line, Rectangle } from '@shape/types'
-import type { Aggregator, GEdge, GNode, RectangleSchemaItem, SchemaItem } from '@graph/types'
-import { useTheme } from '@graph/themes/useTheme'
-import colors, { BLUE_800 } from '@colors'
-import { useNodeAnchorGraph, type NodeAnchorGraphOptions } from './useNodeAnchorGraph'
-import { drawCircleWithCtx } from '@shape/draw/circle'
-import { getValue } from '@graph/helpers'
 import { onClickOutside } from '@vueuse/core'
+import colors from '@colors'
+import type {
+  GEdge,
+  GNode,
+  SchemaItem,
+  RectangleSchemaItem,
+  Aggregator,
+} from '@graph/types'
+import { useTheme } from '@graph/themes/useTheme'
+import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
+import type { NodeAnchorGraphOptions } from '@graph/compositions/useNodeAnchorGraph'
+import { getValue } from '@graph/helpers'
+import type { Rectangle } from '@shape/types'
+import { drawCircleWithCtx } from '@shape/draw/circle'
 
-type SelectionBox = {
+export type SelectionBox = {
   topLeft: { x: number; y: number }
   bottomRight: { x: number; y: number }
 }
@@ -116,11 +123,9 @@ export const useMarqueeGraph = (
 
   graph.subscribe('onRepaint', drawSampledPoints)
 
-  graph.updateAggregator.push((aggregator) => {
-    if (!selectionBox.value) return aggregator
 
-    const { topLeft, bottomRight } = selectionBox.value
-
+  const getSelectionBoxSchematic = (box: SelectionBox): RectangleSchemaItem => {
+    const { topLeft, bottomRight } = box
     const rect: Rectangle = {
       at: {
         x: topLeft.x,
@@ -143,9 +148,17 @@ export const useMarqueeGraph = (
       priority: Infinity,
     }
 
-    aggregator.push(boxSchemaItem)
+    return boxSchemaItem
+  }
+
+  const addSelectionBoxToAggregator = (aggregator: Aggregator) => {
+    if (!selectionBox.value) return aggregator
+    const selectionBoxSchemaItem = getSelectionBoxSchematic(selectionBox.value)
+    aggregator.push(selectionBoxSchemaItem)
     return aggregator
-  })
+  }
+
+  graph.updateAggregator.push(addSelectionBoxToAggregator)
 
   const colorMarqueedNodes = (node: GNode) => {
     const isMarqueed = marqueedItemIDs.has(node.id)
