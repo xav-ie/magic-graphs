@@ -99,6 +99,7 @@
     if (!ctx) throw new Error("2d context not found");
 
     ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
+
     const SAMPLING_RATE = 75;
 
     for (let x = SAMPLING_RATE / 2; x < canvasWidth.value; x += SAMPLING_RATE) {
@@ -175,7 +176,7 @@
 <template>
   <!-- coordinates for debugging -->
   <p
-    class="z-50 text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none"
+    class="z-50 dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none"
   >
     ({{ xCoord }}, {{ yCoord }})
   </p>
