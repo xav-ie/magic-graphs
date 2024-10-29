@@ -6,6 +6,15 @@
   import { drawLineWithCtx } from "@shape/draw/line";
   import type { Graph } from "@graph/types";
 
+  /**
+   * how many multiples larger the graph is relative to the size of the parents
+   * height and width.
+   *
+   * IE if the width and height of the parent is the full viewport and OPEN_WORLD_FACTOR = 3,
+   * the canvas will take up 3*3=9 viewports in surface area
+   */
+  const OPEN_WORLD_FACTOR = 2;
+
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
 
@@ -41,7 +50,6 @@
   const setCanvasSize = () => {
     if (!parentEl.value) throw new Error("parent element not found");
     const { width, height } = parentEl.value.getBoundingClientRect();
-    const OPEN_WORLD_FACTOR = 6;
     canvasWidth.value = width * OPEN_WORLD_FACTOR;
     canvasHeight.value = height * OPEN_WORLD_FACTOR;
   };

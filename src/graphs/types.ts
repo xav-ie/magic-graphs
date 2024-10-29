@@ -6,7 +6,6 @@ import type {
   UTurnArrow
 } from "@shape/types"
 import { useGraph } from "@graph/useGraph";
-import type { GraphTheme, GraphThemeKey } from "./themes/types";
 
 /**
  * @describes the useGraph composition function
