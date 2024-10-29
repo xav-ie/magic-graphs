@@ -16,7 +16,7 @@ export const useTheme = <G extends ThemeableGraph>(graph: G, themeId: string) =>
       value,
       useThemeId: themeId
     })
-    graph.repaint(`use-theme/set-theme/from:"${themeId}"/prop:"${prop}"`)
+    graph.repaint(`use-theme/set-theme/from:"${themeId}"/prop:"${prop}"`)()
   }
 
   const removeTheme = (prop: GraphThemeKey, repaint = true) => {
@@ -24,14 +24,14 @@ export const useTheme = <G extends ThemeableGraph>(graph: G, themeId: string) =>
     const index = themeMapEntries.findIndex(entry => entry.useThemeId === themeId)
     if (index !== -1) {
       themeMapEntries.splice(index, 1)
-      if (repaint) graph.repaint(`use-theme/remove-theme/from:"${themeId}"/prop:"${prop}"`)
+      if (repaint) graph.repaint(`use-theme/remove-theme/from:"${themeId}"/prop:"${prop}"`)()
     }
   }
 
   const removeAllThemes = () => {
     const themeProps = Object.keys(graph.themeMap) as GraphThemeKey[]
     for (const prop of themeProps) removeTheme(prop, false)
-    graph.repaint(`use-theme/remove-all-themes/from:"${themeId}"`)
+    graph.repaint(`use-theme/remove-all-themes/from:"${themeId}"`)()
   }
 
   onUnmounted(removeAllThemes)

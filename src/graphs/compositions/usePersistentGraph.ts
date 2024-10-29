@@ -150,7 +150,7 @@ export const usePersistentGraph = (
       settings.value = Object.assign(settings.value, settingsStorage.get())
     }
 
-    setTimeout(() => graph.repaint('persistent-graph/load'), 10)
+    setTimeout(() => graph.repaint('persistent-graph/load')(), 10)
   }
 
   const trackChangeEvents = [

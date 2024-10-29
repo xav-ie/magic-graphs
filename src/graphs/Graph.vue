@@ -2,10 +2,11 @@
   import { ref, useAttrs, watch, computed, onMounted, onUnmounted } from "vue";
   import type { WatchHandle } from "vue";
   import { useElementSize } from "@vueuse/core";
-  import colors from "@utils/colors";
   import { drawLineWithCtx } from "@shape/draw/line";
   import type { Graph } from "@graph/types";
   import GraphSpinner from "./GraphSpinner.vue";
+  import { debounce } from "@utils/debounce";
+  import colors from "@colors";
 
   /**
    * how many multiples larger the graph is relative to the size of the parents
@@ -61,33 +62,40 @@
   let stopParentHeightWatch: WatchHandle;
 
   onMounted(() => {
-    stopParentWidthWatch = watch(parentHeight, () => {
-      setCanvasSize();
-      drawBackgroundPattern();
-      props.graph.repaint('graph-view/width-watch')
-    }, {
-      immediate: true,
-    });
-    stopParentHeightWatch = watch(parentWidth, () =>{
-      setCanvasSize();
-      drawBackgroundPattern();
-      props.graph.repaint('graph-view/height-watch')
-    }, {
-      immediate: true,
-    });
+    stopParentWidthWatch = watch(
+      parentHeight,
+      () => {
+        setCanvasSize();
+        drawBackgroundPattern();
+        props.graph.repaint("graph-view/width-watch");
+      },
+      {
+        immediate: true,
+      }
+    );
+    stopParentHeightWatch = watch(
+      parentWidth,
+      () => {
+        setCanvasSize();
+        drawBackgroundPattern();
+        props.graph.repaint("graph-view/height-watch");
+      },
+      {
+        immediate: true,
+      }
+    );
   });
 
-  const patternColor = ref(props.graph.getTheme('graphBgPatternColor'))
+  const patternColor = ref(props.graph.getTheme("graphBgPatternColor"));
 
-  props.graph.subscribe('onThemeChange', () => {
-    const color = props.graph.getTheme('graphBgPatternColor')
+  props.graph.subscribe("onThemeChange", () => {
+    const color = props.graph.getTheme("graphBgPatternColor");
     if (color === patternColor.value) return;
     patternColor.value = color;
     drawBackgroundPattern();
-  })
+  });
 
   const drawBackgroundPattern = debounce(() => {
-
     if (!bgCanvas.value) throw new Error("bgCanvas not found");
     const ctx = bgCanvas.value.getContext("2d");
     if (!ctx) throw new Error("2d context not found");
@@ -149,9 +157,15 @@
   const currentPosition = () => {
     if (!parentEl.value) throw new Error("parent element not found");
 
-    const x = parentEl.value.scrollLeft - (canvasWidth.value / 2) + (parentEl.value.clientWidth / 2);
-    const y = parentEl.value.scrollTop - (canvasHeight.value / 2) + (parentEl.value.clientHeight / 2);
-    xCoord.value = x
+    const x =
+      parentEl.value.scrollLeft -
+      canvasWidth.value / 2 +
+      parentEl.value.clientWidth / 2;
+    const y =
+      parentEl.value.scrollTop -
+      canvasHeight.value / 2 +
+      parentEl.value.clientHeight / 2;
+    xCoord.value = x;
     yCoord.value = y * -1; // flip axis to get a normal cartesian plane
   };
 
@@ -166,7 +180,6 @@
 </script>
 
 <template>
-
   <!-- coordinates for debugging -->
   <p
     class="z-50 dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none"

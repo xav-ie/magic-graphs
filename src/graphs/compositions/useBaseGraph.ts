@@ -38,6 +38,7 @@ import { getInitialThemeMap } from '@graph/themes/types';
 import { drawShape } from '@shape/draw';
 import { getTextAreaLocation } from '@shape/draw/text';
 import { hitboxes, isInTextarea } from '@shape/hitboxes';
+import { debounce } from '@utils/debounce';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -216,13 +217,13 @@ export const useBaseGraph = (
     return aggregator
   })
 
-  const repaint = (repaintId: string) => requestAnimationFrame(() => {
+  const repaint = (repaintId: string) => () => {
     if (!canvas.value) return
     const ctx = canvas.value.getContext('2d')
     if (!ctx) return
     ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
 
-    const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
+    const evaluateAggregator = updateAggregator.reduce<Aggregator>((acc, fn) => fn(acc), [])
     aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
 
     const {
@@ -253,7 +254,7 @@ export const useBaseGraph = (
     }
 
     eventBus.onRepaint.forEach(fn => fn(ctx, repaintId))
-  })
+  }
 
   subscribe('onRepaint', (_, repaintId) => {
     console.log(`🎨 repaint triggered -> \n ${repaintId}`)
@@ -321,16 +322,17 @@ export const useBaseGraph = (
     nodes.value.push(newNode)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     eventBus.onNodeAdded.forEach(fn => fn(newNode))
-    repaint('base-graph/add-node')
+    repaint('base-graph/add-node')()
     return newNode
   }
 
+  const repaintMoveNode = repaint('base-graph/move-node')
   const moveNode = (id: GNode['id'], x: number, y: number) => {
     const node = getNode(id)
     if (!node) return
     node.x = x
     node.y = y
-    repaint('base-graph/move-node')
+    repaintMoveNode()
   }
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
@@ -384,7 +386,7 @@ export const useBaseGraph = (
     edges.value = edges.value.filter(edge => edge.from !== removedNode.label && edge.to !== removedNode.label)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     eventBus.onNodeRemoved.forEach(fn => fn(removedNode))
-    repaint('base-graph/remove-node')
+    repaint('base-graph/remove-node')()
   }
 
   const addEdge = (edge: Omit<GEdge, 'id'>) => {
@@ -415,7 +417,7 @@ export const useBaseGraph = (
 
     eventBus.onEdgeAdded.forEach(fn => fn(newEdge))
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-    repaint('base-graph/add-edge')
+    repaint('base-graph/add-edge')()
     return newEdge
   }
 
@@ -425,7 +427,7 @@ export const useBaseGraph = (
     edges.value = edges.value.filter(e => e.id !== edge.id)
     eventBus.onEdgeRemoved.forEach(fn => fn(edge))
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-    repaint('base-graph/remove-edge')
+    repaint('base-graph/remove-edge')()
     return edge
   }
 
@@ -456,6 +458,10 @@ export const useBaseGraph = (
 
   watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
   watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
+
+  subscribe('onThemeChange', () => repaint('base-graph/on-theme-change')())
+  subscribe('onSettingsChange', () => repaint('base-graph/on-settings-change')())
+  subscribe('onGraphReset', () => repaint('base-graph/on-graph-reset')())
 
   return {
     nodes,

@@ -299,7 +299,7 @@ export const useNodeAnchorGraph = (
     if (!activeAnchor.value) return
     activeAnchor.value.x = ev.offsetX
     activeAnchor.value.y = ev.offsetY
-    graph.repaint('node-anchor-graph/update-active-anchor-position')
+    graph.repaint('node-anchor-graph/update-active-anchor-position')()
   }
 
   subscribe('onMouseMove', updateActiveAnchorPosition)
@@ -370,7 +370,7 @@ export const useNodeAnchorGraph = (
   })
 
   watch(parentNode, () => {
-    graph.repaint('node-anchor-graph/parent-node-watch')
+    graph.repaint('node-anchor-graph/parent-node-watch')()
   })
 
   return {
