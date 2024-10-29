@@ -76,7 +76,23 @@ export const useMarqueeGraph = (
     if (surfaceArea > 200) disableNodeCreationNextTick()
     selectionBox.value = undefined
     sampledPoints.clear()
+    coordinateCache.clear()
     removeTheme('nodeAnchorColor')
+  }
+
+  const coordinateCache = new Map<string, SchemaItem>()
+  const getFromCache = (xInp: number, yInp: number) => {
+    const CACHE_BUCKET_SIZE = MARQUEE_SAMPLING_RATE / 2
+    const x = Math.round(xInp / CACHE_BUCKET_SIZE) * CACHE_BUCKET_SIZE
+    const y = Math.round(yInp / CACHE_BUCKET_SIZE) * CACHE_BUCKET_SIZE
+    const key = `${x}:${y}`
+    const res = coordinateCache.get(key);
+    if (res === undefined) {
+      const [ topItem ] = graph.getDrawItemsByCoordinates(xInp, yInp)
+      coordinateCache.set(key, topItem ?? null)
+      return topItem
+    }
+    return res
   }
 
   const updateSelectedItems = (box: SelectionBox) => {
@@ -89,7 +105,7 @@ export const useMarqueeGraph = (
       for (let y = y1 + (MARQUEE_SAMPLING_RATE / 2); y < y2; y += MARQUEE_SAMPLING_RATE) {
         sampledPoints.add({ x, y })
 
-        const [topItem] = graph.getDrawItemsByCoordinates(x, y)
+        const topItem = getFromCache(x, y)
         if (!topItem) continue
 
         const isMarqueeable = MARQUEE_SELECTABLE_GRAPH_TYPES.some(type => topItem.graphType === type)
@@ -112,6 +128,7 @@ export const useMarqueeGraph = (
 
   const drawSampledPoints = (ctx: CanvasRenderingContext2D) => {
     if (!selectionBox.value) return
+    if (graph.aggregator.value.length > 20) return
     const drawCirce = drawCircleWithCtx(ctx)
     for (const { x, y } of sampledPoints) {
       drawCirce({
