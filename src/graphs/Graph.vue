@@ -41,8 +41,9 @@
   const setCanvasSize = () => {
     if (!parentEl.value) throw new Error("parent element not found");
     const { width, height } = parentEl.value.getBoundingClientRect();
-    canvasWidth.value = width * 3;
-    canvasHeight.value = height * 3;
+    const OPEN_WORLD_FACTOR = 6;
+    canvasWidth.value = width * OPEN_WORLD_FACTOR;
+    canvasHeight.value = height * OPEN_WORLD_FACTOR;
   };
 
   let stopParentWidthWatch: WatchHandle;
@@ -57,11 +58,7 @@
     });
   });
 
-  setTimeout(() => {
-    if (!bgCanvas.value) throw new Error("bgCanvas not found");
-    const ctx = bgCanvas.value.getContext("2d");
-    if (!ctx) throw new Error("2d context not found");
-
+  const drawBackgroundPattern = (ctx: CanvasRenderingContext2D) => {
     const SAMPLING_RATE = 75;
 
     for (let x = SAMPLING_RATE / 2; x < canvasWidth.value; x += SAMPLING_RATE) {
@@ -93,22 +90,50 @@
         });
       }
     }
+  }
+
+  setTimeout(() => {
+    if (!bgCanvas.value) throw new Error("bgCanvas not found");
+    const ctx = bgCanvas.value.getContext("2d");
+    if (!ctx) throw new Error("2d context not found");
+    drawBackgroundPattern(ctx);
+    if (!parentEl.value) throw new Error("parent element not found");
+    parentEl.value.scrollTop = (canvasHeight.value / 2) - (parentEl.value.clientHeight / 2);
+    parentEl.value.scrollLeft = (canvasWidth.value / 2) - (parentEl.value.clientWidth / 2);
+    parentEl.value.addEventListener("scroll", currentPosition);
   }, 100);
+
+  const xCoord = ref(0);
+  const yCoord = ref(0);
+
+  const currentPosition = () => {
+    if (!parentEl.value) throw new Error("parent element not found");
+    // make the center of the canvas the origin
+    xCoord.value = parentEl.value.scrollLeft - (canvasWidth.value / 2) + (parentEl.value.clientWidth / 2);
+    yCoord.value = (parentEl.value.scrollTop - (canvasHeight.value / 2) + (parentEl.value.clientHeight / 2)) * -1;
+  };
 
   onUnmounted(() => {
     stopParentWidthWatch();
     stopParentHeightWatch();
+    if (!parentEl.value) throw new Error("parent element not found");
+    parentEl.value.removeEventListener("scroll", currentPosition);
   });
 
   const bgColor = computed(() => props.graph.getTheme("graphBgColor"));
 </script>
 
 <template>
+  <p class="z-50 text-white font-bold text-4xl absolute top-0 right-0">
+    ({{ xCoord }}, {{ yCoord }})
+  </p>
   <div
     ref="parentEl"
     id="graph-container"
     class="h-full w-full overflow-auto relative"
   >
+
+
     <canvas
       :width="canvasWidth"
       :height="canvasHeight"
@@ -134,8 +159,5 @@
 </template>
 
 <style scoped>
-/* hide the bars that show up when you scroll */
-div.graph-container::-webkit-scrollbar {
-  display: none;
-}
+
 </style>

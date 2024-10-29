@@ -12,6 +12,14 @@ import SearchVisualizer from '@product/search-visualizer/Main.vue'
 </template>
 
 <style>
+/* hide the bars that show up when you scroll */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+html, body {
+  overscroll-behavior-x: none;
+}
 
 /* class for exclusive use by useGraphTutorial, should be move out to css file at some point */
 .element-highlight {
