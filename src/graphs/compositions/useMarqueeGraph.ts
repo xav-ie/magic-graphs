@@ -1,7 +1,7 @@
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import type { Circle, Line, Rectangle } from '@shape/types'
-import type { Aggregator, GEdge, GNode, RectangleSchemaItem } from '@graph/types'
+import type { Aggregator, GEdge, GNode, RectangleSchemaItem, SchemaItem } from '@graph/types'
 import { useTheme } from '@graph/themes/useTheme'
 import colors, { BLUE_800 } from '@colors'
 import { useNodeAnchorGraph, type NodeAnchorGraphOptions } from './useNodeAnchorGraph'
@@ -14,6 +14,7 @@ type SelectionBox = {
   bottomRight: { x: number; y: number }
 }
 
+const MARQUEE_SELECTABLE_GRAPH_TYPES: SchemaItem['graphType'][] = ['node', 'edge']
 const MARQUEE_SAMPLING_RATE = 20;
 const MARQUEE_SELECTION_BORDER_COLOR = colors.WHITE
 const MARQUEE_SELECTION_BG_COLOR = colors.WHITE + '10'
@@ -27,47 +28,54 @@ export const useMarqueeGraph = (
   const selectionBox = ref<SelectionBox | undefined>()
   const graph = useNodeAnchorGraph(canvas, options)
 
-  const { setTheme, removeTheme } = useTheme(graph, MARQUEE_THEME_ID)
-
-  graph.subscribe('onMouseDown', (event) => {
-    const { offsetX: x, offsetY: y } = event
-    const [topItem] = graph.getDrawItemsByCoordinates(x, y)
-    if (topItem) return
-    setTheme('nodeAnchorColor', colors.TRANSPARENT)
-    selectionBox.value = { topLeft: { x, y }, bottomRight: { x, y } }
-  })
-
-  graph.subscribe('onMouseUp', () => {
-    removeTheme('nodeAnchorColor')
-    selectionBox.value = undefined
-  })
-
-  graph.subscribe('onMouseMove', (event) => {
-    if (!selectionBox.value) return
-    const { offsetX: x, offsetY: y } = event
-    selectionBox.value.bottomRight = { x, y }
-  })
-
-  graph.subscribe('onClick', () => {
-    if (!selectionBox.value) return
-    selectionBox.value = undefined
-    removeTheme('nodeAnchorColor')
-  })
-
   const sampledPoints = new Set<{ x: number, y: number }>()
   const marqueedItemIDs = new Set<string>()
 
-  const updateSelectedItems = () => {
-    if (!selectionBox.value) return
+  const { setTheme, removeTheme } = useTheme(graph, MARQUEE_THEME_ID)
 
-    sampledPoints.clear()
-    marqueedItemIDs.clear()
-
-    const { topLeft, bottomRight } = selectionBox.value
+  const getSelectionBoxProps = (box: SelectionBox) => {
+    const { topLeft, bottomRight } = box
     const x1 = Math.min(topLeft.x, bottomRight.x)
     const x2 = Math.max(topLeft.x, bottomRight.x)
     const y1 = Math.min(topLeft.y, bottomRight.y)
     const y2 = Math.max(topLeft.y, bottomRight.y)
+    const surfaceArea = (x2 - x1) * (y2 - y1)
+    return { x1, x2, y1, y2, surfaceArea }
+  }
+
+  const disableNodeCreationNextTick = () => {
+    const callbacks = graph.eventBus['onDblClick']
+    const nodeCreationFn = callbacks.find((fn) => fn.name === 'handleNodeCreation')
+    if (nodeCreationFn) {
+      graph.unsubscribe('onDblClick', nodeCreationFn)
+      setTimeout(() => graph.subscribe('onDblClick', nodeCreationFn), 10)
+    }
+  }
+
+  const engageSelectionBox = (event: MouseEvent) => {
+    const { offsetX: x, offsetY: y } = event
+    const [topItem] = graph.getDrawItemsByCoordinates(x, y)
+    if (topItem) return
+    setTheme('nodeAnchorColor', colors.TRANSPARENT)
+    selectionBox.value = {
+      topLeft: { x, y },
+      bottomRight: { x, y }
+    }
+  }
+
+  const disengageSelectionBox = () => {
+    if (!selectionBox.value) return
+    const { surfaceArea } = getSelectionBoxProps(selectionBox.value)
+    if (surfaceArea > 200) disableNodeCreationNextTick()
+    selectionBox.value = undefined
+    removeTheme('nodeAnchorColor')
+  }
+
+  const updateSelectedItems = (box: SelectionBox) => {
+    sampledPoints.clear()
+    marqueedItemIDs.clear()
+
+    const { x1, x2, y1, y2 } = getSelectionBoxProps(box)
 
     for (let x = x1 + (MARQUEE_SAMPLING_RATE / 2); x < x2; x += MARQUEE_SAMPLING_RATE) {
       for (let y = y1 + (MARQUEE_SAMPLING_RATE / 2); y < y2; y += MARQUEE_SAMPLING_RATE) {
@@ -76,12 +84,23 @@ export const useMarqueeGraph = (
         const [topItem] = graph.getDrawItemsByCoordinates(x, y)
         if (!topItem) continue
 
-        const marqueeableTypes = ['node', 'edge'] as const
-        const isMarqueeable = marqueeableTypes.some(type => topItem.graphType === type)
+        const isMarqueeable = MARQUEE_SELECTABLE_GRAPH_TYPES.some(type => topItem.graphType === type)
         if (isMarqueeable) marqueedItemIDs.add(topItem.id)
       }
     }
   }
+
+  const updateSelectionBoxDimensions = (event: MouseEvent) => {
+    if (!selectionBox.value) return
+    const { offsetX: x, offsetY: y } = event
+    selectionBox.value.bottomRight = { x, y }
+    updateSelectedItems(selectionBox.value)
+  }
+
+  graph.subscribe('onMouseDown', engageSelectionBox)
+  graph.subscribe('onMouseUp', disengageSelectionBox)
+  graph.subscribe('onContextMenu', disengageSelectionBox)
+  graph.subscribe('onMouseMove', updateSelectionBoxDimensions)
 
   const drawSampledPoints = (ctx: CanvasRenderingContext2D) => {
     if (!selectionBox.value) return
@@ -124,14 +143,12 @@ export const useMarqueeGraph = (
       priority: Infinity,
     }
 
-    updateSelectedItems()
-
     aggregator.push(boxSchemaItem)
     return aggregator
   })
 
   const colorMarqueedNodes = (node: GNode) => {
-    const isMarqueed =marqueedItemIDs.has(node.id)
+    const isMarqueed = marqueedItemIDs.has(node.id)
     const defaultColor = graph.theme.value.nodeColor
     const focusColor = graph.theme.value.nodeFocusColor
     return getValue(isMarqueed ? focusColor : defaultColor, node)

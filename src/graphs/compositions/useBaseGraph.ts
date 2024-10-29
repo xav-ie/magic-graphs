@@ -36,7 +36,7 @@ import { engageTextarea } from '@graph/textarea';
 import { getInitialThemeMap } from '@graph/themes/types';
 import { drawShape } from '@shape/draw';
 import { getTextAreaLocation } from '@shape/draw/text';
-import { hitboxes, isInRectangle, isInTextarea } from '@shape/hitboxes';
+import { hitboxes, isInTextarea } from '@shape/hitboxes';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -68,6 +68,7 @@ export type BaseGraphEvents = {
   onMouseUp: (ev: MouseEvent) => void;
   onMouseMove: (ev: MouseEvent) => void;
   onDblClick: (ev: MouseEvent) => void;
+  onContextMenu: (ev: MouseEvent) => void;
 
   /* global dom events */
   onKeydown: (ev: KeyboardEvent) => void;
@@ -149,6 +150,7 @@ export const useBaseGraph =(
     onMouseUp: [],
     onMouseMove: [],
     onDblClick: [],
+    onContextMenu: [],
     onKeydown: [],
     onThemeChange: [],
     onSettingsChange: [],
@@ -176,6 +178,9 @@ export const useBaseGraph =(
     dblclick: (ev: MouseEvent) => {
       eventBus.onDblClick.forEach(fn => fn(ev))
     },
+    contextmenu: (ev: MouseEvent) => {
+      eventBus.onContextMenu.forEach(fn => fn(ev))
+    }
   }
 
   const keyboardEvents: Partial<KeyboardEventMap> = {
@@ -307,18 +312,10 @@ export const useBaseGraph =(
 
   const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
 
-  const changeCanvasColor = () => {
-    if (!canvas.value) return
-    canvas.value.style.backgroundColor = theme.value.graphBgColor
-  }
-
   const initCanvas = () => {
     if (!canvas.value) {
       throw new Error('canvas element not found')
     }
-
-    canvas.value.style.backgroundColor = theme.value.graphBgColor
-    subscribe('onThemeChange', changeCanvasColor)
 
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.addEventListener(event, listeners)

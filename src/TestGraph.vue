@@ -66,7 +66,10 @@
   <div class="relative w-full h-full">
 
     <div class="w-full h-full absolute">
-      <Graph @graph-ref="(el) => graphElement = el" />
+      <Graph
+        @graph-ref="(el) => graphElement = el"
+        :graph="graph"
+      />
     </div>
 
     <div class="absolute flex gap-2 m-2">

@@ -13,14 +13,6 @@ import SearchVisualizer from '@product/search-visualizer/Main.vue'
 
 <style>
 
-/* button:after {
-  content:
-} */
-/*
-button:hover {
-  animation: highlight 1s infinite;
-} */
-
 /* class for exclusive use by useGraphTutorial, should be move out to css file at some point */
 .element-highlight {
   animation: highlight 1s infinite;
