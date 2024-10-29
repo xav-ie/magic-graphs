@@ -123,6 +123,8 @@ export const useFocusGraph = (
     return getValue(graph.theme.value.edgeFocusColor, edge)
   })
 
+  graph.subscribe('onFocusChange', () => setTimeout(graph.repaint('focus-graph/on-focus-change'), 10))
+
   const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
   onUnmounted(stopClickOutsideListener)
 

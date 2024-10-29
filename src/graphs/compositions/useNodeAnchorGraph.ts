@@ -13,6 +13,7 @@ import {
   ref,
   readonly,
   watchEffect,
+  watch,
 } from 'vue'
 import type { Ref } from 'vue'
 import { generateSubscriber, prioritizeNode } from "@graph/helpers";
@@ -298,6 +299,7 @@ export const useNodeAnchorGraph = (
     if (!activeAnchor.value) return
     activeAnchor.value.x = ev.offsetX
     activeAnchor.value.y = ev.offsetY
+    graph.repaint('node-anchor-graph/update-active-anchor-position')()
   }
 
   subscribe('onMouseMove', updateActiveAnchorPosition)
@@ -365,6 +367,10 @@ export const useNodeAnchorGraph = (
       parentNode.value = undefined
       activeAnchor.value = undefined
     }
+  })
+
+  watch(parentNode, () => {
+    graph.repaint('node-anchor-graph/parent-node-watch')()
   })
 
   return {
