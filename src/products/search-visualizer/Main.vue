@@ -96,7 +96,10 @@
 
     <!-- graph -->
     <div class="h-[50%] relative">
-      <Graph @graph-ref="(el) => graphEl = el" />
+      <Graph
+        @graph-ref="(el) => graphEl = el"
+        :graph="graph"
+      />
       <!-- switch out algorithm -->
       <div
         :class="[
