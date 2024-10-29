@@ -124,9 +124,12 @@
 </script>
 
 <template>
-  <p class="z-50 text-white font-bold text-4xl absolute top-0 right-0">
+
+  <!-- coordinates for debugging -->
+  <p class="z-50 text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none">
     ({{ xCoord }}, {{ yCoord }})
   </p>
+
   <div
     ref="parentEl"
     id="graph-container"

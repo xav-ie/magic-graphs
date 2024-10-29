@@ -1,4 +1,4 @@
-import type { GNode, SchemaItem } from "@graph/types";
+import type { GEdge, GNode, SchemaItem } from "@graph/types";
 import { useBaseGraph, type BaseGraphOptions } from "./useBaseGraph";
 import { computed, onUnmounted, readonly, ref } from "vue";
 import type { Ref } from "vue";
@@ -6,9 +6,23 @@ import { getTextAreaLocation } from "@shape/draw/text";
 import { isInTextarea } from "@shape/hitboxes";
 import { engageTextarea } from "@graph/textarea";
 import { onClickOutside } from "@vueuse/core";
+import { useTheme } from "@graph/themes/useTheme";
 
 type Id = SchemaItem['id']
 type MaybeId = Id | undefined
+
+type FocusedItem = {
+  type: 'node',
+  item: GNode,
+} | {
+  type: 'edge',
+  item: GEdge,
+}
+
+type ValidFocusableTypes = SchemaItem['graphType'] & FocusedItem['type']
+
+const FOCUSABLE_GRAPH_TYPES: ValidFocusableTypes[] = ['node', 'edge']
+const FOCUS_THEME_ID = 'use-focus-graph'
 
 export const useFocusGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -17,7 +31,7 @@ export const useFocusGraph = (
 
   const graph = useBaseGraph(canvas, options);
 
-  const FOCUSABLE_GRAPH_TYPES: SchemaItem['graphType'][] = ['node', 'edge']
+  const { setTheme, removeTheme } = useTheme(graph, FOCUS_THEME_ID)
   const focusedItemId = ref<MaybeId>()
 
   const setFocus = (newId: MaybeId) => {
@@ -29,7 +43,7 @@ export const useFocusGraph = (
   // function breaks with guard clauses!!!
   const handleFocusChange = (ev: MouseEvent) => {
     const topItem = graph.getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
-    const canFocus = topItem && FOCUSABLE_GRAPH_TYPES.includes(topItem.graphType)
+    const canFocus = topItem && FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)
     if (!canFocus) return setFocus(undefined)
 
     const textInputHandler = (str: string) => {
@@ -78,17 +92,31 @@ export const useFocusGraph = (
   graph.subscribe('onMouseDown', handleFocusChange)
   graph.subscribe('onNodeAdded', setFocusToAddedNode)
 
-  const focusedItem = computed(() => {
+  const focusedItem = computed<FocusedItem | undefined>(() => {
     if (!focusedItemId.value) return
     const node = graph.getNode(focusedItemId.value)
-    if (node) return node
+    if (node) return {
+      type: 'node',
+      item: node,
+    } as const
     const edge = graph.getEdge(focusedItemId.value)
-    if (edge) return edge
+    if (edge) return {
+      type: 'edge',
+      item: edge,
+    } as const
     throw new Error('focused item not found, is FOCUSABLE_GRAPH_TYPES is exhaustive?')
   })
 
-  const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
 
+  const nodeColor = (node: GNode) => 'blue'
+  const nodeBorderColor = (node: GNode) => node.id === focusedItemId.value ? 'red' : 'black'
+  const edgeColor = (edge: GEdge) => edge.id === focusedItemId.value ? 'red' : 'black'
+
+  setTheme('nodeColor', 'blue')
+  setTheme('nodeBorderColor', nodeBorderColor)
+  setTheme('edgeFocusColor', edgeColor)
+
+  const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
   onUnmounted(stopClickOutsideListener)
 
   return {

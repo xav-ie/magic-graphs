@@ -1,10 +1,16 @@
 import type { NodeAnchorGraphTheme } from "@graph/compositions/useNodeAnchorGraph"
+import type { MaybeGetter, MaybeGetterParams, UnwrapMaybeGetter } from "@graph/types"
 
 export type GraphTheme = NodeAnchorGraphTheme
 export type GraphThemeKey = keyof GraphTheme
 
+/**
+ * decomposes MaybeGetter<T, K> such that it turns T into T | void
+ */
+export type MaybeGetterOrVoid<T> = MaybeGetter<UnwrapMaybeGetter<T> | void, MaybeGetterParams<T>>
+
 export type ThemeMapEntry<T extends GraphThemeKey> = {
-  value: GraphTheme[T],
+  value: MaybeGetterOrVoid<GraphTheme[T]>,
   useThemeId: string,
 }
 

@@ -60,6 +60,8 @@
   ];
 
   useUserPreferredTheme(graph);
+
+  const log = () => console.log(graph.themeMap.nodeColor)
 </script>
 
 <template>
@@ -74,6 +76,10 @@
 
     <div class="absolute flex gap-2 m-2">
       <GraphBtns :btns="btns" />
+    </div>
+
+    <div class="absolute m-2 text-white font-bold text-lg bg-emerald-600 top-0 mt-12 px-4 py-1 rounded-xl">
+      <button @click="log">log</button>
     </div>
 
     <div class="bottom-0 absolute flex gap-2 m-2">

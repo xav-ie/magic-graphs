@@ -114,12 +114,9 @@ export const useUserEditableGraph = (
     if (ev.key !== 'Backspace') return
 
     if (graph.focusedItem.value) {
-      const { item, type } = focusedItem
-      if (type === 'node') {
-        graph.removeNode(item.id)
-      } else if (type === 'edge') {
-        graph.removeEdge(item.id)
-      }
+      const { item, type } = graph.focusedItem.value
+      if (type === 'node') graph.removeNode(item.id)
+      else if (type === 'edge') graph.removeEdge(item.id)
     }
 
     if (graph.marqueedItemIDs.size > 0) {

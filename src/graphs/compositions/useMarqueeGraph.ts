@@ -184,9 +184,7 @@ export const useMarqueeGraph = (
 
   const colorMarqueedNodes = (node: GNode) => {
     const isMarqueed = marqueedItemIDs.has(node.id)
-    const defaultColor = graph.theme.value.nodeColor
-    const focusColor = graph.theme.value.nodeFocusColor
-    return getValue(isMarqueed ? focusColor : defaultColor, node)
+    if (isMarqueed) return getValue(graph.theme.value.nodeFocusColor, node)
   }
 
   const colorMarqueedNodeBorders = (node: GNode) => {
