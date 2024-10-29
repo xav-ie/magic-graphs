@@ -5,6 +5,7 @@ import {
   readonly,
   watch,
   computed,
+  queuePostFlushCb,
 } from 'vue'
 import type { Ref } from 'vue'
 import { onClickOutside } from '@vueuse/core';
@@ -58,7 +59,7 @@ export type BaseGraphEvents = {
     WARNING: items drawn to the canvas using ctx won't be tied to the graph event architecture.
     Use updateAggregator if you need drawn item to integrate with graph apis
   */
-  onRepaint: (ctx: CanvasRenderingContext2D) => void;
+  onRepaint: (ctx: CanvasRenderingContext2D, repaintId: string) => void;
   onNodeHoverChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
   onGraphReset: () => void;
 
@@ -80,12 +81,6 @@ export type BaseGraphEvents = {
 
 export type BaseGraphSettings = {
   /**
-   * the number of frames per second the graph should be repainted
-   * WARNING: this property can only be set at instantiation and is not reactive
-   * @default 60
-   */
-  repaintFps: number;
-  /**
    * whether to display edge labels
    * @default true
    */
@@ -104,7 +99,6 @@ export type BaseGraphSettings = {
 }
 
 const defaultSettings = {
-  repaintFps: 60,
   displayEdgeLabels: true,
   edgeLabelsEditable: true,
   edgeInputToWeight: (input: string) => {
@@ -116,7 +110,7 @@ const defaultSettings = {
 
 export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
 
-export const useBaseGraph =(
+export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<BaseGraphOptions> = {},
 ) => {
@@ -222,7 +216,7 @@ export const useBaseGraph =(
     return aggregator
   })
 
-  const drawGraphInterval = setInterval(() => {
+  const repaint = (repaintId: string) => requestAnimationFrame(() => {
     if (!canvas.value) return
     const ctx = canvas.value.getContext('2d')
     if (!ctx) return
@@ -256,10 +250,14 @@ export const useBaseGraph =(
       } else {
         throw new Error('Unknown schema type')
       }
-
-      eventBus.onRepaint.forEach(fn => fn(ctx))
     }
-  }, 1000 / settings.value.repaintFps)
+
+    eventBus.onRepaint.forEach(fn => fn(ctx, repaintId))
+  })
+
+  subscribe('onRepaint', (_, repaintId) => {
+    console.log(`🎨 repaint triggered -> \n ${repaintId}`)
+  })
 
   const initCanvas = () => {
     if (!canvas.value) {
@@ -289,8 +287,6 @@ export const useBaseGraph =(
     for (const [event, listeners] of Object.entries(keyboardEvents) as KeyboardEventEntries) {
       document.removeEventListener(event, listeners)
     }
-
-    clearInterval(drawGraphInterval)
   })
 
   const getNewNodeLabel = () => {
@@ -298,28 +294,6 @@ export const useBaseGraph =(
     let label = 1
     while (labels.includes(label.toString())) label++
     return label.toString()
-  }
-
-  const addNode = (node: Partial<GNode>) => {
-    const { x, y } = canvas.value ? getRandomPointOnCanvas(canvas.value) : { x: 0, y: 0 }
-    const newNode = {
-      id: node.id ?? generateId(),
-      label: node.label ?? getNewNodeLabel(),
-      x: node.x ?? x,
-      y: node.y ?? y,
-    }
-    nodes.value.push(newNode)
-    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-    eventBus.onNodeAdded.forEach(fn => fn(newNode))
-    return newNode
-  }
-
-  const moveNode = (id: GNode['id'], x: number, y: number) => {
-    const node = nodes.value.find(node => node.id === id)
-    if (node) {
-      node.x = x
-      node.y = y
-    }
   }
 
   const nodeIdToNodeMap = computed(() => {
@@ -337,6 +311,27 @@ export const useBaseGraph =(
   const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
   const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
 
+  const addNode = (node: Omit<GNode, 'id'>) => {
+    const newNode = {
+      id: generateId(),
+      label: node.label ?? getNewNodeLabel(),
+      x: node.x,
+      y: node.y,
+    }
+    nodes.value.push(newNode)
+    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    eventBus.onNodeAdded.forEach(fn => fn(newNode))
+    repaint('base-graph/add-node')
+    return newNode
+  }
+
+  const moveNode = (id: GNode['id'], x: number, y: number) => {
+    const node = getNode(id)
+    if (!node) return
+    node.x = x
+    node.y = y
+    repaint('base-graph/move-node')
+  }
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
     const point = { x, y }
@@ -389,6 +384,7 @@ export const useBaseGraph =(
     edges.value = edges.value.filter(edge => edge.from !== removedNode.label && edge.to !== removedNode.label)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     eventBus.onNodeRemoved.forEach(fn => fn(removedNode))
+    repaint('base-graph/remove-node')
   }
 
   const addEdge = (edge: Omit<GEdge, 'id'>) => {
@@ -408,18 +404,18 @@ export const useBaseGraph =(
     if (directedEdgeOnPath) return
 
     const newEdge: GEdge = {
+      id: generateId(),
       to: edge.to,
       from: edge.from,
       weight: edge.weight ?? 1,
       type: edge.type,
-      id: generateId()
     }
 
     edges.value.push(newEdge)
 
     eventBus.onEdgeAdded.forEach(fn => fn(newEdge))
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-
+    repaint('base-graph/add-edge')
     return newEdge
   }
 
@@ -427,9 +423,9 @@ export const useBaseGraph =(
     const edge = edges.value.find(edge => edge.id === edgeId)
     if (!edge) return
     edges.value = edges.value.filter(e => e.id !== edge.id)
-
     eventBus.onEdgeRemoved.forEach(fn => fn(edge))
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    repaint('base-graph/remove-edge')
     return edge
   }
 
@@ -491,6 +487,7 @@ export const useBaseGraph =(
 
     reset,
 
+    repaint,
     canvas,
   }
 }

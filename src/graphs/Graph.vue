@@ -63,25 +63,19 @@
   onMounted(() => {
     stopParentWidthWatch = watch(parentHeight, () => {
       setCanvasSize();
-      drawBackgroundPattern()
+      drawBackgroundPattern();
+      props.graph.repaint('graph-view/width-watch')
     }, {
       immediate: true,
     });
     stopParentHeightWatch = watch(parentWidth, () =>{
       setCanvasSize();
       drawBackgroundPattern();
+      props.graph.repaint('graph-view/height-watch')
     }, {
       immediate: true,
     });
   });
-
-  const debounce = (fn: () => void, ms: number) => {
-    let timeout: NodeJS.Timeout;
-    return () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(fn, ms);
-    };
-  };
 
   const patternColor = ref(props.graph.getTheme('graphBgPatternColor'))
 
@@ -138,10 +132,13 @@
     if (!ctx) throw new Error("2d context not found");
     drawBackgroundPattern();
     if (!parentEl.value) throw new Error("parent element not found");
-    parentEl.value.scrollTop =
-      canvasHeight.value / 2 - parentEl.value.clientHeight / 2;
-    parentEl.value.scrollLeft =
-      canvasWidth.value / 2 - parentEl.value.clientWidth / 2;
+
+    const middleY = canvasHeight.value / 2 - parentEl.value.clientHeight / 2;
+    parentEl.value.scrollTop = middleY;
+
+    const middleX = canvasWidth.value / 2 - parentEl.value.clientWidth / 2;
+    parentEl.value.scrollLeft = middleX;
+
     parentEl.value.addEventListener("scroll", currentPosition);
     loadingGraph.value = false;
   }, 100);
@@ -151,16 +148,11 @@
 
   const currentPosition = () => {
     if (!parentEl.value) throw new Error("parent element not found");
-    // make the center of the canvas the origin
-    xCoord.value =
-      parentEl.value.scrollLeft -
-      canvasWidth.value / 2 +
-      parentEl.value.clientWidth / 2;
-    yCoord.value =
-      (parentEl.value.scrollTop -
-        canvasHeight.value / 2 +
-        parentEl.value.clientHeight / 2) *
-      -1;
+
+    const x = parentEl.value.scrollLeft - (canvasWidth.value / 2) + (parentEl.value.clientWidth / 2);
+    const y = parentEl.value.scrollTop - (canvasHeight.value / 2) + (parentEl.value.clientHeight / 2);
+    xCoord.value = x
+    yCoord.value = y * -1; // flip axis to get a normal cartesian plane
   };
 
   onUnmounted(() => {
@@ -174,6 +166,7 @@
 </script>
 
 <template>
+
   <!-- coordinates for debugging -->
   <p
     class="z-50 dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none"

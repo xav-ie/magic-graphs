@@ -123,6 +123,7 @@ export const useMarqueeGraph = (
     const { offsetX: x, offsetY: y } = event
     selectionBox.value.bottomRight = { x, y }
     updateSelectedItems(selectionBox.value)
+    graph.repaint('marquee-graph/update-selection-box')
   }
 
   graph.subscribe('onMouseDown', engageSelectionBox)
