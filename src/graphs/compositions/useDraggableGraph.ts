@@ -13,6 +13,7 @@ import type {
   GraphOptions,
   MappingsToEventBus
 } from '@graph/types'
+import { useFocusGraph } from './useFocusGraph';
 
 export type DraggableGraphEvents = BaseGraphEvents & {
   onNodeDragStart: (node: GNode) => void;
@@ -35,7 +36,7 @@ export const useDraggableGraph = (
   options: Partial<DraggableGraphOptions> = {},
 ) => {
 
-  const graph = useBaseGraph(canvas, options)
+  const graph = useFocusGraph(canvas, options)
 
   const settings = ref<DraggableGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultDraggableGraphSettings,

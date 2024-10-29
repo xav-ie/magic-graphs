@@ -60,12 +60,18 @@ export const getThemeResolver = (
   prop: T,
   ...args: K
 ) => {
-    const entries = themeMap[prop]
-    const themeValue = entries.length === 0 ? theme.value[prop] : entries[entries.length - 1].value
-    if (!themeValue) throw new Error(`theme value for ${prop} not found`)
-    // casting to assist with inference
-    return getValue<GraphTheme[T], K>(themeValue, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
-  }
+  const themeMapEntry = themeMap[prop].findLast((themeMapEntryItem: FullThemeMap[T][number]) => {
+    const themeGetterOrValue = themeMapEntryItem.value
+    const themeValue = getValue<typeof themeGetterOrValue, K>(
+      themeGetterOrValue,
+      ...args
+    ) as UnwrapMaybeGetter<GraphTheme[T]>
+    return themeValue ?? false
+  })
+  const getter = themeMapEntry?.value ?? theme.value[prop]
+  if (!getter) throw new Error(`Theme property "${prop}" not found`)
+  return getValue<typeof getter, K>(getter, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
+}
 
 /**
  * describes the function that gets a value from a theme inquiry

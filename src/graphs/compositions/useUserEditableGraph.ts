@@ -113,14 +113,10 @@ export const useUserEditableGraph = (
   const handleDeletion = (ev: KeyboardEvent) => {
     if (ev.key !== 'Backspace') return
 
-    const focusedItem = graph.getFocusedItem()
-    if (focusedItem) {
-      const { item, type } = focusedItem
-      if (type === 'node') {
-        graph.removeNode(item.id)
-      } else if (type === 'edge') {
-        graph.removeEdge(item.id)
-      }
+    if (graph.focusedItem.value) {
+      const { item, type } = graph.focusedItem.value
+      if (type === 'node') graph.removeNode(item.id)
+      else if (type === 'edge') graph.removeEdge(item.id)
     }
 
     if (graph.marqueedItemIDs.size > 0) {

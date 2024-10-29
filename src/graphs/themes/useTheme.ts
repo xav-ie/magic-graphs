@@ -3,13 +3,14 @@ import type { Graph } from "@graph/types";
 import type {
   GraphTheme,
   GraphThemeKey,
+  ThemeMapEntry,
 } from "@graph/themes/types";
 
 type ThemeableGraph = Pick<Graph, 'themeMap'>
 
 export const useTheme = <G extends ThemeableGraph>(graph: G, themeId: string) => {
 
-  const setTheme = <T extends GraphThemeKey>(prop: T, value: GraphTheme[T]) => {
+  const setTheme = <T extends GraphThemeKey>(prop: T, value: ThemeMapEntry<T>['value']) => {
     removeTheme(prop)
     const themeMapEntries = graph.themeMap[prop]
     themeMapEntries.push({

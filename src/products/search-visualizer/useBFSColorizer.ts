@@ -29,21 +29,22 @@ export const useBFSColorizer = (graph: Graph) => {
 
   const shiftStartNodeIfNecessary = () => {
     if (startNode.value === undefined) {
-      const [ newStartNode ] = graph.nodes.value;
+      const [newStartNode] = graph.nodes.value;
       if (newStartNode) startNode.value = newStartNode.label;
     }
 
     const startNodeInGraph = graph.nodes.value.find(node => node.id === startNode.value);
     if (!startNodeInGraph) {
-      const [ newStartNode ] = graph.nodes.value;
+      const [newStartNode] = graph.nodes.value;
       startNode.value = newStartNode ? newStartNode.label : undefined;
     }
   }
 
   const color = (node: GNode) => {
+    if (node.id === graph.focusedItemId.value) return
     const level = bfsLevelRecord.value[node.label];
     // disjoint from bfs tree
-    if (level === undefined) return getValue(graph.theme.value.nodeBorderColor, node);
+    if (level === undefined) return;
     const colors = defaultColorPalette;
     return colors[level % colors.length];
   }

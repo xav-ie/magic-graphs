@@ -85,7 +85,7 @@ const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = (
   /**
    * the color of the link preview
    */
-  linkPreviewColor: graph.getTheme('edgeColor', graph.edges.value[0]),
+  linkPreviewColor: graph.edges.value[0] ? graph.getTheme('edgeColor', graph.edges.value[0]) : BLACK,
   /**
    * the width of the link preview
    */
@@ -178,7 +178,7 @@ export const useNodeAnchorGraph = (
 
     const defaultColor = getTheme('nodeAnchorColor', parentNode.value)
     const focusedColor = getTheme('nodeAnchorColorWhenParentFocused', parentNode.value)
-    const isFocused = parentNode.value.id === graph.focusedId.value
+    const isFocused = parentNode.value.id === graph.focusedItemId.value
     const color = isFocused ? focusedColor : defaultColor
 
     const anchors = getAnchors(parentNode.value)

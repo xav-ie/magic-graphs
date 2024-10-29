@@ -160,7 +160,6 @@ export const useBaseGraph =(
 
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
-  const focusedId = ref<GNode['id'] | GEdge['id'] | undefined>()
 
   const mouseEvents: Partial<MouseEventMap> = {
     click: (ev: MouseEvent) => {
@@ -189,53 +188,6 @@ export const useBaseGraph =(
     }
   }
 
-  // function breaks with guard clauses!!!
-  const handleFocusChange = (ev: MouseEvent) => {
-    const focusableTypes: SchemaItem['graphType'][] = ['node', 'edge']
-    const topItem = getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
-    if (!topItem || !focusableTypes.includes(topItem.graphType)) return setFocus(undefined)
-
-    const textInputHandler = (str: string) => {
-      const edge = getEdge(topItem.id)
-      if (!edge) throw new Error('Textarea only implemented for edges')
-      const newWeight = settings.value.edgeInputToWeight(str)
-      if (!newWeight) return
-      if (edge.weight === newWeight) return
-      edge.weight = newWeight
-      eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
-    }
-
-    const { schema, schemaType } = topItem
-
-    if ('textArea' in schema && schema.textArea?.editable ) {
-
-      if (schemaType === 'arrow' || schemaType === 'line') {
-
-        const textAreaLocationArrow = getTextAreaLocation.arrow(schema)
-        const textAreaLocationLine = getTextAreaLocation.line(schema)
-        const textAreaLocation = schemaType === 'arrow' ? textAreaLocationArrow : textAreaLocationLine
-
-        const isInTextAreaFns = isInTextarea({ x: ev.offsetX, y: ev.offsetY })
-        const textAreaSelected = schemaType === 'arrow' ? isInTextAreaFns.arrow(schema) : isInTextAreaFns.line(schema)
-        if (schema.textArea && textAreaSelected) {
-          engageTextarea({ ...schema.textArea, at: textAreaLocation }, textInputHandler)
-          return setFocus(undefined)
-        }
-      } else if (schemaType === 'uturn') {
-        const textAreaLocationUTurn = getTextAreaLocation.uTurn(schema)
-        const isInTextAreaFns = isInTextarea({ x: ev.offsetX, y: ev.offsetY })
-        const textAreaSelected = isInTextAreaFns.uTurn(schema)
-        if (schema.textArea && textAreaSelected) {
-          engageTextarea({ ...schema.textArea, at: textAreaLocationUTurn }, textInputHandler)
-          return setFocus(undefined)
-        }
-      }
-    }
-    setFocus(topItem.id)
-  }
-
-  subscribe('onMouseDown', handleFocusChange)
-
   const aggregator = ref<Aggregator>([])
   const updateAggregator: UpdateAggregator[] = []
 
@@ -248,7 +200,6 @@ export const useBaseGraph =(
         edges.value,
         getTheme,
         settings.value,
-        focusedId.value
       )
       if (!schema) return
       return {
@@ -258,7 +209,7 @@ export const useBaseGraph =(
     }).filter((item) => item && item.schema) as SchemaItem[]
 
     const nodeSchemaItems = nodes.value.map((node, i) => {
-      const schema = getNodeSchematic(node, getTheme, focusedId.value)
+      const schema = getNodeSchematic(node, getTheme)
       if (!schema) return
       return {
         ...schema,
@@ -310,8 +261,6 @@ export const useBaseGraph =(
     }
   }, 1000 / settings.value.repaintFps)
 
-  const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
-
   const initCanvas = () => {
     if (!canvas.value) {
       throw new Error('canvas element not found')
@@ -342,7 +291,6 @@ export const useBaseGraph =(
     }
 
     clearInterval(drawGraphInterval)
-    stopClickOutsideListener()
   })
 
   const getNewNodeLabel = () => {
@@ -352,7 +300,7 @@ export const useBaseGraph =(
     return label.toString()
   }
 
-  const addNode = (node: Partial<GNode>, focusNode = true) => {
+  const addNode = (node: Partial<GNode>) => {
     const { x, y } = canvas.value ? getRandomPointOnCanvas(canvas.value) : { x: 0, y: 0 }
     const newNode = {
       id: node.id ?? generateId(),
@@ -363,7 +311,6 @@ export const useBaseGraph =(
     nodes.value.push(newNode)
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     eventBus.onNodeAdded.forEach(fn => fn(newNode))
-    if (focusNode) setFocus(newNode.id)
     return newNode
   }
 
@@ -486,12 +433,6 @@ export const useBaseGraph =(
     return edge
   }
 
-  const setFocus = (newGItemId: GNode['id'] | GEdge['id'] | undefined) => {
-    if (focusedId.value === newGItemId) return
-    eventBus.onFocusChange.forEach(fn => fn(newGItemId, focusedId.value))
-    focusedId.value = newGItemId
-  }
-
   let currHoveredNode: GNode | undefined = undefined
   subscribe('onMouseMove', (ev) => {
     const node = getNodeByCoordinates(ev.offsetX, ev.offsetY)
@@ -506,17 +447,16 @@ export const useBaseGraph =(
     return aggregator
   }
 
+  updateAggregator.push(liftHoveredNodeToTop)
 
   const reset = () => {
     nodes.value = []
     edges.value = []
-    focusedId.value = undefined
     eventBus.onGraphReset.forEach(fn => fn())
   }
 
   subscribe('onGraphReset', () => eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value)))
 
-  updateAggregator.push(liftHoveredNodeToTop)
 
   watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
   watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
@@ -537,16 +477,6 @@ export const useBaseGraph =(
 
     getNodeByCoordinates,
     getDrawItemsByCoordinates,
-
-    getFocusedItem: () => {
-      if (!focusedId.value) return
-      const node = getNode(focusedId.value)
-      if (node) return { item: node, type: 'node' } as const
-      const edge = getEdge(focusedId.value)
-      if (edge) return { item: edge, type: 'edge' } as const
-    },
-    focusedId: readonly(focusedId),
-    setFocus,
 
     eventBus,
     subscribe,
