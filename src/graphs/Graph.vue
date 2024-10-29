@@ -62,12 +62,20 @@
   let stopParentHeightWatch: WatchHandle;
 
   onMounted(() => {
+    const debouncedWidthRepaint = debounce(() => {
+      props.graph.repaint("graph-view/width-watch")();
+    }, 250);
+
+    const debouncedHeightRepaint = debounce(() => {
+      props.graph.repaint("graph-view/height-watch")();
+    }, 250);
+
     stopParentWidthWatch = watch(
       parentHeight,
       () => {
         setCanvasSize();
         drawBackgroundPattern();
-        props.graph.repaint("graph-view/width-watch");
+        debouncedWidthRepaint();
       },
       {
         immediate: true,
@@ -78,7 +86,7 @@
       () => {
         setCanvasSize();
         drawBackgroundPattern();
-        props.graph.repaint("graph-view/height-watch");
+        debouncedHeightRepaint();
       },
       {
         immediate: true,
