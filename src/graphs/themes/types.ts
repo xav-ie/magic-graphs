@@ -42,7 +42,9 @@ export const getInitialThemeMap: () => FullThemeMap = () => ({
   edgeFocusTextColor: [] as ThemeMapEntry<'edgeFocusTextColor'>[],
   edgeTextFontWeight: [] as ThemeMapEntry<'edgeTextFontWeight'>[],
   edgeFocusColor: [] as ThemeMapEntry<'edgeFocusColor'>[],
+
   graphBgColor: [] as ThemeMapEntry<'graphBgColor'>[],
+  graphBgPatternColor: [] as ThemeMapEntry<'graphBgPatternColor'>[],
 
   /**
    * node anchor themes

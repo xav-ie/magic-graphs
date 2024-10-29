@@ -5,7 +5,7 @@
   import colors from "@utils/colors";
   import { drawLineWithCtx } from "@shape/draw/line";
   import type { Graph } from "@graph/types";
-import GraphSpinner from "./GraphSpinner.vue";
+  import GraphSpinner from "./GraphSpinner.vue";
 
   /**
    * how many multiples larger the graph is relative to the size of the parents
@@ -61,15 +61,44 @@ import GraphSpinner from "./GraphSpinner.vue";
   let stopParentHeightWatch: WatchHandle;
 
   onMounted(() => {
-    stopParentWidthWatch = watch(parentHeight, setCanvasSize, {
+    stopParentWidthWatch = watch(parentHeight, () => {
+      setCanvasSize();
+      drawBackgroundPattern()
+    }, {
       immediate: true,
     });
-    stopParentHeightWatch = watch(parentWidth, setCanvasSize, {
+    stopParentHeightWatch = watch(parentWidth, () =>{
+      setCanvasSize();
+      drawBackgroundPattern();
+    }, {
       immediate: true,
     });
   });
 
-  const drawBackgroundPattern = (ctx: CanvasRenderingContext2D) => {
+  const debounce = (fn: () => void, ms: number) => {
+    let timeout: NodeJS.Timeout;
+    return () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(fn, ms);
+    };
+  };
+
+  const patternColor = ref(props.graph.getTheme('graphBgPatternColor'))
+
+  props.graph.subscribe('onThemeChange', () => {
+    const color = props.graph.getTheme('graphBgPatternColor')
+    if (color === patternColor.value) return;
+    patternColor.value = color;
+    drawBackgroundPattern();
+  })
+
+  const drawBackgroundPattern = debounce(() => {
+
+    if (!bgCanvas.value) throw new Error("bgCanvas not found");
+    const ctx = bgCanvas.value.getContext("2d");
+    if (!ctx) throw new Error("2d context not found");
+
+    ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
     const SAMPLING_RATE = 75;
 
     for (let x = SAMPLING_RATE / 2; x < canvasWidth.value; x += SAMPLING_RATE) {
@@ -80,13 +109,12 @@ import GraphSpinner from "./GraphSpinner.vue";
       ) {
         const len = 10;
         const width = 2;
-        const color = colors.WHITE + "10";
         const start = { x, y };
         const end = { x: x, y: y + len };
         drawLineWithCtx(ctx)({
           start,
           end,
-          color,
+          color: patternColor.value,
           width,
         });
 
@@ -96,21 +124,23 @@ import GraphSpinner from "./GraphSpinner.vue";
         drawLineWithCtx(ctx)({
           start: start2,
           end: end2,
-          color,
+          color: patternColor.value,
           width,
         });
       }
     }
-  }
+  }, 250);
 
   setTimeout(() => {
     if (!bgCanvas.value) throw new Error("bgCanvas not found");
     const ctx = bgCanvas.value.getContext("2d");
     if (!ctx) throw new Error("2d context not found");
-    drawBackgroundPattern(ctx);
+    drawBackgroundPattern();
     if (!parentEl.value) throw new Error("parent element not found");
-    parentEl.value.scrollTop = (canvasHeight.value / 2) - (parentEl.value.clientHeight / 2);
-    parentEl.value.scrollLeft = (canvasWidth.value / 2) - (parentEl.value.clientWidth / 2);
+    parentEl.value.scrollTop =
+      canvasHeight.value / 2 - parentEl.value.clientHeight / 2;
+    parentEl.value.scrollLeft =
+      canvasWidth.value / 2 - parentEl.value.clientWidth / 2;
     parentEl.value.addEventListener("scroll", currentPosition);
     loadingGraph.value = false;
   }, 100);
@@ -121,8 +151,15 @@ import GraphSpinner from "./GraphSpinner.vue";
   const currentPosition = () => {
     if (!parentEl.value) throw new Error("parent element not found");
     // make the center of the canvas the origin
-    xCoord.value = parentEl.value.scrollLeft - (canvasWidth.value / 2) + (parentEl.value.clientWidth / 2);
-    yCoord.value = (parentEl.value.scrollTop - (canvasHeight.value / 2) + (parentEl.value.clientHeight / 2)) * -1;
+    xCoord.value =
+      parentEl.value.scrollLeft -
+      canvasWidth.value / 2 +
+      parentEl.value.clientWidth / 2;
+    yCoord.value =
+      (parentEl.value.scrollTop -
+        canvasHeight.value / 2 +
+        parentEl.value.clientHeight / 2) *
+      -1;
   };
 
   onUnmounted(() => {
@@ -136,9 +173,10 @@ import GraphSpinner from "./GraphSpinner.vue";
 </script>
 
 <template>
-
   <!-- coordinates for debugging -->
-  <p class="z-50 text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none">
+  <p
+    class="z-50 text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none"
+  >
     ({{ xCoord }}, {{ yCoord }})
   </p>
 
@@ -147,7 +185,6 @@ import GraphSpinner from "./GraphSpinner.vue";
     id="graph-container"
     class="h-full w-full overflow-auto relative"
   >
-
     <div
       v-if="loadingGraph"
       class="absolute top-0 left-0 w-full h-full flex items-center justify-center"
@@ -177,10 +214,7 @@ import GraphSpinner from "./GraphSpinner.vue";
         'pointer-events-none',
       ]"
     ></canvas>
-
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

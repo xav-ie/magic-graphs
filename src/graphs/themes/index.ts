@@ -5,7 +5,7 @@ import type {
 } from "@graph/types"
 import type { SupportedNodeShapes } from "@graph/schematics/node"
 import type { TextFontWeight } from "@shape/types"
-import {
+import colors, {
   BLACK,
   WHITE,
   STONE_600,
@@ -56,6 +56,7 @@ type WrapWithEdgeGetter<T extends Record<string, any>> = {
 
 export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEdgeGetter<BaseGraphEdgeTheme> & {
   graphBgColor: string,
+  graphBgPatternColor: string,
 }
 
 export const DEFAULT_THEME: BaseGraphTheme = {
@@ -78,6 +79,7 @@ export const DEFAULT_THEME: BaseGraphTheme = {
   edgeFocusColor: BLUE_600,
   edgeFocusTextColor: BLACK,
   graphBgColor: GRAY_200,
+  graphBgPatternColor: colors.BLACK + '15',
 } as const
 
 // TODO replace any with the type of the top level theme
@@ -108,6 +110,8 @@ export const themes = {
     // TODO BOOO!!!!
     edgeTextColor: WHITE,
     edgeFocusTextColor: WHITE,
+
     graphBgColor: GRAY_600,
+    graphBgPatternColor: colors.WHITE + '15',
   },
 } as const
