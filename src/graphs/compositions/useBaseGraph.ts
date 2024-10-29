@@ -256,9 +256,9 @@ export const useBaseGraph = (
     eventBus.onRepaint.forEach(fn => fn(ctx, repaintId))
   }
 
-  subscribe('onRepaint', (_, repaintId) => {
-    console.log(`🎨 repaint triggered -> \n ${repaintId}`)
-  })
+  // subscribe('onRepaint', (_, repaintId) => {
+  //   console.log(`🎨 repaint triggered -> \n ${repaintId}`)
+  // })
 
   const initCanvas = () => {
     if (!canvas.value) {
