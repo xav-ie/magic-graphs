@@ -118,6 +118,7 @@ export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][
 export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
 
 type BaseGraphTypes = 'node' | 'edge'
+type MarqueeGraphTypes = 'marquee-selection-box'
 type NodeAnchorGraphTypes = 'node-anchor' | 'link-preview'
 
 type SharedSchemaItemFields = {
@@ -128,7 +129,7 @@ type SharedSchemaItemFields = {
   /**
    * the type of graph data this schema item represents
    */
-  graphType: BaseGraphTypes | NodeAnchorGraphTypes,
+  graphType: BaseGraphTypes | NodeAnchorGraphTypes | MarqueeGraphTypes,
   /**
    * determines the order in which this schema item is rendered
    * on the canvas. The lower the number, the higher the priority, the higher the priority,
@@ -153,6 +154,11 @@ export type SquareSchemaItem = SharedSchemaItemFields & {
   schema: Square,
 }
 
+export type RectangleSchemaItem = SharedSchemaItemFields & {
+  schemaType: 'rect',
+  schema: Square,
+}
+
 export type ArrowSchemaItem = SharedSchemaItemFields & {
   schemaType: 'arrow',
   schema: Arrow,
@@ -166,4 +172,9 @@ export type ArrowUTurnSchemaItem = SharedSchemaItemFields & {
 /**
  * @describes a schema item that can be fed into the aggregator in order to be rendered on the canvas
  */
-export type SchemaItem = CircleSchemaItem | LineSchemaItem | SquareSchemaItem | ArrowSchemaItem | ArrowUTurnSchemaItem
+export type SchemaItem = CircleSchemaItem |
+  LineSchemaItem |
+  SquareSchemaItem |
+  ArrowSchemaItem |
+  ArrowUTurnSchemaItem |
+  RectangleSchemaItem

@@ -20,6 +20,7 @@ import type {
   NodeAnchorGraphSettings,
   NodeAnchorGraphEvents
 } from "@graph/compositions/useNodeAnchorGraph"
+import { useMarqueeGraph } from './useMarqueeGraph'
 
 export type EditSettings = {
   /**
@@ -78,7 +79,7 @@ export const useUserEditableGraph = (
   options: Partial<UserEditableGraphOptions> = {}
 ) => {
 
-  const graph = useNodeAnchorGraph(canvas, options)
+  const graph = useMarqueeGraph(canvas, options)
 
   const settings = ref<UserEditableGraphSettings>(Object.assign(graph.settings.value, {
     ...defaultUserEditableGraphSettings,
@@ -110,14 +111,25 @@ export const useUserEditableGraph = (
   }
 
   const handleDeletion = (ev: KeyboardEvent) => {
-    const focusedItem = graph.getFocusedItem()
-    if (!focusedItem) return
     if (ev.key !== 'Backspace') return
-    const { item, type } = focusedItem
-    if (type === 'node') {
-      graph.removeNode(item.id)
-    } else if (type === 'edge') {
-      graph.removeEdge(item.id)
+
+    const focusedItem = graph.getFocusedItem()
+    if (focusedItem) {
+      const { item, type } = focusedItem
+      if (type === 'node') {
+        graph.removeNode(item.id)
+      } else if (type === 'edge') {
+        graph.removeEdge(item.id)
+      }
+    }
+
+    if (graph.marqueedItemIDs.size > 0) {
+      for (const id of graph.marqueedItemIDs) {
+        const node = graph.getNode(id)
+        if (node) graph.removeNode(id)
+        const edge = graph.getEdge(id)
+        if (edge) graph.removeEdge(id)
+      }
     }
   }
 

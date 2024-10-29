@@ -315,6 +315,7 @@ export const SLATE_900 = '#0d131e';
 
 export const WHITE = '#ffffff';
 export const BLACK = '#000000';
+export const TRANSPARENT = '#00000000';
 
 /**
  * tailwinds 500 level color palette
@@ -350,6 +351,7 @@ export const TAILWIND_500_COLORS = {
 export default {
   WHITE,
   BLACK,
+  TRANSPARENT,
 
   GRAY_50,
   GRAY_100,

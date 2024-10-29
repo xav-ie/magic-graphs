@@ -42,7 +42,9 @@
     toggleEdgeType,
     changeEdgeWeight,
     clearLocalStorage,
-    crazyBtn,
+    toggleEdgeLabelDisplay,
+
+    // crazyBtn,
   } = useGraphBtns(graph);
 
   const btns = [
@@ -52,8 +54,9 @@
     toggleEdgeType,
     changeEdgeWeight,
     colorizeBtn,
+    toggleEdgeLabelDisplay,
 
-    crazyBtn,
+    // crazyBtn,
   ];
 
   useUserPreferredTheme(graph);
@@ -63,20 +66,23 @@
   <div class="relative w-full h-full">
 
     <div class="w-full h-full absolute">
-      <Graph @graph-ref="(el) => graphElement = el" />
+      <Graph
+        @graph-ref="(el) => graphElement = el"
+        :graph="graph"
+      />
     </div>
 
     <div class="absolute flex gap-2 m-2">
       <GraphBtns :btns="btns" />
     </div>
 
-    <!-- <div class="bottom-0 absolute flex gap-2 m-2">
+    <div class="bottom-0 absolute flex gap-2 m-2">
       <TutorialControls :tutorial="tutorialControls" />
     </div>
 
     <div class="absolute w-full dark:text-white bottom-[10%] grid place-items-center">
       <TutorialHint :tutorial="tutorialControls" />
-    </div> -->
+    </div>
 
   </div>
 </template>

@@ -22,10 +22,10 @@
     <span class="select-none">Previous Step</span>
   </button>
   <button
-    @click="tutorial.skipStep"
+    @click="tutorial.nextStep"
     :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
   >
-    <span class="select-none">Skip Step</span>
+    <span class="select-none">Next Step</span>
   </button>
   <button
     @click="tutorial.endTutorial"
@@ -40,9 +40,9 @@
     <span class="select-none">Restart Tutorial</span>
   </button>
 
-  <div class="flex gap-2 dark:text-white">
+  <!-- <div class="flex gap-2 dark:text-white">
     <span class="select-none">
       step {{ progress }} -> isTutorialOver: {{ tutorial.isTutorialOver }}
     </span>
-  </div>
+  </div> -->
 </template>

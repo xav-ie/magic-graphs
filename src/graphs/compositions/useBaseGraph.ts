@@ -4,6 +4,7 @@ import {
   onBeforeUnmount,
   readonly,
   watch,
+  computed,
 } from 'vue'
 import type { Ref } from 'vue'
 import { onClickOutside } from '@vueuse/core';
@@ -67,6 +68,7 @@ export type BaseGraphEvents = {
   onMouseUp: (ev: MouseEvent) => void;
   onMouseMove: (ev: MouseEvent) => void;
   onDblClick: (ev: MouseEvent) => void;
+  onContextMenu: (ev: MouseEvent) => void;
 
   /* global dom events */
   onKeydown: (ev: KeyboardEvent) => void;
@@ -148,6 +150,7 @@ export const useBaseGraph =(
     onMouseUp: [],
     onMouseMove: [],
     onDblClick: [],
+    onContextMenu: [],
     onKeydown: [],
     onThemeChange: [],
     onSettingsChange: [],
@@ -175,6 +178,9 @@ export const useBaseGraph =(
     dblclick: (ev: MouseEvent) => {
       eventBus.onDblClick.forEach(fn => fn(ev))
     },
+    contextmenu: (ev: MouseEvent) => {
+      eventBus.onContextMenu.forEach(fn => fn(ev))
+    }
   }
 
   const keyboardEvents: Partial<KeyboardEventMap> = {
@@ -273,7 +279,16 @@ export const useBaseGraph =(
 
     const evaluateAggregator = updateAggregator.reduce<SchemaItem[]>((acc, fn) => fn(acc), [])
     aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
-    const { drawLine, drawCircle, drawSquare, drawArrow, drawUTurnArrow } = drawShape(ctx)
+
+    const {
+      drawLine,
+      drawCircle,
+      drawSquare,
+      drawRectangle,
+      drawArrow,
+      drawUTurnArrow,
+    } = drawShape(ctx)
+
     for (const item of aggregator.value) {
       if (item.schemaType === 'circle') {
         drawCircle(item.schema)
@@ -281,6 +296,8 @@ export const useBaseGraph =(
         drawLine(item.schema)
       } else if (item.schemaType === 'square') {
         drawSquare(item.schema)
+      } else if (item.schemaType === 'rect') {
+        drawRectangle(item.schema)
       } else if (item.schemaType === 'arrow') {
         drawArrow(item.schema)
       } else if (item.schemaType === 'uturn') {
@@ -295,18 +312,10 @@ export const useBaseGraph =(
 
   const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
 
-  const changeCanvasColor = () => {
-    if (!canvas.value) return
-    canvas.value.style.backgroundColor = theme.value.graphBgColor
-  }
-
   const initCanvas = () => {
     if (!canvas.value) {
       throw new Error('canvas element not found')
     }
-
-    canvas.value.style.backgroundColor = theme.value.graphBgColor
-    subscribe('onThemeChange', changeCanvasColor)
 
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.addEventListener(event, listeners)
@@ -366,17 +375,32 @@ export const useBaseGraph =(
     }
   }
 
-  const getNode = (id: GNode['id']) => {
-    return nodes.value.find(node => node.id === id)
-  }
+  const nodeIdToNodeMap = computed(() => {
+    const map = new Map<GNode['id'], GNode>()
+    for (const node of nodes.value) map.set(node.id, node)
+    return map
+  })
 
-  const getEdge = (id: GEdge['id']) => {
-    return edges.value.find(edge => edge.id === id)
-  }
+  const edgeIdToEdgeMap = computed(() => {
+    const map = new Map<GEdge['id'], GEdge>()
+    for (const edge of edges.value) map.set(edge.id, edge)
+    return map
+  })
+
+  const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
+  const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
+
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
     const point = { x, y }
-    const { isInCircle, isInLine, isInSquare, isInArrow, isInUTurnArrow } = hitboxes(point)
+    const {
+      isInCircle,
+      isInLine,
+      isInSquare,
+      isInArrow,
+      isInUTurnArrow,
+      isInRectangle
+    } = hitboxes(point)
 
     // TODO Make sure that this works with priority
     return aggregator.value.filter(item => {
@@ -386,6 +410,8 @@ export const useBaseGraph =(
         return isInLine(item.schema)
       } if (item.schemaType === 'square') {
         return isInSquare(item.schema)
+      } if (item.schemaType === 'rect') {
+        return isInRectangle(item.schema)
       } if (item.schemaType === 'arrow') {
         return isInArrow(item.schema)
       } if (item.schemaType === 'uturn') {
@@ -497,16 +523,21 @@ export const useBaseGraph =(
 
   return {
     nodes,
+    getNode,
+
     edges,
+    getEdge,
+
     addNode,
     moveNode,
-    getNode,
-    getEdge,
-    getNodeByCoordinates,
-    getDrawItemsByCoordinates,
     removeNode,
+
     addEdge,
     removeEdge,
+
+    getNodeByCoordinates,
+    getDrawItemsByCoordinates,
+
     getFocusedItem: () => {
       if (!focusedId.value) return
       const node = getNode(focusedId.value)

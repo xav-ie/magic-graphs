@@ -5,20 +5,22 @@ import type {
   GraphThemeKey,
 } from "@graph/themes/types";
 
-export const useTheme = (graph: Graph, id: string) => {
+type ThemeableGraph = Pick<Graph, 'themeMap'>
+
+export const useTheme = <G extends ThemeableGraph>(graph: G, themeId: string) => {
 
   const setTheme = <T extends GraphThemeKey>(prop: T, value: GraphTheme[T]) => {
     removeTheme(prop)
     const themeMapEntries = graph.themeMap[prop]
     themeMapEntries.push({
       value,
-      useThemeId: id
+      useThemeId: themeId
     })
   }
 
   const removeTheme = (prop: GraphThemeKey) => {
     const themeMapEntries = graph.themeMap[prop]
-    const index = themeMapEntries.findIndex(entry => entry.useThemeId === id)
+    const index = themeMapEntries.findIndex(entry => entry.useThemeId === themeId)
     if (index !== -1) themeMapEntries.splice(index, 1)
   }
 

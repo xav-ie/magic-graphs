@@ -19,6 +19,7 @@ export const drawShape = (ctx: CanvasRenderingContext2D) => ({
   drawCircle: drawCircleWithCtx(ctx),
   drawLine: drawLineWithCtx(ctx),
   drawSquare: drawSquareWithCtx(ctx),
+  drawRectangle: drawSquareWithCtx(ctx),
   drawTriangle: drawTriangleWithCtx(ctx),
   drawArrow: drawArrowWithCtx(ctx),
   drawUTurnArrow: drawUTurnArrowWithCtx(ctx),
