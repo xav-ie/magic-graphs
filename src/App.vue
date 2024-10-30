@@ -6,8 +6,8 @@ import SearchVisualizer from '@product/search-visualizer/Main.vue'
 
 <template>
   <div class="w-[100vw] h-[100vh] relative">
-    <TestGraph />
-    <!-- <SearchVisualizer /> -->
+    <!-- <TestGraph /> -->
+    <SearchVisualizer />
   </div>
 </template>
 
@@ -15,6 +15,10 @@ import SearchVisualizer from '@product/search-visualizer/Main.vue'
 /* hide the bars that show up when you scroll */
 *::-webkit-scrollbar {
   display: none;
+}
+
+* {
+  user-select: none;
 }
 
 html, body {

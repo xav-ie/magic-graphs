@@ -1,14 +1,13 @@
-import type { Graph } from "@/useGraph/useGraph"
-import { nodesEdgesToAdjList } from '@/graphConverters';
+import { computed } from "vue";
+import { nodesEdgesToAdjList } from '@graph/converters';
 import {
   TAILWIND_500_COLORS as color,
   GRAY_800,
   type Color
-} from "@/utils/colors";
+} from "@colors";
 import { TRANSIENT_COLOR } from "./colors";
-import { computed } from "vue";
 import { useMarkovChainSCC } from "./useSCC";
-import type { GNode } from "@/useGraph/types";
+import type { GNode, Graph } from "@graph/types";
 
 const defaultColors = [
   color.RED,

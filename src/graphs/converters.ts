@@ -4,28 +4,37 @@ import type {
   Graph
 } from '@graph/types';
 import { onUnmounted, ref } from 'vue';
+import { doesEdgeFlowOutOfToNode } from './helpers';
 
 export type AdjacencyList = Record<string, string[]>;
 
-export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes.reduce<AdjacencyList>((acc, node) => {
-  acc[node.label] = edges
-    .filter(edge => {
-      if (edge.type === 'undirected') {
-        return (edge.from) === (node.label) || (edge.to) === (node.label);
-      }
-      return (edge.from) === (node.label)
-    })
-    .map(edge => {
-      if (edge.type === 'undirected') {
-        if ((edge.from) === (node.label)) {
-          return (edge.to)
+export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes
+  .reduce<AdjacencyList>((acc, node) => {
+    acc[node.id] = edges
+      .filter(edge => doesEdgeFlowOutOfToNode(edge, node))
+      .map(edge => {
+        if (edge.type === 'undirected') {
+          if (edge.from === node.id) return edge.to
+          return edge.from
         }
-        return (edge.from)
-      }
-      return (edge.to)
-    });
-  return acc;
-}, {});
+        return edge.to
+      });
+    return acc;
+  }, {});
+
+export const humanReadableAdjList = (adjList: AdjacencyList, graph: Graph) => {
+  const entries = Object.entries(adjList);
+  return entries.reduce<AdjacencyList>((acc, [from, tos]) => {
+    const keyNode = graph.getNode(from);
+    if (!keyNode) return acc;
+    const toNodeLabels = tos
+      .map(to => graph.getNode(to))
+      .filter(Boolean)
+      .map(node => node!.label)
+    acc[keyNode.label] = toNodeLabels;
+    return acc;
+  }, {});
+}
 
 /**
  * a reactively updated adjacency list based on the graph's nodes and edges
@@ -35,18 +44,23 @@ export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes.red
  */
 export const useAdjacencyList = (graph: Graph) => {
   const adjList = ref<AdjacencyList>({});
+  const labelAdjList = ref<AdjacencyList>({});
 
-  const makeAdjList = () => {
+  const makeAdjLists = () => {
     const { nodes, edges } = graph;
     adjList.value = nodesEdgesToAdjList(nodes.value, edges.value);
+    labelAdjList.value = humanReadableAdjList(adjList.value, graph);
   }
 
-  makeAdjList();
+  makeAdjLists();
 
-  graph.subscribe('onStructureChange', makeAdjList);
-  onUnmounted(() => graph.unsubscribe('onStructureChange', makeAdjList));
+  graph.subscribe('onStructureChange', makeAdjLists);
+  onUnmounted(() => graph.unsubscribe('onStructureChange', makeAdjLists));
 
-  return adjList;
+  return {
+    adjacencyList: adjList,
+    humanReadableAdjList: labelAdjList
+  };
 };
 
 export const adjListToNodesEdges = (adjList: AdjacencyList) => {

@@ -22,7 +22,7 @@ export type SelectionBox = {
 }
 
 const MARQUEE_SELECTABLE_GRAPH_TYPES: SchemaItem['graphType'][] = ['node', 'edge']
-const MARQUEE_SAMPLING_RATE = 20;
+const MARQUEE_SAMPLING_RATE = 15;
 const MARQUEE_SELECTION_BORDER_COLOR = colors.WHITE
 const MARQUEE_SELECTION_BG_COLOR = colors.WHITE + '10'
 const MARQUEE_THEME_ID = 'use-marquee-graph'
@@ -35,7 +35,7 @@ export const useMarqueeGraph = (
   const selectionBox = ref<SelectionBox | undefined>()
   const graph = useNodeAnchorGraph(canvas, options)
 
-  const sampledPoints = new Set<{ x: number, y: number }>()
+  // const sampledPoints = new Set<{ x: number, y: number }>()
   const marqueedItemIDs = new Set<string>()
 
   const { setTheme, removeTheme } = useTheme(graph, MARQUEE_THEME_ID)
@@ -79,13 +79,14 @@ export const useMarqueeGraph = (
     const { surfaceArea } = getSelectionBoxProps(selectionBox.value)
     if (surfaceArea > 200) disableNodeCreationNextTick()
     selectionBox.value = undefined
-    sampledPoints.clear()
+    // sampledPoints.clear()
     coordinateCache.clear()
     showNodeAnchors()
     graph.repaint('marquee-graph/disengage-selection-box')()
   }
 
   const coordinateCache = new Map<string, SchemaItem>()
+
   const getFromCache = (xInp: number, yInp: number) => {
     const CACHE_BUCKET_SIZE = MARQUEE_SAMPLING_RATE / 2
     const x = Math.round(xInp / CACHE_BUCKET_SIZE) * CACHE_BUCKET_SIZE
@@ -101,15 +102,14 @@ export const useMarqueeGraph = (
   }
 
   const updateSelectedItems = (box: SelectionBox) => {
-    sampledPoints.clear()
+    // sampledPoints.clear()
     marqueedItemIDs.clear()
 
     const { x1, x2, y1, y2 } = getSelectionBoxProps(box)
 
-    for (let x = x1 + (MARQUEE_SAMPLING_RATE / 2); x < x2; x += MARQUEE_SAMPLING_RATE) {
-      for (let y = y1 + (MARQUEE_SAMPLING_RATE / 2); y < y2; y += MARQUEE_SAMPLING_RATE) {
-        sampledPoints.add({ x, y })
-
+    for (let x = x1; x < x2; x += MARQUEE_SAMPLING_RATE) {
+      for (let y = y1; y < y2; y += MARQUEE_SAMPLING_RATE) {
+        // sampledPoints.add({ x, y })
         const topItem = getFromCache(x, y)
         if (!topItem) continue
 
@@ -132,20 +132,20 @@ export const useMarqueeGraph = (
   graph.subscribe('onContextMenu', disengageSelectionBox)
   graph.subscribe('onMouseMove', updateSelectionBoxDimensions)
 
-  const drawSampledPoints = (ctx: CanvasRenderingContext2D) => {
-    if (!selectionBox.value) return
-    if (graph.aggregator.value.length > 20) return
-    const drawCirce = drawCircleWithCtx(ctx)
-    for (const { x, y } of sampledPoints) {
-      drawCirce({
-        at: { x, y },
-        radius: 1,
-        color: MARQUEE_SELECTION_BG_COLOR,
-      })
-    }
-  }
+  // const drawSampledPoints = (ctx: CanvasRenderingContext2D) => {
+  //   if (!selectionBox.value) return
+  //   if (graph.aggregator.value.length > 20) return
+  //   const drawCirce = drawCircleWithCtx(ctx)
+  //   for (const { x, y } of sampledPoints) {
+  //     drawCirce({
+  //       at: { x, y },
+  //       radius: 1,
+  //       color: MARQUEE_SELECTION_BG_COLOR,
+  //     })
+  //   }
+  // }
 
-  graph.subscribe('onRepaint', drawSampledPoints)
+  // graph.subscribe('onRepaint', drawSampledPoints)
 
 
   const getSelectionBoxSchematic = (box: SelectionBox): RectangleSchemaItem => {

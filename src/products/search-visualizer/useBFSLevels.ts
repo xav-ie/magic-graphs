@@ -8,7 +8,7 @@ import type { GNode, Graph } from '@graph/types';
 import { nodesEdgesToAdjList } from '@graph/converters';
 
 // node id -> bfs level
-export type BFSLevelRecord = Record<GNode['label'], number>;
+export type BFSLevelRecord = Record<GNode['id'], number>;
 
 /**
  * reactive BFS level computation for a graph
@@ -17,10 +17,10 @@ export type BFSLevelRecord = Record<GNode['label'], number>;
  * @param startNodeInput start node to compute BFS levels from
  * @returns bfsLevelRecord reactive record of node id -> bfs level and a reactive start node
  */
-export const useBFSLevels = (graph: Graph, startNodeInput?: GNode['label']) => {
+export const useBFSLevels = (graph: Graph, startNodeInput?: GNode['id']) => {
 
   const bfsLevelRecord = ref<BFSLevelRecord>({});
-  const startNode = ref<GNode['label'] | undefined>(startNodeInput);
+  const startNode = ref<GNode['id'] | undefined>(startNodeInput);
 
   const computeBfsLevels = () => {
     bfsLevelRecord.value = {};

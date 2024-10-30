@@ -97,14 +97,13 @@ export const useUserEditableGraph = (
     if (!editSettings.value) return
     const { x, y } = anchor
     const itemStack = graph.getDrawItemsByCoordinates(x, y)
-    // @ts-expect-error findLast is real
-    const nodeSchema = itemStack.findLast((item: SchemaItem) => item.graphType === 'node') as SchemaItem | undefined
+    const nodeSchema = itemStack.findLast((item: SchemaItem) => item.graphType === 'node')
     if (!nodeSchema) return
     const node = graph.nodes.value.find(node => node.id === nodeSchema.id)
     if (!node) return
     graph.addEdge({
-      from: parentNode.label,
-      to: node.label,
+      from: parentNode.id,
+      to: node.id,
       type: editSettings.value.addedEdgeType,
       weight: editSettings.value.addedEdgeWeight,
     })

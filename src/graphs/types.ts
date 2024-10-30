@@ -34,10 +34,8 @@ export type GraphOptions<Theme, Settings> = {
 export type GNode = {
   id: string,
   /**
-   * the label of the node. strongly recommended to be unique.
-   * this property is used by converters to represent the node in adjacency lists
-   * and other data structures, therefore it must also reflect what the user
-   * sees in the UI
+   * it reflects what the user sees in the UI.
+   * recommended to be unique.
    */
   label: string,
   /**
@@ -56,11 +54,11 @@ export type GNode = {
 export type GEdge = {
   id: string,
   /**
-   * tracks the label of the node that the edge is coming from
+   * id of the node that the edge is coming from
    */
   to: string,
   /**
-   * tracks the label of the node that the edge is going to
+   * id of the node that the edge is going to
    */
   from: string,
   weight: number,

@@ -1,38 +1,37 @@
 import type {
   GEdge,
-  GNode,
   LineSchemaItem,
   ArrowSchemaItem,
-  ArrowUTurnSchemaItem
+  ArrowUTurnSchemaItem,
 } from '@graph/types'
-import { getFromToNodes } from '@graph/helpers'
-import type { ThemeGetter } from '@graph/helpers'
-import type { BaseGraphSettings } from '@graph/compositions/useBaseGraph'
+import { getConnectedNodes } from '@graph/helpers'
 import { getLargestAngularSpace } from '@shape/helpers'
+import type { BaseGraph } from '@graph/compositions/useBaseGraph'
 
 type EdgeSchemas = LineSchemaItem | ArrowSchemaItem | ArrowUTurnSchemaItem
 type EdgeSchematic = Omit<EdgeSchemas, 'priority'> | undefined
 
 export const getEdgeSchematic = (
   edge: GEdge,
-  nodes: GNode[],
-  edges: GEdge[],
-  getTheme: ThemeGetter,
-  graphSettings: BaseGraphSettings,
+  graph: Pick<BaseGraph, 'edges' | 'getNode' | 'getTheme' | 'settings'>,
+  // nodes: GNode[],
+  // edges: GEdge[],
+  // getTheme: ThemeGetter,
+  // graphSettings: BaseGraphSettings,
 ): EdgeSchematic => {
 
-  const { from, to } = getFromToNodes(edge, nodes)
+  const { from, to } = getConnectedNodes(edge, graph)
 
-  const isBidirectional = edges.some(e => e.from === to.label && e.to === from.label)
+  const isThereAnEdgeGoingTheOtherWay = graph.edges.value.some(e => e.from === to.id && e.to === from.id)
   const isSelfDirecting = to === from
 
   const spacingAwayFromNode = 3
 
-  const fromNodeSize = getTheme('nodeSize', from) + spacingAwayFromNode
-  const toNodeSize = getTheme('nodeSize', to) + spacingAwayFromNode
+  const fromNodeSize = graph.getTheme('nodeSize', from) + spacingAwayFromNode
+  const toNodeSize = graph.getTheme('nodeSize', to) + spacingAwayFromNode
 
-  const fromNodeBorderWidth = getTheme('nodeBorderWidth', from)
-  const toNodeBorderWidth = getTheme('nodeBorderWidth', to)
+  const fromNodeBorderWidth = graph.getTheme('nodeBorderWidth', from)
+  const toNodeBorderWidth = graph.getTheme('nodeBorderWidth', to)
 
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
 
@@ -44,11 +43,11 @@ export const getEdgeSchematic = (
   const start = { x: from.x, y: from.y }
   const end = epiCenter
 
-  const edgeWidth = getTheme('edgeWidth', edge)
+  const edgeWidth = graph.getTheme('edgeWidth', edge)
 
   const bidirectionalEdgeSpacing = edgeWidth * 1.2
 
-  if (isBidirectional) {
+  if (isThereAnEdgeGoingTheOtherWay) {
     start.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
     start.y += Math.sin(angle + Math.PI / 2) * bidirectionalEdgeSpacing
 
@@ -56,33 +55,35 @@ export const getEdgeSchematic = (
     end.y += Math.sin(angle + Math.PI / 2) * bidirectionalEdgeSpacing
   }
 
-  const largestAngularSpace = getLargestAngularSpace(start, edges
-    // remove self-referencing edge
-    .filter((e) => (e.from === from.label || e.to === to.label) && e.from !== e.to)
-    // convert to { x, y } format
-    .map((e) => {
-      const { from: fromNode, to: toNode } = getFromToNodes(e, nodes)
-      return from.id === fromNode.id ? { x: toNode.x, y: toNode.y } : { x: fromNode.x, y: fromNode.y }
-    })
-    // remove duplicates (such as bi-directional edges)
-    .filter((point, index, self) =>
-      index === self.findIndex(
-        (p) => p.x === point.x && p.y === point.y
+  const largestAngularSpace = getLargestAngularSpace(
+    start,
+    // filter to remove self-referencing edge
+    // map to convert to { x, y } format
+    // filter to remove duplicates. (yonava: check if this is necessary, im not sure)
+    graph.edges.value
+      .filter((e) => (e.from === from.id || e.to === to.id) && e.from !== e.to)
+      .map((e) => {
+        const { from: fromNode, to: toNode } = getConnectedNodes(e, graph)
+        return from.id === fromNode.id ? { x: toNode.x, y: toNode.y } : { x: fromNode.x, y: fromNode.y }
+      })
+      .filter((point, index, self) =>
+        index === self.findIndex(
+          (p) => p.x === point.x && p.y === point.y
+        )
       )
-    )
   )
 
-  const color = getTheme('edgeColor', edge)
-  const edgeTextColor = getTheme('edgeTextColor', edge)
+  const color = graph.getTheme('edgeColor', edge)
+  const edgeTextColor = graph.getTheme('edgeTextColor', edge)
 
-  const graphBgColor = getTheme('graphBgColor')
+  const graphBgColor = graph.getTheme('graphBgColor')
 
-  const edgeTextSize = getTheme('edgeTextSize', edge)
-  const edgeTextFontWeight = getTheme('edgeTextFontWeight', edge)
+  const edgeTextSize = graph.getTheme('edgeTextSize', edge)
+  const edgeTextFontWeight = graph.getTheme('edgeTextFontWeight', edge)
 
   const textArea = {
     color: graphBgColor,
-    editable: graphSettings.edgeLabelsEditable,
+    editable: graph.settings.value.edgeLabelsEditable,
     text: {
       content: edge.weight.toString(),
       color: edgeTextColor,
@@ -105,7 +106,7 @@ export const getEdgeSchematic = (
         angle: largestAngularSpace,
         lineWidth: edgeWidth,
         color: color,
-        textArea: graphSettings.displayEdgeLabels ? textArea : undefined,
+        textArea: graph.settings.value.displayEdgeLabels ? textArea : undefined,
       },
       schemaType: 'uturn',
       id: edge.id,
@@ -126,7 +127,7 @@ export const getEdgeSchematic = (
         end: { x: to.x, y: to.y },
         color: color,
         width: edgeWidth,
-        textArea: graphSettings.displayEdgeLabels ? textArea : undefined,
+        textArea: graph.settings.value.displayEdgeLabels ? textArea : undefined,
       },
       schemaType: 'line',
       id: edge.id,
@@ -144,7 +145,7 @@ export const getEdgeSchematic = (
       // TODO - must take into account of actual node size.
       // TODO - 32 is approx default node size but wont work if node size is different
       textOffsetFromCenter: 32,
-      textArea: graphSettings.displayEdgeLabels ? textArea : undefined,
+      textArea: graph.settings.value.displayEdgeLabels ? textArea : undefined,
     },
     schemaType: 'arrow',
     id: edge.id,

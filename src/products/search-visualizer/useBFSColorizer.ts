@@ -25,24 +25,24 @@ export const useBFSColorizer = (graph: Graph) => {
 
   const isColorized = ref(false);
   const { setTheme, removeTheme } = useTheme(graph, SEARCH_VISUALIZER_THEME_ID);
-  const { bfsLevelRecord, startNode } = useBFSLevels(graph, graph.nodes.value[0]?.label);
+  const { bfsLevelRecord, startNode } = useBFSLevels(graph, graph.nodes.value[0]?.id);
 
   const shiftStartNodeIfNecessary = () => {
     if (startNode.value === undefined) {
       const [newStartNode] = graph.nodes.value;
-      if (newStartNode) startNode.value = newStartNode.label;
+      if (newStartNode) startNode.value = newStartNode.id;
     }
 
     const startNodeInGraph = graph.nodes.value.find(node => node.id === startNode.value);
     if (!startNodeInGraph) {
       const [newStartNode] = graph.nodes.value;
-      startNode.value = newStartNode ? newStartNode.label : undefined;
+      startNode.value = newStartNode ? newStartNode.id : undefined;
     }
   }
 
   const color = (node: GNode) => {
     if (node.id === graph.focusedItemId.value) return
-    const level = bfsLevelRecord.value[node.label];
+    const level = bfsLevelRecord.value[node.id];
     // disjoint from bfs tree
     if (level === undefined) return;
     const colors = defaultColorPalette;

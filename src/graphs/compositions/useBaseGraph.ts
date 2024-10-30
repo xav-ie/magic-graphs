@@ -28,6 +28,7 @@ import {
   prioritizeNode,
   getRandomPointOnCanvas,
   getThemeResolver,
+  getConnectedEdges,
 } from '@graph/helpers';
 import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
@@ -39,6 +40,7 @@ import { drawShape } from '@shape/draw';
 import { getTextAreaLocation } from '@shape/draw/text';
 import { hitboxes, isInTextarea } from '@shape/hitboxes';
 import { debounce } from '@utils/debounce';
+import { nodesEdgesToAdjList } from '@graph/converters';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -189,13 +191,12 @@ export const useBaseGraph = (
   updateAggregator.push((aggregator) => {
 
     const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(
-        edge,
-        nodes.value,
-        edges.value,
+      const schema = getEdgeSchematic(edge, {
+        edges,
+        getNode,
         getTheme,
-        settings.value,
-      )
+        settings,
+      })
       if (!schema) return
       return {
         ...schema,
@@ -312,7 +313,7 @@ export const useBaseGraph = (
   const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
   const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
 
-  const addNode = (node: Omit<GNode, 'id'>) => {
+  const addNode = (node: Omit<GNode, 'id' | 'label'> & { label?: GNode['label'] }) => {
     const newNode = {
       id: generateId(),
       label: node.label ?? getNewNodeLabel(),
@@ -375,18 +376,22 @@ export const useBaseGraph = (
     const topItem = getDrawItemsByCoordinates(x, y).pop()
     if (!topItem) return
     if (topItem.graphType !== 'node') return
-    return nodes.value.find(node => node.id === topItem.id)
+    return getNode(topItem.id)
   }
 
   const removeNode = (id: GNode['id']) => {
-    const index = nodes.value.findIndex(node => node.id === id)
-    if (index === -1) return
-    const removedNode = nodes.value[index]
-    nodes.value.splice(index, 1)
-    edges.value = edges.value.filter(edge => edge.from !== removedNode.label && edge.to !== removedNode.label)
+    const node = getNode(id)
+    if (!node) return
+
+    const edgesToRemove = getConnectedEdges(node, edges.value)
+    for (const edge of edgesToRemove) removeEdge(edge.id)
+
+    nodes.value = nodes.value.filter(n => n.id !== node.id)
+
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-    eventBus.onNodeRemoved.forEach(fn => fn(removedNode))
-    repaint('base-graph/remove-node')()
+    eventBus.onNodeRemoved.forEach(fn => fn(node))
+
+    setTimeout(repaint('base-graph/remove-node'), 5)
   }
 
   const addEdge = (edge: Omit<GEdge, 'id'>) => {
@@ -459,9 +464,9 @@ export const useBaseGraph = (
   watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
   watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
 
-  subscribe('onThemeChange', () => repaint('base-graph/on-theme-change')())
-  subscribe('onSettingsChange', () => repaint('base-graph/on-settings-change')())
-  subscribe('onGraphReset', () => repaint('base-graph/on-graph-reset')())
+  subscribe('onThemeChange', repaint('base-graph/on-theme-change'))
+  subscribe('onSettingsChange', repaint('base-graph/on-settings-change'))
+  subscribe('onGraphReset', repaint('base-graph/on-graph-reset'))
 
   return {
     nodes,
@@ -497,3 +502,5 @@ export const useBaseGraph = (
     canvas,
   }
 }
+
+export type BaseGraph = ReturnType<typeof useBaseGraph>

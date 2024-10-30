@@ -14,7 +14,8 @@ import type {
   GNode,
   GEdge,
   MappingsToEventBus,
-  UnwrapMaybeGetter
+  UnwrapMaybeGetter,
+  Graph
 } from '@graph/types'
 import type { BaseGraphEvents } from '@graph/compositions/useBaseGraph'
 
@@ -60,18 +61,18 @@ export const getThemeResolver = (
   prop: T,
   ...args: K
 ) => {
-  const themeMapEntry = themeMap[prop].findLast((themeMapEntryItem: FullThemeMap[T][number]) => {
-    const themeGetterOrValue = themeMapEntryItem.value
-    const themeValue = getValue<typeof themeGetterOrValue, K>(
-      themeGetterOrValue,
-      ...args
-    ) as UnwrapMaybeGetter<GraphTheme[T]>
-    return themeValue ?? false
-  })
-  const getter = themeMapEntry?.value ?? theme.value[prop]
-  if (!getter) throw new Error(`Theme property "${prop}" not found`)
-  return getValue<typeof getter, K>(getter, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
-}
+    const themeMapEntry = themeMap[prop].findLast((themeMapEntryItem: FullThemeMap[T][number]) => {
+      const themeGetterOrValue = themeMapEntryItem.value
+      const themeValue = getValue<typeof themeGetterOrValue, K>(
+        themeGetterOrValue,
+        ...args
+      ) as UnwrapMaybeGetter<GraphTheme[T]>
+      return themeValue ?? false
+    })
+    const getter = themeMapEntry?.value ?? theme.value[prop]
+    if (!getter) throw new Error(`Theme property "${prop}" not found`)
+    return getValue<typeof getter, K>(getter, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
+  }
 
 /**
  * describes the function that gets a value from a theme inquiry
@@ -147,23 +148,48 @@ export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement, buffer = 50) =
 });
 
 /**
- * @description given an edge and a set of nodes, this function returns the nodes that the edge connects
+ * get the nodes that an edge connects
  *
  * @param edge - the edge to get the nodes from
- * @param nodes - the nodes to search for the edge's nodes
+ * @param nodes - the nodes of the graph
  * @returns an object with the from and to nodes
  * @throws an error if the nodes are not found
  */
-export const getFromToNodes = (edge: GEdge, nodes: GNode[]) => {
-  // using label when its ID that should be used but if i use ID, we create a new property that
-  // predefined nodes and edges outside of the graph instance do not know about!
-
-  const from = nodes.find(node => node.label === edge.from)
-  const to = nodes.find(node => node.label === edge.to)
+export const getConnectedNodes = (edge: GEdge, graph: Pick<Graph, 'getNode'>) => {
+  const from = graph.getNode(edge.from)
+  const to = graph.getNode(edge.to)
   if (!from || !to) throw new Error('nodes not found')
-
-  return { from, to }
+  return {
+    from,
+    to
+  }
 }
+
+/**
+ * asks if any given edge flows out to any given node
+ *
+ * @param edge - the edge to check
+ * @param node - the node to check
+ * @returns true if the edge flows out to the node, false otherwise
+ */
+export const doesEdgeFlowOutOfToNode = (edge: GEdge, node: GNode) => {
+  if (edge.type === 'undirected') {
+    return edge.from === node.id || edge.to === node.id
+  } else {
+    return edge.from === node.id
+  }
+}
+
+/**
+ * get all edges connected to a node regardless of direction
+ *
+ * @param node - the node to get the connected edges for
+ * @param edges - the edges of the graph
+ * @returns an array of edges connected to the node
+ */
+export const getConnectedEdges = (node: GNode, edges: GEdge[]) => edges.filter(edge => {
+  return edge.from === node.id || edge.to === node.id
+})
 
 /**
  * gets the theme attributes for a GNode at the point in time the function is called

@@ -66,6 +66,7 @@ export const useDraggableGraph = (
   const drop = () => {
     if (!nodeBeingDragged.value) return
     eventBus.onNodeDrop.forEach(fn => fn(nodeBeingDragged.value))
+    setTimeout(graph.repaint('draggable-graph/drop'), 10)
     nodeBeingDragged.value = undefined;
   }
 
