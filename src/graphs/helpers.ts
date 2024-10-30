@@ -17,7 +17,9 @@ import type {
   UnwrapMaybeGetter,
   Graph
 } from '@graph/types'
-import type { BaseGraphEvents } from '@graph/compositions/useBaseGraph'
+import type { BaseGraphEvents, BaseGraphSettings } from '@graph/compositions/useBaseGraph'
+import type { DeepValue, NestedKeys } from '@utils/types'
+import type { PersistentGraphSettings } from './compositions/usePersistentGraph'
 
 /**
   unwraps MaybeGetter type into a value of type T.
@@ -190,6 +192,13 @@ export const doesEdgeFlowOutOfToNode = (edge: GEdge, node: GNode) => {
 export const getConnectedEdges = (node: GNode, edges: GEdge[]) => edges.filter(edge => {
   return edge.from === node.id || edge.to === node.id
 })
+
+export const getSetting = <T extends NestedKeys<Graph['settings']['value']>>(path: T, graph: Graph) => {
+  return path
+    .split('.')
+    // @ts-expect-error the nested key type does the checking for the acc[key] indexing
+    .reduce((acc, key) => acc[key], graph.settings.value) as DeepValue<Graph['settings']['value'], T>
+}
 
 /**
  * gets the theme attributes for a GNode at the point in time the function is called

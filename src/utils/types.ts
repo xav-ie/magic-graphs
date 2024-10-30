@@ -27,9 +27,27 @@ type AcceptableObject = Record<AcceptableKeys, any>
  * get a clean union of all paths in an object
  */
 export type NestedKeys<T extends AcceptableObject> = T extends AcceptableObject ? {
-    [K in keyof T]: K | (
-        T[K] extends AcceptableObject
-        ? K extends string
-        ? `${K}.${NestedKeys<T[K]>}` : never : never
-    )
+  [K in keyof T]: K | (
+    Extract<T[K], AcceptableObject> extends AcceptableObject
+    ? K extends string
+    // @ts-expect-error this works but typescript doesn't like it
+    ? `${K}.${NestedKeys<Required<T[K]>>}` : never : never
+  )
 }[keyof T] : never
+
+type OnlyObj<T> = Extract<T, object>
+
+type OnlyObjNested<T> = {
+  [K in keyof T]: OnlyObj<T[K]> extends never ? T[K] : OnlyObj<T[K]>
+}
+
+type ExecuteDeepValue<T, Path extends string> =
+  Path extends `${infer Key}.${infer Rest}`
+  ? Key extends keyof T
+  ? ExecuteDeepValue<T[Key], Rest>
+  : never
+  : Path extends keyof T
+  ? T[Path]
+  : never;
+
+export type DeepValue<T, Path extends string> = ExecuteDeepValue<OnlyObjNested<T>, Path>
