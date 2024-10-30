@@ -455,29 +455,31 @@ export const useBaseGraph = (
 
   subscribe('onGraphReset', () => eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value)))
 
-  const activeTheme = ref(structuredClone(theme.value))
+  const clone = <T>(value: T) => JSON.parse(JSON.stringify(value))
+
+  const activeTheme = ref(clone(theme.value))
   watch(theme, (newTheme) => {
     const themeDiff = delta(activeTheme.value, theme.value)
     if (!themeDiff) return
-    activeTheme.value = structuredClone(newTheme)
+    activeTheme.value = clone(newTheme)
     eventBus.onThemeChange.forEach(fn => fn(themeDiff))
   }, { deep: true })
 
-  const activeSettings = ref(structuredClone(settings.value))
-  watch(settings, () => {
-    const settingsDiff = delta(activeSettings.value, settings.value)
+  const activeSettings = ref(clone(settings.value))
+  watch(settings, (newSettings) => {
+    console.log('settings changed')
+    console.log('old settings', JSON.stringify(activeSettings.value, null, 2))
+    console.log('new settings', JSON.stringify(newSettings, null, 2))
+    const settingsDiff = delta(activeSettings.value, newSettings)
+    console.log(settingsDiff)
     if (!settingsDiff) return
-    activeSettings.value = structuredClone(settings.value)
+    activeSettings.value = clone(settings.value)
     eventBus.onSettingsChange.forEach(fn => fn(settingsDiff))
   }, { deep: true })
 
   subscribe('onThemeChange', () => repaint('base-graph/on-theme-change')())
   subscribe('onSettingsChange', () => repaint('base-graph/on-settings-change')())
   subscribe('onGraphReset', () => repaint('base-graph/on-graph-reset')())
-
-  subscribe('onThemeChange', (diff) => {
-
-  })
 
   return {
     nodes,
