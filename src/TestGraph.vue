@@ -11,8 +11,6 @@
   import GraphBtns from "@graph/buttons/GraphBtns.vue";
   import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
   import Graph from "@graph/Graph.vue";
-  import { getRandomInRange, getSetting } from "@graph/helpers";
-  import colors from "@colors";
 
   const graphElement = ref<HTMLCanvasElement>();
 
@@ -62,9 +60,6 @@
   useUserPreferredTheme(graph);
 
   const log = () => console.log(graph.themeMap.nodeColor)
-
-
-  const mySetting = getSetting('persistent', graph)
 </script>
 
 <template>

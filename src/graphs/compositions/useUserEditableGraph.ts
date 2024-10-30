@@ -128,17 +128,27 @@ export const useUserEditableGraph = (
     }
   }
 
-  watchEffect(() => {
+  const active = () => {
+    graph.subscribe('onDblClick', handleNodeCreation)
+    graph.subscribe('onKeydown', handleDeletion)
+    graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
+    settings.value.nodeAnchors = true
+  }
+
+  const deactivate = () => {
     graph.unsubscribe('onDblClick', handleNodeCreation)
     graph.unsubscribe('onKeydown', handleDeletion)
     graph.unsubscribe('onNodeAnchorDrop', handleEdgeCreation)
+    settings.value.nodeAnchors = false
+  }
 
-    if (editSettings.value) {
-      graph.subscribe('onDblClick', handleNodeCreation)
-      graph.subscribe('onKeydown', handleDeletion)
-      graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
-    }
+  if (settings.value.userEditable) active()
+
+  graph.subscribe('onSettingsChange', (diff) => {
+    if (diff.userEditable === true) active()
+    else if (diff.userEditable === false) deactivate()
   })
+
 
   return {
     ...graph,

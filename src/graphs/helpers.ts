@@ -18,7 +18,7 @@ import type {
   Graph
 } from '@graph/types'
 import type { BaseGraphEvents, BaseGraphSettings } from '@graph/compositions/useBaseGraph'
-import type { DeepValue, NestedKeys } from '@utils/types'
+import type { DeepRequired, DeepValue, NestedKeys } from '@utils/types'
 import type { PersistentGraphSettings } from './compositions/usePersistentGraph'
 
 /**
@@ -193,11 +193,16 @@ export const getConnectedEdges = (node: GNode, edges: GEdge[]) => edges.filter(e
   return edge.from === node.id || edge.to === node.id
 })
 
-export const getSetting = <T extends NestedKeys<Graph['settings']['value']>>(path: T, graph: Graph) => {
+export const setting = <S extends {}, P extends NestedKeys<S>>(settings: S, path: P) => {
   return path
+    // @ts-ignore this works because P is always a string in settings
     .split('.')
-    // @ts-expect-error the nested key type does the checking for the acc[key] indexing
-    .reduce((acc, key) => acc[key], graph.settings.value) as DeepValue<Graph['settings']['value'], T>
+    // @ts-ignore the nested key type does the checking for the acc[key] indexing
+    .reduce((acc, key) => {
+      if (acc === undefined) return acc
+      return acc[key]
+      // @ts-ignore
+    }, settings) as DeepValue<DeepRequired<S>, P>
 }
 
 /**
