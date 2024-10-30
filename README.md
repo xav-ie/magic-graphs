@@ -1,4 +1,5 @@
-# magic graphs ✨🦄
+# magic products ✨🦄
+### a new tool for learning computer science
 
 This template should help get you started developing with Vue 3 in Vite.
 
