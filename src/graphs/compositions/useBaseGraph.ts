@@ -2,13 +2,10 @@ import {
   ref,
   onMounted,
   onBeforeUnmount,
-  readonly,
   watch,
   computed,
-  queuePostFlushCb,
 } from 'vue'
 import type { Ref } from 'vue'
-import { onClickOutside } from '@vueuse/core';
 import type {
   GNode,
   GEdge,
@@ -26,7 +23,6 @@ import {
   generateSubscriber,
   generateId,
   prioritizeNode,
-  getRandomPointOnCanvas,
   getThemeResolver,
   getConnectedEdges,
 } from '@graph/helpers';
@@ -34,14 +30,12 @@ import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
 import { themes } from '@graph/themes';
 import type { BaseGraphTheme } from '@graph/themes'
-import { engageTextarea } from '@graph/textarea';
-import { getInitialThemeMap } from '@graph/themes/types';
+import { getInitialThemeMap, type GraphTheme } from '@graph/themes/types';
 import { drawShape } from '@shape/draw';
-import { getTextAreaLocation } from '@shape/draw/text';
-import { hitboxes, isInTextarea } from '@shape/hitboxes';
-import { debounce } from '@utils/debounce';
-import { nodesEdgesToAdjList } from '@graph/converters';
+import { hitboxes } from '@shape/hitboxes';
 import { delta } from '@utils/deepDelta/delta';
+import type { PersistentGraphSettings } from './usePersistentGraph';
+import type { DeepPartial } from '@utils/types';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -79,8 +73,8 @@ export type BaseGraphEvents = {
   onKeydown: (ev: KeyboardEvent) => void;
 
   /* reactivity events */
-  onThemeChange: () => void;
-  onSettingsChange: () => void;
+  onThemeChange: (diff: DeepPartial<GraphTheme>) => void;
+  onSettingsChange: (diff: DeepPartial<PersistentGraphSettings>) => void;
 }
 
 export type BaseGraphSettings = {
@@ -480,6 +474,10 @@ export const useBaseGraph = (
   subscribe('onThemeChange', () => repaint('base-graph/on-theme-change')())
   subscribe('onSettingsChange', () => repaint('base-graph/on-settings-change')())
   subscribe('onGraphReset', () => repaint('base-graph/on-graph-reset')())
+
+  subscribe('onThemeChange', (diff) => {
+
+  })
 
   return {
     nodes,

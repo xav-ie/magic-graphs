@@ -12,6 +12,7 @@ import { drawShape } from "@shape/draw";
 import { getTextAreaLocationOnLine } from "./line";
 import { getTextAreaLocationOnArrow } from "./arrow";
 import { getTextAreaLocationOnUTurnArrow } from "./uturn";
+import type { DeepRequired } from "@utils/types";
 
 export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
   line: (line: Line) => {
@@ -70,12 +71,6 @@ export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
     queueMicrotask(() => drawText(ctx)(fullTextArea));
   },
 })
-
-export type DeepRequired<T> = {
-  [K in keyof T]-?: T[K] extends object
-    ? DeepRequired<T[K]>
-    : T[K];
-};
 
 export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({
   width: textArea.text.fontSize * 2,
