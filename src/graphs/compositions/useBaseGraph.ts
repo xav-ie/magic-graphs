@@ -189,13 +189,12 @@ export const useBaseGraph = (
   updateAggregator.push((aggregator) => {
 
     const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(
-        edge,
-        nodes.value,
-        edges.value,
+      const schema = getEdgeSchematic(edge, {
+        edges,
+        getNode,
         getTheme,
-        settings.value,
-      )
+        settings,
+      })
       if (!schema) return
       return {
         ...schema,
@@ -312,7 +311,7 @@ export const useBaseGraph = (
   const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
   const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
 
-  const addNode = (node: Omit<GNode, 'id'>) => {
+  const addNode = (node: Omit<GNode, 'id' | 'label'> & { label?: GNode['label'] }) => {
     const newNode = {
       id: generateId(),
       label: node.label ?? getNewNodeLabel(),
@@ -375,7 +374,7 @@ export const useBaseGraph = (
     const topItem = getDrawItemsByCoordinates(x, y).pop()
     if (!topItem) return
     if (topItem.graphType !== 'node') return
-    return nodes.value.find(node => node.id === topItem.id)
+    return getNode(topItem.id)
   }
 
   const removeNode = (id: GNode['id']) => {
@@ -459,9 +458,9 @@ export const useBaseGraph = (
   watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
   watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
 
-  subscribe('onThemeChange', () => repaint('base-graph/on-theme-change')())
-  subscribe('onSettingsChange', () => repaint('base-graph/on-settings-change')())
-  subscribe('onGraphReset', () => repaint('base-graph/on-graph-reset')())
+  subscribe('onThemeChange', repaint('base-graph/on-theme-change'))
+  subscribe('onSettingsChange', repaint('base-graph/on-settings-change'))
+  subscribe('onGraphReset', repaint('base-graph/on-graph-reset'))
 
   return {
     nodes,
@@ -497,3 +496,5 @@ export const useBaseGraph = (
     canvas,
   }
 }
+
+export type BaseGraph = ReturnType<typeof useBaseGraph>

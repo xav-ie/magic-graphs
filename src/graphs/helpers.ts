@@ -14,7 +14,8 @@ import type {
   GNode,
   GEdge,
   MappingsToEventBus,
-  UnwrapMaybeGetter
+  UnwrapMaybeGetter,
+  Graph
 } from '@graph/types'
 import type { BaseGraphEvents } from '@graph/compositions/useBaseGraph'
 
@@ -147,22 +148,21 @@ export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement, buffer = 50) =
 });
 
 /**
- * @description given an edge and a set of nodes, this function returns the nodes that the edge connects
+ * get the nodes that an edge connects
  *
  * @param edge - the edge to get the nodes from
- * @param nodes - the nodes to search for the edge's nodes
+ * @param nodes - the nodes of the graph
  * @returns an object with the from and to nodes
  * @throws an error if the nodes are not found
  */
-export const getFromToNodes = (edge: GEdge, nodes: GNode[]) => {
-  // using label when its ID that should be used but if i use ID, we create a new property that
-  // predefined nodes and edges outside of the graph instance do not know about!
-
-  const from = nodes.find(node => node.label === edge.from)
-  const to = nodes.find(node => node.label === edge.to)
+export const getConnectedNodes = (edge: GEdge, graph: Pick<Graph, 'getNode'>) => {
+  const from = graph.getNode(edge.from)
+  const to = graph.getNode(edge.to)
   if (!from || !to) throw new Error('nodes not found')
-
-  return { from, to }
+  return {
+    from,
+    to
+  }
 }
 
 /**
