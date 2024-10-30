@@ -61,18 +61,18 @@ export const getThemeResolver = (
   prop: T,
   ...args: K
 ) => {
-  const themeMapEntry = themeMap[prop].findLast((themeMapEntryItem: FullThemeMap[T][number]) => {
-    const themeGetterOrValue = themeMapEntryItem.value
-    const themeValue = getValue<typeof themeGetterOrValue, K>(
-      themeGetterOrValue,
-      ...args
-    ) as UnwrapMaybeGetter<GraphTheme[T]>
-    return themeValue ?? false
-  })
-  const getter = themeMapEntry?.value ?? theme.value[prop]
-  if (!getter) throw new Error(`Theme property "${prop}" not found`)
-  return getValue<typeof getter, K>(getter, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
-}
+    const themeMapEntry = themeMap[prop].findLast((themeMapEntryItem: FullThemeMap[T][number]) => {
+      const themeGetterOrValue = themeMapEntryItem.value
+      const themeValue = getValue<typeof themeGetterOrValue, K>(
+        themeGetterOrValue,
+        ...args
+      ) as UnwrapMaybeGetter<GraphTheme[T]>
+      return themeValue ?? false
+    })
+    const getter = themeMapEntry?.value ?? theme.value[prop]
+    if (!getter) throw new Error(`Theme property "${prop}" not found`)
+    return getValue<typeof getter, K>(getter, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
+  }
 
 /**
  * describes the function that gets a value from a theme inquiry
@@ -164,6 +164,32 @@ export const getConnectedNodes = (edge: GEdge, graph: Pick<Graph, 'getNode'>) =>
     to
   }
 }
+
+/**
+ * asks if any given edge connects to any given node
+ *
+ * @param edge - the edge to check
+ * @param node - the node to check
+ * @returns true if the edge connects to the node, false otherwise
+ */
+export const doesEdgeConnectToNode = (edge: GEdge, node: GNode) => {
+  if (edge.type === 'undirected') {
+    return edge.from === node.id || edge.to === node.id
+  } else {
+    return edge.from === node.id
+  }
+}
+
+/**
+ * get all edges connected to a node
+ *
+ * @param node - the node to get the connected edges for
+ * @param edges - the edges of the graph
+ * @returns an array of edges connected to the node
+ */
+export const getConnectedEdges = (node: GNode, edges: GEdge[]) => edges.filter(edge => {
+  return doesEdgeConnectToNode(edge, node)
+})
 
 /**
  * gets the theme attributes for a GNode at the point in time the function is called

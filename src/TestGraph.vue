@@ -82,13 +82,13 @@
       <button @click="log">log</button>
     </div>
 
-    <div class="bottom-0 absolute flex gap-2 m-2">
+    <!-- <div class="bottom-0 absolute flex gap-2 m-2">
       <TutorialControls :tutorial="tutorialControls" />
     </div>
 
     <div class="absolute w-full dark:text-white bottom-[10%] grid place-items-center">
       <TutorialHint :tutorial="tutorialControls" />
-    </div>
+    </div> -->
 
   </div>
 </template>

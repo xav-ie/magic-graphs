@@ -20,16 +20,17 @@
       }
     }
   });
-  const adjacencyList = useAdjacencyList(graph);
+
+  const { humanReadableAdjList } = useAdjacencyList(graph);
 
   /**
    * a graph with traps to collect the traversal trace
    */
   const trappedGraph = computed(
     () =>
-      new Proxy(adjacencyList.value, {
+      new Proxy(humanReadableAdjList.value, {
         get(target, prop, receiver) {
-          trace.value.push(prop);
+          trace.value.push(prop.toString());
           if (trace.value.length > 100)
             throw new Error("Infinite loop detected");
           if (!Reflect.has(target, prop))

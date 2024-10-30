@@ -39,6 +39,7 @@ import { drawShape } from '@shape/draw';
 import { getTextAreaLocation } from '@shape/draw/text';
 import { hitboxes, isInTextarea } from '@shape/hitboxes';
 import { debounce } from '@utils/debounce';
+import { nodesEdgesToAdjList } from '@graph/converters';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -378,13 +379,21 @@ export const useBaseGraph = (
   }
 
   const removeNode = (id: GNode['id']) => {
+    const adjList = nodesEdgesToAdjList(nodes.value, edges.value)
+    console.log(adjList)
+    const edgesToRemove = adjList[id]
+    console.log(edgesToRemove)
+
     const index = nodes.value.findIndex(node => node.id === id)
     if (index === -1) return
     const removedNode = nodes.value[index]
     nodes.value.splice(index, 1)
-    edges.value = edges.value.filter(edge => edge.from !== removedNode.label && edge.to !== removedNode.label)
+
+    for (const edgeId of edgesToRemove) removeEdge(edgeId)
+
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
     eventBus.onNodeRemoved.forEach(fn => fn(removedNode))
+
     repaint('base-graph/remove-node')()
   }
 
