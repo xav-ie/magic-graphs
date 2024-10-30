@@ -14,7 +14,7 @@ import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
 import type { NodeAnchorGraphOptions } from '@graph/compositions/useNodeAnchorGraph'
 import { getValue } from '@graph/helpers'
 import type { Rectangle } from '@shape/types'
-import { drawCircleWithCtx } from '@shape/draw/circle'
+// import { drawCircleWithCtx } from '@shape/draw/circle'
 
 export type SelectionBox = {
   topLeft: { x: number; y: number }
@@ -22,7 +22,7 @@ export type SelectionBox = {
 }
 
 const MARQUEE_SELECTABLE_GRAPH_TYPES: SchemaItem['graphType'][] = ['node', 'edge']
-const MARQUEE_SAMPLING_RATE = 15;
+const MARQUEE_SAMPLING_RATE = 5;
 const MARQUEE_SELECTION_BORDER_COLOR = colors.WHITE
 const MARQUEE_SELECTION_BG_COLOR = colors.WHITE + '10'
 const MARQUEE_THEME_ID = 'use-marquee-graph'
