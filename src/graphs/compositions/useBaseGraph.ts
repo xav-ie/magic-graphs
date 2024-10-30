@@ -36,6 +36,7 @@ import { hitboxes } from '@shape/hitboxes';
 import { delta } from '@utils/deepDelta/delta';
 import type { PersistentGraphSettings } from './usePersistentGraph';
 import type { DeepPartial } from '@utils/types';
+import { clone } from '@utils/clone';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -454,8 +455,6 @@ export const useBaseGraph = (
   }
 
   subscribe('onGraphReset', () => eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value)))
-
-  const clone = <T>(value: T) => JSON.parse(JSON.stringify(value))
 
   const activeTheme = ref(clone(theme.value))
   watch(theme, (newTheme) => {

@@ -1,5 +1,10 @@
 
-// deeply clone the object while keeping all the references in place
+/**
+ * clones an object while preserving the references of non-serializable values
+ *
+ * @param obj - the object to clone
+ * @returns the cloned object
+ */
 export const clone = (obj: Record<any, any>) => {
   const cloned = { ...obj }
   for (const key in cloned) {

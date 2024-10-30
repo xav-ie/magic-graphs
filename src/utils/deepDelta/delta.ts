@@ -9,8 +9,7 @@ const isObj = (obj: any) => Object.prototype.toString.call(obj) === '[object Obj
  *
  * @param oldObject
  * @param newObject
- * @returns an object with the keys from oldObject that have changed values in newObject
- * set to the new value
+ * @returns an object with only the changes, the values are the new values
  */
 export const delta = (oldObject: Record<any, any>, newObject: Record<any, any>) => {
 
