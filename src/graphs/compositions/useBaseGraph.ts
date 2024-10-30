@@ -2,13 +2,10 @@ import {
   ref,
   onMounted,
   onBeforeUnmount,
-  readonly,
   watch,
   computed,
-  queuePostFlushCb,
 } from 'vue'
 import type { Ref } from 'vue'
-import { onClickOutside } from '@vueuse/core';
 import type {
   GNode,
   GEdge,
@@ -26,7 +23,6 @@ import {
   generateSubscriber,
   generateId,
   prioritizeNode,
-  getRandomPointOnCanvas,
   getThemeResolver,
   getConnectedEdges,
 } from '@graph/helpers';
@@ -34,13 +30,13 @@ import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
 import { themes } from '@graph/themes';
 import type { BaseGraphTheme } from '@graph/themes'
-import { engageTextarea } from '@graph/textarea';
-import { getInitialThemeMap } from '@graph/themes/types';
+import { getInitialThemeMap, type GraphTheme } from '@graph/themes/types';
 import { drawShape } from '@shape/draw';
-import { getTextAreaLocation } from '@shape/draw/text';
-import { hitboxes, isInTextarea } from '@shape/hitboxes';
-import { debounce } from '@utils/debounce';
-import { nodesEdgesToAdjList } from '@graph/converters';
+import { hitboxes } from '@shape/hitboxes';
+import { delta } from '@utils/deepDelta/delta';
+import type { PersistentGraphSettings } from './usePersistentGraph';
+import type { DeepPartial } from '@utils/types';
+import { clone } from '@utils/clone';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -78,8 +74,8 @@ export type BaseGraphEvents = {
   onKeydown: (ev: KeyboardEvent) => void;
 
   /* reactivity events */
-  onThemeChange: () => void;
-  onSettingsChange: () => void;
+  onThemeChange: (diff: DeepPartial<GraphTheme>) => void;
+  onSettingsChange: (diff: DeepPartial<PersistentGraphSettings>) => void;
 }
 
 export type BaseGraphSettings = {
@@ -460,13 +456,25 @@ export const useBaseGraph = (
 
   subscribe('onGraphReset', () => eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value)))
 
+  const activeTheme = ref(clone(theme.value))
+  watch(theme, (newTheme) => {
+    const themeDiff = delta(activeTheme.value, theme.value)
+    if (!themeDiff) return
+    activeTheme.value = clone(newTheme)
+    eventBus.onThemeChange.forEach(fn => fn(themeDiff))
+  }, { deep: true })
 
-  watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
-  watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
+  const activeSettings = ref(clone(settings.value))
+  watch(settings, (newSettings) => {
+    const settingsDiff = delta(activeSettings.value, newSettings)
+    if (!settingsDiff) return
+    activeSettings.value = clone(settings.value)
+    eventBus.onSettingsChange.forEach(fn => fn(settingsDiff))
+  }, { deep: true })
 
-  subscribe('onThemeChange', repaint('base-graph/on-theme-change'))
-  subscribe('onSettingsChange', repaint('base-graph/on-settings-change'))
-  subscribe('onGraphReset', repaint('base-graph/on-graph-reset'))
+  subscribe('onThemeChange', () => repaint('base-graph/on-theme-change')())
+  subscribe('onSettingsChange', () => repaint('base-graph/on-settings-change')())
+  subscribe('onGraphReset', () => repaint('base-graph/on-graph-reset')())
 
   return {
     nodes,

@@ -4,11 +4,25 @@
 
 const isObj = (obj: any) => Object.prototype.toString.call(obj) === '[object Object]'
 
-export const delta = (oldObject: any, newObject: any) => {
+/**
+ * gets the delta between two objects
+ *
+ * @param oldObject
+ * @param newObject
+ * @returns an object with only the changes, the values are the new values
+ */
+export const delta = (oldObject: Record<any, any>, newObject: Record<any, any>) => {
 
-  const output: any = {};
+  const output: Record<any, any> = {};
 
   const oldObjectKeys = Object.keys(oldObject);
+  const newObjectKeys = Object.keys(newObject);
+
+  for (const key of newObjectKeys) {
+    if (!oldObjectKeys.includes(key)) {
+      output[key] = newObject[key];
+    }
+  }
 
   for (const key of oldObjectKeys) {
 
@@ -28,77 +42,4 @@ export const delta = (oldObject: any, newObject: any) => {
   }
 
   return Object.keys(output).length ? output : null;
-};
-
-
-/**
- * jesse style tests for deep object delta
- */
-
-const yona = {
-  name: 'yona',
-  sex: 'm',
-  residence: 'amherst',
-  school: {
-    name: 'umass',
-    year: 'senior',
-    info: {
-      major: ['cs'],
-      minor: [],
-      start: '2023',
-    }
-  },
-  test: {
-    hello: 'world',
-    removeMe: {
-      removeMe: 'removeMe',
-      removeMe2: {}
-    },
-    test2: {
-      test3:
-      'secret'
-    }
-  },
-};
-
-const dila = {
-  name: 'dila',
-  sex: 'f',
-  residence: 'amherst',
-  school: {
-    name: 'umass',
-    year: 'junior',
-    info: {
-      major: ['cs', 'japanese'],
-      minor: [],
-      start: '2022',
-    }
-  },
-  test: {
-    hello: 'world',
-    removeMe: {
-      removeMe: 'removeMe',
-      removeMe2: {}
-    },
-    test2: {
-      test3: 'secret changed'
-    }
-  },
-};
-
-const expected = {
-  name: 'dila',
-  sex: 'f',
-  school: {
-    year: 'junior',
-    info: {
-      major: ['cs', 'japanese'],
-      start: '2022'
-    }
-  },
-  test: {
-    test2: {
-      test3: 'secret changed'
-    }
-  }
 };
