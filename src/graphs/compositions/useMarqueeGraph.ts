@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
-import { onClickOutside, set } from '@vueuse/core'
+import { onClickOutside } from '@vueuse/core'
 import colors from '@colors'
 import type {
   GEdge,

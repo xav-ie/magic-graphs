@@ -41,6 +41,7 @@ import { getTextAreaLocation } from '@shape/draw/text';
 import { hitboxes, isInTextarea } from '@shape/hitboxes';
 import { debounce } from '@utils/debounce';
 import { nodesEdgesToAdjList } from '@graph/converters';
+import { delta } from '@utils/deepDelta/delta';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -460,13 +461,25 @@ export const useBaseGraph = (
 
   subscribe('onGraphReset', () => eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value)))
 
+  const activeTheme = ref(structuredClone(theme.value))
+  watch(theme, (newTheme) => {
+    const themeDiff = delta(activeTheme.value, theme.value)
+    if (!themeDiff) return
+    activeTheme.value = structuredClone(newTheme)
+    eventBus.onThemeChange.forEach(fn => fn(themeDiff))
+  }, { deep: true })
 
-  watch(theme, () => eventBus.onThemeChange.forEach(fn => fn()), { deep: true })
-  watch(settings, () => eventBus.onSettingsChange.forEach(fn => fn()), { deep: true })
+  const activeSettings = ref(structuredClone(settings.value))
+  watch(settings, () => {
+    const settingsDiff = delta(activeSettings.value, settings.value)
+    if (!settingsDiff) return
+    activeSettings.value = structuredClone(settings.value)
+    eventBus.onSettingsChange.forEach(fn => fn(settingsDiff))
+  }, { deep: true })
 
-  subscribe('onThemeChange', repaint('base-graph/on-theme-change'))
-  subscribe('onSettingsChange', repaint('base-graph/on-settings-change'))
-  subscribe('onGraphReset', repaint('base-graph/on-graph-reset'))
+  subscribe('onThemeChange', () => repaint('base-graph/on-theme-change')())
+  subscribe('onSettingsChange', () => repaint('base-graph/on-settings-change')())
+  subscribe('onGraphReset', () => repaint('base-graph/on-graph-reset')())
 
   return {
     nodes,

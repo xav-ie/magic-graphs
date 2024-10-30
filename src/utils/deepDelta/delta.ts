@@ -4,9 +4,17 @@
 
 const isObj = (obj: any) => Object.prototype.toString.call(obj) === '[object Object]'
 
-export const delta = (oldObject: any, newObject: any) => {
+/**
+ * gets the delta between two objects
+ *
+ * @param oldObject
+ * @param newObject
+ * @returns an object with the keys from oldObject that have changed values in newObject
+ * set to the new value
+ */
+export const delta = (oldObject: Record<any, any>, newObject: Record<any, any>) => {
 
-  const output: any = {};
+  const output: Record<any, any> = {};
 
   const oldObjectKeys = Object.keys(oldObject);
 
