@@ -7,25 +7,24 @@ import { onUnmounted, ref } from 'vue';
 
 export type AdjacencyList = Record<string, string[]>;
 
-export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes.reduce<AdjacencyList>((acc, node) => {
-  acc[node.label] = edges
-    .filter(edge => {
-      if (edge.type === 'undirected') {
-        return (edge.from) === (node.label) || (edge.to) === (node.label);
-      }
-      return (edge.from) === (node.label)
-    })
-    .map(edge => {
-      if (edge.type === 'undirected') {
-        if ((edge.from) === (node.label)) {
-          return (edge.to)
+export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes
+  .reduce<AdjacencyList>((acc, node) => {
+    acc[node.id] = edges
+      // filter checks if it belongs to the node
+      // map turns the edges that were filtered into a node id
+      .filter(edge => {
+        if (edge.type === 'undirected') return edge.from === node.id || edge.to === node.id;
+        return edge.from === node.id
+      })
+      .map(edge => {
+        if (edge.type === 'undirected') {
+          if (edge.from === node.id) return edge.to
+          return edge.from
         }
-        return (edge.from)
-      }
-      return (edge.to)
-    });
-  return acc;
-}, {});
+        return edge.to
+      });
+    return acc;
+  }, {});
 
 /**
  * a reactively updated adjacency list based on the graph's nodes and edges

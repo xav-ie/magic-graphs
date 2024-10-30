@@ -107,10 +107,9 @@ export const useMarqueeGraph = (
 
     const { x1, x2, y1, y2 } = getSelectionBoxProps(box)
 
-    for (let x = x1 + (MARQUEE_SAMPLING_RATE / 2); x < x2; x += MARQUEE_SAMPLING_RATE) {
-      for (let y = y1 + (MARQUEE_SAMPLING_RATE / 2); y < y2; y += MARQUEE_SAMPLING_RATE) {
+    for (let x = x1; x < x2; x += MARQUEE_SAMPLING_RATE) {
+      for (let y = y1; y < y2; y += MARQUEE_SAMPLING_RATE) {
         // sampledPoints.add({ x, y })
-
         const topItem = getFromCache(x, y)
         if (!topItem) continue
 

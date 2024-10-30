@@ -22,7 +22,7 @@ export const getEdgeSchematic = (
 
   const { from, to } = getConnectedNodes(edge, graph)
 
-  const isBidirectional = graph.edges.value.some(e => e.from === to.label && e.to === from.label)
+  const isThereAnEdgeGoingTheOtherWay = graph.edges.value.some(e => e.from === to.id && e.to === from.id)
   const isSelfDirecting = to === from
 
   const spacingAwayFromNode = 3
@@ -47,7 +47,7 @@ export const getEdgeSchematic = (
 
   const bidirectionalEdgeSpacing = edgeWidth * 1.2
 
-  if (isBidirectional) {
+  if (isThereAnEdgeGoingTheOtherWay) {
     start.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
     start.y += Math.sin(angle + Math.PI / 2) * bidirectionalEdgeSpacing
 
@@ -61,7 +61,7 @@ export const getEdgeSchematic = (
     // map to convert to { x, y } format
     // filter to remove duplicates. (yonava: check if this is necessary, im not sure)
     graph.edges.value
-      .filter((e) => (e.from === from.label || e.to === to.label) && e.from !== e.to)
+      .filter((e) => (e.from === from.id || e.to === to.id) && e.from !== e.to)
       .map((e) => {
         const { from: fromNode, to: toNode } = getConnectedNodes(e, graph)
         return from.id === fromNode.id ? { x: toNode.x, y: toNode.y } : { x: fromNode.x, y: fromNode.y }
