@@ -4,14 +4,14 @@ import type {
   Graph
 } from '@graph/types';
 import { onUnmounted, ref } from 'vue';
-import { doesEdgeConnectToNode } from './helpers';
+import { doesEdgeFlowOutOfToNode } from './helpers';
 
 export type AdjacencyList = Record<string, string[]>;
 
 export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes
   .reduce<AdjacencyList>((acc, node) => {
     acc[node.id] = edges
-      .filter(edge => doesEdgeConnectToNode(edge, node))
+      .filter(edge => doesEdgeFlowOutOfToNode(edge, node))
       .map(edge => {
         if (edge.type === 'undirected') {
           if (edge.from === node.id) return edge.to
@@ -50,7 +50,6 @@ export const useAdjacencyList = (graph: Graph) => {
     const { nodes, edges } = graph;
     adjList.value = nodesEdgesToAdjList(nodes.value, edges.value);
     labelAdjList.value = humanReadableAdjList(adjList.value, graph);
-    console.log(JSON.stringify(labelAdjList.value, null, 2));
   }
 
   makeAdjLists();

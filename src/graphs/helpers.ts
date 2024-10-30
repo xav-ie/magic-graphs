@@ -166,13 +166,13 @@ export const getConnectedNodes = (edge: GEdge, graph: Pick<Graph, 'getNode'>) =>
 }
 
 /**
- * asks if any given edge connects to any given node
+ * asks if any given edge flows out to any given node
  *
  * @param edge - the edge to check
  * @param node - the node to check
- * @returns true if the edge connects to the node, false otherwise
+ * @returns true if the edge flows out to the node, false otherwise
  */
-export const doesEdgeConnectToNode = (edge: GEdge, node: GNode) => {
+export const doesEdgeFlowOutOfToNode = (edge: GEdge, node: GNode) => {
   if (edge.type === 'undirected') {
     return edge.from === node.id || edge.to === node.id
   } else {
@@ -181,14 +181,14 @@ export const doesEdgeConnectToNode = (edge: GEdge, node: GNode) => {
 }
 
 /**
- * get all edges connected to a node
+ * get all edges connected to a node regardless of direction
  *
  * @param node - the node to get the connected edges for
  * @param edges - the edges of the graph
  * @returns an array of edges connected to the node
  */
 export const getConnectedEdges = (node: GNode, edges: GEdge[]) => edges.filter(edge => {
-  return doesEdgeConnectToNode(edge, node)
+  return edge.from === node.id || edge.to === node.id
 })
 
 /**

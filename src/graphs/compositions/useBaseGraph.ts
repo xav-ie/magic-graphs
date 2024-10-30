@@ -28,6 +28,7 @@ import {
   prioritizeNode,
   getRandomPointOnCanvas,
   getThemeResolver,
+  getConnectedEdges,
 } from '@graph/helpers';
 import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
@@ -379,22 +380,18 @@ export const useBaseGraph = (
   }
 
   const removeNode = (id: GNode['id']) => {
-    const adjList = nodesEdgesToAdjList(nodes.value, edges.value)
-    console.log(adjList)
-    const edgesToRemove = adjList[id]
-    console.log(edgesToRemove)
+    const node = getNode(id)
+    if (!node) return
 
-    const index = nodes.value.findIndex(node => node.id === id)
-    if (index === -1) return
-    const removedNode = nodes.value[index]
-    nodes.value.splice(index, 1)
+    const edgesToRemove = getConnectedEdges(node, edges.value)
+    for (const edge of edgesToRemove) removeEdge(edge.id)
 
-    for (const edgeId of edgesToRemove) removeEdge(edgeId)
+    nodes.value = nodes.value.filter(n => n.id !== node.id)
 
     eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-    eventBus.onNodeRemoved.forEach(fn => fn(removedNode))
+    eventBus.onNodeRemoved.forEach(fn => fn(node))
 
-    repaint('base-graph/remove-node')()
+    setTimeout(repaint('base-graph/remove-node'), 5)
   }
 
   const addEdge = (edge: Omit<GEdge, 'id'>) => {
