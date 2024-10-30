@@ -62,14 +62,6 @@
   useUserPreferredTheme(graph);
 
   const log = () => console.log(graph.themeMap.nodeColor)
-
-  graph.subscribe('onThemeChange', (diff) => {
-    console.log('theme changed', diff)
-  })
-
-  graph.subscribe('onSettingsChange', (diff) => {
-    console.log('settings changed', diff)
-  })
 </script>
 
 <template>

@@ -467,11 +467,7 @@ export const useBaseGraph = (
 
   const activeSettings = ref(clone(settings.value))
   watch(settings, (newSettings) => {
-    console.log('settings changed')
-    console.log('old settings', JSON.stringify(activeSettings.value, null, 2))
-    console.log('new settings', JSON.stringify(newSettings, null, 2))
     const settingsDiff = delta(activeSettings.value, newSettings)
-    console.log(settingsDiff)
     if (!settingsDiff) return
     activeSettings.value = clone(settings.value)
     eventBus.onSettingsChange.forEach(fn => fn(settingsDiff))
