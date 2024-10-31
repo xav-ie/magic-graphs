@@ -5,7 +5,6 @@
 import {
   computed,
   ref,
-  watchEffect,
 } from 'vue'
 import type { Ref } from 'vue'
 import type {
@@ -13,7 +12,6 @@ import type {
   GNode,
   GraphOptions
 } from "@graph/types"
-import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
 import type {
   NodeAnchorGraphTheme,
   NodeAnchor,
@@ -128,16 +126,27 @@ export const useUserEditableGraph = (
     }
   }
 
-  watchEffect(() => {
+  const active = () => {
+    graph.subscribe('onDblClick', handleNodeCreation)
+    graph.subscribe('onKeydown', handleDeletion)
+    graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
+    settings.value.nodeAnchors = true
+    settings.value.draggable = true
+  }
+
+  const deactivate = () => {
     graph.unsubscribe('onDblClick', handleNodeCreation)
     graph.unsubscribe('onKeydown', handleDeletion)
     graph.unsubscribe('onNodeAnchorDrop', handleEdgeCreation)
+    settings.value.nodeAnchors = false
+    settings.value.draggable = false
+  }
 
-    if (editSettings.value) {
-      graph.subscribe('onDblClick', handleNodeCreation)
-      graph.subscribe('onKeydown', handleDeletion)
-      graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
-    }
+  if (settings.value.userEditable) active()
+
+  graph.subscribe('onSettingsChange', (diff) => {
+    if (diff.userEditable === true) active()
+    else if (diff.userEditable === false) deactivate()
   })
 
   return {

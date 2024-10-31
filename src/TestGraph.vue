@@ -11,8 +11,6 @@
   import GraphBtns from "@graph/buttons/GraphBtns.vue";
   import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
   import Graph from "@graph/Graph.vue";
-  import { getRandomInRange } from "@graph/helpers";
-  import colors from "@colors";
 
   const graphElement = ref<HTMLCanvasElement>();
 

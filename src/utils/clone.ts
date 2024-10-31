@@ -1,6 +1,6 @@
 
 /**
- * clones an object while preserving the references of non-serializable values
+ * clones an object while preserving the references of non-primitive values
  *
  * @param obj - the object to clone
  * @returns the cloned object

@@ -355,18 +355,18 @@ export const useNodeAnchorGraph = (
   graph.updateAggregator.push(insertAnchorsIntoAggregator)
   graph.updateAggregator.push(insertLinkPreviewIntoAggregator)
 
+  const deactivateAnchors = () => {
+    parentNode.value = undefined
+    activeAnchor.value = undefined
+  }
+
   subscribe('onNodeRemoved', (node) => {
-    if (parentNode.value?.id === node.id) {
-      parentNode.value = undefined
-      activeAnchor.value = undefined
-    }
+    if (parentNode.value?.id !== node.id) return
+    deactivateAnchors()
   })
 
-  watchEffect(() => {
-    if (!settings.value.nodeAnchors) {
-      parentNode.value = undefined
-      activeAnchor.value = undefined
-    }
+  subscribe('onSettingsChange', (diff) => {
+    if (diff.nodeAnchors === false) deactivateAnchors()
   })
 
   watch(parentNode, () => {
