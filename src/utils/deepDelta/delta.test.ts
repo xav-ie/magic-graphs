@@ -1,8 +1,6 @@
 import { test, expect } from 'vitest';
 import { delta } from './delta';
 
-const clone = (obj: any) => JSON.parse(JSON.stringify(obj));
-
 test('deepDelta standard', () => {
 
   const yona = {
