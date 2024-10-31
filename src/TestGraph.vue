@@ -20,7 +20,7 @@
 
   const graph = useGraph(graphElement);
 
-  const tutorialControls = useBasicsTutorial(graph);
+  // const tutorialControls = useBasicsTutorial(graph);
 
   const { toggleColorize, isColorized } = useBFSColorizer(graph);
   const colorizeBtn = {
