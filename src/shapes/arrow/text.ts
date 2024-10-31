@@ -2,12 +2,13 @@ import {
   drawText,
   drawTextAreaMatte,
   getTextAreaDimension,
-  getTextAreaLocation
 } from "@shape/text";
-import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS, type Coordinate } from "@shape/types";
-import { ARROW_DEFAULTS, type Arrow } from ".";
+import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
+import type { Coordinate } from "@shape/types";
 import { rectHitbox } from "@shape/rect/hitbox";
 import { getTextAreaLocationOnLine } from "@shape/line/text";
+import { ARROW_DEFAULTS } from ".";
+import type { Arrow } from ".";
 
 export const arrowTextHitbox = (arrow: Arrow) => {
   if (!arrow.textArea) return;
@@ -25,7 +26,7 @@ export const arrowTextHitbox = (arrow: Arrow) => {
   const fullTextArea = {
     ...textArea,
     text,
-    at: getTextAreaLocation.arrow(arrow),
+    at: getTextAreaLocationOnArrow(arrow),
   }
 
   const { width, height } = getTextAreaDimension(fullTextArea);
@@ -40,6 +41,7 @@ export const arrowTextHitbox = (arrow: Arrow) => {
 }
 
 export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
+
   const {
     textOffsetFromCenter,
     start: lineStart,
@@ -51,6 +53,8 @@ export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
     ...ARROW_DEFAULTS,
     ...arrow,
   }
+
+  if (!textArea) throw new Error('no text area provided');
 
   const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
   const arrowHeadHeight = width * 2.5;
@@ -74,19 +78,23 @@ export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
 
 export const drawTextOnArrow = (arrow: Arrow) => (ctx: CanvasRenderingContext2D) => {
   if (!arrow.textArea) return;
+
   const textArea = {
     ...TEXTAREA_DEFAULTS,
     ...arrow.textArea,
   }
+
   const text = {
     ...TEXT_DEFAULTS,
     ...textArea.text,
   }
+
   const fullTextArea = {
     ...textArea,
     text,
-    at: getTextAreaLocation.arrow(arrow),
+    at: getTextAreaLocationOnArrow(arrow),
   }
+
   drawTextAreaMatte(ctx)(fullTextArea);
   queueMicrotask(() => drawText(ctx)(fullTextArea));
 }

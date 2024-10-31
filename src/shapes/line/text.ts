@@ -1,13 +1,14 @@
-import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS, type Coordinate } from "@shape/types";
-import { LINE_DEFAULTS, type Line } from ".";
+import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
+import type { Coordinate } from "@shape/types";
+import type { Line } from "@shape/line";
 import {
   drawText,
   drawTextAreaMatte,
   getTextAreaDimension,
-  getTextAreaLocation
 } from "@shape/text";
 import { rectHitbox } from "@shape/rect/hitbox";
 import { getAngle } from "@shape/helpers";
+import { LINE_DEFAULTS } from ".";
 
 /**
  * @description checks if the point is in the text label of the line
@@ -31,7 +32,7 @@ export const lineTextHitbox = (line: Line) => {
   const fullTextArea = {
     ...textArea,
     text,
-    at: getTextAreaLocation.line(line),
+    at: getTextAreaLocationOnLine(line),
   }
 
   const { width, height } = getTextAreaDimension(fullTextArea);
@@ -57,7 +58,7 @@ export const getTextAreaLocationOnLine = (line: Line) => {
     ...line,
   }
 
-  if (!textArea) return
+  if (!textArea) throw new Error('no text area provided')
 
   const { text } = textArea;
 
@@ -82,19 +83,23 @@ export const getTextAreaLocationOnLine = (line: Line) => {
 
 export const drawTextAreaOnLine = (line: Line) => (ctx: CanvasRenderingContext2D) => {
   if (!line.textArea) return;
+
   const textArea = {
     ...TEXTAREA_DEFAULTS,
     ...line.textArea,
   }
+
   const text = {
     ...TEXT_DEFAULTS,
     ...textArea.text,
   }
+
   const fullTextArea = {
     ...textArea,
     text,
-    at: getTextAreaLocation.line(line),
+    at: getTextAreaLocationOnLine(line),
   }
+
   drawTextAreaMatte(ctx)(fullTextArea);
   queueMicrotask(() => drawText(ctx)(fullTextArea));
 }
