@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue";
+  import { ref } from "vue";
   import type { Graph } from "@graph/types";
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
   import { debounce } from "@utils/debounce";
@@ -34,7 +34,7 @@
   <ResponsiveCanvas
     @width-change="repaintGraph"
     @height-change="repaintGraph"
-    @graph-ref="emitRef"
+    @canvas-ref="emitRef"
     :color="bgColor"
     :pattern-color="patternColor"
   />

@@ -17,7 +17,7 @@
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
 
-  const loadingGraph = ref(true);
+  const loading = ref(true);
 
   const bgCanvas = ref<HTMLCanvasElement>();
 
@@ -27,7 +27,7 @@
   }>();
 
   const emit = defineEmits<{
-    (e: "graphRef", value: HTMLCanvasElement | undefined): void;
+    (e: "canvasRef", value: HTMLCanvasElement | undefined): void;
     (e: "widthChange", value: number): void;
     (e: "heightChange", value: number): void;
   }>();
@@ -46,7 +46,7 @@
     else throw new Error("invalid class attribute");
   });
 
-  const emitRef = (el: HTMLCanvasElement | undefined) => emit("graphRef", el);
+  const emitRef = (el: HTMLCanvasElement | undefined) => emit("canvasRef", el);
 
   const parentEl = ref<HTMLDivElement>();
   const { height: parentWidth, width: parentHeight } = useElementSize(parentEl);
@@ -117,7 +117,7 @@
     parentEl.scrollLeft = middleX;
 
     parentEl.addEventListener("scroll", updatePositionCoords);
-    loadingGraph.value = false;
+    loading.value = false;
   };
 
   setTimeout(initCanvas, 100);
@@ -166,11 +166,11 @@
 
   <div
     ref="parentEl"
-    id="graph-container"
     class="h-full w-full overflow-auto relative"
+    id="responsive-canvas-container"
   >
     <div
-      v-if="loadingGraph"
+      v-if="loading"
       :style="{ backgroundColor: color }"
       class="absolute top-0 left-0 w-full h-full flex items-center justify-center"
     ></div>
@@ -180,6 +180,7 @@
       :height="canvasHeight"
       :ref="(emitRef as any)"
       :class="[`w-[${canvasWidth}px]`, `h-[${canvasHeight}px]`]"
+      id="responsive-canvas"
     ></canvas>
 
     <canvas
