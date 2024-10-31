@@ -7,7 +7,7 @@
  * @param ms time in milliseconds
  * @returns a debounced function
  */
-export const debounce = (fn: () => void, ms: number) => {
+export const debounce = <T extends () => void>(fn: T, ms: number) => {
   let timeout: NodeJS.Timeout;
   return () => {
     clearTimeout(timeout);

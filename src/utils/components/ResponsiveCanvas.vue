@@ -118,6 +118,11 @@
     }
   }, 250);
 
+  const updateMousePos = (ev: MouseEvent) => {
+    mousePos.value = { x: ev.clientX, y: ev.clientY };
+    updatePositionCoords();
+  };
+
   const initCanvas = async () => {
     drawBackgroundPattern();
     const parentEl = await getParentEl();
@@ -129,24 +134,28 @@
     parentEl.scrollLeft = middleX;
 
     parentEl.addEventListener("scroll", updatePositionCoords);
+    parentEl.addEventListener("mousemove", updateMousePos);
     loading.value = false;
   };
 
   setTimeout(initCanvas, 100);
 
-  const xCoord = ref(0);
-  const yCoord = ref(0);
+  const mousePos = ref({ x: 0, y: 0 });
+  const canvasCoords = ref({ x: 0, y: 0 });
+  const humanCoords = ref({ x: 0, y: 0 });
 
   const updatePositionCoords = async () => {
     const parentEl = await getParentEl();
 
-    const { scrollLeft, scrollTop, clientHeight, clientWidth } = parentEl;
+    const { x: mouseOffsetX, y: mouseOffsetY } = mousePos.value;
+    const { scrollLeft, scrollTop } = parentEl;
 
-    const x = scrollLeft - canvasWidth.value / 2 + clientWidth / 2;
-    const y = scrollTop - canvasHeight.value / 2 + clientHeight / 2;
+    canvasCoords.value.x = scrollLeft + mouseOffsetX;
+    canvasCoords.value.y = scrollTop + mouseOffsetY;
 
-    xCoord.value = x;
-    yCoord.value = y * -1; // flip axis to get a standard cartesian plane
+    // -1 flips axis to get a standard cartesian plane
+    humanCoords.value.x = canvasCoords.value.x - canvasWidth.value / 2;
+    humanCoords.value.y = (canvasCoords.value.y - canvasHeight.value / 2) * -1;
   };
 
   watch(parentWidth, () => {
@@ -166,15 +175,18 @@
   onUnmounted(async () => {
     const parentEl = await getParentEl();
     parentEl.removeEventListener("scroll", updatePositionCoords);
+    parentEl.removeEventListener("mousemove", updateMousePos);
   });
 </script>
 
 <template>
   <!-- coordinates for debugging -->
   <p
-    class="z-50 dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none"
+    class="z-50 dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none text-right"
   >
-    ({{ xCoord }}, {{ yCoord }})
+    ({{ canvasCoords.x }}, {{ canvasCoords.y }})
+    <br />
+    ({{ humanCoords.x }}, {{ humanCoords.y }})
   </p>
 
   <div
