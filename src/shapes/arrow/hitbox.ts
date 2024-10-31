@@ -12,33 +12,3 @@ export const arrowHitbox = (arrow: Arrow) => {
   const isInLine = lineHitbox(arrow);
   return (point: Coordinate) => isInLine(point);
 }
-
-export const arrowTextHitbox = (arrow: Arrow) => {
-  if (!arrow.textArea) return;
-
-  const textArea = {
-    ...TEXTAREA_DEFAULTS,
-    ...arrow.textArea
-  };
-
-  const text = {
-    ...TEXT_DEFAULTS,
-    ...textArea.text
-  };
-
-  const fullTextArea = {
-    ...textArea,
-    text,
-    at: getTextAreaLocation.arrow(arrow),
-  }
-
-  const { width, height } = getTextAreaDimension(fullTextArea);
-
-  const isInText = rectHitbox({
-    at: fullTextArea.at,
-    width,
-    height
-  })
-
-  return (point: Coordinate) => isInText(point);
-}

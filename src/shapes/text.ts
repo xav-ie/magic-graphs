@@ -11,30 +11,10 @@ import type { TextArea } from "@shape/types"
 import { drawShape } from "@shape/draw";
 import type { DeepRequired } from "@utils/types";
 
-import { getTextAreaLocationOnLine } from "./line";
-import { getTextAreaLocationOnArrow } from "./arrow";
 import { getTextAreaLocationOnUTurnArrow } from "./uturn";
 
 export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
-  line: ,
-  arrow: (arrow: Arrow) => {
-    if (!arrow.textArea) return;
-    const textArea = {
-      ...TEXTAREA_DEFAULTS,
-      ...arrow.textArea,
-    }
-    const text = {
-      ...TEXT_DEFAULTS,
-      ...textArea.text,
-    }
-    const fullTextArea = {
-      ...textArea,
-      text,
-      at: getTextAreaLocation.arrow(arrow),
-    }
-    drawTextAreaMatte(ctx)(fullTextArea);
-    queueMicrotask(() => drawText(ctx)(fullTextArea));
-  },
+
   uTurn: (uturn: UTurn) => {
     if (!uturn.textArea) return;
     const textArea = {
