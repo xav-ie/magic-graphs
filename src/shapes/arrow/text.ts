@@ -50,21 +50,8 @@ export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
 export const arrowTextHitbox = (arrow: Arrow) => {
   if (!arrow.textArea) return;
 
-  const textArea = {
-    ...TEXTAREA_DEFAULTS,
-    ...arrow.textArea
-  };
-
-  const text = {
-    ...TEXT_DEFAULTS,
-    ...textArea.text
-  };
-
-  const fullTextArea = {
-    ...textArea,
-    text,
-    at: getTextAreaLocationOnArrow(arrow),
-  }
+  const location = getTextAreaLocationOnArrow(arrow);
+  const fullTextArea = getFullTextArea(arrow.textArea, location);
 
   const { width, height } = getTextAreaDimension(fullTextArea);
 

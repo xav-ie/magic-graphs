@@ -1,10 +1,13 @@
 import { TEXT_DEFAULTS } from "@shape/types";
+import type { Coordinate } from "@shape/types";
 import {
   drawTextWithTextArea,
   drawTextMatteWithTextArea,
-  getFullTextArea
+  getFullTextArea,
+  getTextAreaDimension
 } from "@shape/text";
 import { rotatePoint } from "@shape/helpers";
+import { rectHitbox } from "@shape/rect/hitbox";
 import { UTURN_DEFAULTS } from ".";
 import type { UTurn } from ".";
 
@@ -38,6 +41,23 @@ export const getTextAreaLocationOnUTurn = (uturn: UTurn) => {
     x: endPoint.x - fontSize,
     y: endPoint.y - fontSize
   }
+}
+
+export const uturnTextHitbox = (uturn: UTurn) => {
+  if (!uturn.textArea) return;
+
+  const location = getTextAreaLocationOnUTurn(uturn);
+  const fullTextArea = getFullTextArea(uturn.textArea, location);
+
+  const { width, height } = getTextAreaDimension(fullTextArea);
+
+  const isInTextHitbox = rectHitbox({
+    at: fullTextArea.at,
+    width,
+    height
+  })
+
+  return (point: Coordinate) => isInTextHitbox(point);
 }
 
 export const drawTextAreaMatteOnUTurn = (uturn: UTurn) => {
