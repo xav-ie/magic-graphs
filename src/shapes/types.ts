@@ -9,6 +9,7 @@ export type Shape = {
   name: ShapeName,
   draw: (ctx: CanvasRenderingContext2D) => void,
   hitbox: (point: Coordinate) => boolean,
+  textHitbox?: (point: Coordinate) => boolean,
 }
 
 export type Coordinate = {

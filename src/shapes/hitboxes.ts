@@ -18,7 +18,7 @@ import type {
   Arrow
 } from "@shape/types"
 import { rotatePoint } from "@shape/helpers"
-import { getTextAreaDimension, getTextAreaLocation } from "@shape/draw/text"
+import { getTextAreaDimension, getTextAreaLocation } from "@shape/text"
 
 /**
  * @param point - the point to check if it is in the shape
@@ -40,41 +40,7 @@ export const isInTextarea = (point: Coordinate) => ({
   uTurn: isInUTurnArrowTextArea(point),
 })
 
-/**
- * @param point - the point to check if it is in the square
- * @returns a function that checks if the point is in the square
-*/
-export const isInSquare = (point: Coordinate) => (square: Square) => {
-  const { at, width, height } = square;
-  const { x, y } = at;
-  return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
-}
 
-
-
-/**
- * @description checks if the point is in the text label of the line
- *
- * @param point - the point to check if it is in the line
- * @returns a function that checks if the point is in the line
- */
-export const isInLineTextArea = (point: Coordinate) => (line: Line) => {
-  if (!line.textArea) return false;
-  const textArea = { ...TEXTAREA_DEFAULTS, ...line.textArea };
-  const text = { ...TEXT_DEFAULTS, ...textArea.text };
-  const fullTextArea = {
-    ...textArea,
-    text,
-    at: getTextAreaLocation.line(line),
-  }
-  const { width, height } = getTextAreaDimension(fullTextArea);
-
-  return isInSquare(point)({
-    at: fullTextArea.at,
-    width,
-    height
-  });
-}
 
 export const isInArrowTextArea = (point: Coordinate) => (arrow: Arrow) => {
   if (!arrow.textArea) return false;

@@ -4,7 +4,7 @@ import type {
   TextAreaNoLocation
 } from "@shape/types";
 import { drawLineWithCtx } from "./draw";
-import { lineHitbox } from "./hitbox";
+import { lineHitbox, lineTextHitbox } from "./hitbox";
 import { generateId } from "@graph/helpers";
 
 export type Line = {
@@ -30,10 +30,12 @@ export const LINE_DEFAULTS = {
 export const line = (options: Line): Shape => {
   const draw = drawLineWithCtx(options);
   const hitbox = lineHitbox(options);
+  const textHitbox = lineTextHitbox(options);
   return {
     id: generateId(),
     name: 'line',
     draw,
     hitbox,
+    textHitbox,
   }
 }

@@ -1,8 +1,11 @@
+import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
 import type { Coordinate } from "@shape/types";
+import { rectHitbox } from "@shape/rect/hitbox";
+import { getTextAreaDimension, getTextAreaLocation } from "@shape/text";
 import { LINE_DEFAULTS } from ".";
 import type { Line } from ".";
 
-  /**
+/**
  * @param point - the point to check if it is in the line
  * @returns a function that checks if the point is in the line
 */
@@ -38,3 +41,39 @@ export const lineHitbox = (line: Line) => (point: Coordinate) => {
 
   return distanceSquared <= (width / 2) ** 2;
 };
+
+/**
+ * @description checks if the point is in the text label of the line
+ *
+ * @param point - the point to check if it is in the line
+ * @returns a function that checks if the point is in the line
+ */
+export const lineTextHitbox = (line: Line) => {
+  if (!line.textArea) return;
+
+  const textArea = {
+    ...TEXTAREA_DEFAULTS,
+    ...line.textArea
+   };
+
+  const text = {
+    ...TEXT_DEFAULTS,
+    ...textArea.text
+  };
+
+  const fullTextArea = {
+    ...textArea,
+    text,
+    at: getTextAreaLocation.line(line),
+  }
+
+  const { width, height } = getTextAreaDimension(fullTextArea);
+
+  const isInTextHitbox = rectHitbox({
+    at: fullTextArea.at,
+    width,
+    height
+  });
+
+  return (point: Coordinate) => isInTextHitbox(point);
+}
