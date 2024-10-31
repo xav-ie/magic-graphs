@@ -75,6 +75,8 @@ export const engageTextarea = (textAreaSchema: TextArea, handler: (str: string) 
     }
   }
 
-  document.body.appendChild(input);
+  const responsiveCanvas = document.getElementById('responsive-canvas-container');
+  if (!responsiveCanvas) throw new Error('responsive canvas container not found');
+  responsiveCanvas.appendChild(input);
   setTimeout(() => input.focus(), 10);
 }

@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import TestGraph from './TestGraph.vue';
+import GraphPlayground from './GraphPlayground.vue';
+import ShapePlayground from './ShapePlayground.vue';
 import SearchVisualizer from '@product/search-visualizer/Main.vue'
 
 </script>
 
 <template>
   <div class="w-[100vw] h-[100vh] relative">
-    <TestGraph />
+    <!-- <GraphPlayground /> -->
+    <ShapePlayground />
     <!-- <SearchVisualizer /> -->
   </div>
 </template>
