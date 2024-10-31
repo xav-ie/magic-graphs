@@ -37,7 +37,10 @@ export const arrow = (options: Arrow): Shape => {
 
     draw,
 
+    drawShape,
     drawTextArea,
+    drawTextAreaMatte,
+    drawText,
 
     hitbox,
     textHitbox,
