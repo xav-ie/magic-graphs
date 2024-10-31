@@ -2,6 +2,15 @@
   types for shapes
 */
 
+export type ShapeName = 'circle' | 'line' | 'square' | 'rectangle' | 'triangle' | 'arrow' | 'uturn'
+
+export type Shape = {
+  id: string,
+  name: ShapeName,
+  draw: (ctx: CanvasRenderingContext2D) => void,
+  hitbox: (point: Coordinate) => boolean,
+}
+
 export type Coordinate = {
   x: number,
   y: number,
