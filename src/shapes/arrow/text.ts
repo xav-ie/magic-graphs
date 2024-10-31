@@ -85,7 +85,7 @@ export const drawTextOnArrow = (arrow: Arrow) => {
   return (ctx: CanvasRenderingContext2D) => drawText(ctx);
 }
 
-export const drawTextAreaOnLine = (arrow: Arrow) => {
+export const drawTextAreaOnArrow = (arrow: Arrow) => {
   const drawMatte = drawTextAreaMatteOnArrow(arrow);
   const drawText = drawTextOnArrow(arrow);
 
