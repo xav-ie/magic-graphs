@@ -1,3 +1,4 @@
+
 /*
   types for shapes
 */
@@ -15,16 +16,6 @@ export type Shape = {
 export type Coordinate = {
   x: number,
   y: number,
-}
-
-export type TextFontWeight = 'lighter' | 'normal' | 'bold' | 'bolder'
-
-// the actual text
-export type Text = {
-  content: string,
-  fontSize?: number,
-  fontWeight?: TextFontWeight,
-  color?: string,
 }
 
 export const TEXT_DEFAULTS = {
@@ -48,6 +39,16 @@ export const TEXTAREA_DEFAULTS = {
 export type TextArea = {
   at: Coordinate,
 } & TextAreaNoLocation
+
+export type TextFontWeight = 'lighter' | 'normal' | 'bold' | 'bolder'
+
+// the text displayed in the text area
+export type Text = {
+  content: string,
+  fontSize?: number,
+  fontWeight?: TextFontWeight,
+  color?: string,
+}
 
 export type Stroke = {
   color: string,

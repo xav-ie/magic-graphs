@@ -5,7 +5,7 @@ import type {
   TextAreaNoLocation
 } from "@shape/types"
 import { drawUTurnWithCtx } from "./draw"
-import { uturnHitbox } from "./hitbox"
+import { uturnHitbox, uturnTextHitbox } from "./hitbox"
 
 export type UTurn = {
   spacing: number,
@@ -25,10 +25,12 @@ export const UTURN_DEFAULTS = {
 export const uturn = (options: UTurn): Shape => {
   const draw = drawUTurnWithCtx(options)
   const hitbox = uturnHitbox(options)
+  const textHitbox = uturnTextHitbox(options)
   return {
     id: generateId(),
     name: 'uturn',
     draw,
     hitbox,
+    textHitbox,
   }
 }
