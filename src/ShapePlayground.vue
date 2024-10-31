@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useDark } from '@vueuse/core';
 import ResponsiveCanvas from '@utils/components/ResponsiveCanvas.vue';
 import colors from '@colors';
@@ -16,7 +16,6 @@ const getCtx = () => {
   if (!ctx) throw new Error('2d context not found');
   return ctx;
 };
-
 
 const draw = () => {
   const ctx = getCtx();
@@ -44,21 +43,16 @@ document.addEventListener('keyup', (e) => {
   if (e.code === 'Space') draw();
 });
 
-const canvasPos = ref({ x: 0, y: 0 });
-watch(canvasPos, () => {
-  console.log('canvasPos', canvasPos.value);
-});
-
 setTimeout(draw, 100);
 </script>
 
 <template>
   <div class="h-full w-full">
     <ResponsiveCanvas
-      v-model="canvasPos"
       @canvas-ref="(el) => canvas = el"
       :color="color"
       :pattern-color="patternColor"
+      :open-world-factor="1"
     ></ResponsiveCanvas>
   </div>
 </template>

@@ -5,15 +5,6 @@
   import { debounce } from "@utils/debounce";
   import { type Color } from "@colors";
 
-  /**
-   * how many multiples larger the graph is relative to the size of the parents
-   * height and width.
-   *
-   * IE if the width and height of the parent is the full viewport and OPEN_WORLD_FACTOR = 3,
-   * the canvas will take up 3*3=9 viewports in surface area
-   */
-  const OPEN_WORLD_FACTOR = 2;
-
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
 
@@ -24,23 +15,25 @@
   const props = defineProps<{
     color: Color;
     patternColor: Color;
+    /**
+     * how many multiples larger the graph is relative to the size of the parents
+     * height and width.
+     *
+     * IE if the width and height of the parent is the full viewport and OPEN_WORLD_FACTOR = 3,
+     * the canvas will take up 3*3=9 viewports in surface area
+     *
+     * @default 2
+     */
+    openWorldFactor?: number;
   }>();
+
+  const openWorldFactor = computed(() => props?.openWorldFactor ?? 2);
 
   const emit = defineEmits<{
     (e: "canvasRef", value: HTMLCanvasElement | undefined): void;
     (e: "widthChange", value: number): void;
     (e: "heightChange", value: number): void;
   }>();
-
-  const model = defineModel<{
-    x: number;
-    y: number;
-  }>({
-    set(v) {
-      console.log("set");
-      return v;
-    }
-  })
 
   const DEFAULT_PARENT_CLASSES = ["w-full", "h-full"];
 
@@ -64,8 +57,8 @@
   const setCanvasSize = async () => {
     const parentEl = await getParentEl();
     const { width, height } = parentEl.getBoundingClientRect();
-    canvasWidth.value = width * OPEN_WORLD_FACTOR;
-    canvasHeight.value = height * OPEN_WORLD_FACTOR;
+    canvasWidth.value = width * openWorldFactor.value;
+    canvasHeight.value = height * openWorldFactor.value;
   };
 
   const getParentEl = async () => {
@@ -163,8 +156,6 @@
     canvasCoords.value.x = scrollLeft + mouseOffsetX;
     canvasCoords.value.y = scrollTop + mouseOffsetY;
 
-    model.value = { x: canvasCoords.value.x, y: canvasCoords.value.y };
-
     // -1 flips axis to get a standard cartesian plane
     humanCoords.value.x = canvasCoords.value.x - canvasWidth.value / 2;
     humanCoords.value.y = (canvasCoords.value.y - canvasHeight.value / 2) * -1;
@@ -182,6 +173,13 @@
     emit("heightChange", canvasHeight.value);
   });
 
+  watch(() => props.openWorldFactor, () => {
+    setCanvasSize();
+    drawBackgroundPattern();
+    emit("widthChange", canvasWidth.value);
+    emit("heightChange", canvasHeight.value);
+  })
+
   watch(() => props.patternColor, drawBackgroundPattern);
 
   onUnmounted(async () => {
@@ -194,7 +192,7 @@
 <template>
   <!-- coordinates for debugging -->
   <p
-    class="z-50 dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none text-right"
+    class="z-50 dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none text-right pointer-events-none"
   >
     ({{ canvasCoords.x }}, {{ canvasCoords.y }})
     <!-- <br />
