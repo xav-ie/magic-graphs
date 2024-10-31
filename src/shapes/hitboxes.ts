@@ -41,31 +41,11 @@ export const isInTextarea = (point: Coordinate) => ({
 })
 
 /**
- * @param point - the point to check if it is in the circle
- * @returns a function that checks if the point is in the circle
- */
-export const isInCircle = (point: Coordinate) => (circle: Circle) => {
-  const dx = point.x - circle.at.x;
-  const dy = point.y - circle.at.y;
-  return dx * dx + dy * dy <= circle.radius * circle.radius;
-}
-
-/**
  * @param point - the point to check if it is in the square
  * @returns a function that checks if the point is in the square
 */
 export const isInSquare = (point: Coordinate) => (square: Square) => {
   const { at, width, height } = square;
-  const { x, y } = at;
-  return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
-}
-
-/**
- * @param point - the point to check if it is in the rectangle
- * @returns a function that checks if the point is in the rectangle
-*/
-export const isInRectangle = (point: Coordinate) => (rectangle: Rectangle) => {
-  const { at, width, height } = rectangle;
   const { x, y } = at;
   return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }

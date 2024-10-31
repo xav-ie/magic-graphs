@@ -2,7 +2,7 @@
   types for shapes
 */
 
-export type ShapeName = 'circle' | 'line' | 'square' | 'rectangle' | 'triangle' | 'arrow' | 'uturn'
+export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'arrow' | 'uturn'
 
 export type Shape = {
   id: string,
@@ -52,29 +52,6 @@ export type Stroke = {
   color: string,
   width: number,
 }
-
-export type Circle = {
-  at: Coordinate,
-  radius: number,
-  color?: string,
-  stroke?: Stroke,
-  text?: Text
-}
-
-export type Rectangle = {
-  at: Coordinate,
-  width: number,
-  height: number,
-  color?: string,
-  stroke?: Stroke,
-  text?: Text
-}
-
-export const RECTANGLE_DEFAULTS = {
-  color: 'black',
-} as const
-
-export type Square = Rectangle
 
 export const SQUARE_DEFAULTS = {
   color: 'black',
