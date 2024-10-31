@@ -1,5 +1,5 @@
 import { drawShape } from "@shape/draw";
-import type { TextArea } from "@shape/types"
+import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS, type Coordinate, type TextArea, type TextAreaNoLocation } from "@shape/types"
 import type { DeepRequired } from "@utils/types";
 
 export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({
@@ -7,7 +7,7 @@ export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({
   height: textArea.text.fontSize * 2,
 });
 
-export const drawTextAreaMatte = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => {
+export const drawTextMatteWithTextArea = (textArea: DeepRequired<TextArea>) => (ctx: CanvasRenderingContext2D) => {
   const { width, height } = getTextAreaDimension(textArea);
   const { at } = textArea;
   drawShape(ctx).drawSquare({
@@ -18,7 +18,7 @@ export const drawTextAreaMatte = (ctx: CanvasRenderingContext2D) => (textArea: D
   })
 }
 
-export const drawText = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequired<TextArea>) => {
+export const drawTextWithTextArea = (textArea: DeepRequired<TextArea>) => (ctx: CanvasRenderingContext2D) => {
   const { at } = textArea;
   const {
     content,
@@ -32,4 +32,24 @@ export const drawText = (ctx: CanvasRenderingContext2D) => (textArea: DeepRequir
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(content, at.x + fontSize, at.y + fontSize);
+}
+
+export const getFullTextArea = (textAreaInput: TextAreaNoLocation, at: Coordinate) => {
+  const textArea = {
+    ...TEXTAREA_DEFAULTS,
+    ...textAreaInput,
+  }
+
+  const text = {
+    ...TEXT_DEFAULTS,
+    ...textArea.text,
+  }
+
+  const fullTextArea = {
+    ...textArea,
+    text,
+    at,
+  }
+
+  return fullTextArea;
 }

@@ -1,37 +1,12 @@
-import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
-import type { Coordinate } from "@shape/types";
+import { TEXT_DEFAULTS } from "@shape/types";
 import {
-  drawText,
-  drawTextAreaMatte,
-  getTextAreaDimension
+  drawTextWithTextArea,
+  drawTextMatteWithTextArea,
+  getFullTextArea
 } from "@shape/text";
-import { rectHitbox } from "@shape/rect/hitbox";
 import { rotatePoint } from "@shape/helpers";
 import { UTURN_DEFAULTS } from ".";
 import type { UTurn } from ".";
-
-export const drawTextAreaOnUTurn = (uturn: UTurn) => (ctx: CanvasRenderingContext2D) => {
-  if (!uturn.textArea) return;
-
-  const textArea = {
-    ...TEXTAREA_DEFAULTS,
-    ...uturn.textArea,
-  }
-
-  const text = {
-    ...TEXT_DEFAULTS,
-    ...textArea.text,
-  }
-
-  const fullTextArea = {
-    ...textArea,
-    text,
-    at: getTextAreaLocationOnUTurn(uturn),
-  }
-
-  drawTextAreaMatte(ctx)(fullTextArea);
-  queueMicrotask(() => drawText(ctx)(fullTextArea));
-}
 
 export const getTextAreaLocationOnUTurn = (uturn: UTurn) => {
   const {
@@ -65,32 +40,35 @@ export const getTextAreaLocationOnUTurn = (uturn: UTurn) => {
   }
 }
 
-export const uturnTextHitbox = (uturn: UTurn) => {
+export const drawTextAreaMatteOnUTurn = (uturn: UTurn) => {
   if (!uturn.textArea) return;
 
-  const textArea = {
-    ...TEXTAREA_DEFAULTS,
-    ...uturn.textArea
-  };
+  const location = getTextAreaLocationOnUTurn(uturn);
+  const fullTextArea = getFullTextArea(uturn.textArea, location);
 
-  const text = {
-    ...TEXT_DEFAULTS,
-    ...textArea.text
-  };
+  const drawMatte = drawTextMatteWithTextArea(fullTextArea);
+  return (ctx: CanvasRenderingContext2D) => drawMatte(ctx);
+};
 
-  const fullTextArea = {
-    ...textArea,
-    text,
-    at: getTextAreaLocationOnUTurn(uturn),
+
+export const drawTextOnUTurn = (uturn: UTurn) => {
+  if (!uturn.textArea) return;
+
+  const location = getTextAreaLocationOnUTurn(uturn);
+  const fullTextArea = getFullTextArea(uturn.textArea, location);
+
+  const drawText = drawTextWithTextArea(fullTextArea);
+  return (ctx: CanvasRenderingContext2D) => drawText(ctx);
+}
+
+export const drawTextAreaOnUTurn = (uturn: UTurn) => {
+  const drawMatte = drawTextAreaMatteOnUTurn(uturn);
+  const drawText = drawTextOnUTurn(uturn);
+
+  if (!drawMatte || !drawText) return;
+
+  return (ctx: CanvasRenderingContext2D) => {
+    drawMatte(ctx);
+    drawText(ctx);
   }
-
-  const { width, height } = getTextAreaDimension(fullTextArea);
-
-  const isInTextHitbox = rectHitbox({
-    at: fullTextArea.at,
-    width,
-    height
-  })
-
-  return (point: Coordinate) => isInTextHitbox(point);
 }

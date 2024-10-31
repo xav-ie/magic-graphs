@@ -2,9 +2,10 @@ import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
 import type { Coordinate } from "@shape/types";
 import type { Line } from "@shape/line";
 import {
-  drawText,
-  drawTextAreaMatte,
+  drawTextWithTextArea,
+  drawTextMatteWithTextArea,
   getTextAreaDimension,
+  getFullTextArea,
 } from "@shape/text";
 import { rectHitbox } from "@shape/rect/hitbox";
 import { getAngle } from "@shape/helpers";
@@ -22,7 +23,7 @@ export const lineTextHitbox = (line: Line) => {
   const textArea = {
     ...TEXTAREA_DEFAULTS,
     ...line.textArea
-   };
+  };
 
   const text = {
     ...TEXT_DEFAULTS,
@@ -81,25 +82,34 @@ export const getTextAreaLocationOnLine = (line: Line) => {
   }
 }
 
-export const drawTextAreaOnLine = (line: Line) => (ctx: CanvasRenderingContext2D) => {
+export const drawTextAreaMatteOnLine = (line: Line) => {
   if (!line.textArea) return;
 
-  const textArea = {
-    ...TEXTAREA_DEFAULTS,
-    ...line.textArea,
-  }
+  const location = getTextAreaLocationOnLine(line);
+  const fullTextArea = getFullTextArea(line.textArea, location);
 
-  const text = {
-    ...TEXT_DEFAULTS,
-    ...textArea.text,
-  }
+  const drawMatte = drawTextMatteWithTextArea(fullTextArea);
+  return (ctx: CanvasRenderingContext2D) => drawMatte(ctx);
+};
 
-  const fullTextArea = {
-    ...textArea,
-    text,
-    at: getTextAreaLocationOnLine(line),
-  }
+export const drawTextOnLine = (line: Line) => {
+  if (!line.textArea) return;
 
-  drawTextAreaMatte(ctx)(fullTextArea);
-  queueMicrotask(() => drawText(ctx)(fullTextArea));
+  const location = getTextAreaLocationOnLine(line);
+  const fullTextArea = getFullTextArea(line.textArea, location);
+
+  const drawText = drawTextWithTextArea(fullTextArea);
+  return (ctx: CanvasRenderingContext2D) => drawText(ctx);
+}
+
+export const drawTextAreaOnLine = (line: Line) => {
+  const drawMatte = drawTextAreaMatteOnLine(line);
+  const drawText = drawTextOnLine(line);
+
+  if (!drawMatte || !drawText) return;
+
+  return (ctx: CanvasRenderingContext2D) => {
+    drawMatte(ctx);
+    drawText(ctx);
+  }
 }
