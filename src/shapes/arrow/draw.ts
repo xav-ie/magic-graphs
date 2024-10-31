@@ -1,6 +1,7 @@
 import { drawTextArea } from "@shape/draw/text";
 import { ARROW_DEFAULTS, type Arrow } from ".";
 import { drawLineWithCtx } from "@shape/line/draw";
+import { drawTriangleWithCtx } from "@shape/triangle/draw";
 
 export const drawArrowWithCtx = (options: Arrow) => {
 

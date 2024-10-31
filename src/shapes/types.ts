@@ -52,18 +52,3 @@ export type Stroke = {
   color: string,
   width: number,
 }
-
-export type UTurnArrow = {
-  spacing: number,
-  center: Coordinate,
-  upDistance: number,
-  downDistance: number,
-  angle: number,
-  lineWidth: number,
-  color?: string,
-  textArea?: TextAreaNoLocation
-}
-
-export const UTURN_ARROW_DEFAULTS = {
-  color: 'black',
-} as const

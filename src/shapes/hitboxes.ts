@@ -112,19 +112,3 @@ export const isInUTurnArrowTextArea = (point: Coordinate) => (uTurn: UTurnArrow)
     height
   });
 }
-
-export const isInUTurnArrow = (point: Coordinate) => (uTurnArrow: UTurnArrow) => {
-  const {
-    spacing,
-    center,
-    upDistance,
-    lineWidth,
-    angle
-  } = uTurnArrow;
-
-  return isInLine(point)({
-    start: center,
-    end: rotatePoint({ x: center.x + upDistance, y: center.y }, center, angle),
-    width: 2 * spacing + lineWidth
-  })
-}
