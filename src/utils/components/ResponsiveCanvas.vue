@@ -51,26 +51,38 @@
   const parentEl = ref<HTMLDivElement>();
   const { height: parentWidth, width: parentHeight } = useElementSize(parentEl);
 
-  const setCanvasSize = () => {
-    const { width, height } = getParentEl().getBoundingClientRect();
+  const setCanvasSize = async () => {
+    const parentEl = await getParentEl();
+    const { width, height } = parentEl.getBoundingClientRect();
     canvasWidth.value = width * OPEN_WORLD_FACTOR;
     canvasHeight.value = height * OPEN_WORLD_FACTOR;
   };
 
-  const getParentEl = () => {
-    if (!parentEl.value) throw new Error("parent element not found");
-    return parentEl.value;
+  const getParentEl = async () => {
+    if (parentEl.value) return parentEl.value;
+    return new Promise<HTMLDivElement>((resolve) => {
+      const interval = setInterval(() => {
+        if (parentEl.value) {
+          clearInterval(interval);
+          resolve(parentEl.value);
+        }
+      }, 100);
+    });
   };
 
-  const getBgCanvasContext = () => {
-    if (!bgCanvas.value) throw new Error("bgCanvas not found");
-    const ctx = bgCanvas.value.getContext("2d");
-    if (!ctx) throw new Error("2d context not found");
-    return ctx;
-  };
+  const getBgCanvasContext = async () =>
+    new Promise<CanvasRenderingContext2D>((resolve, reject) => {
+      const interval = setInterval(() => {
+        if (bgCanvas.value) {
+          const ctx = bgCanvas.value.getContext("2d");
+          clearInterval(interval);
+          ctx ? resolve(ctx) : reject("2d context not found");
+        }
+      }, 100);
+    });
 
-  const drawBackgroundPattern = debounce(() => {
-    const ctx = getBgCanvasContext();
+  const drawBackgroundPattern = debounce(async () => {
+    const ctx = await getBgCanvasContext();
 
     ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
 
@@ -106,9 +118,9 @@
     }
   }, 250);
 
-  const initCanvas = () => {
+  const initCanvas = async () => {
     drawBackgroundPattern();
-    const parentEl = getParentEl();
+    const parentEl = await getParentEl();
 
     const middleY = canvasHeight.value / 2 - parentEl.clientHeight / 2;
     parentEl.scrollTop = middleY;
@@ -125,8 +137,8 @@
   const xCoord = ref(0);
   const yCoord = ref(0);
 
-  const updatePositionCoords = () => {
-    const parentEl = getParentEl();
+  const updatePositionCoords = async () => {
+    const parentEl = await getParentEl();
 
     const { scrollLeft, scrollTop, clientHeight, clientWidth } = parentEl;
 
@@ -151,8 +163,9 @@
 
   watch(() => props.patternColor, drawBackgroundPattern);
 
-  onUnmounted(() => {
-    getParentEl().removeEventListener("scroll", updatePositionCoords);
+  onUnmounted(async () => {
+    const parentEl = await getParentEl();
+    parentEl.removeEventListener("scroll", updatePositionCoords);
   });
 </script>
 
