@@ -32,6 +32,16 @@
     (e: "heightChange", value: number): void;
   }>();
 
+  const model = defineModel<{
+    x: number;
+    y: number;
+  }>({
+    set(v) {
+      console.log("set");
+      return v;
+    }
+  })
+
   const DEFAULT_PARENT_CLASSES = ["w-full", "h-full"];
 
   /**
@@ -153,6 +163,8 @@
     canvasCoords.value.x = scrollLeft + mouseOffsetX;
     canvasCoords.value.y = scrollTop + mouseOffsetY;
 
+    model.value = { x: canvasCoords.value.x, y: canvasCoords.value.y };
+
     // -1 flips axis to get a standard cartesian plane
     humanCoords.value.x = canvasCoords.value.x - canvasWidth.value / 2;
     humanCoords.value.y = (canvasCoords.value.y - canvasHeight.value / 2) * -1;
@@ -185,8 +197,8 @@
     class="z-50 dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none text-right"
   >
     ({{ canvasCoords.x }}, {{ canvasCoords.y }})
-    <br />
-    ({{ humanCoords.x }}, {{ humanCoords.y }})
+    <!-- <br />
+    ({{ humanCoords.x }}, {{ humanCoords.y }}) -->
   </p>
 
   <div

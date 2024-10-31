@@ -44,12 +44,18 @@ document.addEventListener('keyup', (e) => {
   if (e.code === 'Space') draw();
 });
 
+const canvasPos = ref({ x: 0, y: 0 });
+watch(canvasPos, () => {
+  console.log('canvasPos', canvasPos.value);
+});
+
 setTimeout(draw, 100);
 </script>
 
 <template>
   <div class="h-full w-full">
     <ResponsiveCanvas
+      v-model="canvasPos"
       @canvas-ref="(el) => canvas = el"
       :color="color"
       :pattern-color="patternColor"
