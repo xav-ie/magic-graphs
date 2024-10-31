@@ -16,24 +16,7 @@ import { getTextAreaLocationOnArrow } from "./arrow";
 import { getTextAreaLocationOnUTurnArrow } from "./uturn";
 
 export const drawTextArea = (ctx: CanvasRenderingContext2D) => ({
-  line: (line: Line) => {
-    if (!line.textArea) return;
-    const textArea = {
-      ...TEXTAREA_DEFAULTS,
-      ...line.textArea,
-    }
-    const text = {
-      ...TEXT_DEFAULTS,
-      ...textArea.text,
-    }
-    const fullTextArea = {
-      ...textArea,
-      text,
-      at: getTextAreaLocation.line(line),
-    }
-    drawTextAreaMatte(ctx)(fullTextArea);
-    queueMicrotask(() => drawText(ctx)(fullTextArea));
-  },
+  line: ,
   arrow: (arrow: Arrow) => {
     if (!arrow.textArea) return;
     const textArea = {

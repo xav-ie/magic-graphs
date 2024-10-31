@@ -8,7 +8,10 @@ export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'ar
 export type Shape = {
   id: string,
   name: ShapeName,
+
   draw: (ctx: CanvasRenderingContext2D) => void,
+  drawText?: (ctx: CanvasRenderingContext2D) => void,
+
   hitbox: (point: Coordinate) => boolean,
   textHitbox?: (point: Coordinate) => boolean,
 }
