@@ -53,23 +53,6 @@ export type Stroke = {
   width: number,
 }
 
-
-
-export type Arrow = Line
-
-export const ARROW_DEFAULTS = LINE_DEFAULTS
-
-export type Triangle = {
-  point1: Coordinate,
-  point2: Coordinate,
-  point3: Coordinate,
-  color?: string,
-}
-
-export const TRIANGLE_DEFAULTS = {
-  color: 'black',
-} as const
-
 export type UTurnArrow = {
   spacing: number,
   center: Coordinate,
