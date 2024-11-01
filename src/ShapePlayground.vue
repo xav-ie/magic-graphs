@@ -6,8 +6,8 @@
   import { shapes } from "@shapes";
   import type { Shape } from "@shape/types";
   import { debounce } from "@utils/debounce";
-import { useHeatmap } from "@utils/playground/useHeatmap";
-import { getCtx } from "@utils/ctx";
+  import { useHeatmap } from "@utils/playground/useHeatmap";
+  import { getCtx } from "@utils/ctx";
 
   const canvas = ref<HTMLCanvasElement>();
   const isDark = useDark();
@@ -27,83 +27,44 @@ import { getCtx } from "@utils/ctx";
     () => (isDark.value ? colors.GRAY_200 : colors.GRAY_700) + "15"
   );
 
-  const testForHitbox = () => {
-    const { width, height } = canvas!.value!.getBoundingClientRect();
-    const SAMPLING_RATE = heatmapResolution.value;
-    for (let i = 0; i < width; i += SAMPLING_RATE) {
-      for (let j = 0; j < height; j += SAMPLING_RATE) {
-        const shapeHit = items.value.findLast((item) =>
-          item.hitbox({ x: i, y: j })
-        );
-        const textHit = items.value.findLast((item) =>
-          item.textHitbox?.({ x: i, y: j })
-        );
-        if (textHit) {
-          shapes
-            .circle({
-              at: { x: i, y: j },
-              radius: 2,
-              color: colors.YELLOW_500,
-            })
-            .draw(getCtx());
-        } else if (shapeHit) {
-          shapes
-            .circle({
-              at: { x: i, y: j },
-              radius: 2,
-              color: colors.RED_500,
-            })
-            .draw(getCtx());
-        } else {
-          shapes
-            .circle({
-              at: { x: i, y: j },
-              radius: 2,
-              color: colors.GREEN_500,
-            })
-            .draw(getCtx());
-        }
-      }
-    }
-  };
-
   const draw = () => {
-    const ctx = getCtx(canvas.value)
+    const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    const { circle, rect, square, triangle, line, arrow, uturn, cross } =
-      shapes;
+    const { circle, uturn } = shapes;
 
-    items.value.push(circle({
-      at: { x: 200, y: 200 },
-      radius: 50,
-      color: colors.BLUE_500,
-      stroke: {
-        color: colors.BLUE_700,
-        width: 10,
-      },
-    }));
-
-    items.value.push(uturn({
-      center: { x: 400, y: 200 },
-      downDistance: 50,
-      upDistance: 50,
-      lineWidth: 10,
-      color: colors.BLUE_500,
-      angle: 0,
-      spacing: 20,
-      textArea: {
-        color: colors.PURPLE_500,
-        text: {
-          content: "5",
-          color: colors.WHITE,
-          fontSize: 50,
+    items.value.push(
+      circle({
+        at: { x: 200, y: 200 },
+        radius: 50,
+        color: colors.BLUE_500,
+        stroke: {
+          color: colors.BLUE_700,
+          width: 10,
         },
-      },
-    }))
+      })
+    );
 
+    items.value.push(
+      uturn({
+        center: { x: 400, y: 200 },
+        downDistance: 50,
+        upDistance: 50,
+        lineWidth: 10,
+        color: colors.BLUE_500,
+        angle: 0,
+        spacing: 20,
+        textArea: {
+          color: colors.PURPLE_500,
+          text: {
+            content: "5",
+            color: colors.WHITE,
+            fontSize: 50,
+          },
+        },
+      })
+    );
 
     items.value.forEach((item) => item.draw(ctx));
-    if (heatmapActive.value) testForHitbox();
   };
 
   document.addEventListener("resize", draw);
