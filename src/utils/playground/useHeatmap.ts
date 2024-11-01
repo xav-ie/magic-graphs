@@ -1,4 +1,4 @@
-import { onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import type { Ref } from "vue"
 import colors from "@colors"
 import type { Coordinate, Shape } from "@shape/types"
@@ -35,7 +35,15 @@ export const useHeatmap = (
 ) => {
   const active = ref(false)
   const resolution = ref(4)
+  const opacity = ref(99)
   const pointsSampled = ref(0)
+
+  const opacityStr = computed(() => {
+    if (opacity.value < 1) return '00'
+    else if (opacity.value < 10) return `0${opacity.value}`
+    else if (opacity.value > 99) return ''
+    return opacity.value.toString()
+  })
 
   const canvas = document.createElement("canvas")
 
@@ -64,11 +72,11 @@ export const useHeatmap = (
     const circleSchema: Circle = {
       at: coords,
       radius: 2,
-      color: MISS_COLOR,
+      color: MISS_COLOR + opacityStr.value,
     }
 
-    if (textHit) circleSchema.color = TEXT_HIT_COLOR
-    else if (shapeHit) circleSchema.color = HIT_COLOR
+    if (textHit) circleSchema.color = TEXT_HIT_COLOR + opacityStr.value
+    else if (shapeHit) circleSchema.color = HIT_COLOR + opacityStr.value
 
     const ctx = getCtx(canvas)
     circle(circleSchema).draw(ctx)
@@ -94,13 +102,15 @@ export const useHeatmap = (
   watch(active, run)
 
   const debouncedRunner = debounce(run, 500)
-  watch(resolution, run)
+  watch(resolution, debouncedRunner)
+  watch(opacity, debouncedRunner)
   watch(drawItems, debouncedRunner)
 
   setTimeout(initCanvas, 500)
 
   return {
     heatmapActive: active,
+    heatmapOpacity: opacity,
     heatmapResolution: resolution,
     runHeatmap: run,
     runHeatmapDebounced: debouncedRunner,

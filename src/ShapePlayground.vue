@@ -3,9 +3,8 @@
   import { useDark } from "@vueuse/core";
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
   import colors from "@colors";
-  import { shapes } from "@shapes";
+  import { shapes, square } from "@shapes";
   import type { Shape } from "@shape/types";
-  import { debounce } from "@utils/debounce";
   import { useHeatmap } from "@utils/playground/useHeatmap";
   import { getCtx } from "@utils/ctx";
 
@@ -17,7 +16,11 @@
   );
 
   const items = ref<Shape[]>([]);
-  const { heatmapActive, heatmapResolution } = useHeatmap(canvas, items);
+  const {
+    heatmapActive,
+    heatmapResolution,
+    heatmapOpacity,
+  } = useHeatmap(canvas, items);
 
   const heatmapBtnText = computed(() =>
     heatmapActive.value ? "Hide Heatmap" : "Show Heatmap"
@@ -51,18 +54,24 @@
         upDistance: 50,
         lineWidth: 10,
         color: colors.BLUE_500,
-        angle: 0,
+        angle: Math.PI * 0.2,
         spacing: 20,
-        textArea: {
-          color: colors.PURPLE_500,
-          text: {
-            content: "5",
-            color: colors.WHITE,
-            fontSize: 50,
-          },
-        },
+        // textArea: {
+        //   color: colors.PURPLE_500,
+        //   text: {
+        //     content: "5",
+        //     color: colors.WHITE,
+        //     fontSize: 50,
+        //   },
+        // },
       })
     );
+
+    items.value.push(square({
+      at: { x: 500, y: 300 },
+      color: colors.PINK_500,
+      size: 500
+    }))
 
     items.value.forEach((item) => item.draw(ctx));
   };
@@ -129,9 +138,8 @@
     >
       {{ heatmapBtnText }}
     </button>
-    <div class="absolute top-4 left-[250px] flex items-center z-50 gap-4">
+    <div v-if="heatmapActive" class="absolute top-4 left-[250px] flex items-center z-50 gap-4">
       <input
-        v-if="heatmapActive"
         type="range"
         min="1"
         max="10"
@@ -140,10 +148,22 @@
       />
       <label
         class="text-white"
-        v-if="heatmapActive"
         for="heatmapResolution"
       >
         Resolution: {{ heatmapResolution }}
+      </label>
+      <input
+        v-model.number="heatmapOpacity"
+        type="range"
+        min="0"
+        max="100"
+        id="heatmap-opacity"
+      />
+      <label
+        class="text-white"
+        for="heatmap-opacity"
+      >
+        Opacity: {{ heatmapOpacity }}
       </label>
     </div>
     <ResponsiveCanvas
