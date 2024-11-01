@@ -142,6 +142,7 @@ export const useBaseGraph = (
 
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)
+
     return aggregator
   })
 
@@ -154,32 +155,7 @@ export const useBaseGraph = (
     const evaluateAggregator = updateAggregator.reduce<Aggregator>((acc, fn) => fn(acc), [])
     aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
 
-    const {
-      drawLine,
-      drawCircle,
-      drawSquare,
-      drawRectangle,
-      drawArrow,
-      drawUTurnArrow,
-    } = drawShape(ctx)
-
-    for (const item of aggregator.value) {
-      if (item.schemaType === 'circle') {
-        drawCircle(item.schema)
-      } else if (item.schemaType === 'line') {
-        drawLine(item.schema)
-      } else if (item.schemaType === 'square') {
-        drawSquare(item.schema)
-      } else if (item.schemaType === 'rect') {
-        drawRectangle(item.schema)
-      } else if (item.schemaType === 'arrow') {
-        drawArrow(item.schema)
-      } else if (item.schemaType === 'uturn') {
-        drawUTurnArrow(item.schema)
-      } else {
-        throw new Error('Unknown schema type')
-      }
-    }
+    for (const item of aggregator.value) item.shape.draw(ctx)
 
     eventBus.onRepaint.forEach(fn => fn(ctx, repaintId))
   }
@@ -264,42 +240,15 @@ export const useBaseGraph = (
   }
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
-    const point = { x, y }
-    const {
-      isInCircle,
-      isInLine,
-      isInSquare,
-      isInArrow,
-      isInUTurnArrow,
-      isInRectangle
-    } = hitboxes(point)
-
-    // TODO Make sure that this works with priority
-    return aggregator.value.filter(item => {
-      if (item.schemaType === 'circle') {
-        return isInCircle(item.schema)
-      } if (item.schemaType === 'line') {
-        return isInLine(item.schema)
-      } if (item.schemaType === 'square') {
-        return isInSquare(item.schema)
-      } if (item.schemaType === 'rect') {
-        return isInRectangle(item.schema)
-      } if (item.schemaType === 'arrow') {
-        return isInArrow(item.schema)
-      } if (item.schemaType === 'uturn') {
-        return isInUTurnArrow(item.schema)
-      } else {
-        throw new Error('Unknown schema type')
-      }
-    })
+    return aggregator.value.filter(item => item.shape.hitbox({ x, y }))
   }
 
   /**
-    @param x - the x coordinate
-    @param y - the y coordinate
-    @returns the node that is at the given coordinates or undefined if no node is found or is covered by another non-node item
+    @param x - the x coord
+    @param y - the y coord
+    @returns the node at given coords or undefined if not there or obscured by another schema item
   */
-  const getNodeByCoordinates = (x: number, y: number): GNode | undefined => {
+  const getNodeByCoordinates = (x: number, y: number) => {
     const topItem = getDrawItemsByCoordinates(x, y).pop()
     if (!topItem) return
     if (topItem.graphType !== 'node') return
