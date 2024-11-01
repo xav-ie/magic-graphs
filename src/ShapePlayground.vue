@@ -18,7 +18,7 @@
   const heatmapBtnText = computed(() =>
     heatmapActive.value ? "Hide Heatmap" : "Show Heatmap"
   );
-  const heatmapResolution = ref(3);
+  const heatmapResolution = ref(4);
 
   const patternColor = computed(
     () => (isDark.value ? colors.GRAY_200 : colors.GRAY_700) + "15"
@@ -98,10 +98,11 @@
       angle: 0,
       spacing: 20,
       textArea: {
+        color: colors.PURPLE_500,
         text: {
-          content: "Hello",
-          color: colors.BLUE_500,
-          fontSize: 20,
+          content: "5",
+          color: colors.WHITE,
+          fontSize: 50,
         },
       },
     });
