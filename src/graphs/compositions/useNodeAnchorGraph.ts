@@ -32,10 +32,10 @@ import type {
   MaybeGetter,
   GraphOptions,
 } from "@graph/types";
-import { BLACK } from "@colors";
+import colors from "@colors";
 
-import { hitboxes } from "@shape/hitboxes";
-import type { Circle } from "@shape/types";
+import type { Circle } from "@shape/circle";
+import { circle, line } from '@shapes';
 
 export type NodeAnchor = {
   /**
@@ -78,12 +78,14 @@ const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = (
   /**
    * the color of the node anchor
    */
-  nodeAnchorColor: BLACK,
+  nodeAnchorColor: colors.BLACK,
   /**
    * the color of the node anchor when the parent node is focused
    */
   nodeAnchorColorWhenParentFocused: graph.theme.value.nodeFocusBorderColor,
   /**
+   * TODO - i dont think these defaults work because persistent graph fires load after this runs
+   * TODO - the edges wont be there yet
    * the color of the link preview
    */
   linkPreviewColor: graph.edges.value[0] ? graph.getTheme('edgeColor', graph.edges.value[0]) : BLACK,
@@ -168,34 +170,49 @@ export const useNodeAnchorGraph = (
   const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
 
-  const getAnchorSchematics = () => {
+  const getAnchorSchemas = (node: GNode) => {
     if (
-      !parentNode.value ||
       graph.nodeBeingDragged.value ||
       !settings.value.nodeAnchors
     ) return []
 
     const { getTheme } = graph
 
-    const defaultColor = getTheme('nodeAnchorColor', parentNode.value)
-    const focusedColor = getTheme('nodeAnchorColorWhenParentFocused', parentNode.value)
-    const isFocused = parentNode.value.id === graph.focusedItemId.value
+    const defaultColor = getTheme('nodeAnchorColor', node)
+    const focusedColor = getTheme('nodeAnchorColorWhenParentFocused', node)
+
+    const isFocused = node.id === graph.focusedItemId.value
     const color = isFocused ? focusedColor : defaultColor
 
-    const anchors = getAnchors(parentNode.value)
-    const radius = getTheme('nodeAnchorRadius', parentNode.value)
+    const anchors = getAnchors(node)
+    const radius = getTheme('nodeAnchorRadius', node)
 
-    const circles: Circle[] = []
+    const anchorSchemas: SchemaItem[] = []
     for (const anchor of anchors) {
       const { x, y } = anchor
-      const circle = { at: { x, y }, radius, color }
-      if (activeAnchor.value && activeAnchor.value.direction === anchor.direction) {
-        circle.at.x = activeAnchor.value.x
-        circle.at.y = activeAnchor.value.y
+
+      const circleTemplate = {
+        at: { x, y },
+        radius,
+        color
       }
-      circles.push(circle)
+
+      if (activeAnchor.value && activeAnchor.value.direction === anchor.direction) {
+        circleTemplate.at.x = activeAnchor.value.x
+        circleTemplate.at.y = activeAnchor.value.y
+      }
+
+      const nodeAnchorShape = circle(circleTemplate)
+
+      anchorSchemas.push({
+        id: `${node.label}-${anchor.direction}-anchor`,
+        graphType: 'node-anchor',
+        shape: nodeAnchorShape,
+        priority: Infinity,
+      })
     }
-    return circles
+
+    return anchorSchemas
   }
 
   /**
@@ -233,37 +250,48 @@ export const useNodeAnchorGraph = (
   }
 
   /**
-   * @param {GNode} node - the parent node of the anchor
    * @param {number} x - the x-coordinate to check
    * @param {number} y - the y-coordinate to check
    * @returns the anchor at the given coordinates if it exists or undefined
    */
-  const getAnchor = (node: GNode, x: number, y: number) => {
-    const anchors = getAnchors(node)
-    return anchors.find((anchor) => {
-      const point = { x, y }
-      const { isInCircle } = hitboxes(point)
-      return isInCircle({
-        at: { x: anchor.x, y: anchor.y },
-        radius: graph.getTheme('nodeAnchorRadius', node),
-      })
-    })
+  const getAnchor = (x: number, y: number) => {
+    // const anchors = getAnchors(node)
+    // return anchors.find((anchor) => {
+    //   const point = { x, y }
+    //   const { isInCircle } = hitboxes(point)
+    //   return isInCircle({
+    //     at: { x: anchor.x, y: anchor.y },
+    //     radius: graph.getTheme('nodeAnchorRadius', node),
+    //   })
+    // })
+    const [topItem] = graph.getDrawItemsByCoordinates(x, y)
+    if (!topItem || topItem.graphType !== 'node-anchor') return
+    return topItem.shape
   }
 
-  const getLinkPreviewSchematic = () => {
+  const getUnprioritizedLinkPreviewSchema = () => {
     if (!parentNode.value || !activeAnchor.value) return
     const { x, y } = activeAnchor.value
     const start = { x: parentNode.value.x, y: parentNode.value.y }
     const end = { x, y }
     const { getTheme } = graph
+
     const color = getTheme('linkPreviewColor', parentNode.value, activeAnchor.value)
     const width = getTheme('linkPreviewWidth', parentNode.value, activeAnchor.value)
-    const schema: Omit<LineSchemaItem, 'priority'> = {
+
+    const shape = line({
+      start,
+      end,
+      color,
+      width,
+    })
+
+    const schema: Omit<SchemaItem, 'priority'> = {
       id: 'link-preview',
       graphType: 'link-preview',
-      schemaType: 'line',
-      schema: { start, end, color, width },
+      shape,
     }
+
     return schema
   }
 
@@ -275,7 +303,7 @@ export const useNodeAnchorGraph = (
     if (activeAnchor.value || !settings.value.nodeAnchors) return
     const node = graph.getNodeByCoordinates(ev.offsetX, ev.offsetY)
     if (!node && parentNode.value) {
-      const hoveredAnchor = getAnchor(parentNode.value, ev.offsetX, ev.offsetY)
+      const hoveredAnchor = getAnchor(ev.offsetX, ev.offsetY)
       if (hoveredAnchor) return
     }
     parentNode.value = node
@@ -285,7 +313,7 @@ export const useNodeAnchorGraph = (
 
   subscribe('onMouseDown', (ev) => {
     if (!parentNode.value) return
-    const anchor = getAnchor(parentNode.value, ev.offsetX, ev.offsetY)
+    const anchor = getAnchor(ev.offsetX, ev.offsetY)
     if (!anchor) return
     activeAnchor.value = anchor
     eventBus.onNodeAnchorDragStart.forEach(fn => fn(parentNode.value, anchor))
@@ -319,21 +347,8 @@ export const useNodeAnchorGraph = (
 
   const insertAnchorsIntoAggregator = (aggregator: SchemaItem[]) => {
     if (!parentNode.value) return aggregator
-    const anchors = getAnchorSchematics()
-    const { id: parentNodeId } = parentNode.value
-    const parentNodeSchema = aggregator.find((item) => item.id === parentNodeId)
-    if (!parentNodeSchema) return aggregator
-    const { priority: parentNodePriority } = parentNodeSchema
-    const priority = parentNodePriority + (activeAnchor.value ? Infinity : 0)
-    for (const anchor of anchors) {
-      aggregator.push({
-        id: 'anchor',
-        graphType: 'node-anchor',
-        schemaType: 'circle',
-        schema: anchor,
-        priority: priority,
-      })
-    }
+    const anchors = getAnchorSchemas(parentNode.value)
+    for (const anchor of anchors) aggregator.push(anchor)
     return aggregator
   }
 

@@ -1,7 +1,6 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
-import colors from '@colors'
 import type {
   GEdge,
   GNode,
@@ -12,14 +11,11 @@ import { useTheme } from '@graph/themes/useTheme'
 import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
 import type { NodeAnchorGraphOptions } from '@graph/compositions/useNodeAnchorGraph'
 import { getValue } from '@graph/helpers'
+import type { Rect } from '@shape/rect'
+import colors from '@colors'
+import { rect } from '@shapes'
 
-import type { Rectangle } from '@shape/types'
-// import { drawCircleWithCtx } from '@shape/draw/circle'
-
-export type SelectionBox = {
-  topLeft: { x: number; y: number }
-  bottomRight: { x: number; y: number }
-}
+export type SelectionBox = Pick<Rect, 'at' | 'width' | 'height'>
 
 const MARQUEE_SELECTABLE_GRAPH_TYPES: SchemaItem['graphType'][] = ['node', 'edge']
 const MARQUEE_SAMPLING_RATE = 5;
@@ -44,12 +40,12 @@ export const useMarqueeGraph = (
   const showNodeAnchors = () => removeTheme('nodeAnchorColor')
 
   const getSelectionBoxProps = (box: SelectionBox) => {
-    const { topLeft, bottomRight } = box
-    const x1 = Math.min(topLeft.x, bottomRight.x)
-    const x2 = Math.max(topLeft.x, bottomRight.x)
-    const y1 = Math.min(topLeft.y, bottomRight.y)
-    const y2 = Math.max(topLeft.y, bottomRight.y)
-    const surfaceArea = (x2 - x1) * (y2 - y1)
+    const { at, width, height } = box
+    const x1 = Math.min(at.x, at.x + width)
+    const x2 = Math.max(at.x, at.x + width)
+    const y1 = Math.min(at.y, at.y + height)
+    const y2 = Math.max(at.y, at.y + height)
+    const surfaceArea = width * height
     return { x1, x2, y1, y2, surfaceArea }
   }
 
@@ -69,8 +65,9 @@ export const useMarqueeGraph = (
     if (topItem) return
     hideNodeAnchors()
     selectionBox.value = {
-      topLeft: { x, y },
-      bottomRight: { x, y }
+      at: { x, y },
+      width: 0,
+      height: 0,
     }
   }
 
@@ -122,7 +119,8 @@ export const useMarqueeGraph = (
   const updateSelectionBoxDimensions = (event: MouseEvent) => {
     if (!selectionBox.value) return
     const { offsetX: x, offsetY: y } = event
-    selectionBox.value.bottomRight = { x, y }
+    selectionBox.value.width = x - selectionBox.value.at.x
+    selectionBox.value.height = y - selectionBox.value.at.y
     updateSelectedItems(selectionBox.value)
     graph.repaint('marquee-graph/update-selection-box')()
   }
@@ -148,36 +146,27 @@ export const useMarqueeGraph = (
   // graph.subscribe('onRepaint', drawSampledPoints)
 
 
-  const getSelectionBoxSchematic = (box: SelectionBox): RectangleSchemaItem => {
-    const { topLeft, bottomRight } = box
-    const rect: Rectangle = {
-      at: {
-        x: topLeft.x,
-        y: topLeft.y,
-      },
-      width: bottomRight.x - topLeft.x,
-      height: bottomRight.y - topLeft.y,
+  const getSelectionBoxSchema = (box: SelectionBox) => {
+    const shape = rect({
+      ...box,
       color: MARQUEE_SELECTION_BG_COLOR,
       stroke: {
         color: MARQUEE_SELECTION_BORDER_COLOR,
         width: 1,
       }
-    }
+    })
 
-    const boxSchemaItem: RectangleSchemaItem = {
+    return {
       id: 'marquee-selection-box',
-      schemaType: 'rect',
       graphType: 'marquee-selection-box',
-      schema: rect,
+      shape,
       priority: Infinity,
-    }
-
-    return boxSchemaItem
+    } as const
   }
 
   const addSelectionBoxToAggregator = (aggregator: Aggregator) => {
     if (!selectionBox.value) return aggregator
-    const selectionBoxSchemaItem = getSelectionBoxSchematic(selectionBox.value)
+    const selectionBoxSchemaItem = getSelectionBoxSchema(selectionBox.value)
     aggregator.push(selectionBoxSchemaItem)
     return aggregator
   }

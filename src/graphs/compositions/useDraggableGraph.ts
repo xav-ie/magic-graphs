@@ -4,9 +4,9 @@ import {
   watchEffect
 } from 'vue'
 import type { Ref } from 'vue'
-import type { BaseGraphEvents, BaseGraphSettings } from '@graph/compositions/useBaseGraph'
+import type { BaseGraphSettings } from '@graph/compositions/useBaseGraph'
 import { generateSubscriber } from '@graph/events';
-import type { MappingsToEventBus } from '@graph/events';
+import type { BaseGraphEvents, MappingsToEventBus } from '@graph/events';
 import type { BaseGraphTheme } from '@graph/themes';
 import type { GNode, GraphOptions } from '@graph/types'
 import { useFocusGraph } from './useFocusGraph';
