@@ -6,6 +6,8 @@
   import { shapes } from "@shapes";
   import type { Shape } from "@shape/types";
   import { debounce } from "@utils/debounce";
+import { useHeatmap } from "@utils/playground/useHeatmap";
+import { getCtx } from "@utils/ctx";
 
   const canvas = ref<HTMLCanvasElement>();
   const isDark = useDark();
@@ -14,24 +16,16 @@
     isDark.value ? colors.GRAY_800 : colors.GRAY_200
   );
 
-  const heatmapActive = ref(false);
+  const items = ref<Shape[]>([]);
+  const { heatmapActive, heatmapResolution } = useHeatmap(canvas, items);
+
   const heatmapBtnText = computed(() =>
     heatmapActive.value ? "Hide Heatmap" : "Show Heatmap"
   );
-  const heatmapResolution = ref(4);
 
   const patternColor = computed(
     () => (isDark.value ? colors.GRAY_200 : colors.GRAY_700) + "15"
   );
-
-  const items = ref<Shape[]>([]);
-
-  const getCtx = () => {
-    if (!canvas.value) throw new Error("canvas not found");
-    const ctx = canvas.value.getContext("2d");
-    if (!ctx) throw new Error("2d context not found");
-    return ctx;
-  };
 
   const testForHitbox = () => {
     const { width, height } = canvas!.value!.getBoundingClientRect();
@@ -74,7 +68,7 @@
   };
 
   const draw = () => {
-    const ctx = getCtx();
+    const ctx = getCtx(canvas.value)
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     const { circle, rect, square, triangle, line, arrow, uturn, cross } =
       shapes;
