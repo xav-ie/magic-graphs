@@ -8,12 +8,10 @@ import {
   uturn
 } from '@shapes'
 
-type EdgeSchematic = Omit<SchemaItem, 'priority'> | undefined
-
 export const getEdgeSchematic = (
   edge: GEdge,
   graph: Pick<BaseGraph, 'edges' | 'getNode' | 'getTheme' | 'settings'>,
-): EdgeSchematic => {
+): Omit<SchemaItem, 'priority'> | undefined => {
 
   const { from, to } = getConnectedNodes(edge, graph)
 
@@ -109,7 +107,7 @@ export const getEdgeSchematic = (
       shape,
       id: edge.id,
       graphType: 'edge',
-    } as const;
+    }
   }
 
   const sumOfToAndFromNodeSize = fromNodeSize + fromNodeBorderWidth / 2 + toNodeSize + toNodeBorderWidth / 2
@@ -131,7 +129,7 @@ export const getEdgeSchematic = (
       shape,
       id: edge.id,
       graphType: 'edge',
-    } as const
+    }
   }
 
   const shape = arrow({
@@ -149,5 +147,5 @@ export const getEdgeSchematic = (
     shape,
     id: edge.id,
     graphType: 'edge',
-  } as const
+  }
 }
