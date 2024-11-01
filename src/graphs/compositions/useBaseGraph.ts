@@ -15,17 +15,16 @@ import type {
   KeyboardEventEntries,
   SchemaItem,
   GraphOptions,
-  MappingsToEventBus,
   Aggregator,
   UpdateAggregator
 } from '@graph/types'
 import {
-  generateSubscriber,
   generateId,
   prioritizeNode,
   getThemeResolver,
   getConnectedEdges,
 } from '@graph/helpers';
+import { generateSubscriber } from '@graph/events';
 import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
 import { themes } from '@graph/themes';
@@ -33,50 +32,8 @@ import type { BaseGraphTheme } from '@graph/themes'
 import { getInitialThemeMap } from '@graph/themes/types';
 import type { GraphTheme } from '@graph/themes/types';
 import { delta } from '@utils/deepDelta/delta';
-import type { PersistentGraphSettings } from './usePersistentGraph';
-import type { DeepPartial } from '@utils/types';
 import { clone } from '@utils/clone';
 import { getInitialEventBus } from '@graph/events';
-
-export type BaseGraphEvents = {
-  /* graph dataflow events */
-  onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
-  onFocusChange: (
-    newGItemId: GNode['id'] | GEdge['id'] | undefined,
-    oldGItemId: GNode['id'] | GEdge['id'] | undefined
-  ) => void;
-  onNodeAdded: (node: GNode) => void;
-  onNodeRemoved: (node: GNode) => void;
-
-  onEdgeAdded: (edge: GEdge) => void;
-  onEdgeRemoved: (edge: GEdge) => void;
-
-  onEdgeWeightChange: (edge: GEdge) => void;
-
-  /*
-    @description - this event is called when the graph needs to be redrawn
-    WARNING: items drawn to the canvas using ctx won't be tied to the graph event architecture.
-    Use updateAggregator if you need drawn item to integrate with graph apis
-  */
-  onRepaint: (ctx: CanvasRenderingContext2D, repaintId: string) => void;
-  onNodeHoverChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
-  onGraphReset: () => void;
-
-  /* canvas dom events */
-  onClick: (ev: MouseEvent) => void;
-  onMouseDown: (ev: MouseEvent) => void;
-  onMouseUp: (ev: MouseEvent) => void;
-  onMouseMove: (ev: MouseEvent) => void;
-  onDblClick: (ev: MouseEvent) => void;
-  onContextMenu: (ev: MouseEvent) => void;
-
-  /* global dom events */
-  onKeydown: (ev: KeyboardEvent) => void;
-
-  /* reactivity events */
-  onThemeChange: (diff: DeepPartial<GraphTheme>) => void;
-  onSettingsChange: (diff: DeepPartial<PersistentGraphSettings>) => void;
-}
 
 export type BaseGraphSettings = {
   /**
