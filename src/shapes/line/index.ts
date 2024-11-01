@@ -5,7 +5,12 @@ import type {
 } from "@shape/types";
 import { drawLineWithCtx } from "./draw";
 import { lineHitbox } from "./hitbox";
-import { lineTextHitbox, drawTextAreaOnLine } from "./text";
+import {
+  lineTextHitbox,
+  drawTextAreaOnLine,
+  drawTextAreaMatteOnLine,
+  drawTextOnLine
+} from "./text";
 import { generateId } from "@graph/helpers";
 
 export type Line = {
@@ -29,17 +34,30 @@ export const LINE_DEFAULTS = {
 } as const
 
 export const line = (options: Line): Shape => {
-  const draw = drawLineWithCtx(options);
-  const drawText = drawTextAreaOnLine(options);
+  const drawShape = drawLineWithCtx(options);
 
   const hitbox = lineHitbox(options);
   const textHitbox = lineTextHitbox(options);
+
+  const drawTextArea = drawTextAreaOnLine(options);
+
+  const drawTextAreaMatte = drawTextAreaMatteOnLine(options);
+  const drawText = drawTextOnLine(options);
+
+  const draw = (ctx: CanvasRenderingContext2D) => {
+    drawShape(ctx);
+    drawTextArea?.(ctx);
+  }
 
   return {
     id: generateId(),
     name: 'line',
 
     draw,
+
+    drawShape,
+    drawTextArea,
+    drawTextAreaMatte,
     drawText,
 
     hitbox,
