@@ -6,22 +6,7 @@ import type {
 } from "@graph/types"
 import type { SupportedNodeShapes } from "@graph/schematics/node"
 import type { TextFontWeight } from "@shape/types"
-import colors, {
-  BLACK,
-  WHITE,
-  STONE_600,
-  STONE_900,
-  GRAY_50,
-  GRAY_200,
-  GRAY_600,
-  GRAY_800,
-  GRAY_900,
-  BLUE_100,
-  BLUE_600,
-  BLUE_900,
-  RED_700,
-  RED_800,
-} from "@colors"
+import colors from "@colors"
 import type { ThemeGetter } from "@graph/helpers"
 
 export type BaseGraphNodeTheme = {
@@ -64,23 +49,23 @@ export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEd
 export const DEFAULT_THEME: BaseGraphTheme = {
   nodeSize: 35,
   nodeBorderWidth: 8,
-  nodeColor: GRAY_50,
-  nodeBorderColor: GRAY_800,
-  nodeFocusBorderColor: BLUE_600,
-  nodeFocusColor: BLUE_100,
+  nodeColor: colors.GRAY_50,
+  nodeBorderColor: colors.GRAY_800,
+  nodeFocusBorderColor: colors.BLUE_600,
+  nodeFocusColor: colors.BLUE_100,
   nodeText: ({ label }: GNode) => label,
   nodeTextSize: 24,
-  nodeTextColor: GRAY_900,
-  nodeFocusTextColor: GRAY_900,
+  nodeTextColor: colors.GRAY_900,
+  nodeFocusTextColor: colors.GRAY_900,
   nodeShape: 'circle',
-  edgeColor: GRAY_800,
+  edgeColor: colors.GRAY_800,
   edgeWidth: 10,
   edgeTextSize: 20,
   edgeTextFontWeight: 'bold',
-  edgeTextColor: GRAY_900,
-  edgeFocusColor: BLUE_600,
-  edgeFocusTextColor: BLACK,
-  graphBgColor: GRAY_200,
+  edgeTextColor: colors.GRAY_900,
+  edgeFocusColor: colors.BLUE_600,
+  edgeFocusTextColor: colors.BLACK,
+  graphBgColor: colors.GRAY_200,
   graphBgPatternColor: colors.BLACK + '15',
 } as const
 
@@ -95,25 +80,25 @@ const REDDISH_GRAY = 'rgb(100, 60, 70)'
 export const themes = {
   default: {
     ...DEFAULT_THEME,
-    nodeAnchorColor: BLACK,
-    nodeAnchorColorWhenParentFocused: BLUE_900,
+    nodeAnchorColor: colors.BLACK,
+    nodeAnchorColorWhenParentFocused: colors.BLUE_900,
   },
   dark: {
-    nodeBorderColor: BLACK,
-    nodeColor: STONE_600,
-    nodeTextColor: WHITE,
-    nodeFocusBorderColor: RED_700,
+    nodeBorderColor: colors.BLACK,
+    nodeColor: colors.STONE_600,
+    nodeTextColor: colors.WHITE,
+    nodeFocusBorderColor: colors.RED_700,
     nodeFocusColor: REDDISH_GRAY,
-    nodeFocusTextColor: WHITE,
-    nodeAnchorColor: GRAY_900,
-    nodeAnchorColorWhenParentFocused: RED_800,
-    edgeColor: STONE_900,
-    edgeFocusColor: RED_700,
+    nodeFocusTextColor: colors.WHITE,
+    nodeAnchorColor: colors.GRAY_900,
+    nodeAnchorColorWhenParentFocused: colors.RED_800,
+    edgeColor: colors.STONE_900,
+    edgeFocusColor: colors.RED_700,
     // TODO BOOO!!!!
-    edgeTextColor: WHITE,
-    edgeFocusTextColor: WHITE,
+    edgeTextColor: colors.WHITE,
+    edgeFocusTextColor: colors.WHITE,
 
-    graphBgColor: GRAY_600,
+    graphBgColor: colors.GRAY_600,
     graphBgPatternColor: colors.WHITE + '15',
   },
 } as const
