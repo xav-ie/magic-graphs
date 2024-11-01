@@ -4,6 +4,7 @@
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
   import colors from "@colors";
   import { shapes } from "@shapes"
+import { X } from "vitest/dist/chunks/reporters.C4ZHgdxQ.js";
 
   const canvas = ref<HTMLCanvasElement>();
   const isDark = useDark();
@@ -35,7 +36,7 @@
       cross,
     } = shapes;
 
-    circle({
+    const c = circle({
       at: { x: 200, y: 200 },
       radius: 50,
       color: colors.BLUE_500,
@@ -43,7 +44,8 @@
         color: colors.BLUE_700,
         width: 10,
       }
-    }).draw(ctx);
+    })
+    c.draw(ctx)
 
     uturn({
       color: colors.BLUE_500,
@@ -118,6 +120,11 @@
       lineWidth: 50,
       angle: Math.PI / 3,
     }).draw(ctx)
+
+    canvas.value?.addEventListener("click", (e) => {
+      const {offsetX: x, offsetY: y} = e
+      console.log(c.hitbox({x, y}));
+    });
   };
   
 

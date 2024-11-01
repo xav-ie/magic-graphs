@@ -58,11 +58,7 @@ export type Coordinate = {
   y: number,
 }
 
-export const TEXT_DEFAULTS = {
-  fontSize: 12,
-  fontWeight: 'normal',
-  color: 'black',
-} as const
+
 
 // the area in which text is displayed
 export type TextAreaNoLocation = {
@@ -90,7 +86,18 @@ export type Text = {
   color?: string,
 }
 
+export const TEXT_DEFAULTS = {
+  fontSize: 12,
+  fontWeight: 'normal',
+  color: 'black',
+} as const
+
 export type Stroke = {
   color: string,
   width: number,
+}
+
+export const STROKE_DEFALTS = {
+  color: 'black',
+  width: 0
 }
