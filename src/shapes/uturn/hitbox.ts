@@ -12,6 +12,7 @@ export const uturnHitbox = (uturn: UTurn) => {
     angle
   } = uturn;
 
+  // rotated rectangle checked with line
   const end = rotatePoint({
     x: center.x + upDistance,
     y: center.y
