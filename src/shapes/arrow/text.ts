@@ -66,7 +66,7 @@ export const arrowTextHitbox = (arrow: Arrow) => {
 export const drawTextAreaMatteOnArrow = (arrow: Arrow) => {
   if (!arrow.textArea) return;
 
-  const location = getTextAreaLocationOnLine(arrow);
+  const location = getTextAreaLocationOnArrow(arrow);
   const fullTextArea = getFullTextArea(arrow.textArea, location);
 
   const drawMatte = drawTextMatteWithTextArea(fullTextArea);
