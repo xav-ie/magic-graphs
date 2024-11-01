@@ -46,10 +46,10 @@
 
     uturn({
       color: colors.BLUE_500,
-      upDistance: 30,
+      upDistance: 100,
       downDistance: 100,
       spacing: 15,
-      center: { x: 600, y: 150 },
+      center: { x: 525, y: 100 },
       lineWidth: 10,
       angle: Math.PI / 4,
       textArea: {

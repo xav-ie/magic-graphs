@@ -29,6 +29,15 @@ export const UTURN_DEFAULTS = {
 } as const
 
 export const uturn = (options: UTurn): Shape => {
+
+  if (options.downDistance < 0) {
+    throw new Error('downDistance must be positive')
+  }
+
+  if (options.upDistance < 0) {
+    throw new Error('upDistance must be positive')
+  }
+
   const drawShape = drawUTurnWithCtx(options);
 
   const hitbox = uturnHitbox(options);
