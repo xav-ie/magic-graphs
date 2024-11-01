@@ -30,13 +30,13 @@ import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
 import { themes } from '@graph/themes';
 import type { BaseGraphTheme } from '@graph/themes'
-import { getInitialThemeMap, type GraphTheme } from '@graph/themes/types';
-import { drawShape } from '@shape/draw';
-import { hitboxes } from '@shape/hitboxes';
+import { getInitialThemeMap } from '@graph/themes/types';
+import type { GraphTheme } from '@graph/themes/types';
 import { delta } from '@utils/deepDelta/delta';
 import type { PersistentGraphSettings } from './usePersistentGraph';
 import type { DeepPartial } from '@utils/types';
 import { clone } from '@utils/clone';
+import { getInitialEventBus } from '@graph/events';
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
@@ -127,27 +127,7 @@ export const useBaseGraph = (
     ...options.settings,
   })
 
-  const eventBus: MappingsToEventBus<BaseGraphEvents> = {
-    onStructureChange: [],
-    onFocusChange: [],
-    onNodeAdded: [],
-    onNodeRemoved: [],
-    onEdgeAdded: [],
-    onEdgeRemoved: [],
-    onEdgeWeightChange: [],
-    onRepaint: [],
-    onNodeHoverChange: [],
-    onGraphReset: [],
-    onClick: [],
-    onMouseDown: [],
-    onMouseUp: [],
-    onMouseMove: [],
-    onDblClick: [],
-    onContextMenu: [],
-    onKeydown: [],
-    onThemeChange: [],
-    onSettingsChange: [],
-  }
+  const eventBus = getInitialEventBus()
 
   const { subscribe, unsubscribe } = generateSubscriber(eventBus)
 

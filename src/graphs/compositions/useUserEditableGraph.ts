@@ -2,10 +2,7 @@
  * @module useUserEditableGraph
  */
 
-import {
-  computed,
-  ref,
-} from 'vue'
+import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
 import type {
   SchemaItem,

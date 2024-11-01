@@ -12,11 +12,12 @@
 import {
   ref,
   readonly,
-  watchEffect,
   watch,
 } from 'vue'
 import type { Ref } from 'vue'
-import { generateSubscriber, prioritizeNode } from "@graph/helpers";
+import { prioritizeNode } from "@graph/helpers";
+import type { MappingsToEventBus } from '@graph/events';
+import { generateSubscriber } from '@graph/events';
 import { useDraggableGraph } from "@graph/compositions/useDraggableGraph";
 import type {
   DraggableGraphEvents,
@@ -25,17 +26,16 @@ import type {
 } from "@graph/compositions/useDraggableGraph";
 import type {
   SchemaItem,
-  LineSchemaItem,
   GNode,
   GEdge,
   NodeGetterOrValue,
   MaybeGetter,
   GraphOptions,
-  MappingsToEventBus
 } from "@graph/types";
+import { BLACK } from "@colors";
+
 import { hitboxes } from "@shape/hitboxes";
 import type { Circle } from "@shape/types";
-import { BLACK } from "@colors";
 
 export type NodeAnchor = {
   /**

@@ -4,15 +4,11 @@ import {
   watchEffect
 } from 'vue'
 import type { Ref } from 'vue'
-import { useBaseGraph } from '@graph/compositions/useBaseGraph'
 import type { BaseGraphEvents, BaseGraphSettings } from '@graph/compositions/useBaseGraph'
-import { generateSubscriber } from '@graph/helpers';
+import { generateSubscriber } from '@graph/events';
+import type { MappingsToEventBus } from '@graph/events';
 import type { BaseGraphTheme } from '@graph/themes';
-import type {
-  GNode,
-  GraphOptions,
-  MappingsToEventBus
-} from '@graph/types'
+import type { GNode, GraphOptions } from '@graph/types'
 import { useFocusGraph } from './useFocusGraph';
 
 export type DraggableGraphEvents = BaseGraphEvents & {

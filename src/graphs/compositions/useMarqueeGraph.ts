@@ -6,13 +6,13 @@ import type {
   GEdge,
   GNode,
   SchemaItem,
-  RectangleSchemaItem,
   Aggregator,
 } from '@graph/types'
 import { useTheme } from '@graph/themes/useTheme'
 import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
 import type { NodeAnchorGraphOptions } from '@graph/compositions/useNodeAnchorGraph'
 import { getValue } from '@graph/helpers'
+
 import type { Rectangle } from '@shape/types'
 // import { drawCircleWithCtx } from '@shape/draw/circle'
 

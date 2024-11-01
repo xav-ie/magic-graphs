@@ -1,13 +1,24 @@
-import type { GEdge, GNode, SchemaItem } from "@graph/types";
-import { useBaseGraph, type BaseGraphOptions } from "./useBaseGraph";
-import { computed, onUnmounted, readonly, ref } from "vue";
+import {
+  ref,
+  computed,
+  onUnmounted,
+  readonly,
+} from "vue";
 import type { Ref } from "vue";
-import { getTextAreaLocation } from "@shape/draw/text";
-import { isInTextarea } from "@shape/hitboxes";
+import type {
+  GEdge,
+  GNode,
+  SchemaItem
+} from "@graph/types";
+import { useBaseGraph } from "@graph/compositions/useBaseGraph";
+import type { BaseGraphOptions } from "@graph/compositions/useBaseGraph";
 import { engageTextarea } from "@graph/textarea";
 import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
+
+import { getTextAreaLocation } from "@shape/draw/text";
+import { isInTextarea } from "@shape/hitboxes";
 
 type Id = SchemaItem['id']
 type MaybeId = Id | undefined

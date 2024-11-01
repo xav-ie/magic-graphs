@@ -72,11 +72,6 @@ export type Aggregator = SchemaItem[]
 export type UpdateAggregator = (aggregator: Aggregator) => Aggregator
 
 /**
- * @describes the event bus mappings for the useGraph composable
- */
-export type MappingsToEventBus<T> = Record<keyof T, any[]>
-
-/**
  * @describes something that takes an any[] our of a union of arrays
  */
 export type RemoveAnyArray<T extends any[]> = T extends ['!!!-@-NOT-A-TYPE-@-!!!'][] ? never : T
@@ -127,7 +122,7 @@ type NodeAnchorGraphTypes = 'node-anchor' | 'link-preview'
 /**
  * @describes a schema item that can be fed into the aggregator in order to be rendered on the canvas
  */
-type SchemaItem = {
+export type SchemaItem = {
   /**
    * unique identifier for the schema item
    */
