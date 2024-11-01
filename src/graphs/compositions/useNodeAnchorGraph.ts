@@ -15,7 +15,7 @@ import {
   watch,
 } from 'vue'
 import type { Ref } from 'vue'
-import { prioritizeNode } from "@graph/helpers";
+import { generateId, prioritizeNode } from "@graph/helpers";
 import type { MappingsToEventBus } from '@graph/events';
 import { generateSubscriber } from '@graph/events';
 import { useDraggableGraph } from "@graph/compositions/useDraggableGraph";
@@ -50,6 +50,10 @@ export type NodeAnchor = {
    * @description the direction of the anchor relative to the parent node
    */
   direction: 'north' | 'east' | 'south' | 'west',
+  /**
+   * @description the unique id of the anchor
+   */
+  id: string,
 }
 
 type DraggableGraph = ReturnType<typeof useDraggableGraph>
@@ -88,7 +92,7 @@ const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = (
    * TODO - the edges wont be there yet
    * the color of the link preview
    */
-  linkPreviewColor: graph.edges.value[0] ? graph.getTheme('edgeColor', graph.edges.value[0]) : BLACK,
+  linkPreviewColor: graph.edges.value[0] ? graph.getTheme('edgeColor', graph.edges.value[0]) : colors.BLACK,
   /**
    * the width of the link preview
    */
@@ -184,11 +188,10 @@ export const useNodeAnchorGraph = (
     const isFocused = node.id === graph.focusedItemId.value
     const color = isFocused ? focusedColor : defaultColor
 
-    const anchors = getAnchors(node)
     const radius = getTheme('nodeAnchorRadius', node)
 
     const anchorSchemas: SchemaItem[] = []
-    for (const anchor of anchors) {
+    for (const anchor of nodeAnchors.value) {
       const { x, y } = anchor
 
       const circleTemplate = {
@@ -205,7 +208,7 @@ export const useNodeAnchorGraph = (
       const nodeAnchorShape = circle(circleTemplate)
 
       anchorSchemas.push({
-        id: `${node.label}-${anchor.direction}-anchor`,
+        id: anchor.id,
         graphType: 'node-anchor',
         shape: nodeAnchorShape,
         priority: Infinity,
@@ -215,17 +218,24 @@ export const useNodeAnchorGraph = (
     return anchorSchemas
   }
 
+  const nodeAnchors = ref<NodeAnchor[]>([])
+
   /**
+   * updates the node anchor ref with the new node anchors
+   *
    * @param {GNode} node - the parent node of the anchor
-   * @returns an array of anchors for the given node
+   * @returns {void}
    */
-  const getAnchors = (node: GNode): NodeAnchor[] => {
+  const updateNodeAnchors = (node: GNode | undefined) => {
+    if (!node) return nodeAnchors.value = []
     const { getTheme } = graph
+
     const anchorRadius = getTheme('nodeAnchorRadius', node)
     const nodeSize = getTheme('nodeSize', node)
     const nodeBorderWidth = getTheme('nodeBorderWidth', node)
+
     const offset = nodeSize - (anchorRadius / 3) + (nodeBorderWidth / 2)
-    return [
+    nodeAnchors.value = ([
       {
         x: node.x,
         y: node.y - offset,
@@ -246,7 +256,7 @@ export const useNodeAnchorGraph = (
         y: node.y,
         direction: 'west',
       },
-    ]
+    ] as const).map((anchor) => ({ ...anchor, id: generateId() }))
   }
 
   /**
@@ -255,18 +265,10 @@ export const useNodeAnchorGraph = (
    * @returns the anchor at the given coordinates if it exists or undefined
    */
   const getAnchor = (x: number, y: number) => {
-    // const anchors = getAnchors(node)
-    // return anchors.find((anchor) => {
-    //   const point = { x, y }
-    //   const { isInCircle } = hitboxes(point)
-    //   return isInCircle({
-    //     at: { x: anchor.x, y: anchor.y },
-    //     radius: graph.getTheme('nodeAnchorRadius', node),
-    //   })
-    // })
-    const [topItem] = graph.getDrawItemsByCoordinates(x, y)
+    const topItem = graph.getDrawItemsByCoordinates(x, y).pop()
     if (!topItem || topItem.graphType !== 'node-anchor') return
-    return topItem.shape
+    const { id: anchorId } = topItem
+    return nodeAnchors.value.find((anchor) => anchor.id === anchorId)
   }
 
   const getUnprioritizedLinkPreviewSchema = () => {
@@ -301,23 +303,23 @@ export const useNodeAnchorGraph = (
    */
   const updateParentNode = (ev: MouseEvent) => {
     if (activeAnchor.value || !settings.value.nodeAnchors) return
-    const node = graph.getNodeByCoordinates(ev.offsetX, ev.offsetY)
-    if (!node && parentNode.value) {
-      const hoveredAnchor = getAnchor(ev.offsetX, ev.offsetY)
-      if (hoveredAnchor) return
-    }
-    parentNode.value = node
+    const topItem = graph.getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
+    if (!topItem) return parentNode.value = undefined
+    else if (topItem.graphType === 'node-anchor') return
+    else if (topItem.graphType === 'node') return parentNode.value = graph.getNode(topItem.id)
   }
 
-  subscribe('onMouseMove', updateParentNode)
-
-  subscribe('onMouseDown', (ev) => {
+  const setActiveAnchor = (ev: MouseEvent) => {
     if (!parentNode.value) return
     const anchor = getAnchor(ev.offsetX, ev.offsetY)
     if (!anchor) return
     activeAnchor.value = anchor
     eventBus.onNodeAnchorDragStart.forEach(fn => fn(parentNode.value, anchor))
-  })
+  }
+
+  subscribe('onMouseMove', updateParentNode)
+
+  subscribe('onMouseDown', setActiveAnchor)
 
   /**
    * @description updates the position of the active anchor based on the mouse event
@@ -339,8 +341,7 @@ export const useNodeAnchorGraph = (
   const dropAnchor = () => {
     if (!activeAnchor.value) return
     eventBus.onNodeAnchorDrop.forEach(fn => fn(parentNode.value, activeAnchor.value))
-    activeAnchor.value = undefined
-    parentNode.value = undefined
+    deactivateAnchors()
   }
 
   subscribe('onMouseUp', dropAnchor)
@@ -354,16 +355,26 @@ export const useNodeAnchorGraph = (
 
   const insertLinkPreviewIntoAggregator = (aggregator: SchemaItem[]) => {
     if (!parentNode.value || !activeAnchor.value) return aggregator
+
     const { id: parentNodeId } = parentNode.value
+
     prioritizeNode(parentNodeId, aggregator)
-    const parentNodePriority = aggregator.find((item) => item.id === parentNodeId)?.priority
+
+    const parentNodePriority = aggregator
+      .find((item) => item.id === parentNodeId)?.priority
+
     if (!parentNodePriority) return aggregator
-    const linkPreview = getLinkPreviewSchematic()
-    if (!linkPreview) return aggregator
-    aggregator.push({
-      ...linkPreview,
+
+    const unprioritizedPreviewSchema = getUnprioritizedLinkPreviewSchema()
+
+    if (!unprioritizedPreviewSchema) return aggregator
+
+    const linkPreviewSchema = {
+      ...unprioritizedPreviewSchema,
       priority: parentNodePriority - 0.1,
-    })
+    }
+
+    aggregator.push(linkPreviewSchema)
     return aggregator
   }
 
@@ -385,8 +396,11 @@ export const useNodeAnchorGraph = (
   })
 
   watch(parentNode, () => {
+    if (parentNode.value) updateNodeAnchors(parentNode.value)
     graph.repaint('node-anchor-graph/parent-node-watch')()
   })
+
+  graph.subscribe('onNodeDrop', (node) => updateNodeAnchors(node))
 
   return {
     ...graph,

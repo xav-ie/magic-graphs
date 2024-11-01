@@ -240,7 +240,9 @@ export const useBaseGraph = (
   }
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
-    return aggregator.value.filter(item => item.shape.hitbox({ x, y }))
+    return aggregator.value
+      .sort((a, b) => a.priority - b.priority)
+      .filter(item => item.shape.hitbox({ x, y }))
   }
 
   /**

@@ -61,8 +61,8 @@ export const useMarqueeGraph = (
   const engageSelectionBox = (event: MouseEvent) => {
     marqueedItemIDs.clear()
     const { offsetX: x, offsetY: y } = event
-    const [topItem] = graph.getDrawItemsByCoordinates(x, y)
-    if (topItem) return
+    const items = graph.getDrawItemsByCoordinates(x, y)
+    if (items.length > 0) return
     hideNodeAnchors()
     selectionBox.value = {
       at: { x, y },
@@ -82,7 +82,7 @@ export const useMarqueeGraph = (
     graph.repaint('marquee-graph/disengage-selection-box')()
   }
 
-  const coordinateCache = new Map<string, SchemaItem>()
+  const coordinateCache = new Map<string, SchemaItem | null>()
 
   const getFromCache = (xInp: number, yInp: number) => {
     const CACHE_BUCKET_SIZE = MARQUEE_SAMPLING_RATE / 2
@@ -91,7 +91,7 @@ export const useMarqueeGraph = (
     const key = `${x}:${y}`
     const res = coordinateCache.get(key);
     if (res === undefined) {
-      const [ topItem ] = graph.getDrawItemsByCoordinates(xInp, yInp)
+      const topItem = graph.getDrawItemsByCoordinates(xInp, yInp).pop()
       coordinateCache.set(key, topItem ?? null)
       return topItem
     }

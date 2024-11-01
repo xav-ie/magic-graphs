@@ -59,7 +59,7 @@ export const useFocusGraph = (
 
   const handleTextAreaFocus = (ev: MouseEvent) => {
     const { offsetX: x, offsetY: y } = ev
-    const [topItem] = graph.getDrawItemsByCoordinates(x, y)
+    const topItem = graph.getDrawItemsByCoordinates(x, y).pop()
     if (!topItem) return
 
     const inText = topItem.shape.textHitbox?.({ x, y })
@@ -75,8 +75,6 @@ export const useFocusGraph = (
       edge.weight = newWeight
       graph.eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
     }
-
-    console.log('engaging textarea')
 
     setFocus(undefined)
   }

@@ -54,7 +54,6 @@ export const useHeatmap = (
   const initCanvas = () => {
     if (!targetCanvas.value) throw new Error('target canvas not found')
     const { width, height } = targetCanvas.value.getBoundingClientRect()
-    console.log('width', width, 'height', height)
     canvas.width = width
     canvas.height = height
     canvas.style.position = 'absolute'
