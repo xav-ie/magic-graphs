@@ -79,7 +79,7 @@
     const { circle, rect, square, triangle, line, arrow, uturn, cross } =
       shapes;
 
-    const c = circle({
+    items.value.push(circle({
       at: { x: 200, y: 200 },
       radius: 50,
       color: colors.BLUE_500,
@@ -87,9 +87,9 @@
         color: colors.BLUE_700,
         width: 10,
       },
-    });
+    }));
 
-    const u = uturn({
+    items.value.push(uturn({
       center: { x: 400, y: 200 },
       downDistance: 50,
       upDistance: 50,
@@ -105,15 +105,10 @@
           fontSize: 50,
         },
       },
-    });
+    }))
 
-    items.value.push(u);
-    items.value.push(c);
 
-    items.value.forEach((item) => {
-      item.draw(ctx);
-    });
-
+    items.value.forEach((item) => item.draw(ctx));
     if (heatmapActive.value) testForHitbox();
   };
 
