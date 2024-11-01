@@ -1,7 +1,15 @@
-import type { Circle } from "@shape/types";
+import { TEXT_DEFAULTS } from "@shape/types";
+import { CIRCLE_DEFAULTS } from "@shape/circle";
+import type { Circle } from "@shape/circle";
 
-export const drawCircleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Circle) => {
-  const { at, radius, color = 'black' } = options;
+export const drawCircleWithCtx = (options: Circle) => (ctx: CanvasRenderingContext2D) => {
+
+  const {
+    at,
+    radius,
+    color,
+  } = { ...CIRCLE_DEFAULTS, ...options };
+
   ctx.beginPath();
   ctx.arc(at.x, at.y, radius, 0, 2 * Math.PI);
   ctx.fillStyle = color;
@@ -14,13 +22,14 @@ export const drawCircleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Ci
     ctx.stroke();
   }
 
-  if (options.text) {
+  const circleText = options.text;
+  if (circleText) {
     const {
       content,
-      fontSize = 12,
-      fontWeight = 'normal',
-      color = 'black'
-    } = options.text;
+      fontSize,
+      fontWeight,
+      color,
+    } = { ...TEXT_DEFAULTS, ...circleText };
 
     ctx.font = `${fontWeight} ${fontSize}px Arial`;
     ctx.fillStyle = color;

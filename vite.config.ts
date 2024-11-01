@@ -11,7 +11,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
+
       '@colors': fileURLToPath(new URL('./src/utils/colors.ts', import.meta.url)),
+      '@shapes': fileURLToPath(new URL('./src/shapes/index.ts', import.meta.url)),
 
       '@graph': fileURLToPath(new URL('./src/graphs', import.meta.url)),
       '@shape': fileURLToPath(new URL('./src/shapes', import.meta.url)),

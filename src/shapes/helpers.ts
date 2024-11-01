@@ -59,7 +59,7 @@ export const getAngle = (point1: Coordinate, point2: Coordinate) => {
  */
 export const getLargestAngularSpace = (center: Coordinate, points: Coordinate[]) => {
   if (points.length === 0) return 0
-  const [ firstPoint ] = points
+  const [firstPoint] = points
   if (points.length === 1) return getAngle(center, firstPoint) + Math.PI
 
   const angles = points

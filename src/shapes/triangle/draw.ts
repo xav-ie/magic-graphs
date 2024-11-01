@@ -1,7 +1,7 @@
-import { TRIANGLE_DEFAULTS } from "@shape/types";
-import type { Triangle } from "@shape/types";
+import { TRIANGLE_DEFAULTS } from ".";
+import type { Triangle } from ".";
 
-export const drawTriangleWithCtx = (ctx: CanvasRenderingContext2D) => (options: Triangle) => {
+export const drawTriangleWithCtx = (options: Triangle) => (ctx: CanvasRenderingContext2D) => {
 
   const {
     point1,

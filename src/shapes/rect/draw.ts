@@ -1,14 +1,15 @@
-import type { Square } from "@shape/types";
-import { SQUARE_DEFAULTS } from "@shape/types";
+import { TEXT_DEFAULTS } from "@shape/types";
+import { RECT_DEFAULTS } from ".";
+import type { Rect } from ".";
 
-export const drawSquareWithCtx = (ctx: CanvasRenderingContext2D) => (options: Square) => {
+export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D) => {
   const {
     at,
     width,
     height,
     color
   } = {
-    ...SQUARE_DEFAULTS,
+    ...RECT_DEFAULTS,
     ...options
   };
 
@@ -25,12 +26,16 @@ export const drawSquareWithCtx = (ctx: CanvasRenderingContext2D) => (options: Sq
   }
 
   if (options.text) {
+
     const {
       content,
-      fontSize = 12,
-      fontWeight = 'normal',
-      color = 'black'
-    } = options.text;
+      fontSize,
+      fontWeight,
+      color
+    } = {
+      ...TEXT_DEFAULTS,
+      ...options.text
+    }
 
     ctx.font = `${fontWeight} ${fontSize}px Arial`;
     ctx.fillStyle = color;
