@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import { ref, computed, watch } from "vue";
+  import { ref, computed } from "vue";
   import { useDark } from "@vueuse/core";
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
   import colors from "@colors";
-  import { drawShape } from "@shape/draw";
+  import { shapes } from "@shapes"
 
   const canvas = ref<HTMLCanvasElement>();
   const isDark = useDark();
@@ -25,16 +25,16 @@
     const ctx = getCtx();
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     const {
-      drawCircle,
-      drawTriangle,
-      drawRectangle,
-      drawSquare,
-      drawLine,
-      drawArrow,
-      drawUTurnArrow,
-    } = drawShape(ctx);
+      circle,
+      rect,
+      square,
+      triangle,
+      line,
+      arrow,
+      uturn,
+    } = shapes;
 
-    drawCircle({
+    circle({
       at: { x: 200, y: 200 },
       radius: 50,
       color: colors.BLUE_500,
@@ -42,9 +42,9 @@
         color: colors.BLUE_700,
         width: 10,
       }
-    });
+    }).draw(ctx);
 
-    drawUTurnArrow({
+    uturn({
       color: colors.BLUE_500,
       upDistance: 100,
       downDistance: 100,
@@ -52,16 +52,16 @@
       center: { x: 600, y: 100 },
       lineWidth: 10,
       angle: Math.PI / 4,
-    });
+    }).draw(ctx);
 
-    drawArrow({
+    arrow({
       start: { x: 300, y: 100 },
       end: { x: 400, y: 200 },
       color: colors.BLUE_600,
       width: 10,
-    })
+    }).draw(ctx);
 
-    drawArrow({
+    arrow({
       start: { x: 400, y: 100 },
       end: { x: 500, y: 200 },
       color: colors.BLUE_600,
@@ -73,36 +73,36 @@
           color: colors.WHITE,
         },
       }
-    })
+    }).draw(ctx);
 
 
-    drawTriangle({
+    triangle({
       point1: { x: 700, y: 300 },
       point2: { x: 200, y: 500 },
       point3: { x: 800, y: 500 },
       color: colors.BLUE_600,
-    });
+    }).draw(ctx);
 
-    drawRectangle({
+    rect({
       at: { x: 200, y: 600 },
       width: 200,
       height: 100,
       color: colors.BLUE_700,
-    });
+    }).draw(ctx);
 
-    drawSquare({
+    square({
       at: { x: 500, y: 600 },
-      width: 100,
-      height: 100,
+      size: 100,
       color: colors.BLUE_800,
-    });
+    }).draw(ctx);
 
-    drawLine({
+    line({
       start: { x: 200, y: 800 },
       end: { x: 800, y: 700 },
       color: colors.BLUE_900,
       width: 5,
-    });
+    }).draw(ctx);
+
   };
 
   document.addEventListener("resize", draw);

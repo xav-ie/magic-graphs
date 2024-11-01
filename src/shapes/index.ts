@@ -1,10 +1,18 @@
-import { arrow } from "./arrow";
-import { circle } from "./circle";
-import { line } from "./line";
-import { rect } from "./rect";
-import { square } from "./square";
-import { triangle } from "./triangle";
-import { uturn } from "./uturn";
+import { arrow as arrowAPI } from "./arrow";
+import { circle as circleAPI } from "./circle";
+import { line as lineAPI } from "./line";
+import { rect as rectAPI } from "./rect";
+import { square as squareAPI } from "./square";
+import { triangle as triangleAPI } from "./triangle";
+import { uturn as uturnAPI } from "./uturn";
+
+export const line = lineAPI;
+export const arrow = arrowAPI;
+export const circle = circleAPI;
+export const rect = rectAPI;
+export const square = squareAPI;
+export const triangle = triangleAPI;
+export const uturn = uturnAPI;
 
 export const shapes = {
   arrow,

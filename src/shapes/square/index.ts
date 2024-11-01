@@ -11,6 +11,7 @@ import { generateId } from "@graph/helpers"
 export type Square = {
   at: Coordinate,
   size: number,
+  color?: string,
   stroke?: Stroke,
   text?: Text,
 }

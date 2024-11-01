@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import { ref, useAttrs, watch, computed, onUnmounted } from "vue";
   import { useElementSize } from "@vueuse/core";
-  import { drawLineWithCtx } from "@shape/draw/line";
   import { debounce } from "@utils/debounce";
-  import { type Color } from "@colors";
+  import { shapes } from "@shapes";
+  import type { Color } from "@colors";
 
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
