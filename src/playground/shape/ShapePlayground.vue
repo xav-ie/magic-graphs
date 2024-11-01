@@ -5,7 +5,7 @@
   import colors from "@colors";
   import { shapes, square } from "@shapes";
   import type { Shape } from "@shape/types";
-  import { useHeatmap } from "@utils/playground/useHeatmap";
+  import { useHeatmap } from "@playground/shape/useHeatmap";
   import { getCtx } from "@utils/ctx";
 
   const canvas = ref<HTMLCanvasElement>();

@@ -18,6 +18,7 @@ export default defineConfig({
       '@graph': fileURLToPath(new URL('./src/graphs', import.meta.url)),
       '@shape': fileURLToPath(new URL('./src/shapes', import.meta.url)),
       '@product': fileURLToPath(new URL('./src/products', import.meta.url)),
+      '@playground': fileURLToPath(new URL('./src/playground', import.meta.url)),
     }
   }
 })

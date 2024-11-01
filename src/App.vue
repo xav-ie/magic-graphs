@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import GraphPlayground from './GraphPlayground.vue';
-import ShapePlayground from './ShapePlayground.vue';
+import GraphPlayground from '@playground/graph/GraphPlayground.vue';
+import ShapePlayground from '@playground/shape/ShapePlayground.vue';
 import SearchVisualizer from '@product/search-visualizer/Main.vue'
 
 </script>

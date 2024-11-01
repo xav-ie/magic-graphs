@@ -1,4 +1,8 @@
-import { computed, onMounted, ref, watch } from "vue"
+import {
+  computed,
+  ref,
+  watch
+} from "vue"
 import type { Ref } from "vue"
 import colors from "@colors"
 import type { Coordinate, Shape } from "@shape/types"
