@@ -4,7 +4,6 @@
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
   import colors from "@colors";
   import { shapes } from "@shapes"
-import { X } from "vitest/dist/chunks/reporters.C4ZHgdxQ.js";
 
   const canvas = ref<HTMLCanvasElement>();
   const isDark = useDark();
