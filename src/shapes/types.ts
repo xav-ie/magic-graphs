@@ -3,7 +3,7 @@
   types for shapes
 */
 
-export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'arrow' | 'uturn'
+export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'arrow' | 'uturn' | 'cross'
 
 export type Shape = {
   /**

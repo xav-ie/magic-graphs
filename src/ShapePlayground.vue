@@ -32,6 +32,7 @@
       line,
       arrow,
       uturn,
+      cross,
     } = shapes;
 
     circle({
@@ -110,7 +111,16 @@
       width: 5,
     }).draw(ctx);
 
+    cross({
+      center: { x: 800, y: 800 },
+      size: 100,
+      color: colors.GREEN_500,
+      lineWidth: 50,
+      angle: Math.PI / 3,
+    }).draw(ctx)
   };
+  
+
 
   document.addEventListener("resize", draw);
   document.addEventListener("keyup", (e) => {
