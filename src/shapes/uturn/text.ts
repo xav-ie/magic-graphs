@@ -38,8 +38,8 @@ export const getTextAreaLocationOnUTurn = (uturn: UTurn) => {
   }, center, angle)
 
   return {
-    x: endPoint.x - fontSize,
-    y: endPoint.y - fontSize
+    x: endPoint.x - fontSize + Math.cos(angle) * 15,
+    y: endPoint.y - fontSize + Math.sin(angle) * 15
   }
 }
 

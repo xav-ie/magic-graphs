@@ -46,12 +46,19 @@
 
     uturn({
       color: colors.BLUE_500,
-      upDistance: 100,
+      upDistance: 30,
       downDistance: 100,
-      spacing: 20,
-      center: { x: 600, y: 100 },
+      spacing: 15,
+      center: { x: 600, y: 150 },
       lineWidth: 10,
       angle: Math.PI / 4,
+      textArea: {
+        color: color.value,
+        text: {
+          content: "4",
+          color: colors.WHITE,
+        },
+      }
     }).draw(ctx);
 
     arrow({
