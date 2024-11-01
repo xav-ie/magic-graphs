@@ -1,24 +1,17 @@
-import type {
-  GEdge,
-  LineSchemaItem,
-  ArrowSchemaItem,
-  ArrowUTurnSchemaItem,
-} from '@graph/types'
+import type { GEdge, SchemaItem } from '@graph/types'
 import { getConnectedNodes } from '@graph/helpers'
 import { getLargestAngularSpace } from '@shape/helpers'
 import type { BaseGraph } from '@graph/compositions/useBaseGraph'
-
-type EdgeSchemas = LineSchemaItem | ArrowSchemaItem | ArrowUTurnSchemaItem
-type EdgeSchematic = Omit<EdgeSchemas, 'priority'> | undefined
+import {
+  line,
+  arrow,
+  uturn
+} from '@shapes'
 
 export const getEdgeSchematic = (
   edge: GEdge,
   graph: Pick<BaseGraph, 'edges' | 'getNode' | 'getTheme' | 'settings'>,
-  // nodes: GNode[],
-  // edges: GEdge[],
-  // getTheme: ThemeGetter,
-  // graphSettings: BaseGraphSettings,
-): EdgeSchematic => {
+): Omit<SchemaItem, 'priority'> | undefined => {
 
   const { from, to } = getConnectedNodes(edge, graph)
 
@@ -81,7 +74,7 @@ export const getEdgeSchematic = (
   const edgeTextSize = graph.getTheme('edgeTextSize', edge)
   const edgeTextFontWeight = graph.getTheme('edgeTextFontWeight', edge)
 
-  const textArea = {
+  const textAreaOnEdge = {
     color: graphBgColor,
     editable: graph.settings.value.edgeLabelsEditable,
     text: {
@@ -92,63 +85,67 @@ export const getEdgeSchematic = (
     }
   }
 
+  const { displayEdgeLabels } = graph.settings.value
+  const textArea = displayEdgeLabels ? textAreaOnEdge : undefined
+
   const upDistance = edgeWidth * 8
   const downDistance = upDistance * 0.35
 
-  // returns the u-turn edge
   if (isSelfDirecting) {
-    return {
-      schema: {
-        spacing: edgeWidth * 1.2,
-        center: { x: from.x, y: from.y },
-        upDistance,
-        downDistance,
-        angle: largestAngularSpace,
-        lineWidth: edgeWidth,
-        color: color,
-        textArea: graph.settings.value.displayEdgeLabels ? textArea : undefined,
-      },
-      schemaType: 'uturn',
-      id: edge.id,
-      graphType: 'edge',
-    } as const;
-  }
+    const shape = uturn({
+      spacing: edgeWidth * 1.2,
+      center: { x: from.x, y: from.y },
+      upDistance,
+      downDistance,
+      angle: largestAngularSpace,
+      lineWidth: edgeWidth,
+      color,
+      textArea,
+    })
 
-  const sumOfToAndFromNodeSize = fromNodeSize + fromNodeBorderWidth / 2 + toNodeSize + toNodeBorderWidth / 2
-  const distanceSquaredBetweenNodes = (from.x - to.x) ** 2 + (from.y - to.y) ** 2
-  const areNodesTouching = (sumOfToAndFromNodeSize ** 2) > distanceSquaredBetweenNodes
-  if (areNodesTouching) return
-
-  // returns the line edge
-  if (edge.type === 'undirected') {
     return {
-      schema: {
-        start: { x: from.x, y: from.y },
-        end: { x: to.x, y: to.y },
-        color: color,
-        width: edgeWidth,
-        textArea: graph.settings.value.displayEdgeLabels ? textArea : undefined,
-      },
-      schemaType: 'line',
+      shape,
       id: edge.id,
       graphType: 'edge',
     }
   }
 
-  // returns the arrow edge
-  return {
-    schema: {
-      start,
-      end,
-      color: color,
+  const sumOfToAndFromNodeSize = fromNodeSize + fromNodeBorderWidth / 2 + toNodeSize + toNodeBorderWidth / 2
+  const distanceSquaredBetweenNodes = (from.x - to.x) ** 2 + (from.y - to.y) ** 2
+  const areNodesTouching = (sumOfToAndFromNodeSize ** 2) > distanceSquaredBetweenNodes
+
+  if (areNodesTouching) return
+
+  if (edge.type === 'undirected') {
+    const shape = line({
+      start: { x: from.x, y: from.y },
+      end: { x: to.x, y: to.y },
       width: edgeWidth,
-      // TODO - must take into account of actual node size.
-      // TODO - 32 is approx default node size but wont work if node size is different
-      textOffsetFromCenter: 32,
-      textArea: graph.settings.value.displayEdgeLabels ? textArea : undefined,
-    },
-    schemaType: 'arrow',
+      color,
+      textArea,
+    })
+
+    return {
+      shape,
+      id: edge.id,
+      graphType: 'edge',
+    }
+  }
+
+  const shape = arrow({
+    start,
+    end,
+    width: edgeWidth,
+    // TODO - must take into account of actual node size.
+    // TODO - 32 is approx default node size but wont work if node size is different
+    textOffsetFromCenter: 32,
+    color,
+    textArea,
+  })
+
+  return {
+    shape,
     id: edge.id,
     graphType: 'edge',
-  } as const
+  }
 }

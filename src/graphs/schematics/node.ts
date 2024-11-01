@@ -1,20 +1,13 @@
-import type {
-  CircleSchemaItem,
-  GNode,
-  SquareSchemaItem
-} from '@graph/types'
+import type { GNode, SchemaItem } from '@graph/types'
 import type { ThemeGetter } from '@graph/helpers'
-import type { Circle, Square } from '@shape/types'
+import { circle, square } from '@shapes'
 
 export type SupportedNodeShapes = 'circle' | 'square'
-
-type NodeSchemas = SquareSchemaItem | CircleSchemaItem
-type NodeSchematic = Omit<NodeSchemas, 'priority'> | undefined
 
 export const getNodeSchematic = (
   node: GNode,
   getTheme: ThemeGetter,
-): NodeSchematic => {
+): Omit<SchemaItem, 'priority'> | undefined => {
 
   const color = getTheme('nodeColor', node)
   const borderColor = getTheme('nodeBorderColor', node)
@@ -25,7 +18,7 @@ export const getNodeSchematic = (
   const textColor = getTheme('nodeTextColor', node)
   const shape = getTheme('nodeShape', node)
 
-  const circleSchematic: Circle = {
+  const circleShape = circle({
     at: {
       x: node.x,
       y: node.y
@@ -42,15 +35,14 @@ export const getNodeSchematic = (
       fontWeight: 'bold',
       color: textColor,
     }
-  }
+  })
 
-  const squareSchematic: Square = {
+  const squareShape = square({
     at: {
       x: node.x - size,
       y: node.y - size
     },
-    width: size * 2,
-    height: size * 2,
+    size: size * 2,
     color: color,
     stroke: {
       color: borderColor,
@@ -62,11 +54,10 @@ export const getNodeSchematic = (
       fontWeight: 'bold',
       color: textColor,
     }
-  }
+  })
 
   return {
-    schema: shape === 'circle' ? circleSchematic : squareSchematic,
-    schemaType: shape,
+    shape: shape === 'circle' ? circleShape : squareShape,
     id: node.id,
     graphType: 'node',
   }

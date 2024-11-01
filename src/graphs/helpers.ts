@@ -13,13 +13,14 @@ import type {
   SchemaItem,
   GNode,
   GEdge,
-  MappingsToEventBus,
   UnwrapMaybeGetter,
   Graph
 } from '@graph/types'
-import type { BaseGraphEvents, BaseGraphSettings } from '@graph/compositions/useBaseGraph'
-import type { DeepRequired, DeepValue, NestedKeys } from '@utils/types'
-import type { PersistentGraphSettings } from './compositions/usePersistentGraph'
+import type {
+  DeepRequired,
+  DeepValue,
+  NestedKeys
+} from '@utils/types'
 
 /**
   unwraps MaybeGetter type into a value of type T.
@@ -80,19 +81,6 @@ export const getThemeResolver = (
  * describes the function that gets a value from a theme inquiry
  */
 export type ThemeGetter = ReturnType<typeof getThemeResolver>
-
-/**
-  generates a "subscribe" and "unsubscribe" function for the event bus
-  in order to registering and deregistering graph events
-*/
-export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: MappingsToEventBus<T>) => ({
-  subscribe: <K extends keyof T>(event: K, fn: T[K]) => {
-    eventBus[event].push(fn)
-  },
-  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => {
-    eventBus[event] = eventBus[event].filter((f: T[K]) => f !== fn)
-  },
-})
 
 /**
   generates an id. Every item on the canvas must have a unique id
@@ -204,41 +192,3 @@ export const setting = <S extends {}, P extends NestedKeys<S>>(settings: S, path
       // @ts-ignore
     }, settings) as DeepValue<DeepRequired<S>, P>
 }
-
-/**
- * gets the theme attributes for a GNode at the point in time the function is called
- *
- * @param getTheme - the theme getter function
- * @param node - the node to get the theme for
- * @returns the theme attributes for the node
- */
-export const resolveThemeForNode = (getTheme: ThemeGetter, node: GNode): BaseGraphNodeTheme => ({
-  nodeSize: getTheme('nodeSize', node),
-  nodeBorderWidth: getTheme('nodeBorderWidth', node),
-  nodeColor: getTheme('nodeColor', node),
-  nodeBorderColor: getTheme('nodeBorderColor', node),
-  nodeFocusColor: getTheme('nodeFocusColor', node),
-  nodeFocusBorderColor: getTheme('nodeFocusBorderColor', node),
-  nodeTextSize: getTheme('nodeTextSize', node),
-  nodeTextColor: getTheme('nodeTextColor', node),
-  nodeFocusTextColor: getTheme('nodeFocusTextColor', node),
-  nodeText: getTheme('nodeText', node),
-  nodeShape: getTheme('nodeShape', node),
-})
-
-/**
- * gets the theme attributes for a GEdge at the point in time the function is called
- *
- * @param getTheme - the theme getter function
- * @param edge - the edge to get the theme for
- * @returns the theme attributes for the edge
- */
-export const resolveThemeForEdge = (getTheme: ThemeGetter, edge: GEdge): BaseGraphEdgeTheme => ({
-  edgeWidth: getTheme('edgeWidth', edge),
-  edgeColor: getTheme('edgeColor', edge),
-  edgeTextSize: getTheme('edgeTextSize', edge),
-  edgeTextColor: getTheme('edgeTextColor', edge),
-  edgeFocusColor: getTheme('edgeFocusColor', edge),
-  edgeFocusTextColor: getTheme('edgeFocusTextColor', edge),
-  edgeTextFontWeight: getTheme('edgeTextFontWeight', edge),
-})

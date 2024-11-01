@@ -1,10 +1,4 @@
-import type {
-  Circle,
-  Line,
-  Square,
-  Arrow,
-  UTurnArrow
-} from "@shape/types"
+import type { Shape } from "@shape/types"
 import { useGraph } from "@graph/useGraph";
 
 /**
@@ -78,11 +72,6 @@ export type Aggregator = SchemaItem[]
 export type UpdateAggregator = (aggregator: Aggregator) => Aggregator
 
 /**
- * @describes the event bus mappings for the useGraph composable
- */
-export type MappingsToEventBus<T> = Record<keyof T, any[]>
-
-/**
  * @describes something that takes an any[] our of a union of arrays
  */
 export type RemoveAnyArray<T extends any[]> = T extends ['!!!-@-NOT-A-TYPE-@-!!!'][] ? never : T
@@ -130,7 +119,10 @@ type BaseGraphTypes = 'node' | 'edge'
 type MarqueeGraphTypes = 'marquee-selection-box'
 type NodeAnchorGraphTypes = 'node-anchor' | 'link-preview'
 
-type SharedSchemaItemFields = {
+/**
+ * @describes a schema item that can be fed into the aggregator in order to be rendered on the canvas
+ */
+export type SchemaItem = {
   /**
    * unique identifier for the schema item
    */
@@ -146,44 +138,8 @@ type SharedSchemaItemFields = {
    * (items with a lower priority score will appear visually underneath those with a higher score)
    */
   priority: number,
+  /**
+   * the magic shape instance that will be rendered on the canvas
+   */
+  shape: Shape,
 }
-
-export type CircleSchemaItem = SharedSchemaItemFields & {
-  schemaType: 'circle',
-  schema: Circle,
-}
-
-export type LineSchemaItem = SharedSchemaItemFields & {
-  schemaType: 'line',
-  schema: Line,
-}
-
-export type SquareSchemaItem = SharedSchemaItemFields & {
-  schemaType: 'square',
-  schema: Square,
-}
-
-export type RectangleSchemaItem = SharedSchemaItemFields & {
-  schemaType: 'rect',
-  schema: Square,
-}
-
-export type ArrowSchemaItem = SharedSchemaItemFields & {
-  schemaType: 'arrow',
-  schema: Arrow,
-}
-
-export type ArrowUTurnSchemaItem = SharedSchemaItemFields & {
-  schemaType: 'uturn',
-  schema: UTurnArrow
-}
-
-/**
- * @describes a schema item that can be fed into the aggregator in order to be rendered on the canvas
- */
-export type SchemaItem = CircleSchemaItem |
-  LineSchemaItem |
-  SquareSchemaItem |
-  ArrowSchemaItem |
-  ArrowUTurnSchemaItem |
-  RectangleSchemaItem

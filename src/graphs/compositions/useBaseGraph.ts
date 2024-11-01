@@ -15,68 +15,25 @@ import type {
   KeyboardEventEntries,
   SchemaItem,
   GraphOptions,
-  MappingsToEventBus,
   Aggregator,
   UpdateAggregator
 } from '@graph/types'
 import {
-  generateSubscriber,
   generateId,
   prioritizeNode,
   getThemeResolver,
   getConnectedEdges,
 } from '@graph/helpers';
+import { generateSubscriber } from '@graph/events';
 import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
 import { themes } from '@graph/themes';
 import type { BaseGraphTheme } from '@graph/themes'
-import { getInitialThemeMap, type GraphTheme } from '@graph/themes/types';
-import { drawShape } from '@shape/draw';
-import { hitboxes } from '@shape/hitboxes';
+import { getInitialThemeMap } from '@graph/themes/types';
+import type { GraphTheme } from '@graph/themes/types';
 import { delta } from '@utils/deepDelta/delta';
-import type { PersistentGraphSettings } from './usePersistentGraph';
-import type { DeepPartial } from '@utils/types';
 import { clone } from '@utils/clone';
-
-export type BaseGraphEvents = {
-  /* graph dataflow events */
-  onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
-  onFocusChange: (
-    newGItemId: GNode['id'] | GEdge['id'] | undefined,
-    oldGItemId: GNode['id'] | GEdge['id'] | undefined
-  ) => void;
-  onNodeAdded: (node: GNode) => void;
-  onNodeRemoved: (node: GNode) => void;
-
-  onEdgeAdded: (edge: GEdge) => void;
-  onEdgeRemoved: (edge: GEdge) => void;
-
-  onEdgeWeightChange: (edge: GEdge) => void;
-
-  /*
-    @description - this event is called when the graph needs to be redrawn
-    WARNING: items drawn to the canvas using ctx won't be tied to the graph event architecture.
-    Use updateAggregator if you need drawn item to integrate with graph apis
-  */
-  onRepaint: (ctx: CanvasRenderingContext2D, repaintId: string) => void;
-  onNodeHoverChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
-  onGraphReset: () => void;
-
-  /* canvas dom events */
-  onClick: (ev: MouseEvent) => void;
-  onMouseDown: (ev: MouseEvent) => void;
-  onMouseUp: (ev: MouseEvent) => void;
-  onMouseMove: (ev: MouseEvent) => void;
-  onDblClick: (ev: MouseEvent) => void;
-  onContextMenu: (ev: MouseEvent) => void;
-
-  /* global dom events */
-  onKeydown: (ev: KeyboardEvent) => void;
-
-  /* reactivity events */
-  onThemeChange: (diff: DeepPartial<GraphTheme>) => void;
-  onSettingsChange: (diff: DeepPartial<PersistentGraphSettings>) => void;
-}
+import { getInitialEventBus } from '@graph/events';
 
 export type BaseGraphSettings = {
   /**
@@ -127,27 +84,7 @@ export const useBaseGraph = (
     ...options.settings,
   })
 
-  const eventBus: MappingsToEventBus<BaseGraphEvents> = {
-    onStructureChange: [],
-    onFocusChange: [],
-    onNodeAdded: [],
-    onNodeRemoved: [],
-    onEdgeAdded: [],
-    onEdgeRemoved: [],
-    onEdgeWeightChange: [],
-    onRepaint: [],
-    onNodeHoverChange: [],
-    onGraphReset: [],
-    onClick: [],
-    onMouseDown: [],
-    onMouseUp: [],
-    onMouseMove: [],
-    onDblClick: [],
-    onContextMenu: [],
-    onKeydown: [],
-    onThemeChange: [],
-    onSettingsChange: [],
-  }
+  const eventBus = getInitialEventBus()
 
   const { subscribe, unsubscribe } = generateSubscriber(eventBus)
 
@@ -186,31 +123,26 @@ export const useBaseGraph = (
 
   updateAggregator.push((aggregator) => {
 
-    const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(edge, {
-        edges,
-        getNode,
-        getTheme,
-        settings,
-      })
-      if (!schema) return
-      return {
-        ...schema,
-        priority: i * 10
-      }
-    }).filter((item) => item && item.schema) as SchemaItem[]
+    const edgeOptions = {
+      edges,
+      getNode,
+      getTheme,
+      settings,
+    }
 
-    const nodeSchemaItems = nodes.value.map((node, i) => {
-      const schema = getNodeSchematic(node, getTheme)
-      if (!schema) return
-      return {
-        ...schema,
-        priority: (i * 10) + 1000,
-      }
-    }).filter((item) => item && item.schema) as SchemaItem[]
+    const edgeSchemaItems = edges.value
+      .map((edge) => getEdgeSchematic(edge, edgeOptions))
+      .filter(Boolean)
+      .map((item, i) => ({ ...item, priority: i * 10 })) as SchemaItem[]
+
+    const nodeSchemaItems = nodes.value
+      .map((node) => getNodeSchematic(node, getTheme))
+      .filter(Boolean)
+      .map((item, i) => ({ ...item, priority: (i * 10) + 1000 })) as SchemaItem[]
 
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)
+
     return aggregator
   })
 
@@ -223,32 +155,7 @@ export const useBaseGraph = (
     const evaluateAggregator = updateAggregator.reduce<Aggregator>((acc, fn) => fn(acc), [])
     aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
 
-    const {
-      drawLine,
-      drawCircle,
-      drawSquare,
-      drawRectangle,
-      drawArrow,
-      drawUTurnArrow,
-    } = drawShape(ctx)
-
-    for (const item of aggregator.value) {
-      if (item.schemaType === 'circle') {
-        drawCircle(item.schema)
-      } else if (item.schemaType === 'line') {
-        drawLine(item.schema)
-      } else if (item.schemaType === 'square') {
-        drawSquare(item.schema)
-      } else if (item.schemaType === 'rect') {
-        drawRectangle(item.schema)
-      } else if (item.schemaType === 'arrow') {
-        drawArrow(item.schema)
-      } else if (item.schemaType === 'uturn') {
-        drawUTurnArrow(item.schema)
-      } else {
-        throw new Error('Unknown schema type')
-      }
-    }
+    for (const item of aggregator.value) item.shape.draw(ctx)
 
     eventBus.onRepaint.forEach(fn => fn(ctx, repaintId))
   }
@@ -333,42 +240,17 @@ export const useBaseGraph = (
   }
 
   const getDrawItemsByCoordinates = (x: number, y: number) => {
-    const point = { x, y }
-    const {
-      isInCircle,
-      isInLine,
-      isInSquare,
-      isInArrow,
-      isInUTurnArrow,
-      isInRectangle
-    } = hitboxes(point)
-
-    // TODO Make sure that this works with priority
-    return aggregator.value.filter(item => {
-      if (item.schemaType === 'circle') {
-        return isInCircle(item.schema)
-      } if (item.schemaType === 'line') {
-        return isInLine(item.schema)
-      } if (item.schemaType === 'square') {
-        return isInSquare(item.schema)
-      } if (item.schemaType === 'rect') {
-        return isInRectangle(item.schema)
-      } if (item.schemaType === 'arrow') {
-        return isInArrow(item.schema)
-      } if (item.schemaType === 'uturn') {
-        return isInUTurnArrow(item.schema)
-      } else {
-        throw new Error('Unknown schema type')
-      }
-    })
+    return aggregator.value
+      .sort((a, b) => a.priority - b.priority)
+      .filter(item => item.shape.hitbox({ x, y }))
   }
 
   /**
-    @param x - the x coordinate
-    @param y - the y coordinate
-    @returns the node that is at the given coordinates or undefined if no node is found or is covered by another non-node item
+    @param x - the x coord
+    @param y - the y coord
+    @returns the node at given coords or undefined if not there or obscured by another schema item
   */
-  const getNodeByCoordinates = (x: number, y: number): GNode | undefined => {
+  const getNodeByCoordinates = (x: number, y: number) => {
     const topItem = getDrawItemsByCoordinates(x, y).pop()
     if (!topItem) return
     if (topItem.graphType !== 'node') return

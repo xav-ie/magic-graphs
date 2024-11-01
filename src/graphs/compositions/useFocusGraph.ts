@@ -1,9 +1,17 @@
-import type { GEdge, GNode, SchemaItem } from "@graph/types";
-import { useBaseGraph, type BaseGraphOptions } from "./useBaseGraph";
-import { computed, onUnmounted, readonly, ref } from "vue";
+import {
+  ref,
+  computed,
+  onUnmounted,
+  readonly,
+} from "vue";
 import type { Ref } from "vue";
-import { getTextAreaLocation } from "@shape/draw/text";
-import { isInTextarea } from "@shape/hitboxes";
+import type {
+  GEdge,
+  GNode,
+  SchemaItem
+} from "@graph/types";
+import { useBaseGraph } from "@graph/compositions/useBaseGraph";
+import type { BaseGraphOptions } from "@graph/compositions/useBaseGraph";
 import { engageTextarea } from "@graph/textarea";
 import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
@@ -41,11 +49,22 @@ export const useFocusGraph = (
     focusedItemId.value = newId
   }
 
-  // function breaks with guard clauses!!!
   const handleFocusChange = (ev: MouseEvent) => {
     const topItem = graph.getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     const canFocus = topItem && FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)
     if (!canFocus) return setFocus(undefined)
+
+    setFocus(topItem.id)
+  }
+
+  const handleTextAreaFocus = (ev: MouseEvent) => {
+    const { offsetX: x, offsetY: y } = ev
+    const topItem = graph.getDrawItemsByCoordinates(x, y).pop()
+    if (!topItem) return
+
+    const inText = topItem.shape.textHitbox?.({ x, y })
+    // const textArea = topItem.shape.textArea
+    if (!inText) return
 
     const textInputHandler = (str: string) => {
       const edge = graph.getEdge(topItem.id)
@@ -57,33 +76,7 @@ export const useFocusGraph = (
       graph.eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
     }
 
-    const { schema, schemaType } = topItem
-
-    if ('textArea' in schema && schema.textArea?.editable ) {
-
-      if (schemaType === 'arrow' || schemaType === 'line') {
-
-        const textAreaLocationArrow = getTextAreaLocation.arrow(schema)
-        const textAreaLocationLine = getTextAreaLocation.line(schema)
-        const textAreaLocation = schemaType === 'arrow' ? textAreaLocationArrow : textAreaLocationLine
-
-        const isInTextAreaFns = isInTextarea({ x: ev.offsetX, y: ev.offsetY })
-        const textAreaSelected = schemaType === 'arrow' ? isInTextAreaFns.arrow(schema) : isInTextAreaFns.line(schema)
-        if (schema.textArea && textAreaSelected) {
-          engageTextarea({ ...schema.textArea, at: textAreaLocation }, textInputHandler)
-          return setFocus(undefined)
-        }
-      } else if (schemaType === 'uturn') {
-        const textAreaLocationUTurn = getTextAreaLocation.uTurn(schema)
-        const isInTextAreaFns = isInTextarea({ x: ev.offsetX, y: ev.offsetY })
-        const textAreaSelected = isInTextAreaFns.uTurn(schema)
-        if (schema.textArea && textAreaSelected) {
-          engageTextarea({ ...schema.textArea, at: textAreaLocationUTurn }, textInputHandler)
-          return setFocus(undefined)
-        }
-      }
-    }
-    setFocus(topItem.id)
+    setFocus(undefined)
   }
 
   const resetFocus = () => setFocus(undefined)
@@ -92,6 +85,7 @@ export const useFocusGraph = (
   graph.subscribe('onGraphReset', resetFocus)
   graph.subscribe('onMouseDown', handleFocusChange)
   graph.subscribe('onNodeAdded', setFocusToAddedNode)
+  graph.subscribe('onClick', handleTextAreaFocus)
 
   const focusedItem = computed<FocusedItem | undefined>(() => {
     if (!focusedItemId.value) return
