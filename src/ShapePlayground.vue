@@ -72,11 +72,6 @@
     if (e.code === "Space") draw();
   });
 
-  const debouncedDraw = debounce(draw, 500);
-
-  watch(heatmapActive, draw);
-  watch(heatmapResolution, debouncedDraw);
-
   setTimeout(draw, 100);
 </script>
 

@@ -7,8 +7,19 @@ import type { Circle } from "@shape/circle"
 import { getCtx } from "@utils/ctx"
 import { debounce } from "@utils/debounce"
 
+/**
+ * the color when the point is not hitting any shape
+ */
 const MISS_COLOR = colors.GREEN_500
+
+/**
+ * the color when the point is hitting a shape, but not an embedded text area
+ */
 const HIT_COLOR = colors.RED_500
+
+/**
+ * the color when the point is hitting a text area of a shape
+ */
 const TEXT_HIT_COLOR = colors.YELLOW_500
 
 /**
