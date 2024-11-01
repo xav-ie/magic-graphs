@@ -1,4 +1,9 @@
-import type { Coordinate, Stroke, Text, Shape } from "@shape/types"
+import type {
+  Coordinate,
+  Stroke,
+  Text,
+  Shape
+} from "@shape/types"
 import { drawCircleWithCtx } from "@shape/circle/draw";
 import { circleHitbox } from "./hitbox";
 import { generateId } from "@graph/helpers";
@@ -16,12 +21,20 @@ export const CIRCLE_DEFAULTS = {
 } as const
 
 export const circle = (options: Circle): Shape => {
-  const draw = drawCircleWithCtx(options);
+  const drawShape = drawCircleWithCtx(options);
   const hitbox = circleHitbox(options);
+
+  const draw = (ctx: CanvasRenderingContext2D) => {
+    drawShape(ctx);
+  }
+
   return {
     id: generateId(),
     name: 'circle',
+
     draw,
+    drawShape,
+
     hitbox
   }
 }

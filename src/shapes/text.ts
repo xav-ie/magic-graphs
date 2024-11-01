@@ -1,21 +1,30 @@
-import { drawShape } from "@shape/draw";
-import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS, type Coordinate, type TextArea, type TextAreaNoLocation } from "@shape/types"
+import {
+  TEXT_DEFAULTS,
+  TEXTAREA_DEFAULTS
+} from "@shape/types"
+import type {
+  Coordinate,
+  TextArea,
+  TextAreaNoLocation
+} from "@shape/types";
 import type { DeepRequired } from "@utils/types";
+import { rect } from "./rect";
 
 export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({
   width: textArea.text.fontSize * 2,
   height: textArea.text.fontSize * 2,
 });
 
-export const drawTextMatteWithTextArea = (textArea: DeepRequired<TextArea>) => (ctx: CanvasRenderingContext2D) => {
-  const { width, height } = getTextAreaDimension(textArea);
+export const drawTextMatteWithTextArea = (textArea: DeepRequired<TextArea>) => {
   const { at } = textArea;
-  drawShape(ctx).drawSquare({
+  const { width, height } = getTextAreaDimension(textArea);
+  const matte = rect({
     at,
     width,
     height,
     color: textArea.color,
   })
+  return (ctx: CanvasRenderingContext2D) => matte.draw(ctx);
 }
 
 export const drawTextWithTextArea = (textArea: DeepRequired<TextArea>) => (ctx: CanvasRenderingContext2D) => {

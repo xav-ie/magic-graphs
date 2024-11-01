@@ -6,7 +6,12 @@ import type {
 } from "@shape/types"
 import { drawUTurnWithCtx } from "./draw"
 import { uturnHitbox } from "./hitbox"
-import { drawTextAreaMatteOnUTurn, drawTextAreaOnUTurn, drawTextOnUTurn } from "./text"
+import {
+  drawTextAreaMatteOnUTurn,
+  drawTextAreaOnUTurn,
+  drawTextOnUTurn,
+  uturnTextHitbox
+} from "./text"
 
 export type UTurn = {
   spacing: number,

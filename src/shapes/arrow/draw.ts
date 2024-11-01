@@ -1,6 +1,6 @@
 import { drawLineWithCtx } from "@shape/line/draw";
 import { drawTriangleWithCtx } from "@shape/triangle/draw";
-import { ARROW_DEFAULTS} from ".";
+import { ARROW_DEFAULTS } from ".";
 import type { Arrow } from ".";
 
 export const drawArrowWithCtx = (options: Arrow) => {
@@ -39,8 +39,11 @@ export const drawArrowWithCtx = (options: Arrow) => {
 
   const shaft = {
     start: lineStart,
-    // make sure there is overlap with triangle when drawing (Issue #24)
-    end: { x: shaftEnd.x + Math.cos(angle), y: shaftEnd.y + Math.sin(angle) },
+    // TODO - make sure there is overlap with triangle when drawing (gh issue #24)
+    end: {
+      x: shaftEnd.x + Math.cos(angle),
+      y: shaftEnd.y + Math.sin(angle)
+    },
     width,
     color,
   }

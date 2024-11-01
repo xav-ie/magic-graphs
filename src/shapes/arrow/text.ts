@@ -4,7 +4,6 @@ import {
   getTextAreaDimension,
   getFullTextArea,
 } from "@shape/text";
-import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
 import type { Coordinate } from "@shape/types";
 import { rectHitbox } from "@shape/rect/hitbox";
 import { getTextAreaLocationOnLine } from "@shape/line/text";

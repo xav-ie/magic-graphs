@@ -1,4 +1,4 @@
-import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
+import { TEXT_DEFAULTS } from "@shape/types";
 import type { Coordinate } from "@shape/types";
 import type { Line } from "@shape/line";
 import {

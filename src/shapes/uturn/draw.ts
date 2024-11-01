@@ -1,7 +1,6 @@
 import { rotatePoint } from "@shape/helpers";
 import { drawTriangleWithCtx } from "@shape/triangle/draw";
 import { drawLineWithCtx } from "@shape/line/draw";
-import { drawTextArea } from "@shape/draw/text";
 import { UTURN_DEFAULTS } from ".";
 import type { UTurn } from ".";
 
@@ -73,7 +72,6 @@ export const drawUTurnWithCtx = (options: UTurn) => {
   });
 
   return (ctx: CanvasRenderingContext2D) => {
-
     drawLongShaft(ctx);
     drawHead(ctx);
     drawShortShaft(ctx);
@@ -84,7 +82,5 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     ctx.strokeStyle = color;
     ctx.stroke();
     ctx.closePath();
-
-    if (options.textArea) drawTextArea(ctx).uTurn(options);
   }
 }

@@ -1,4 +1,9 @@
-import type { Text, Stroke, Coordinate, Shape } from "@shape/types"
+import type {
+  Text,
+  Stroke,
+  Coordinate,
+  Shape
+} from "@shape/types"
 import { rectHitbox } from "./hitbox"
 import { drawRectWithCtx } from "./draw"
 import { generateId } from "@graph/helpers"
@@ -17,12 +22,21 @@ export const RECT_DEFAULTS = {
 } as const
 
 export const rect = (options: Rect): Shape => {
-  const draw = drawRectWithCtx(options)
+  const drawShape = drawRectWithCtx(options)
   const hitbox = rectHitbox(options)
+
+  const draw = (ctx: CanvasRenderingContext2D) => {
+    drawShape(ctx)
+  }
+
   return {
     id: generateId(),
     name: 'rect',
+
     draw,
+    drawShape,
+
+
     hitbox
   }
 }

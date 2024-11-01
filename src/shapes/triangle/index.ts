@@ -15,12 +15,20 @@ export const TRIANGLE_DEFAULTS = {
 } as const
 
 export const triangle = (options: Triangle): Shape => {
-  const draw = drawTriangleWithCtx(options)
+  const drawShape = drawTriangleWithCtx(options)
   const hitbox = triangleHitbox(options)
+
+  const draw = (ctx: CanvasRenderingContext2D) => {
+    drawShape(ctx)
+  }
+
   return {
     id: generateId(),
     name: 'triangle',
+
     draw,
+    drawShape,
+
     hitbox,
   }
 }

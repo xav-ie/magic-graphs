@@ -1,7 +1,4 @@
-import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
 import type { Coordinate } from "@shape/types";
-import { rectHitbox } from "@shape/rect/hitbox";
-import { getTextAreaDimension, getTextAreaLocation } from "@shape/text";
 import { LINE_DEFAULTS } from ".";
 import type { Line } from ".";
 
