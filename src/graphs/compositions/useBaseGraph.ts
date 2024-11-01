@@ -123,28 +123,22 @@ export const useBaseGraph = (
 
   updateAggregator.push((aggregator) => {
 
-    const edgeSchemaItems = edges.value.map((edge, i) => {
-      const schema = getEdgeSchematic(edge, {
-        edges,
-        getNode,
-        getTheme,
-        settings,
-      })
-      if (!schema) return
-      return {
-        ...schema,
-        priority: i * 10
-      }
-    }).filter((item) => item && item.schema) as SchemaItem[]
+    const edgeOptions = {
+      edges,
+      getNode,
+      getTheme,
+      settings,
+    }
 
-    const nodeSchemaItems = nodes.value.map((node, i) => {
-      const schema = getNodeSchematic(node, getTheme)
-      if (!schema) return
-      return {
-        ...schema,
-        priority: (i * 10) + 1000,
-      }
-    }).filter((item) => item && item.schema) as SchemaItem[]
+    const edgeSchemaItems = edges.value
+      .map((edge) => getEdgeSchematic(edge, edgeOptions))
+      .filter(Boolean)
+      .map((item, i) => ({ ...item, priority: i * 10 })) as SchemaItem[]
+
+    const nodeSchemaItems = nodes.value
+      .map((node) => getNodeSchematic(node, getTheme))
+      .filter(Boolean)
+      .map((item, i) => ({ ...item, priority: (i * 10) + 1000 })) as SchemaItem[]
 
     aggregator.push(...edgeSchemaItems)
     aggregator.push(...nodeSchemaItems)
