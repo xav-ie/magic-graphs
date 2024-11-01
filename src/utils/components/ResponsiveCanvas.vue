@@ -2,7 +2,7 @@
   import { ref, useAttrs, watch, computed, onUnmounted } from "vue";
   import { useElementSize } from "@vueuse/core";
   import { debounce } from "@utils/debounce";
-  import { shapes } from "@shapes";
+  import { line } from "@shapes";
   import type { Color } from "@colors";
 
   const canvasWidth = ref(0);
@@ -100,23 +100,34 @@
         const len = 10;
         const width = 2;
         const start = { x, y };
-        const end = { x: x, y: y + len };
-        drawLineWithCtx(ctx)({
+        const end = {
+          x,
+          y: y + len
+        };
+
+        line({
           start,
           end,
-          color: props.patternColor,
           width,
-        });
+          color: props.patternColor,
+        }).draw(ctx);
 
-        const start2 = { x: x - len / 2, y: y + len / 2 };
-        const end2 = { x: x + len / 2, y: y + len / 2 };
+        const start2 = {
+          x: x - len / 2,
+          y: y + len / 2
+        };
 
-        drawLineWithCtx(ctx)({
+        const end2 = {
+          x: x + len / 2,
+          y: y + len / 2
+        };
+
+        line({
           start: start2,
           end: end2,
           color: props.patternColor,
           width,
-        });
+        }).draw(ctx);
       }
     }
   }, 250);
