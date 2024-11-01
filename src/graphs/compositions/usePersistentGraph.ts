@@ -25,20 +25,20 @@ export type PersistSettings = {
   storageKey: string,
   /**
    * whether to track theme changes
-   * @default true
+   * @default false
    */
   trackTheme: boolean,
   /**
    * whether to track settings changes
-   * @default true
+   * @default false
    */
   trackSettings: boolean,
 }
 
 export const defaultPersistSettings = {
   storageKey: 'graph',
-  trackTheme: true,
-  trackSettings: true,
+  trackTheme: false,
+  trackSettings: false,
 } as const
 
 export type PersistentGraphSettings = UserEditableGraphSettings & {

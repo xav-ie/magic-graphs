@@ -18,7 +18,9 @@
     (e: "update:modelValue", value: AdjacencyList): void;
   }>();
 
-  const graph = useGraph(graphElement);
+  const graph = useGraph(graphElement, {
+    theme: { nodeShape: 'square' }
+  });
 
   // const tutorialControls = useBasicsTutorial(graph);
 
