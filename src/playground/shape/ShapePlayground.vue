@@ -5,7 +5,6 @@
   import colors from "@colors";
   import { shapes } from "@shapes";
   import type { Shape } from "@shape/types";
-
   import { getCtx } from "@utils/ctx";
   import ShapePlaygroundToolbar from "./Toolbar.vue";
 
