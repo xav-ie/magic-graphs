@@ -44,7 +44,7 @@ export const useDraggableGraph = (
     onNodeDrop: new Set(),
   })
 
-  const { subscribe, unsubscribe } = generateSubscriber(eventBus)
+  const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
 
   const nodeBeingDragged = ref<GNode | undefined>()
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | undefined>()
@@ -56,14 +56,14 @@ export const useDraggableGraph = (
     const node = graph.getNodeByCoordinates(offsetX, offsetY);
     if (!node) return
     nodeBeingDragged.value = node;
-    eventBus.onNodeDragStart.forEach(fn => fn(node))
+    emit('onNodeDragStart', node)
   }
 
   const drop = () => {
     if (!nodeBeingDragged.value) return
-    eventBus.onNodeDrop.forEach(fn => fn(nodeBeingDragged.value))
-    setTimeout(graph.repaint('draggable-graph/drop'), 10)
+    emit('onNodeDrop', nodeBeingDragged.value)
     nodeBeingDragged.value = undefined;
+    setTimeout(graph.repaint('draggable-graph/drop'), 10)
   }
 
   const drag = (ev: MouseEvent) => {
@@ -96,6 +96,7 @@ export const useDraggableGraph = (
     eventBus,
     subscribe,
     unsubscribe,
+    emit,
 
     settings,
   }

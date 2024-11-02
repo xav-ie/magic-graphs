@@ -86,36 +86,22 @@ export const useBaseGraph = (
 
   const eventBus = getInitialEventBus()
 
-  const { subscribe, unsubscribe } = generateSubscriber(eventBus)
+  const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
 
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
 
   const mouseEvents: Partial<MouseEventMap> = {
-    click: (ev: MouseEvent) => {
-      eventBus.onClick.forEach(fn => fn(ev))
-    },
-    mousedown: (ev: MouseEvent) => {
-      eventBus.onMouseDown.forEach(fn => fn(ev))
-    },
-    mouseup: (ev: MouseEvent) => {
-      eventBus.onMouseUp.forEach(fn => fn(ev))
-    },
-    mousemove: (ev: MouseEvent) => {
-      eventBus.onMouseMove.forEach(fn => fn(ev))
-    },
-    dblclick: (ev: MouseEvent) => {
-      eventBus.onDblClick.forEach(fn => fn(ev))
-    },
-    contextmenu: (ev: MouseEvent) => {
-      eventBus.onContextMenu.forEach(fn => fn(ev))
-    }
+    click: (ev: MouseEvent) => emit('onClick', ev),
+    mousedown: (ev: MouseEvent) => emit('onMouseDown', ev),
+    mouseup: (ev: MouseEvent) => emit('onMouseUp', ev),
+    mousemove: (ev: MouseEvent) => emit('onMouseMove', ev),
+    dblclick: (ev: MouseEvent) => emit('onDblClick', ev),
+    contextmenu: (ev: MouseEvent) => emit('onContextMenu', ev),
   }
 
   const keyboardEvents: Partial<KeyboardEventMap> = {
-    keydown: (ev: KeyboardEvent) => {
-      eventBus.onKeydown.forEach(fn => fn(ev))
-    }
+    keydown: (ev: KeyboardEvent) => emit('onKeydown', ev),
   }
 
   const aggregator = ref<Aggregator>([])
@@ -156,8 +142,7 @@ export const useBaseGraph = (
     aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
 
     for (const item of aggregator.value) item.shape.draw(ctx)
-
-    eventBus.onRepaint.forEach(fn => fn(ctx, repaintId))
+    emit('onRepaint', ctx, repaintId)
   }
 
   // subscribe('onRepaint', (_, repaintId) => {
@@ -224,8 +209,8 @@ export const useBaseGraph = (
       y: node.y,
     }
     nodes.value.push(newNode)
-    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-    eventBus.onNodeAdded.forEach(fn => fn(newNode))
+    emit('onStructureChange', nodes.value, edges.value)
+    emit('onNodeAdded', newNode)
     repaint('base-graph/add-node')()
     return newNode
   }
@@ -266,8 +251,8 @@ export const useBaseGraph = (
 
     nodes.value = nodes.value.filter(n => n.id !== node.id)
 
-    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
-    eventBus.onNodeRemoved.forEach(fn => fn(node))
+    emit('onStructureChange', nodes.value, edges.value)
+    emit('onNodeRemoved', node)
 
     setTimeout(repaint('base-graph/remove-node'), 5)
   }
@@ -298,8 +283,8 @@ export const useBaseGraph = (
 
     edges.value.push(newEdge)
 
-    eventBus.onEdgeAdded.forEach(fn => fn(newEdge))
-    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    emit('onEdgeAdded', newEdge)
+    emit('onStructureChange', nodes.value, edges.value)
     repaint('base-graph/add-edge')()
     return newEdge
   }
@@ -308,17 +293,18 @@ export const useBaseGraph = (
     const edge = edges.value.find(edge => edge.id === edgeId)
     if (!edge) return
     edges.value = edges.value.filter(e => e.id !== edge.id)
-    eventBus.onEdgeRemoved.forEach(fn => fn(edge))
-    eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value))
+    emit('onEdgeRemoved', edge)
+    emit('onStructureChange', nodes.value, edges.value)
     repaint('base-graph/remove-edge')()
     return edge
   }
 
   let currHoveredNode: GNode | undefined = undefined
   subscribe('onMouseMove', (ev) => {
-    const node = getNodeByCoordinates(ev.offsetX, ev.offsetY)
+    const { offsetX: x, offsetY: y } = ev
+    const node = getNodeByCoordinates(x, y)
     if (node === currHoveredNode) return
-    eventBus.onNodeHoverChange.forEach(fn => fn(node, currHoveredNode))
+    emit('onNodeHoverChange', node, currHoveredNode)
     currHoveredNode = node
   })
 
@@ -333,17 +319,17 @@ export const useBaseGraph = (
   const reset = () => {
     nodes.value = []
     edges.value = []
-    eventBus.onGraphReset.forEach(fn => fn())
+    emit('onGraphReset')
   }
 
-  subscribe('onGraphReset', () => eventBus.onStructureChange.forEach(fn => fn(nodes.value, edges.value)))
+  subscribe('onGraphReset', () => emit('onStructureChange', nodes.value, edges.value))
 
   const activeTheme = ref(clone(theme.value))
   watch(theme, (newTheme) => {
     const themeDiff = delta(activeTheme.value, theme.value)
     if (!themeDiff) return
     activeTheme.value = clone(newTheme)
-    eventBus.onThemeChange.forEach(fn => fn(themeDiff))
+    emit('onThemeChange', themeDiff)
   }, { deep: true })
 
   const activeSettings = ref(clone(settings.value))
@@ -351,7 +337,7 @@ export const useBaseGraph = (
     const settingsDiff = delta(activeSettings.value, newSettings)
     if (!settingsDiff) return
     activeSettings.value = clone(settings.value)
-    eventBus.onSettingsChange.forEach(fn => fn(settingsDiff))
+    emit('onSettingsChange', settingsDiff)
   }, { deep: true })
 
   subscribe('onThemeChange', () => repaint('base-graph/on-theme-change')())
@@ -379,6 +365,8 @@ export const useBaseGraph = (
     eventBus,
     subscribe,
     unsubscribe,
+    emit,
+
     updateAggregator,
     aggregator,
 

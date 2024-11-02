@@ -169,7 +169,7 @@ export const useNodeAnchorGraph = (
     onNodeAnchorDrop: new Set(),
   })
 
-  const { subscribe, unsubscribe } = generateSubscriber(eventBus)
+  const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
 
   const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
@@ -314,7 +314,7 @@ export const useNodeAnchorGraph = (
     const anchor = getAnchor(ev.offsetX, ev.offsetY)
     if (!anchor) return
     activeAnchor.value = anchor
-    eventBus.onNodeAnchorDragStart.forEach(fn => fn(parentNode.value, anchor))
+    emit('onNodeAnchorDragStart', parentNode.value, anchor)
   }
 
   subscribe('onMouseMove', updateParentNode)
@@ -340,7 +340,8 @@ export const useNodeAnchorGraph = (
    */
   const dropAnchor = () => {
     if (!activeAnchor.value) return
-    eventBus.onNodeAnchorDrop.forEach(fn => fn(parentNode.value, activeAnchor.value))
+    else if (!parentNode.value) throw new Error('active anchor without parent node')
+    emit('onNodeAnchorDrop', parentNode.value, activeAnchor.value)
     deactivateAnchors()
   }
 
@@ -409,6 +410,7 @@ export const useNodeAnchorGraph = (
     eventBus,
     subscribe,
     unsubscribe,
+    emit,
 
     theme,
     settings,

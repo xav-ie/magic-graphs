@@ -138,10 +138,6 @@ export const usePersistentGraph = (
     graph.nodes.value = nodeStorage.get()
     graph.edges.value = edgeStorage.get()
 
-    // wait for the next microtask to ensure caller of useGraph has a chance to sub to onStructureChange
-    queueMicrotask(() => {
-      graph.eventBus.onStructureChange.forEach(fn => fn(graph.nodes.value, graph.edges.value))
-    })
 
     if (persistSettings.value?.trackTheme) {
       graph.theme.value = Object.assign(graph.theme.value, themeStorage.get())
@@ -150,6 +146,9 @@ export const usePersistentGraph = (
     if (persistSettings.value?.trackSettings) {
       settings.value = Object.assign(settings.value, settingsStorage.get())
     }
+
+    // wait for the next microtask to ensure caller of useGraph has a chance to sub to onStructureChange
+    queueMicrotask(() => graph.emit('onStructureChange', graph.nodes.value, graph.edges.value))
 
     setTimeout(() => graph.repaint('persistent-graph/load')(), 10)
   }

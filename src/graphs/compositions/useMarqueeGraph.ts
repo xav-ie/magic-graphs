@@ -51,6 +51,7 @@ export const useMarqueeGraph = (
 
   const disableNodeCreationNextTick = () => {
     const callbacks = graph.eventBus['onDblClick']
+    console.log('callbacks', callbacks)
     // TODO - find a way to implement this with a sets eventBus!
     // const nodeCreationFn = callbacks.find((fn) => fn.name === 'handleNodeCreation')
     // if (nodeCreationFn) {

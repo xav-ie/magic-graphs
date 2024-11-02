@@ -44,7 +44,7 @@ export const useFocusGraph = (
 
   const setFocus = (newId: MaybeId) => {
     if (focusedItemId.value === newId) return
-    graph.eventBus.onFocusChange.forEach(fn => fn(newId, focusedItemId.value))
+    graph.emit('onFocusChange', newId, focusedItemId.value)
     focusedItemId.value = newId
   }
 
