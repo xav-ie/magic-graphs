@@ -155,7 +155,7 @@ export const useBaseGraph = (
     const evaluateAggregator = updateAggregator.reduce<Aggregator>((acc, fn) => fn(acc), [])
     aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
 
-    for (const item of aggregator.value) item.shape.drawShape(ctx)
+    for (const item of aggregator.value) item.shape.draw(ctx)
 
     eventBus.onRepaint.forEach(fn => fn(ctx, repaintId))
   }

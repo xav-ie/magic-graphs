@@ -1,4 +1,4 @@
-import { toRaw, type MaybeRef } from "vue";
+import type { MaybeRef } from "vue";
 
 /**
  * pulls ctx from a canvas, throws if not found

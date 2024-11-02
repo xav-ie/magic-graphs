@@ -75,7 +75,7 @@ export const getEdgeSchematic = (
   const edgeTextFontWeight = graph.getTheme('edgeTextFontWeight', edge)
 
   const textAreaOnEdge = {
-    color: 'rgb(0, 0, 0)',
+    color: graphBgColor,
     editable: graph.settings.value.edgeLabelsEditable,
     text: {
       content: edge.weight.toString(),
@@ -89,7 +89,7 @@ export const getEdgeSchematic = (
   const textArea = displayEdgeLabels ? textAreaOnEdge : undefined
 
   const upDistance = edgeWidth * 8
-  const downDistance = upDistance * 0.35
+  const downDistance = upDistance * 0.5
 
   if (isSelfDirecting) {
     const shape = uturn({
