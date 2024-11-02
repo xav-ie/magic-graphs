@@ -130,6 +130,8 @@ export const useCollaborativeGraph = (
     socket.emit('collaboratorJoined', me)
   }, 1000)
 
+  const collaboratorMoveRepaint = graph.repaint('collaborative-graph/collaborator-mouse-move')
+
   graph.subscribe('onMouseMove', (ev) => {
     const { offsetX, offsetY } = ev
     me.mousePosition = { x: offsetX, y: offsetY }
@@ -137,6 +139,14 @@ export const useCollaborativeGraph = (
       id: me.id,
       mousePosition: me.mousePosition
     })
+    collaboratorMoveRepaint()
+  })
+
+  socket.on('collaboratorMoved', (collaboratorMove) => {
+    const movedCollaborator = collaborators.value.get(collaboratorMove.id)
+    if (!movedCollaborator) throw new Error('moving collaborator not found')
+    movedCollaborator.mousePosition = collaboratorMove.mousePosition
+    collaboratorMoveRepaint()
   })
 
   return graph

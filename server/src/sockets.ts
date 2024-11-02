@@ -28,6 +28,14 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('edgeRemoved', edge)
   })
 
+  socket.on('collaboratorJoined', (collaborator) => {
+    socket.broadcast.emit('collaboratorJoined', collaborator)
+  })
+
+  socket.on('collaboratorMoved', (collaboratorMove) => {
+    socket.broadcast.emit('collaboratorMoved', collaboratorMove)
+  })
+
   socket.on('disconnect', () => {
     console.log('User disconnected')
   })
