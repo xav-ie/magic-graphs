@@ -1,4 +1,5 @@
-import { ref, type Ref } from "vue";
+import { ref } from "vue";
+import type { Ref } from "vue";
 import type { UserEditableGraphOptions } from "./useUserEditableGraph";
 import { usePersistentGraph } from "./usePersistentGraph";
 import { io, Socket } from "socket.io-client";
