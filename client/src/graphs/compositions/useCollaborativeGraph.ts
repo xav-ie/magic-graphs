@@ -12,6 +12,8 @@ const getSocketURL = () => {
 interface GraphEvents {
   nodeAdded: (node: GNode) => void
   nodeRemoved: (nodeId: GNode['id']) => void
+  nodeMoved: (node: GNode) => void
+
   edgeAdded: (edge: GEdge) => void
   edgeRemoved: (edgeId: GEdge['id']) => void
 }
@@ -37,7 +39,7 @@ export const useCollaborativeGraph = (
   })
 
   socket.on('nodeAdded', (node) => {
-    graph.addNode(node, { broadcast: false })
+    graph.addNode(node, { broadcast: false, focus: false })
   })
 
   graph.subscribe('onNodeRemoved', (node, { broadcast }) => {
@@ -49,13 +51,22 @@ export const useCollaborativeGraph = (
     graph.removeNode(nodeId, { broadcast: false })
   })
 
+  graph.subscribe('onNodeMoved', (node, { broadcast }) => {
+    if (!broadcast) return
+    socket.emit('nodeMoved', node)
+  })
+
+  socket.on('nodeMoved', (node) => {
+    graph.moveNode(node.id, node.x, node.y, { broadcast: false })
+  })
+
   graph.subscribe('onEdgeAdded', (node, { broadcast }) => {
     if (!broadcast) return
     socket.emit('edgeAdded', node)
   })
 
   socket.on('edgeAdded', (node) => {
-    graph.addEdge(node, { broadcast: false })
+    graph.addEdge(node, { broadcast: false, focus: false })
   })
 
   graph.subscribe('onEdgeRemoved', (edge, { broadcast }) => {

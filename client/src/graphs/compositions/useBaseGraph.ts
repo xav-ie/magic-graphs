@@ -40,12 +40,14 @@ import {
   REMOVE_NODE_OPTIONS_DEFAULTS,
   ADD_EDGE_OPTIONS_DEFAULTS,
   REMOVE_EDGE_OPTIONS_DEFAULTS,
+  MOVE_NODE_OPTIONS_DEFAULTS,
 } from '@graph/baseGraphAPIs';
 import type {
   AddNodeOptions,
   RemoveNodeOptions,
   AddEdgeOptions,
   RemoveEdgeOptions,
+  MoveNodeOptions,
 } from '@graph/baseGraphAPIs';
 import type { PartiallyPartial } from '@utils/types';
 
@@ -227,11 +229,23 @@ export const useBaseGraph = (
   }
 
   const repaintMoveNode = repaint('base-graph/move-node')
-  const moveNode = (id: GNode['id'], x: number, y: number) => {
+  const moveNode = (
+    id: GNode['id'],
+    x: number,
+    y: number,
+    options: Partial<MoveNodeOptions> = {}
+  ) => {
     const node = getNode(id)
-    if (!node) return
+    if (!node) throw new Error('tried to move node that does not exist')
+
+    const fullOptions = {
+      ...MOVE_NODE_OPTIONS_DEFAULTS,
+      ...options
+    }
+
     node.x = x
     node.y = y
+    emit('onNodeMoved', node, fullOptions)
     repaintMoveNode()
   }
 

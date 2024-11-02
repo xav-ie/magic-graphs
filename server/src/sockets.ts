@@ -4,6 +4,8 @@ import type { GEdge, GNode } from './graphTypes'
 interface GraphEvents {
   nodeAdded: (node: GNode) => void
   nodeRemoved: (node: GNode['id']) => void
+  nodeMoved: (node: GNode) => void
+
   edgeAdded: (edge: GEdge) => void
   edgeRemoved: (edge: GEdge['id']) => void
 }
@@ -16,19 +18,23 @@ const io = new Server<GraphEvents, GraphEvents, {}, {}>({
 
 io.on('connection', (socket) => {
   socket.on('nodeAdded', (node) => {
-    io.emit('nodeAdded', node)
+    socket.broadcast.emit('nodeAdded', node)
   })
 
   socket.on('nodeRemoved', (node) => {
-    io.emit('nodeRemoved', node)
+    socket.broadcast.emit('nodeRemoved', node)
+  })
+
+  socket.on('nodeMoved', (node) => {
+    socket.broadcast.emit('nodeMoved', node)
   })
 
   socket.on('edgeAdded', (edge) => {
-    io.emit('edgeAdded', edge)
+    socket.broadcast.emit('edgeAdded', edge)
   })
 
   socket.on('edgeRemoved', (edge) => {
-    io.emit('edgeRemoved', edge)
+    socket.broadcast.emit('edgeRemoved', edge)
   })
 
   socket.on('disconnect', () => {

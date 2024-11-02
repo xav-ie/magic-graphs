@@ -3,6 +3,7 @@ import type { PersistentGraphSettings } from "@graph/compositions/usePersistentG
 import type {
   AddNodeOptions,
   RemoveNodeOptions,
+  MoveNodeOptions,
   AddEdgeOptions,
   RemoveEdgeOptions,
 } from "@graph/baseGraphAPIs";
@@ -13,8 +14,10 @@ export type BaseGraphEvents = {
   /* graph dataflow events */
   onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
   onFocusChange: (newItemId: string | undefined, oldItemId: string | undefined) => void;
+
   onNodeAdded: (node: GNode, options: AddNodeOptions) => void;
   onNodeRemoved: (node: GNode, options: RemoveNodeOptions) => void;
+  onNodeMoved: (node: GNode, options: MoveNodeOptions) => void;
 
   onEdgeAdded: (edge: GEdge, options: AddEdgeOptions) => void;
   onEdgeRemoved: (edge: GEdge, options: RemoveEdgeOptions) => void;
@@ -87,21 +90,28 @@ export type BaseGraphEmitter = Emitter<BaseGraphEvents>;
 export const getInitialEventBus = () => ({
   onStructureChange: new Set(),
   onFocusChange: new Set(),
+
   onNodeAdded: new Set(),
   onNodeRemoved: new Set(),
+  onNodeMoved: new Set(),
+
   onEdgeAdded: new Set(),
   onEdgeRemoved: new Set(),
   onEdgeWeightChange: new Set(),
+
   onRepaint: new Set(),
   onNodeHoverChange: new Set(),
   onGraphReset: new Set(),
+
   onClick: new Set(),
   onMouseDown: new Set(),
   onMouseUp: new Set(),
   onMouseMove: new Set(),
   onDblClick: new Set(),
   onContextMenu: new Set(),
+
   onKeydown: new Set(),
+
   onThemeChange: new Set(),
   onSettingsChange: new Set(),
 } as MappingsToEventBus<BaseGraphEvents>)

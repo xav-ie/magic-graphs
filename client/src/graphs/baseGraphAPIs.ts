@@ -48,3 +48,9 @@ export type RemoveEdgeOptions = BroadcastOption
 export const REMOVE_EDGE_OPTIONS_DEFAULTS: RemoveEdgeOptions = {
   broadcast: true,
 }
+
+export type MoveNodeOptions = BroadcastOption
+
+export const MOVE_NODE_OPTIONS_DEFAULTS: MoveNodeOptions = {
+  broadcast: true,
+}
