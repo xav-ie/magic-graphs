@@ -8,6 +8,9 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
+  build: {
+    outDir: '../server/public'
+  },
   resolve: {
     alias: {
       '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),

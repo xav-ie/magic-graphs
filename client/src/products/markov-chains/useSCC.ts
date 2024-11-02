@@ -1,6 +1,6 @@
 import type { MaybeRef } from "vue";
-import { toRef, computed, watch } from "vue";
-import type { AdjacencyList } from "@/graphConverters";
+import { toRef, computed } from "vue";
+import type { AdjacencyList } from "@graph/converters";
 import { getStronglyConnectedComponents } from "./tarjansSCC";
 import {
   adjListToAdjMap,

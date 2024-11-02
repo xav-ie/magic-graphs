@@ -1,10 +1,11 @@
-import type { AdjacencyList } from '@/graphConverters';
+import type { AdjacencyList } from '@graph/converters';
 
 export type AdjacencyMap = Map<number, number[]>;
 
 export const adjListToAdjMap = (adjList: AdjacencyList) => {
   const adjMap = new Map<number, number[]>();
   for (const [node, neighbors] of Object.entries(adjList)) {
+    // @ts-ignore this implementation must be revisited
     adjMap.set(Number(node), neighbors);
   }
   return adjMap;
