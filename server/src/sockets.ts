@@ -1,7 +1,6 @@
 import { Server } from 'socket.io'
 import type { GraphEvents } from './graphTypes'
 import { createServer } from 'http'
-import { LOCALHOST_PORT } from './constants'
 
 export const sockets = (httpServer: ReturnType<typeof createServer>) => {
   const io = new Server<GraphEvents, GraphEvents, {}, {}>(httpServer, {
@@ -50,6 +49,3 @@ export const sockets = (httpServer: ReturnType<typeof createServer>) => {
 
   return io
 }
-
-// io.listen(PORT)
-// console.log(`Sockets listening on port ${PORT}`)
