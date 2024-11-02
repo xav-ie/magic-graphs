@@ -9,11 +9,11 @@ import {
   lineTextHitbox,
   drawTextAreaOnLine,
   drawTextAreaMatteOnLine,
-  drawTextOnLine
+  drawTextOnLine,
+  getTextAreaLocationOnLine
 } from "./text";
 import { generateId } from "@graph/helpers";
 import { getFullTextArea } from "@shape/text";
-import { getTextAreaLocationOnArrow } from "@shape/arrow/text";
 import { engageTextarea } from "@shape/textarea";
 
 export type Line = {
@@ -54,7 +54,7 @@ export const line = (options: Line): Shape => {
 
   const activateTextArea = (handler: (str: string) => void) => {
     if (!options.textArea) return;
-    const location = getTextAreaLocationOnArrow(options);
+    const location = getTextAreaLocationOnLine(options);
     const fullTextArea = getFullTextArea(options.textArea, location);
     engageTextarea(fullTextArea, handler);
   }

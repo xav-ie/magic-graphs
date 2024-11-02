@@ -23,7 +23,7 @@
   );
 
   const fn = () => {
-    items.value[1].activateTextArea?.((str) => {
+    items.value[2].activateTextArea?.((str) => {
       console.log('value', str)
     })
   }

@@ -5,6 +5,41 @@
 export type Color = string;
 
 /**
+ * adjust a color by a certain amount - the hex color hex format
+ *
+ * @param color the hexadecimal color to darken
+ * @param amount the amount to darken the color by
+ * @returns the darkened color
+ * @example darkenHex('#ff0000', 20) // lightens the color by 20 (out of 255)
+ * @example darkenHex('#ff0000', -20) // darkens the color by 20 (out of 255)
+ */
+export const adjustHex = (color: Color, amount: number): Color => {
+  const colorInt = parseInt(color.slice(1), 16);
+
+  const rgb = [
+    (colorInt >> 16) + amount,
+    (colorInt >> 8 & 0x00FF) + amount,
+    (colorInt & 0x0000FF) + amount,
+  ];
+
+  const colorStr = rgb
+    .map((v) => Math.min(Math.max(v, 0), 255)
+    .toString(16)
+    .padStart(2, '0'))
+    .join('');
+
+  return `#${colorStr}`;
+}
+
+export const darkenHex = (color: Color, amount: number): Color => {
+  return adjustHex(color, -amount);
+}
+
+export const lightenHex = (color: Color, amount: number): Color => {
+  return adjustHex(color, amount);
+}
+
+/**
  * all tailwind gray colors
  */
 export const GRAY_50 = '#f9fafb';

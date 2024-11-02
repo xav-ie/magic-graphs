@@ -49,6 +49,7 @@
         spacing: 20,
         textArea: {
           color: colors.PURPLE_500,
+          activeColor: colors.PURPLE_600,
           text: {
             content: "5",
             color: colors.WHITE,
@@ -57,6 +58,24 @@
         },
       })
     );
+
+    const lineTest = shapes.line({
+      start: { x: 100, y: 100 },
+      end: { x: 600, y: 900 },
+      color: colors.GRAY_900,
+      width: 10,
+      textArea: {
+        color: colors.PURPLE_500,
+        activeColor: colors.PURPLE_600,
+        text: {
+          content: "5",
+          color: colors.WHITE,
+          fontSize: 20,
+        },
+      },
+    })
+
+    items.value.push(lineTest);
 
     items.value.push(
       square({
