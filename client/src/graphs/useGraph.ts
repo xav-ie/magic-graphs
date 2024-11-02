@@ -8,14 +8,14 @@
 import type { Ref } from 'vue'
 import { themes } from '@graph/themes'
 import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
-import { usePersistentGraph } from '@graph/compositions/usePersistentGraph'
 import type { PersistentGraphOptions } from '@graph/compositions/usePersistentGraph'
+import { useCollaborativeGraph } from './compositions/useCollaborativeGraph'
 
 export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<PersistentGraphOptions> = {},
 ) => {
-  const graph = usePersistentGraph(canvas, options)
+  const graph = useCollaborativeGraph(canvas, options)
   useUserPreferredTheme(graph)
   return graph
 }
@@ -23,7 +23,7 @@ export const useGraph = (
 export const useDarkGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<PersistentGraphOptions> = {},
-) => usePersistentGraph(canvas, {
+) => useCollaborativeGraph(canvas, {
   theme: {
     ...options.theme,
     ...themes.dark,

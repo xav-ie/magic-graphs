@@ -16,7 +16,6 @@ import type {
   SchemaItem,
   GraphOptions,
   Aggregator,
-  UpdateAggregator
 } from '@graph/types'
 import {
   generateId,
@@ -36,6 +35,21 @@ import { clone } from '@utils/clone';
 import { getInitialEventBus } from '@graph/events';
 import { fractionToDecimal } from '@utils/fracDecConverter/fracDec';
 import { useAggregator } from '@graph/useAggregator';
+import {
+  ADD_NODE_OPTIONS_DEFAULTS,
+  REMOVE_NODE_OPTIONS_DEFAULTS,
+  ADD_EDGE_OPTIONS_DEFAULTS,
+  REMOVE_EDGE_OPTIONS_DEFAULTS,
+  MOVE_NODE_OPTIONS_DEFAULTS,
+} from '@graph/baseGraphAPIs';
+import type {
+  AddNodeOptions,
+  RemoveNodeOptions,
+  AddEdgeOptions,
+  RemoveEdgeOptions,
+  MoveNodeOptions,
+} from '@graph/baseGraphAPIs';
+import type { PartiallyPartial } from '@utils/types';
 
 export type BaseGraphSettings = {
   /**
@@ -192,26 +206,46 @@ export const useBaseGraph = (
   const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
   const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
 
-  const addNode = (node: Omit<GNode, 'id' | 'label'> & { label?: GNode['label'] }) => {
+  const addNode = (
+    node: PartiallyPartial<GNode, 'id' | 'label'>,
+    options: Partial<AddNodeOptions> = {}
+  ) => {
+    const fullOptions = {
+      ...ADD_NODE_OPTIONS_DEFAULTS,
+      ...options
+    }
+
     const newNode = {
-      id: generateId(),
+      id: node.id ?? generateId(),
       label: node.label ?? getNewNodeLabel(),
       x: node.x,
       y: node.y,
     }
     nodes.value.push(newNode)
     emit('onStructureChange', nodes.value, edges.value)
-    emit('onNodeAdded', newNode)
+    emit('onNodeAdded', newNode, fullOptions)
     repaint('base-graph/add-node')()
     return newNode
   }
 
   const repaintMoveNode = repaint('base-graph/move-node')
-  const moveNode = (id: GNode['id'], x: number, y: number) => {
+  const moveNode = (
+    id: GNode['id'],
+    x: number,
+    y: number,
+    options: Partial<MoveNodeOptions> = {}
+  ) => {
     const node = getNode(id)
-    if (!node) return
+    if (!node) throw new Error('tried to move node that does not exist')
+
+    const fullOptions = {
+      ...MOVE_NODE_OPTIONS_DEFAULTS,
+      ...options
+    }
+
     node.x = x
     node.y = y
+    emit('onNodeMoved', node, fullOptions)
     repaintMoveNode()
   }
 
@@ -227,9 +261,14 @@ export const useBaseGraph = (
     return getNode(topItem.id)
   }
 
-  const removeNode = (id: GNode['id']) => {
+  const removeNode = (id: GNode['id'], options: Partial<RemoveNodeOptions> = {}) => {
     const node = getNode(id)
-    if (!node) return
+    if (!node) throw new Error('tried to remove node that does not exist')
+
+    const fullOptions = {
+      ...REMOVE_NODE_OPTIONS_DEFAULTS,
+      ...options
+    }
 
     const edgesToRemove = getConnectedEdges(node, edges.value)
     for (const edge of edgesToRemove) removeEdge(edge.id)
@@ -237,12 +276,19 @@ export const useBaseGraph = (
     nodes.value = nodes.value.filter(n => n.id !== node.id)
 
     emit('onStructureChange', nodes.value, edges.value)
-    emit('onNodeRemoved', node)
+    emit('onNodeRemoved', node, fullOptions)
 
     setTimeout(repaint('base-graph/remove-node'), 5)
   }
 
-  const addEdge = (edge: Omit<GEdge, 'id'>) => {
+  const addEdge = (
+    edge: PartiallyPartial<GEdge, 'id' | 'weight'>,
+    options: Partial<AddEdgeOptions> = {}
+  ) => {
+    const fullOptions = {
+      ...ADD_EDGE_OPTIONS_DEFAULTS,
+      ...options
+    }
 
     const undirectedEdgeOnPath = edges.value.find(e => {
       const connectedToFrom = e.to === edge.to && e.from === edge.from
@@ -259,7 +305,7 @@ export const useBaseGraph = (
     if (directedEdgeOnPath) return
 
     const newEdge: GEdge = {
-      id: generateId(),
+      id: edge.id ?? generateId(),
       to: edge.to,
       from: edge.from,
       weight: edge.weight ?? 1,
@@ -268,17 +314,27 @@ export const useBaseGraph = (
 
     edges.value.push(newEdge)
 
-    emit('onEdgeAdded', newEdge)
+    emit('onEdgeAdded', newEdge, fullOptions)
     emit('onStructureChange', nodes.value, edges.value)
     repaint('base-graph/add-edge')()
     return newEdge
   }
 
-  const removeEdge = (edgeId: GEdge['id']) => {
-    const edge = edges.value.find(edge => edge.id === edgeId)
-    if (!edge) return
+  const removeEdge = (
+    edgeId: GEdge['id'],
+    options: Partial<RemoveEdgeOptions> = {}
+  ) => {
+    const edge = getEdge(edgeId)
+    if (!edge) throw new Error('tried to remove edge that does not exist')
+
+    const fullOptions = {
+      ...REMOVE_EDGE_OPTIONS_DEFAULTS,
+      ...options
+    }
+
     edges.value = edges.value.filter(e => e.id !== edge.id)
-    emit('onEdgeRemoved', edge)
+
+    emit('onEdgeRemoved', edge, fullOptions)
     emit('onStructureChange', nodes.value, edges.value)
     repaint('base-graph/remove-edge')()
     return edge

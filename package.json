@@ -1,35 +1,15 @@
 {
-  "name": "user-functions",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
+  "name": "magic-graphs",
+  "version": "1.0.0",
   "scripts": {
-    "dev": "vite",
-    "test": "vitest",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build --force"
+    "dev": "concurrently \"npm run dev-client\" \"npm run dev-server\"",
+    "dev-client": "cd client && npm run dev",
+    "dev-server": "cd server && npm run dev"
   },
-  "dependencies": {
-    "@codemirror/lang-javascript": "^6.2.2",
-    "@codemirror/theme-one-dark": "^6.1.2",
-    "@vueuse/core": "^11.1.0",
-    "codemirror": "^6.0.1",
-    "codemirror-readonly-ranges": "^0.1.0-alpha.2",
-    "vue": "^3.4.29",
-    "vue-codemirror": "^6.1.1"
-  },
+  "keywords": [],
   "devDependencies": {
-    "@tsconfig/node20": "^20.1.4",
-    "@types/node": "^20.14.5",
-    "@vitejs/plugin-vue": "^5.0.5",
-    "@vue/test-utils": "^2.4.6",
-    "@vue/tsconfig": "^0.5.1",
-    "npm-run-all2": "^6.2.0",
-    "typescript": "~5.4.0",
-    "vite": "^5.3.1",
-    "vitest": "^2.1.3",
-    "vue-tsc": "^2.0.21"
-  }
+    "concurrently": "^8.2.2"
+  },
+  "license": "ISC",
+  "description": "magic products entry point"
 }
