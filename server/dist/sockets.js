@@ -40,5 +40,3 @@ const sockets = (httpServer) => {
     return io;
 };
 exports.sockets = sockets;
-// io.listen(PORT)
-// console.log(`Sockets listening on port ${PORT}`)

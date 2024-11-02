@@ -9,7 +9,7 @@ export default defineConfig({
     vue(),
   ],
   build: {
-    outDir: '../server/public'
+    outDir: '../server/dist/public'
   },
   resolve: {
     alias: {
