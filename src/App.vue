@@ -41,7 +41,7 @@ html, body {
   }
   50% {
     background-color: #ed8936;
-    scale: 1.3;
+    scale: 1.15;
     box-shadow:  0px 0px 50px 15px #ed893650;
   }
   100% {

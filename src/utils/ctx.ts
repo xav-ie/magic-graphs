@@ -1,7 +1,7 @@
 import type { MaybeRef } from "vue";
 
 /**
- * pulls ctx from a canvas, throws if not found
+ * pulls ctx from a canvas or canvas ref (vue.js), throws if not found
  *
  * @returns {CanvasRenderingContext2D}
  */

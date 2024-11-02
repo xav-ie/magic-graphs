@@ -30,7 +30,7 @@ export type NestedKeys<T extends AcceptableObject> = T extends AcceptableObject 
   [K in keyof T]: K | (
     Extract<T[K], AcceptableObject> extends AcceptableObject
     ? K extends string
-    // @ts-expect-error this works but typescript doesn't like it
+    // @ts-ignore this works
     ? `${K}.${NestedKeys<Required<T[K]>>}` : never : never
   )
 }[keyof T] : never
