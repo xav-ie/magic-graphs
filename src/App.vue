@@ -15,7 +15,7 @@ import SearchVisualizer from '@product/search-visualizer/Main.vue'
 
 <style>
 /* hide the bars that show up when you scroll */
-*::-webkit-scrollbar {
+::-webkit-scrollbar {
   display: none;
 }
 
@@ -26,6 +26,12 @@ import SearchVisualizer from '@product/search-visualizer/Main.vue'
 html, body {
   overscroll-behavior-x: none;
 }
+
+/* TODO - we might want to adjust the selection color */
+::selection {
+  background-color: rgb(red, green, blue);
+}
+
 
 /* class for exclusive use by useGraphTutorial, should be move out to css file at some point */
 .element-highlight {

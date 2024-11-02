@@ -72,5 +72,10 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
   const responsiveCanvas = document.getElementById('responsive-canvas-container');
   if (!responsiveCanvas) throw new Error('responsive canvas container not found');
   responsiveCanvas.appendChild(input);
-  setTimeout(() => input.focus(), 10);
+  setTimeout(() => {
+    input.focus();
+    // highlight the text
+    input.setSelectionRange(0, input.value.length);
+
+  }, 10);
 }

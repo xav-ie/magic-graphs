@@ -77,7 +77,7 @@ export const getEdgeSchematic = (
 
   const textAreaOnEdge = {
     color: graphBgColor,
-    activeColor: darkenHex(graphBgColor, 25),
+    activeColor: graphBgColor,
     text: {
       content: edge.weight.toString(),
       color: edgeTextColor,
