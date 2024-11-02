@@ -53,7 +53,7 @@ export type MappingsToEventBus<T> = Record<keyof T, Set<any>>
 */
 export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: MappingsToEventBus<T>) => ({
   subscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].add(fn),
-  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].delete((f: T[K]) => f !== fn),
+  unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].delete(fn),
 })
 
 export const getInitialEventBus = () => ({
