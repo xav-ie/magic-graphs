@@ -18,7 +18,9 @@
       persistent: {
         storageKey: "search-visualizer-graph",
       }
-    }
+    }, 
+    theme: {
+    },
   });
 
   const { humanReadableAdjList } = useAdjacencyList(graph);

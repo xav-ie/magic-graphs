@@ -89,8 +89,8 @@ export const getEdgeSchematic = (
   const { displayEdgeLabels } = graph.settings.value
   const textArea = displayEdgeLabels ? textAreaOnEdge : undefined
 
-  const upDistance = edgeWidth * 8
-  const downDistance = upDistance * 0.5
+  const upDistance = fromNodeSize * 2
+  const downDistance = upDistance - fromNodeSize
 
   if (isSelfDirecting) {
     const shape = uturn({
