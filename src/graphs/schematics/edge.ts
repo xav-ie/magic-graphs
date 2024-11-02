@@ -76,7 +76,6 @@ export const getEdgeSchematic = (
 
   const textAreaOnEdge = {
     color: graphBgColor,
-    editable: graph.settings.value.edgeLabelsEditable,
     text: {
       content: edge.weight.toString(),
       color: edgeTextColor,

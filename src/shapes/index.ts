@@ -16,7 +16,6 @@ export const triangle = triangleAPI;
 export const uturn = uturnAPI;
 export const cross = crossAPI;
 
-
 export const shapes = {
   arrow,
   circle,

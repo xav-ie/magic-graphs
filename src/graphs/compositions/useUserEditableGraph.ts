@@ -129,6 +129,7 @@ export const useUserEditableGraph = (
     graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
     settings.value.nodeAnchors = true
     settings.value.draggable = true
+    settings.value.edgeLabelsEditable = true
   }
 
   const deactivate = () => {
@@ -137,6 +138,7 @@ export const useUserEditableGraph = (
     graph.unsubscribe('onNodeAnchorDrop', handleEdgeCreation)
     settings.value.nodeAnchors = false
     settings.value.draggable = false
+    settings.value.edgeLabelsEditable = false
   }
 
   if (settings.value.userEditable) active()

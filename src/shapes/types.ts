@@ -68,18 +68,14 @@ export type Coordinate = {
   y: number,
 }
 
-
-
 // the area in which text is displayed
 export type TextAreaNoLocation = {
   text: Text,
   color?: string,
-  editable?: boolean,
 }
 
 export const TEXTAREA_DEFAULTS = {
   color: 'white',
-  editable: true
 } as const
 
 export type TextArea = {

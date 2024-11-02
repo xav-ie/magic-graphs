@@ -19,7 +19,7 @@
   }>();
 
   const graph = useGraph(graphElement, {
-    theme: { nodeShape: 'square' }
+    theme: {}
   });
 
   // const tutorialControls = useBasicsTutorial(graph);

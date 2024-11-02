@@ -70,7 +70,7 @@ export const useFocusGraph = (
 
     // handle text areas
     const inATextArea = topItem.shape.textHitbox?.({ x, y })
-    const canEdit = inATextArea && true // TODO replace true with a check for textArea.editable
+    const canEdit = inATextArea && graph.settings.value.edgeLabelsEditable
     if (canEdit) return handleTextArea(topItem)
 
     const canFocus = FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)

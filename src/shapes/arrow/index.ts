@@ -38,7 +38,6 @@ export const arrow = (options: Arrow): Shape => {
     if (!options.textArea) return;
     const location = getTextAreaLocationOnArrow(options);
     const fullTextArea = getFullTextArea(options.textArea, location);
-    if (!fullTextArea.editable) return;
     engageTextarea(fullTextArea, handler);
   }
 

@@ -60,7 +60,6 @@ export const uturn = (options: UTurn): Shape => {
     if (!options.textArea) return;
     const location = getTextAreaLocationOnUTurn(options);
     const fullTextArea = getFullTextArea(options.textArea, location);
-    if (!fullTextArea.editable) return;
     engageTextarea(fullTextArea, handler);
   }
 
