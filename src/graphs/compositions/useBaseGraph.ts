@@ -34,6 +34,7 @@ import type { GraphTheme } from '@graph/themes/types';
 import { delta } from '@utils/deepDelta/delta';
 import { clone } from '@utils/clone';
 import { getInitialEventBus } from '@graph/events';
+import { fractionToDecimal } from '@utils/fracDecConverter/fracDec';
 
 export type BaseGraphSettings = {
   /**
@@ -60,7 +61,8 @@ const defaultSettings = {
   edgeInputToWeight: (input: string) => {
     const trimmed = input.trim()
     if (!trimmed) return
-    return Number(trimmed)
+    const decimalNum = fractionToDecimal(trimmed)?.toFixed(2)
+    return Number(decimalNum ?? trimmed)
   }
 } as const
 

@@ -54,7 +54,7 @@ type PermissiveParams<T> = T extends (...args: infer P) => any ? P : never;
 
 /**
   generates a "subscribe" and "unsubscribe" function for the event bus
-  in order to registering and deregistering graph events in a type-safe manner
+  in order to registering, deregistering and broadcast graph events in a type-safe manner
 */
 export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: MappingsToEventBus<T>) => ({
   subscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].add(fn),

@@ -53,10 +53,13 @@ export const useFocusGraph = (
       const edge = graph.getEdge(schemaItem.id)
       if (!edge) throw new Error('textarea only implemented for edges')
       const newWeight = graph.settings.value.edgeInputToWeight(str)
-      if (!newWeight) return
-      if (edge.weight === newWeight) return
+      if (
+        newWeight === undefined ||
+        isNaN(newWeight) ||
+        edge.weight === newWeight
+      ) return
       edge.weight = newWeight
-      graph.eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
+      graph.emit('onEdgeWeightChange', edge)
     })
   }
 
