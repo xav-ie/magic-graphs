@@ -180,5 +180,11 @@ export const useMarqueeGraph = (
     ...graph,
     selectionBox,
     marqueedItemIDs,
+
+    /**
+     * @param itemId a node or edge id
+     * @returns true if the item is marquee-selected or focused
+     */
+    isHighlighted: (itemId: string) => marqueedItemIDs.has(itemId) || graph.focusedItemId.value === itemId,
   }
 }

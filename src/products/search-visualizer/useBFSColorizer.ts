@@ -41,7 +41,7 @@ export const useBFSColorizer = (graph: Graph) => {
   }
 
   const color = (node: GNode) => {
-    if (node.id === graph.focusedItemId.value) return
+    if (graph.isHighlighted(node.id)) return
     const level = bfsLevelRecord.value[node.id];
     // disjoint from bfs tree
     if (level === undefined) return;
