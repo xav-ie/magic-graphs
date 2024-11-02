@@ -40,8 +40,8 @@ export const useDraggableGraph = (
   }))
 
   const eventBus: MappingsToEventBus<DraggableGraphEvents> = Object.assign(graph.eventBus, {
-    onNodeDragStart: [],
-    onNodeDrop: [],
+    onNodeDragStart: new Set(),
+    onNodeDrop: new Set(),
   })
 
   const { subscribe, unsubscribe } = generateSubscriber(eventBus)

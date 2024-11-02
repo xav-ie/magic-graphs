@@ -51,11 +51,12 @@ export const useMarqueeGraph = (
 
   const disableNodeCreationNextTick = () => {
     const callbacks = graph.eventBus['onDblClick']
-    const nodeCreationFn = callbacks.find((fn) => fn.name === 'handleNodeCreation')
-    if (nodeCreationFn) {
-      graph.unsubscribe('onDblClick', nodeCreationFn)
-      setTimeout(() => graph.subscribe('onDblClick', nodeCreationFn), 10)
-    }
+    // TODO - find a way to implement this with a sets eventBus!
+    // const nodeCreationFn = callbacks.find((fn) => fn.name === 'handleNodeCreation')
+    // if (nodeCreationFn) {
+    //   graph.unsubscribe('onDblClick', nodeCreationFn)
+    //   setTimeout(() => graph.subscribe('onDblClick', nodeCreationFn), 10)
+    // }
   }
 
   const engageSelectionBox = (event: MouseEvent) => {

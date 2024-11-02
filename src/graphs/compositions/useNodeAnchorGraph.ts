@@ -165,8 +165,8 @@ export const useNodeAnchorGraph = (
   }))
 
   const eventBus: MappingsToEventBus<NodeAnchorGraphEvents> = Object.assign(graph.eventBus, {
-    onNodeAnchorDragStart: [],
-    onNodeAnchorDrop: [],
+    onNodeAnchorDragStart: new Set(),
+    onNodeAnchorDrop: new Set(),
   })
 
   const { subscribe, unsubscribe } = generateSubscriber(eventBus)

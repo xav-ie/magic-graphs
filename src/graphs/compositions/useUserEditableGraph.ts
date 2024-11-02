@@ -124,7 +124,6 @@ export const useUserEditableGraph = (
   }
 
   const active = () => {
-    deactivate() // when event bus goes to hash sets under the hood, this will be unnecessary
     graph.subscribe('onDblClick', handleNodeCreation)
     graph.subscribe('onKeydown', handleDeletion)
     graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
