@@ -21,6 +21,12 @@
   const heatmapBtnText = computed(() =>
     heatmapActive.value ? "Hide Heatmap" : "Show Heatmap"
   );
+
+  const fn = () => {
+    items.value[1].activateTextArea?.((str) => {
+      console.log('value', str)
+    })
+  }
 </script>
 
 <template>
@@ -28,6 +34,10 @@
 
   <Button @click="heatmapActive = !heatmapActive">
     {{ heatmapBtnText }}
+  </Button>
+
+  <Button @click="fn">
+    Micro Control
   </Button>
 
   <div

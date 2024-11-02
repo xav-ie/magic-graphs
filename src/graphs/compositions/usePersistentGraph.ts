@@ -15,6 +15,7 @@ import type {
   UserEditableGraphSettings,
   UserEditableGraphTheme
 } from '@graph/compositions/useUserEditableGraph'
+import type { DraggableGraphEvents } from './useDraggableGraph'
 
 export type PersistentGraphTheme = UserEditableGraphTheme
 export type PersistSettings = {
@@ -153,16 +154,17 @@ export const usePersistentGraph = (
     setTimeout(() => graph.repaint('persistent-graph/load')(), 10)
   }
 
-  const trackChangeEvents = [
+  const trackChangeEvents: (keyof DraggableGraphEvents)[] = [
     'onStructureChange',
     'onNodeDrop',
     'onGraphReset',
-  ] as const
+    'onEdgeWeightChange',
+  ]
 
-  const trackOptionsEvents = [
+  const trackOptionsEvents: (keyof DraggableGraphEvents)[] = [
     'onThemeChange',
-    'onSettingsChange'
-  ] as const
+    'onSettingsChange',
+  ]
 
   const listenForOptionsEvents = () => {
     trackOptionsEvents.forEach(event => graph.subscribe(event, trackOptions))

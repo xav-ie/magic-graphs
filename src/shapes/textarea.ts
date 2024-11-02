@@ -1,16 +1,13 @@
-import { TEXTAREA_DEFAULTS, TEXT_DEFAULTS } from '@shape/types';
 import type { TextArea } from '@shape/types'
+import type { DeepRequired } from '@utils/types';
 
-export const engageTextarea = (textAreaSchema: TextArea, handler: (str: string) => void) => {
+export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: string) => void) => {
 
   const {
     at,
     text,
     color: bgColor,
-  } = {
-    ...TEXTAREA_DEFAULTS,
-    ...textAreaSchema,
-  }
+  } = textArea;
 
   const {
     x,
@@ -22,10 +19,7 @@ export const engageTextarea = (textAreaSchema: TextArea, handler: (str: string) 
     content,
     fontSize,
     fontWeight,
-  } = {
-    ...TEXT_DEFAULTS,
-    ...text,
-  }
+  } = text
 
   const SIZE = fontSize * 2;
 

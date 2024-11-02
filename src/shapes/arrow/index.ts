@@ -4,12 +4,15 @@ import type { Line } from "@shape/line";
 import type { Shape } from "@shape/types";
 import { drawArrowWithCtx } from "./draw";
 import { arrowHitbox } from "./hitbox";
+import { engageTextarea } from "@shape/textarea";
 import {
   arrowTextHitbox,
   drawTextOnArrow,
   drawTextAreaMatteOnArrow,
-  drawTextAreaOnArrow
+  drawTextAreaOnArrow,
+  getTextAreaLocationOnArrow
 } from "./text";
+import { getFullTextArea } from "@shape/text";
 
 export type Arrow = Line
 
@@ -31,6 +34,14 @@ export const arrow = (options: Arrow): Shape => {
     drawTextArea?.(ctx);
   }
 
+  const activateTextArea = (handler: (str: string) => void) => {
+    if (!options.textArea) return;
+    const location = getTextAreaLocationOnArrow(options);
+    const fullTextArea = getFullTextArea(options.textArea, location);
+    if (!fullTextArea.editable) return;
+    engageTextarea(fullTextArea, handler);
+  }
+
   return {
     id: generateId(),
     name: 'arrow',
@@ -44,5 +55,7 @@ export const arrow = (options: Arrow): Shape => {
 
     hitbox,
     textHitbox,
+
+    activateTextArea,
   }
 }

@@ -12,11 +12,9 @@ import type {
 } from "@graph/types";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
 import type { BaseGraphOptions } from "@graph/compositions/useBaseGraph";
-import { engageTextarea } from "@graph/textarea";
 import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
-import type { Shape } from "@shape/types";
 
 type Id = SchemaItem['id']
 type MaybeId = Id | undefined
@@ -50,23 +48,17 @@ export const useFocusGraph = (
     focusedItemId.value = newId
   }
 
-  const handleTextArea = (shape: Shape) => {
-
-    // shapes must return that actual object used to build the shape
-    // we are blocked until then!
-    console.log('BLOCKED!')
-
-    // const textInputHandler = (str: string) => {
-    //   const edge = graph.getEdge(topItem.id)
-    //   if (!edge) throw new Error('Textarea only implemented for edges')
-    //   const newWeight = graph.settings.value.edgeInputToWeight(str)
-    //   if (!newWeight) return
-    //   if (edge.weight === newWeight) return
-    //   edge.weight = newWeight
-    //   graph.eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
-    // }
+  const handleTextArea = (schemaItem: SchemaItem) => {
+    schemaItem.shape.activateTextArea?.((str: string) => {
+      const edge = graph.getEdge(schemaItem.id)
+      if (!edge) throw new Error('textarea only implemented for edges')
+      const newWeight = graph.settings.value.edgeInputToWeight(str)
+      if (!newWeight) return
+      if (edge.weight === newWeight) return
+      edge.weight = newWeight
+      graph.eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
+    })
   }
-
 
   const handleFocusChange = (ev: MouseEvent) => {
 
@@ -79,7 +71,7 @@ export const useFocusGraph = (
     // handle text areas
     const inATextArea = topItem.shape.textHitbox?.({ x, y })
     const canEdit = inATextArea && true // TODO replace true with a check for textArea.editable
-    if (canEdit) return handleTextArea(topItem.shape)
+    if (canEdit) return handleTextArea(topItem)
 
     const canFocus = FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)
     if (!canFocus) return

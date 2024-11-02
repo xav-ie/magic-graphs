@@ -8,8 +8,8 @@ import SearchVisualizer from '@product/search-visualizer/Main.vue'
 <template>
   <div class="w-[100vw] h-[100vh] relative">
     <!-- <GraphPlayground /> -->
-    <!-- <ShapePlayground /> -->
-    <SearchVisualizer />
+    <ShapePlayground />
+    <!-- <SearchVisualizer /> -->
   </div>
 </template>
 

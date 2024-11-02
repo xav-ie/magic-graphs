@@ -12,6 +12,9 @@ import {
   drawTextOnLine
 } from "./text";
 import { generateId } from "@graph/helpers";
+import { getFullTextArea } from "@shape/text";
+import { getTextAreaLocationOnArrow } from "@shape/arrow/text";
+import { engageTextarea } from "@shape/textarea";
 
 export type Line = {
   start: Coordinate,
@@ -49,6 +52,14 @@ export const line = (options: Line): Shape => {
     drawTextArea?.(ctx);
   }
 
+  const activateTextArea = (handler: (str: string) => void) => {
+    if (!options.textArea) return;
+    const location = getTextAreaLocationOnArrow(options);
+    const fullTextArea = getFullTextArea(options.textArea, location);
+    if (!fullTextArea.editable) return;
+    engageTextarea(fullTextArea, handler);
+  }
+
   return {
     id: generateId(),
     name: 'line',
@@ -62,5 +73,7 @@ export const line = (options: Line): Shape => {
 
     hitbox,
     textHitbox,
+
+    activateTextArea,
   }
 }

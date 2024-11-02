@@ -10,8 +10,11 @@ import {
   drawTextAreaMatteOnUTurn,
   drawTextAreaOnUTurn,
   drawTextOnUTurn,
+  getTextAreaLocationOnUTurn,
   uturnTextHitbox
 } from "./text"
+import { getFullTextArea } from "@shape/text"
+import { engageTextarea } from "@shape/textarea"
 
 export type UTurn = {
   spacing: number,
@@ -53,6 +56,14 @@ export const uturn = (options: UTurn): Shape => {
     drawTextArea?.(ctx);
   }
 
+  const activateTextArea = (handler: (str: string) => void) => {
+    if (!options.textArea) return;
+    const location = getTextAreaLocationOnUTurn(options);
+    const fullTextArea = getFullTextArea(options.textArea, location);
+    if (!fullTextArea.editable) return;
+    engageTextarea(fullTextArea, handler);
+  }
+
   return {
     id: generateId(),
     name: 'uturn',
@@ -66,5 +77,7 @@ export const uturn = (options: UTurn): Shape => {
 
     hitbox,
     textHitbox,
+
+    activateTextArea,
   }
 }

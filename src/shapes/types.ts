@@ -43,14 +43,24 @@ export type Shape = {
   drawText?: (ctx: CanvasRenderingContext2D) => void,
 
   /**
-   * returns true if the point is within the shape
+   * returns true if the point is within the shape or text area of the shape
    */
   hitbox: (point: Coordinate) => boolean,
 
   /**
    * returns true if the point is within the text area of the shape
    */
+  shapeHitbox: (point: Coordinate) => boolean,
+
+  /**
+   * returns true if the point is within the text area of the shape
+   */
   textHitbox?: (point: Coordinate) => boolean,
+
+  /**
+   * activates the text area of the shape
+   */
+  activateTextArea?: (handler: (str: string) => void) => void,
 }
 
 export type Coordinate = {
@@ -97,7 +107,7 @@ export type Stroke = {
   width: number,
 }
 
-export const STROKE_DEFALTS = {
+export const STROKE_DEFAULTS = {
   color: 'black',
   width: 0
 }
