@@ -66,6 +66,17 @@ export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: Mappings
   }
 })
 
+/**
+ * helper types for graph event architecture
+ */
+export type Subscriber<T extends BaseGraphEvents> = ReturnType<typeof generateSubscriber<T>>['subscribe'];
+export type Unsubscriber<T extends BaseGraphEvents> = ReturnType<typeof generateSubscriber<T>>['unsubscribe'];
+export type Emitter<T extends BaseGraphEvents> = ReturnType<typeof generateSubscriber<T>>['emit'];
+
+export type BaseGraphSubscriber = Subscriber<BaseGraphEvents>;
+export type BaseGraphUnsubscriber = Unsubscriber<BaseGraphEvents>;
+export type BaseGraphEmitter = Emitter<BaseGraphEvents>;
+
 export const getInitialEventBus = () => ({
   onStructureChange: new Set(),
   onFocusChange: new Set(),

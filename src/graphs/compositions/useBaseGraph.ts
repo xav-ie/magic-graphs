@@ -35,6 +35,7 @@ import { delta } from '@utils/deepDelta/delta';
 import { clone } from '@utils/clone';
 import { getInitialEventBus } from '@graph/events';
 import { fractionToDecimal } from '@utils/fracDecConverter/fracDec';
+import { useAggregator } from '@graph/useAggregator';
 
 export type BaseGraphSettings = {
   /**
@@ -106,11 +107,14 @@ export const useBaseGraph = (
     keydown: (ev: KeyboardEvent) => emit('onKeydown', ev),
   }
 
-  const aggregator = ref<Aggregator>([])
-  const updateAggregator: UpdateAggregator[] = []
+  const {
+    aggregator,
+    updateAggregator,
+    getSchemaItemsByCoordinates,
+    repaint,
+  } = useAggregator({ canvas, emit })
 
-  updateAggregator.push((aggregator) => {
-
+  const addNodesAndEdgesToAggregator = (aggregator: Aggregator) => {
     const edgeOptions = {
       edges,
       getNode,
@@ -132,24 +136,9 @@ export const useBaseGraph = (
     aggregator.push(...nodeSchemaItems)
 
     return aggregator
-  })
-
-  const repaint = (repaintId: string) => () => {
-    if (!canvas.value) return
-    const ctx = canvas.value.getContext('2d')
-    if (!ctx) return
-    ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
-
-    const evaluateAggregator = updateAggregator.reduce<Aggregator>((acc, fn) => fn(acc), [])
-    aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
-
-    for (const item of aggregator.value) item.shape.draw(ctx)
-    emit('onRepaint', ctx, repaintId)
   }
 
-  // subscribe('onRepaint', (_, repaintId) => {
-  //   console.log(`🎨 repaint triggered -> \n ${repaintId}`)
-  // })
+  updateAggregator.push(addNodesAndEdgesToAggregator)
 
   const initCanvas = () => {
     if (!canvas.value) {
@@ -224,12 +213,6 @@ export const useBaseGraph = (
     node.x = x
     node.y = y
     repaintMoveNode()
-  }
-
-  const getSchemaItemsByCoordinates = (x: number, y: number) => {
-    return aggregator.value
-      .sort((a, b) => a.priority - b.priority)
-      .filter(item => item.shape.hitbox({ x, y }) || item.shape.textHitbox?.({ x, y }))
   }
 
   /**
