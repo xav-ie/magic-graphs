@@ -42,4 +42,6 @@ io.on('connection', (socket) => {
   })
 })
 
-console.log('Sockets Live!')
+const PORT = 3000
+io.listen(PORT)
+console.log(`Sockets listening on port ${PORT}`)
