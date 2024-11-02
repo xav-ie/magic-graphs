@@ -21,7 +21,26 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
     const evaluateAggregator = updateAggregator.reduce<Aggregator>((acc, fn) => fn(acc), [])
     aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
 
-    for (const item of aggregator.value) item.shape.draw(ctx)
+    const indexOfLastEdge = aggregator.value.findLastIndex(item => item.graphType === 'edge')
+    const beforeLastEdge = aggregator.value.slice(0, indexOfLastEdge + 1)
+    const afterLastEdge = aggregator.value.slice(indexOfLastEdge + 1)
+
+    for (const item of beforeLastEdge) {
+      item.shape.drawShape(ctx)
+    }
+
+    for (const item of beforeLastEdge) {
+      item.shape.drawTextAreaMatte?.(ctx)
+    }
+
+    for (const item of beforeLastEdge) {
+      item.shape.drawText?.(ctx)
+    }
+
+    for (const item of afterLastEdge) {
+      item.shape.draw(ctx)
+    }
+
     emit('onRepaint', ctx, repaintId)
   }
 

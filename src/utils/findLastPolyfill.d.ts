@@ -10,5 +10,9 @@ declare global {
       predicate: (value: T, index: number, array: T[]) => unknown,
       thisArg?: any
     ): T | undefined;
+    findLastIndex(
+      predicate: (value: T, index: number, array: T[]) => unknown,
+      thisArg?: any
+    ): number;
   }
 }
