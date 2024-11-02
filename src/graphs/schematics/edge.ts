@@ -7,6 +7,7 @@ import {
   arrow,
   uturn
 } from '@shapes'
+import colors from '@utils/colors'
 
 export const getEdgeSchematic = (
   edge: GEdge,
@@ -76,6 +77,7 @@ export const getEdgeSchematic = (
 
   const textAreaOnEdge = {
     color: graphBgColor,
+    activeColor: colors.GREEN_500,
     text: {
       content: edge.weight.toString(),
       color: edgeTextColor,

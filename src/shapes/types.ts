@@ -68,14 +68,29 @@ export type Coordinate = {
   y: number,
 }
 
-// the area in which text is displayed
+/**
+ * an area that wraps some text
+ */
 export type TextAreaNoLocation = {
+  /**
+   * the text areas inner text
+   */
   text: Text,
+  /**
+   * the color of the text area
+   */
   color?: string,
+  /**
+   * the color of the text area when it is engaged
+   * IE is converted to a textarea html element for user interaction
+   */
+  activeColor?: string,
 }
 
 export const TEXTAREA_DEFAULTS = {
   color: 'white',
+  // TODO - make active color depend on the color of the text area
+  activeColor: 'white',
 } as const
 
 export type TextArea = {

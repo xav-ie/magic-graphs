@@ -2,11 +2,10 @@ import type { TextArea } from '@shape/types'
 import type { DeepRequired } from '@utils/types';
 
 export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: string) => void) => {
-
   const {
     at,
     text,
-    color: bgColor,
+    activeColor: bgColor,
   } = textArea;
 
   const {
@@ -23,8 +22,8 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
 
   const SIZE = fontSize * 2;
 
-  // create a text input
   const input = document.createElement('textarea');
+
   input.style.position = 'absolute';
   input.style.left = `${x}px`;
   input.style.top = `${y}px`;
@@ -32,14 +31,15 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
   input.style.height = `${SIZE}px`;
   input.style.zIndex = '1000';
 
-  // disable resizing
   input.style.resize = 'none';
 
   input.style.overflow = 'hidden';
   input.style.border = 'none';
   input.style.padding = '0';
-  // no hard coding, but i need to figure out how text area works
+
+  // TODO remove hard coding, but i need to figure out how text area works
   input.style.paddingTop = '4px';
+
   input.style.margin = '0';
   input.style.fontSize = `${fontSize}px`;
   input.style.color = textColor;
