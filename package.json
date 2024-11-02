@@ -2,7 +2,7 @@
   "name": "magic-graphs",
   "version": "1.0.0",
   "scripts": {
-    "start": "npm i && node server/dist/index.js",
+    "start": "cd server && npm i && node dist/index.js",
     "dev": "concurrently \"npm run dev-client\" \"npm run dev-server\"",
     "dev-client": "cd client && npm run dev",
     "dev-server": "cd server && npm run dev"
