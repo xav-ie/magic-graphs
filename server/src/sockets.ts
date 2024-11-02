@@ -45,6 +45,10 @@ io.on('connection', (socket) => {
   })
 })
 
-const PORT = 3000
-io.listen(PORT)
+const PORT = process.env.PORT || 3000
+
+io.listen(Number(PORT))
 console.log(`Sockets listening on port ${PORT}`)
+
+// io.listen(PORT)
+// console.log(`Sockets listening on port ${PORT}`)
