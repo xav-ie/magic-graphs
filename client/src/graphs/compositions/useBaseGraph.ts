@@ -16,7 +16,6 @@ import type {
   SchemaItem,
   GraphOptions,
   Aggregator,
-  UpdateAggregator
 } from '@graph/types'
 import {
   generateId,
@@ -36,6 +35,14 @@ import { clone } from '@utils/clone';
 import { getInitialEventBus } from '@graph/events';
 import { fractionToDecimal } from '@utils/fracDecConverter/fracDec';
 import { useAggregator } from '@graph/useAggregator';
+import {
+  ADD_NODE_OPTIONS_DEFAULTS,
+  REMOVE_NODE_OPTIONS_DEFAULTS
+} from '@graph/baseGraphAPIs';
+import type {
+  AddNodeOptions,
+  RemoveNodeOptions
+} from '@graph/baseGraphAPIs';
 
 export type BaseGraphSettings = {
   /**
@@ -192,7 +199,13 @@ export const useBaseGraph = (
   const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
   const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
 
-  const addNode = (node: Omit<GNode, 'id' | 'label'> & { label?: GNode['label'] }) => {
+  type AddNode = Omit<GNode, 'id' | 'label'> & { label?: GNode['label'] }
+  const addNode = (node: AddNode, options: Partial<AddNodeOptions> = {}) => {
+    const fullOptions = {
+      ...ADD_NODE_OPTIONS_DEFAULTS,
+      ...options
+    }
+
     const newNode = {
       id: generateId(),
       label: node.label ?? getNewNodeLabel(),
@@ -201,7 +214,7 @@ export const useBaseGraph = (
     }
     nodes.value.push(newNode)
     emit('onStructureChange', nodes.value, edges.value)
-    emit('onNodeAdded', newNode)
+    emit('onNodeAdded', newNode, fullOptions)
     repaint('base-graph/add-node')()
     return newNode
   }
@@ -227,9 +240,14 @@ export const useBaseGraph = (
     return getNode(topItem.id)
   }
 
-  const removeNode = (id: GNode['id']) => {
+  const removeNode = (id: GNode['id'], options: Partial<RemoveNodeOptions> = {}) => {
     const node = getNode(id)
-    if (!node) return
+    if (!node) throw new Error('tried to remove node that does not exist')
+
+    const fullOptions = {
+      ...REMOVE_NODE_OPTIONS_DEFAULTS,
+      ...options
+    }
 
     const edgesToRemove = getConnectedEdges(node, edges.value)
     for (const edge of edgesToRemove) removeEdge(edge.id)
@@ -237,7 +255,7 @@ export const useBaseGraph = (
     nodes.value = nodes.value.filter(n => n.id !== node.id)
 
     emit('onStructureChange', nodes.value, edges.value)
-    emit('onNodeRemoved', node)
+    emit('onNodeRemoved', node, fullOptions)
 
     setTimeout(repaint('base-graph/remove-node'), 5)
   }

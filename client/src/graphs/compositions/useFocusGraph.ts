@@ -65,7 +65,7 @@ export const useFocusGraph = (
 
   const handleFocusChange = (ev: MouseEvent) => {
 
-    const { offsetX: x , offsetY: y } = ev
+    const { offsetX: x, offsetY: y } = ev
     setFocus(undefined)
 
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()

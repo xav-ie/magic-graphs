@@ -1,14 +1,18 @@
 import type { GEdge, GNode } from "@graph/types";
+import type { PersistentGraphSettings } from "@graph/compositions/usePersistentGraph";
+import type {
+  AddNodeOptions,
+  RemoveNodeOptions
+} from "@graph/baseGraphAPIs";
+import type { GraphTheme } from "@graph/themes/types";
 import type { DeepPartial } from "@utils/types";
-import type { PersistentGraphSettings } from "./compositions/usePersistentGraph";
-import type { GraphTheme } from "./themes/types";
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
   onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
   onFocusChange: (newItemId: string | undefined, oldItemId: string | undefined) => void;
-  onNodeAdded: (node: GNode) => void;
-  onNodeRemoved: (node: GNode) => void;
+  onNodeAdded: (node: GNode, options: AddNodeOptions) => void;
+  onNodeRemoved: (node: GNode, options: RemoveNodeOptions) => void;
 
   onEdgeAdded: (edge: GEdge) => void;
   onEdgeRemoved: (edge: GEdge) => void;

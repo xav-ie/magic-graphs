@@ -16,8 +16,6 @@ interface GraphEvents {
   edgeRemoved: (edgeId: GEdge['id']) => void
 }
 
-const STORE_ID_DURATION = 1000
-
 export const useCollaborativeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<UserEditableGraphOptions> = {}
@@ -35,28 +33,22 @@ export const useCollaborativeGraph = (
     console.log('socket connection error', error)
   })
 
-  graph.subscribe('onNodeAdded', (node) => {
+  graph.subscribe('onNodeAdded', (node, { broadcast }) => {
+    if (!broadcast) return
     socket.emit('nodeAdded', node)
   })
 
   socket.on('nodeAdded', (node) => {
-    if (receivedIds.has(node.id)) return
-    receivedIds.add(node.id)
-    setTimeout(() => receivedIds.delete(node.id), STORE_ID_DURATION)
-
-    graph.addNode(node)
+    graph.addNode(node, { broadcast: false })
   })
 
-  graph.subscribe('onNodeRemoved', (node) => {
-    socket.emit('nodeRemoved', node)
+  graph.subscribe('onNodeRemoved', (node, { broadcast }) => {
+    if (!broadcast) return
+    socket.emit('nodeRemoved', node.id)
   })
 
-  socket.on('nodeRemoved', (node) => {
-    if (receivedIds.has(node.id)) return
-    receivedIds.add(node.id)
-    setTimeout(() => receivedIds.delete(node.id), STORE_ID_DURATION)
-
-    graph.removeNode(node)
+  socket.on('nodeRemoved', (nodeId) => {
+    graph.removeNode(nodeId, { broadcast: false })
   })
 
   graph.subscribe('onEdgeAdded', (node) => {
@@ -64,15 +56,23 @@ export const useCollaborativeGraph = (
   })
 
   socket.on('edgeAdded', (node) => {
+    if (receivedIds.has(node.id)) return
+    receivedIds.add(node.id)
+    setTimeout(() => receivedIds.delete(node.id), STORE_ID_DURATION)
 
+    graph.addEdge(node)
   })
 
-  graph.subscribe('onEdgeRemoved', (node) => {
-    socket.emit('edgeRemoved', node)
+  graph.subscribe('onEdgeRemoved', (edge) => {
+    socket.emit('edgeRemoved', edge.id)
   })
 
-  socket.on('edgeRemoved', (node) => {
-    console.log('received edge removed from socket', node)
+  socket.on('edgeRemoved', (edgeId) => {
+    if (receivedIds.has(edgeId)) return
+    receivedIds.add(edgeId)
+    setTimeout(() => receivedIds.delete(edgeId), STORE_ID_DURATION)
+
+    graph.removeEdge(edgeId)
   })
 
   return graph
