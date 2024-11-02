@@ -91,7 +91,7 @@ export const useUserEditableGraph = (
   const handleEdgeCreation = (parentNode: GNode, anchor: NodeAnchor) => {
     if (!editSettings.value) return
     const { x, y } = anchor
-    const itemStack = graph.getDrawItemsByCoordinates(x, y)
+    const itemStack = graph.getSchemaItemsByCoordinates(x, y)
     const nodeSchema = itemStack.findLast((item: SchemaItem) => item.graphType === 'node')
     if (!nodeSchema) return
     const node = graph.nodes.value.find(node => node.id === nodeSchema.id)

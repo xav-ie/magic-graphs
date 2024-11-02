@@ -16,6 +16,7 @@ import { engageTextarea } from "@graph/textarea";
 import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
+import type { Shape } from "@shape/types";
 
 type Id = SchemaItem['id']
 type MaybeId = Id | undefined
@@ -49,34 +50,41 @@ export const useFocusGraph = (
     focusedItemId.value = newId
   }
 
-  const handleFocusChange = (ev: MouseEvent) => {
-    const topItem = graph.getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
-    const canFocus = topItem && FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)
-    if (!canFocus) return setFocus(undefined)
+  const handleTextArea = (shape: Shape) => {
 
-    setFocus(topItem.id)
+    // shapes must return that actual object used to build the shape
+    // we are blocked until then!
+    console.log('BLOCKED!')
+
+    // const textInputHandler = (str: string) => {
+    //   const edge = graph.getEdge(topItem.id)
+    //   if (!edge) throw new Error('Textarea only implemented for edges')
+    //   const newWeight = graph.settings.value.edgeInputToWeight(str)
+    //   if (!newWeight) return
+    //   if (edge.weight === newWeight) return
+    //   edge.weight = newWeight
+    //   graph.eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
+    // }
   }
 
-  const handleTextAreaFocus = (ev: MouseEvent) => {
-    const { offsetX: x, offsetY: y } = ev
-    const topItem = graph.getDrawItemsByCoordinates(x, y).pop()
+
+  const handleFocusChange = (ev: MouseEvent) => {
+
+    const { offsetX: x , offsetY: y } = ev
+    setFocus(undefined)
+
+    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
     if (!topItem) return
 
-    const inText = topItem.shape.textHitbox?.({ x, y })
-    // const textArea = topItem.shape.textArea
-    if (!inText) return
+    // handle text areas
+    const inATextArea = topItem.shape.textHitbox?.({ x, y })
+    const canEdit = inATextArea && true // TODO replace true with a check for textArea.editable
+    if (canEdit) return handleTextArea(topItem.shape)
 
-    const textInputHandler = (str: string) => {
-      const edge = graph.getEdge(topItem.id)
-      if (!edge) throw new Error('Textarea only implemented for edges')
-      const newWeight = graph.settings.value.edgeInputToWeight(str)
-      if (!newWeight) return
-      if (edge.weight === newWeight) return
-      edge.weight = newWeight
-      graph.eventBus.onEdgeWeightChange.forEach(fn => fn(edge))
-    }
+    const canFocus = FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)
+    if (!canFocus) return
 
-    setFocus(undefined)
+    setFocus(topItem.id)
   }
 
   const resetFocus = () => setFocus(undefined)
@@ -85,7 +93,6 @@ export const useFocusGraph = (
   graph.subscribe('onGraphReset', resetFocus)
   graph.subscribe('onMouseDown', handleFocusChange)
   graph.subscribe('onNodeAdded', setFocusToAddedNode)
-  graph.subscribe('onClick', handleTextAreaFocus)
 
   const focusedItem = computed<FocusedItem | undefined>(() => {
     if (!focusedItemId.value) return

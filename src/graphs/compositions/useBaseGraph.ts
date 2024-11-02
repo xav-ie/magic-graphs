@@ -239,10 +239,10 @@ export const useBaseGraph = (
     repaintMoveNode()
   }
 
-  const getDrawItemsByCoordinates = (x: number, y: number) => {
+  const getSchemaItemsByCoordinates = (x: number, y: number) => {
     return aggregator.value
       .sort((a, b) => a.priority - b.priority)
-      .filter(item => item.shape.hitbox({ x, y }))
+      .filter(item => item.shape.hitbox({ x, y }) || item.shape.textHitbox?.({ x, y }))
   }
 
   /**
@@ -251,7 +251,7 @@ export const useBaseGraph = (
     @returns the node at given coords or undefined if not there or obscured by another schema item
   */
   const getNodeByCoordinates = (x: number, y: number) => {
-    const topItem = getDrawItemsByCoordinates(x, y).pop()
+    const topItem = getSchemaItemsByCoordinates(x, y).pop()
     if (!topItem) return
     if (topItem.graphType !== 'node') return
     return getNode(topItem.id)
@@ -373,7 +373,7 @@ export const useBaseGraph = (
     removeEdge,
 
     getNodeByCoordinates,
-    getDrawItemsByCoordinates,
+    getSchemaItemsByCoordinates,
 
     eventBus,
     subscribe,

@@ -61,7 +61,7 @@ export const useMarqueeGraph = (
   const engageSelectionBox = (event: MouseEvent) => {
     marqueedItemIDs.clear()
     const { offsetX: x, offsetY: y } = event
-    const items = graph.getDrawItemsByCoordinates(x, y)
+    const items = graph.getSchemaItemsByCoordinates(x, y)
     if (items.length > 0) return
     hideNodeAnchors()
     selectionBox.value = {
@@ -91,7 +91,7 @@ export const useMarqueeGraph = (
     const key = `${x}:${y}`
     const res = coordinateCache.get(key);
     if (res === undefined) {
-      const topItem = graph.getDrawItemsByCoordinates(xInp, yInp).pop()
+      const topItem = graph.getSchemaItemsByCoordinates(xInp, yInp).pop()
       coordinateCache.set(key, topItem ?? null)
       return topItem
     }

@@ -265,7 +265,7 @@ export const useNodeAnchorGraph = (
    * @returns the anchor at the given coordinates if it exists or undefined
    */
   const getAnchor = (x: number, y: number) => {
-    const topItem = graph.getDrawItemsByCoordinates(x, y).pop()
+    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
     if (!topItem || topItem.graphType !== 'node-anchor') return
     const { id: anchorId } = topItem
     return nodeAnchors.value.find((anchor) => anchor.id === anchorId)
@@ -303,7 +303,7 @@ export const useNodeAnchorGraph = (
    */
   const updateParentNode = (ev: MouseEvent) => {
     if (activeAnchor.value || !settings.value.nodeAnchors) return
-    const topItem = graph.getDrawItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
+    const topItem = graph.getSchemaItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     if (!topItem) return parentNode.value = undefined
     else if (topItem.graphType === 'node-anchor') return
     else if (topItem.graphType === 'node') return parentNode.value = graph.getNode(topItem.id)
