@@ -1,13 +1,11 @@
 import { Server } from 'socket.io'
-
-type GNode = {}
-type GEdge = {}
+import type { GEdge, GNode } from './graphTypes'
 
 interface GraphEvents {
   nodeAdded: (node: GNode) => void
-  nodeRemoved: (node: GNode) => void
+  nodeRemoved: (node: GNode['id']) => void
   edgeAdded: (edge: GEdge) => void
-  edgeRemoved: (edge: GEdge) => void
+  edgeRemoved: (edge: GEdge['id']) => void
 }
 
 const io = new Server<GraphEvents, GraphEvents, {}, {}>({
