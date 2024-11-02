@@ -37,12 +37,17 @@ import { fractionToDecimal } from '@utils/fracDecConverter/fracDec';
 import { useAggregator } from '@graph/useAggregator';
 import {
   ADD_NODE_OPTIONS_DEFAULTS,
-  REMOVE_NODE_OPTIONS_DEFAULTS
+  REMOVE_NODE_OPTIONS_DEFAULTS,
+  ADD_EDGE_OPTIONS_DEFAULTS,
+  REMOVE_EDGE_OPTIONS_DEFAULTS,
 } from '@graph/baseGraphAPIs';
 import type {
   AddNodeOptions,
-  RemoveNodeOptions
+  RemoveNodeOptions,
+  AddEdgeOptions,
+  RemoveEdgeOptions,
 } from '@graph/baseGraphAPIs';
+import type { PartiallyPartial } from '@utils/types';
 
 export type BaseGraphSettings = {
   /**
@@ -199,15 +204,17 @@ export const useBaseGraph = (
   const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
   const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
 
-  type AddNode = Omit<GNode, 'id' | 'label'> & { label?: GNode['label'] }
-  const addNode = (node: AddNode, options: Partial<AddNodeOptions> = {}) => {
+  const addNode = (
+    node: PartiallyPartial<GNode, 'id' | 'label'>,
+    options: Partial<AddNodeOptions> = {}
+  ) => {
     const fullOptions = {
       ...ADD_NODE_OPTIONS_DEFAULTS,
       ...options
     }
 
     const newNode = {
-      id: generateId(),
+      id: node.id ?? generateId(),
       label: node.label ?? getNewNodeLabel(),
       x: node.x,
       y: node.y,
@@ -260,7 +267,14 @@ export const useBaseGraph = (
     setTimeout(repaint('base-graph/remove-node'), 5)
   }
 
-  const addEdge = (edge: Omit<GEdge, 'id'>) => {
+  const addEdge = (
+    edge: PartiallyPartial<GEdge, 'id' | 'weight'>,
+    options: Partial<AddEdgeOptions> = {}
+  ) => {
+    const fullOptions = {
+      ...ADD_EDGE_OPTIONS_DEFAULTS,
+      ...options
+    }
 
     const undirectedEdgeOnPath = edges.value.find(e => {
       const connectedToFrom = e.to === edge.to && e.from === edge.from
@@ -277,7 +291,7 @@ export const useBaseGraph = (
     if (directedEdgeOnPath) return
 
     const newEdge: GEdge = {
-      id: generateId(),
+      id: edge.id ?? generateId(),
       to: edge.to,
       from: edge.from,
       weight: edge.weight ?? 1,
@@ -286,17 +300,27 @@ export const useBaseGraph = (
 
     edges.value.push(newEdge)
 
-    emit('onEdgeAdded', newEdge)
+    emit('onEdgeAdded', newEdge, fullOptions)
     emit('onStructureChange', nodes.value, edges.value)
     repaint('base-graph/add-edge')()
     return newEdge
   }
 
-  const removeEdge = (edgeId: GEdge['id']) => {
-    const edge = edges.value.find(edge => edge.id === edgeId)
-    if (!edge) return
+  const removeEdge = (
+    edgeId: GEdge['id'],
+    options: Partial<RemoveEdgeOptions> = {}
+  ) => {
+    const edge = getEdge(edgeId)
+    if (!edge) throw new Error('tried to remove edge that does not exist')
+
+    const fullOptions = {
+      ...REMOVE_EDGE_OPTIONS_DEFAULTS,
+      ...options
+    }
+
     edges.value = edges.value.filter(e => e.id !== edge.id)
-    emit('onEdgeRemoved', edge)
+
+    emit('onEdgeRemoved', edge, fullOptions)
     emit('onStructureChange', nodes.value, edges.value)
     repaint('base-graph/remove-edge')()
     return edge

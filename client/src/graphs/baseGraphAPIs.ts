@@ -35,3 +35,16 @@ export type RemoveNodeOptions = BroadcastOption
 export const REMOVE_NODE_OPTIONS_DEFAULTS: RemoveNodeOptions = {
   broadcast: true,
 }
+
+export type AddEdgeOptions = FocusOption & BroadcastOption
+
+export const ADD_EDGE_OPTIONS_DEFAULTS: AddEdgeOptions = {
+  broadcast: true,
+  focus: false,
+}
+
+export type RemoveEdgeOptions = BroadcastOption
+
+export const REMOVE_EDGE_OPTIONS_DEFAULTS: RemoveEdgeOptions = {
+  broadcast: true,
+}

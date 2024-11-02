@@ -2,7 +2,9 @@ import type { GEdge, GNode } from "@graph/types";
 import type { PersistentGraphSettings } from "@graph/compositions/usePersistentGraph";
 import type {
   AddNodeOptions,
-  RemoveNodeOptions
+  RemoveNodeOptions,
+  AddEdgeOptions,
+  RemoveEdgeOptions,
 } from "@graph/baseGraphAPIs";
 import type { GraphTheme } from "@graph/themes/types";
 import type { DeepPartial } from "@utils/types";
@@ -14,17 +16,18 @@ export type BaseGraphEvents = {
   onNodeAdded: (node: GNode, options: AddNodeOptions) => void;
   onNodeRemoved: (node: GNode, options: RemoveNodeOptions) => void;
 
-  onEdgeAdded: (edge: GEdge) => void;
-  onEdgeRemoved: (edge: GEdge) => void;
+  onEdgeAdded: (edge: GEdge, options: AddEdgeOptions) => void;
+  onEdgeRemoved: (edge: GEdge, options: RemoveEdgeOptions) => void;
 
   onEdgeWeightChange: (edge: GEdge) => void;
 
   /*
-    @description - this event is called when the graph needs to be redrawn
+    this event is called when the graph needs to be redrawn
     WARNING: items drawn to the canvas using ctx won't be tied to the graph event architecture.
     Use updateAggregator if you need drawn item to integrate with graph apis
   */
   onRepaint: (ctx: CanvasRenderingContext2D, repaintId: string) => void;
+
   onNodeHoverChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
   onGraphReset: () => void;
 

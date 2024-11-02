@@ -121,6 +121,14 @@ export const useFocusGraph = (
 
   graph.subscribe('onFocusChange', () => setTimeout(graph.repaint('focus-graph/on-focus-change'), 10))
 
+  graph.subscribe('onNodeAdded', (node, { focus }) => {
+    if (focus) setFocus(node.id)
+  })
+
+  graph.subscribe('onEdgeAdded', (edge, { focus }) => {
+    if (focus) setFocus(edge.id)
+  })
+
   const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
   onUnmounted(stopClickOutsideListener)
 

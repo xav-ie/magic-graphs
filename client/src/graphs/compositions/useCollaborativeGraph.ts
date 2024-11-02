@@ -23,8 +23,6 @@ export const useCollaborativeGraph = (
   const graph = usePersistentGraph(canvas, options)
   const socket: Socket<GraphEvents, GraphEvents> = io(getSocketURL())
 
-  const receivedIds = new Set<string>()
-
   socket.on('connect', () => {
     console.log('socket connected')
   })
@@ -51,28 +49,22 @@ export const useCollaborativeGraph = (
     graph.removeNode(nodeId, { broadcast: false })
   })
 
-  graph.subscribe('onEdgeAdded', (node) => {
+  graph.subscribe('onEdgeAdded', (node, { broadcast }) => {
+    if (!broadcast) return
     socket.emit('edgeAdded', node)
   })
 
   socket.on('edgeAdded', (node) => {
-    if (receivedIds.has(node.id)) return
-    receivedIds.add(node.id)
-    setTimeout(() => receivedIds.delete(node.id), STORE_ID_DURATION)
-
-    graph.addEdge(node)
+    graph.addEdge(node, { broadcast: false })
   })
 
-  graph.subscribe('onEdgeRemoved', (edge) => {
+  graph.subscribe('onEdgeRemoved', (edge, { broadcast }) => {
+    if (!broadcast) return
     socket.emit('edgeRemoved', edge.id)
   })
 
   socket.on('edgeRemoved', (edgeId) => {
-    if (receivedIds.has(edgeId)) return
-    receivedIds.add(edgeId)
-    setTimeout(() => receivedIds.delete(edgeId), STORE_ID_DURATION)
-
-    graph.removeEdge(edgeId)
+    graph.removeEdge(edgeId, { broadcast: false })
   })
 
   return graph
