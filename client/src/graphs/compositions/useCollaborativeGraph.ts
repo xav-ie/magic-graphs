@@ -5,6 +5,7 @@ import { io, Socket } from "socket.io-client";
 import type { GEdge, GNode } from "@graph/types";
 import colors from "@utils/colors";
 import { getRandomElement } from "@utils/array";
+import { rect } from "@shapes";
 
 const getSocketURL = () => {
   const isLocalhost = window.location.hostname === 'localhost'
@@ -105,16 +106,16 @@ export const useCollaborativeGraph = (
 
   const names = ['Dila', 'Mila', 'Pila', 'Lila', 'Fila', 'Gila', 'Hila', 'Kila', 'Zila', 'Xila']
   const collabColors = [
-    colors.AMBER_500,
-    colors.BLUE_500,
-    colors.CYAN_500,
-    colors.GREEN_500,
-    colors.INDIGO_500,
-    colors.LIME_500,
-    colors.ORANGE_500,
-    colors.PINK_500,
-    colors.PURPLE_500,
-    colors.RED_500,
+    colors.AMBER_600,
+    colors.BLUE_600,
+    colors.CYAN_600,
+    colors.GREEN_600,
+    colors.INDIGO_600,
+    colors.LIME_600,
+    colors.ORANGE_600,
+    colors.PINK_600,
+    colors.PURPLE_600,
+    colors.RED_600,
   ]
 
   const me = {
@@ -130,7 +131,8 @@ export const useCollaborativeGraph = (
     socket.emit('collaboratorJoined', me)
   }, 1000)
 
-  const collaboratorMoveRepaint = graph.repaint('collaborative-graph/collaborator-mouse-move')
+  const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'
+  const collaboratorMoveRepaint = graph.repaint(COLLAB_MOVE_REPAINT_ID)
 
   graph.subscribe('onMouseMove', (ev) => {
     const { offsetX, offsetY } = ev
@@ -147,6 +149,29 @@ export const useCollaborativeGraph = (
     if (!movedCollaborator) throw new Error('moving collaborator not found')
     movedCollaborator.mousePosition = collaboratorMove.mousePosition
     collaboratorMoveRepaint()
+  })
+
+  graph.subscribe('onRepaint', (ctx) => {
+    // TODO - update with border radius when its added to rect api
+    for (const collaborator of collaborators.value.values()) {
+      const width = collaborator.name.length * 12
+      const height = 24
+      rect({
+        at: {
+          x: collaborator.mousePosition.x - width / 2,
+          y: collaborator.mousePosition.y - height / 2,
+        },
+        width,
+        height,
+        color: collaborator.color,
+        text: {
+          content: collaborator.name,
+          color: colors.WHITE,
+          fontSize: 14,
+          fontWeight: 'bold',
+        },
+      }).draw(ctx)
+    }
   })
 
   return graph
