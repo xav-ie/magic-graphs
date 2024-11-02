@@ -2,12 +2,12 @@ import type { GEdge, SchemaItem } from '@graph/types'
 import { getConnectedNodes } from '@graph/helpers'
 import { getLargestAngularSpace } from '@shape/helpers'
 import type { BaseGraph } from '@graph/compositions/useBaseGraph'
+import { GOLDEN_RATIO } from '@utils/math'
 import {
   line,
   arrow,
   uturn
 } from '@shapes'
-import colors, { darkenHex } from '@utils/colors'
 
 export const getEdgeSchematic = (
   edge: GEdge,
@@ -53,7 +53,7 @@ export const getEdgeSchematic = (
     start,
     // filter to remove self-referencing edge
     // map to convert to { x, y } format
-    // filter to remove duplicates. (yonava: check if this is necessary, im not sure)
+    // filter to remove duplicates. Prevents bi-directional edges from causing angle issues when no other edges are present
     graph.edges.value
       .filter((e) => (e.from === from.id || e.to === to.id) && e.from !== e.to)
       .map((e) => {
@@ -63,7 +63,7 @@ export const getEdgeSchematic = (
       .filter((point, index, self) =>
         index === self.findIndex(
           (p) => p.x === point.x && p.y === point.y
-        )
+        ) 
       )
   )
 
@@ -89,8 +89,9 @@ export const getEdgeSchematic = (
   const { displayEdgeLabels } = graph.settings.value
   const textArea = displayEdgeLabels ? textAreaOnEdge : undefined
 
-  const upDistance = fromNodeSize * 2
-  const downDistance = upDistance - fromNodeSize
+  // Distance calculations based on the node size, border width, and the golden ratio
+  const upDistance = (fromNodeSize + fromNodeBorderWidth) * GOLDEN_RATIO;
+  const downDistance = upDistance - (fromNodeSize + fromNodeBorderWidth / 2);
 
   if (isSelfDirecting) {
     const shape = uturn({
