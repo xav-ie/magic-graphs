@@ -1,21 +1,40 @@
-import type { Ref } from "vue";
+import { ref, type Ref } from "vue";
 import type { UserEditableGraphOptions } from "./useUserEditableGraph";
 import { usePersistentGraph } from "./usePersistentGraph";
 import { io, Socket } from "socket.io-client";
 import type { GEdge, GNode } from "@graph/types";
+import colors from "@utils/colors";
+import { getRandomElement } from "@utils/array";
 
 const getSocketURL = () => {
   const isLocalhost = window.location.hostname === 'localhost'
   return isLocalhost ? 'http://localhost:3000' : '/'
 }
 
-interface GraphEvents {
+export type Collaborator = {
+  id: string
+  name: string
+  color: string
+  mousePosition: { x: number, y: number }
+}
+
+export type CollaboratorMove = {
+  id: Collaborator['id']
+  mousePosition: Collaborator['mousePosition']
+}
+
+export interface GraphEvents {
   nodeAdded: (node: GNode) => void
   nodeRemoved: (nodeId: GNode['id']) => void
   nodeMoved: (node: GNode) => void
 
   edgeAdded: (edge: GEdge) => void
   edgeRemoved: (edgeId: GEdge['id']) => void
+
+  collaboratorJoined: (collaborator: Collaborator) => void
+  collaboratorLeft: (collaboratorId: Collaborator['id']) => void
+
+  collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
 }
 
 export const useCollaborativeGraph = (
@@ -25,12 +44,18 @@ export const useCollaborativeGraph = (
   const graph = usePersistentGraph(canvas, options)
   const socket: Socket<GraphEvents, GraphEvents> = io(getSocketURL())
 
+  const collaborators = ref<Map<Collaborator['id'], Collaborator>>(new Map())
+
   socket.on('connect', () => {
     console.log('socket connected')
   })
 
   socket.on('connect_error', (error) => {
     console.log('socket connection error', error)
+  })
+
+  socket.on('collaboratorJoined', (collaborator) => {
+    collaborators.value.set(collaborator.id, collaborator)
   })
 
   graph.subscribe('onNodeAdded', (node, { broadcast }) => {
@@ -76,6 +101,42 @@ export const useCollaborativeGraph = (
 
   socket.on('edgeRemoved', (edgeId) => {
     graph.removeEdge(edgeId, { broadcast: false })
+  })
+
+  const names = ['Dila', 'Mila', 'Pila', 'Lila', 'Fila', 'Gila', 'Hila', 'Kila', 'Zila', 'Xila']
+  const collabColors = [
+    colors.AMBER_500,
+    colors.BLUE_500,
+    colors.CYAN_500,
+    colors.GREEN_500,
+    colors.INDIGO_500,
+    colors.LIME_500,
+    colors.ORANGE_500,
+    colors.PINK_500,
+    colors.PURPLE_500,
+    colors.RED_500,
+  ]
+
+  const me = {
+    id: '',
+    name: getRandomElement(names),
+    color: getRandomElement(collabColors),
+    mousePosition: { x: 0, y: 0 }
+  }
+
+  setTimeout(() => {
+    if (!socket.id) throw new Error('Socket ID is not defined')
+    me.id = socket.id
+    socket.emit('collaboratorJoined', me)
+  }, 1000)
+
+  graph.subscribe('onMouseMove', (ev) => {
+    const { offsetX, offsetY } = ev
+    me.mousePosition = { x: offsetX, y: offsetY }
+    socket.emit('collaboratorMoved', {
+      id: me.id,
+      mousePosition: me.mousePosition
+    })
   })
 
   return graph

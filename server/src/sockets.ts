@@ -1,14 +1,5 @@
 import { Server } from 'socket.io'
-import type { GEdge, GNode } from './graphTypes'
-
-interface GraphEvents {
-  nodeAdded: (node: GNode) => void
-  nodeRemoved: (node: GNode['id']) => void
-  nodeMoved: (node: GNode) => void
-
-  edgeAdded: (edge: GEdge) => void
-  edgeRemoved: (edge: GEdge['id']) => void
-}
+import type { GraphEvents } from './graphTypes'
 
 const io = new Server<GraphEvents, GraphEvents, {}, {}>({
   cors: {

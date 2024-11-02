@@ -42,3 +42,33 @@ export type GEdge = {
   weight: number,
   type: 'directed' | 'undirected',
 }
+
+/**
+ * useCollaborativeGraph types
+ */
+
+export type Collaborator = {
+  id: string
+  name: string
+  color: string
+  mousePosition: { x: number, y: number }
+}
+
+export type CollaboratorMove = {
+  id: Collaborator['id']
+  mousePosition: Collaborator['mousePosition']
+}
+
+export interface GraphEvents {
+  nodeAdded: (node: GNode) => void
+  nodeRemoved: (nodeId: GNode['id']) => void
+  nodeMoved: (node: GNode) => void
+
+  edgeAdded: (edge: GEdge) => void
+  edgeRemoved: (edgeId: GEdge['id']) => void
+
+  collaboratorJoined: (collaborator: Collaborator) => void
+  collaboratorLeft: (collaboratorId: Collaborator['id']) => void
+
+  collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
+}
