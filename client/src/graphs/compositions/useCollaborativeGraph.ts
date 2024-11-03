@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { readonly, ref } from "vue";
 import type { Ref } from "vue";
 import type { UserEditableGraphOptions } from "./useUserEditableGraph";
 import { usePersistentGraph } from "./usePersistentGraph";
@@ -45,7 +45,7 @@ export interface GraphEvents {
   toServerCollaboratorMoved: (collaboratorMove: ToServerCollaboratorMove) => void
   toClientCollaboratorMoved: (collaboratorMove: ToClientCollaboratorMove) => void
 
-  changeRoom: (roomId: string) => void
+  joinRoom: (JoinOptions: Collaborator & { roomId: string }) => void
 }
 
 const collabColors = [
@@ -80,7 +80,8 @@ export const useCollaborativeGraph = (
   const roomId = ref('')
 
   const joinCollaborativeRoom = (newRoomId: string) => {
-    socket.emit('changeRoom', newRoomId)
+    socket.emit('joinRoom', { ...self.value, roomId: newRoomId })
+    socket.emit('collaboratorJoined', self.value)
     roomId.value = newRoomId
   }
 
@@ -190,5 +191,11 @@ export const useCollaborativeGraph = (
     }
   })
 
-  return graph
+  return {
+    ...graph,
+    self,
+    joinCollaborativeRoom,
+    collaborators: readonly(collaborators),
+    collaborativeRoomId: readonly(roomId),
+  }
 }

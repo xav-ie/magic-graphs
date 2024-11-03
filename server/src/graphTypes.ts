@@ -54,10 +54,17 @@ export type Collaborator = {
   mousePosition: { x: number, y: number }
 }
 
-export type CollaboratorMove = {
-  id: Collaborator['id']
-  mousePosition: Collaborator['mousePosition']
+export type ToServerCollaboratorMove = {
+  x: number
+  y: number
 }
+
+export type ToClientCollaboratorMove = {
+  id: Collaborator['id']
+  x: number
+  y: number
+}
+
 
 export interface GraphEvents {
   nodeAdded: (node: GNode) => void
@@ -70,6 +77,8 @@ export interface GraphEvents {
   collaboratorJoined: (collaborator: Collaborator) => void
   collaboratorLeft: (collaboratorId: Collaborator['id']) => void
 
-  collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
+  toServerCollaboratorMoved: (collaboratorMove: ToServerCollaboratorMove) => void
+  toClientCollaboratorMoved: (collaboratorMove: ToClientCollaboratorMove) => void
 
+  joinRoom: (JoinOptions: Collaborator & { roomId: string }) => void
 }

@@ -1,5 +1,5 @@
 import { Server } from 'socket.io'
-import type { GraphEvents } from './graphTypes'
+import type { Collaborator, GraphEvents } from './graphTypes'
 import { createServer } from 'http'
 
 export const sockets = (httpServer: ReturnType<typeof createServer>) => {
@@ -9,7 +9,15 @@ export const sockets = (httpServer: ReturnType<typeof createServer>) => {
     },
   })
 
+  const collaboratorIdToCollaborator = new Map<string, Collaborator & { roomId: string }>()
+
   io.on('connection', (socket) => {
+    socket.on('joinRoom', (joinRoomDetails) => {
+      socket.join(joinRoomDetails.roomId)
+      collaboratorIdToCollaborator.set(socket.id, joinRoomDetails)
+      socket.broadcast.to(joinRoomDetails.roomId).emit('collaboratorJoined', joinRoomDetails)
+    })
+
     socket.on('nodeAdded', (node) => {
       socket.broadcast.emit('nodeAdded', node)
     })
@@ -30,12 +38,12 @@ export const sockets = (httpServer: ReturnType<typeof createServer>) => {
       socket.broadcast.emit('edgeRemoved', edge)
     })
 
-    socket.on('collaboratorJoined', (collaborator) => {
-      socket.broadcast.emit('collaboratorJoined', collaborator)
-    })
-
-    socket.on('collaboratorMoved', (collaboratorMove) => {
-      socket.broadcast.emit('collaboratorMoved', collaboratorMove)
+    socket.on('toServerCollaboratorMoved', ({ x, y }) => {
+      socket.broadcast.emit('toClientCollaboratorMoved', {
+        id: socket.id,
+        x,
+        y,
+      })
     })
 
     socket.on('disconnect', () => {
