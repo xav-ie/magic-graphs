@@ -119,9 +119,8 @@ export const useGraphBtns = (graph: Graph) => {
 
   const changeStorageKey: GButton = {
     label: () => `Change Storage Key (${storageKey.value})`,
-    action: () => {
-      // @ts-expect-error
-      persistSettings.value.storageKey = storageKey.value === 'graph' ? 'graph2' : 'graph';
+    action: () => graph.settings.value.persistent = {
+      storageKey: storageKey.value === 'graph' ? 'graph2' : 'graph',
     },
     color: () => 'blue',
     id: GRAPH_BUTTON_ID.storageKey,
@@ -157,12 +156,21 @@ export const useGraphBtns = (graph: Graph) => {
     id: GRAPH_BUTTON_ID.testRoom,
   };
 
-  return {
+  const log: GButton = {
+    label: () => 'Log',
+    action: () => console.log(''),
+    color: () => 'blue',
+    id: GRAPH_BUTTON_ID.log,
+  };
+
+  const btnObj = {
+    reset,
+    clearLocalStorage,
+
     // base
     changeNodeSize,
     toggleEdgeLabelDisplay,
     toggleEdgeLabelsEditable,
-    reset,
 
     // draggable
     toggleDraggable,
@@ -182,7 +190,13 @@ export const useGraphBtns = (graph: Graph) => {
     // collaborative
     toggleTestRoom,
 
-    // misc
-    clearLocalStorage,
+    log,
+  };
+
+  const btnArr = Object.values(btnObj);
+
+  return {
+    ...btnObj,
+    btnArr,
   }
 };

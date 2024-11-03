@@ -36,28 +36,7 @@
     emit("update:modelValue", nodesEdgesToAdjList(nodes, edges))
   );
 
-  const {
-    reset,
-    toggleUserEditable,
-    toggleEdgeType,
-    changeEdgeWeight,
-    clearLocalStorage,
-    toggleEdgeLabelDisplay,
-
-    // crazyBtn,
-  } = useGraphBtns(graph);
-
-  const btns = [
-    reset,
-    clearLocalStorage,
-    toggleUserEditable,
-    toggleEdgeType,
-    changeEdgeWeight,
-    colorizeBtn,
-    toggleEdgeLabelDisplay,
-
-    // crazyBtn,
-  ];
+  const { btnArr } = useGraphBtns(graph);
 
   useUserPreferredTheme(graph);
 
@@ -74,12 +53,8 @@
       />
     </div>
 
-    <div class="absolute flex gap-2 m-2">
-      <GraphBtns :btns="btns" />
-    </div>
-
-    <div class="absolute m-2 text-white font-bold text-lg bg-emerald-600 top-0 mt-12 px-4 py-1 rounded-xl">
-      <button @click="log">log</button>
+    <div class="absolute flex gap-2 m-2 flex flex-wrap w-[85%]">
+      <GraphBtns :btns="btnArr" />
     </div>
 
     <!-- <div class="bottom-0 absolute flex gap-2 m-2">

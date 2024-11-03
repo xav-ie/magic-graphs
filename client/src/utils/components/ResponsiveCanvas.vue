@@ -203,7 +203,7 @@
 <template>
   <!-- coordinates for debugging -->
   <p
-    class="z-50 dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none text-right pointer-events-none"
+    class="dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none text-right pointer-events-none"
   >
     ({{ canvasCoords.x }}, {{ canvasCoords.y }})
     <!-- <br />
