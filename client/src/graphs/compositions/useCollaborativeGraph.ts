@@ -45,6 +45,7 @@ export interface GraphEvents {
 
   edgeAdded: (edge: GEdge) => void
   edgeRemoved: (edgeId: GEdge['id']) => void
+  edgeWeightEdited: (edgeId: GEdge['id'], weight: number) => void
 
   collaboratorJoined: (collaborator: Collaborator) => void
   collaboratorLeft: (collaboratorId: Collaborator['id']) => void
@@ -57,10 +58,7 @@ export interface GraphEvents {
     mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
   ) => void
 
-  leaveRoom: (
-    roomId: string,
-    confirmationCallback: () => void
-  ) => void
+  leaveRoom: (confirmationCallback: () => void) => void
 }
 
 const collabColors = [
@@ -109,8 +107,6 @@ export const useCollaborativeGraph = (
           roomId.value = newRoomId
           // TODO - add load graph method to base graph that can handle
           // TODO - both persistent anf collaborative graph loadout switching
-          console.log('graph state received on join', graphState)
-          console.log('my id on join', meAsACollaborator.value.id)
           graph.nodes.value = graphState.nodes
           graph.edges.value = graphState.edges
           graph.repaint('collaborative-graph/join-room')()
@@ -123,7 +119,7 @@ export const useCollaborativeGraph = (
   const leaveCollaborativeRoom = async () => {
     if (!roomId.value) return roomId.value
     return new Promise<string>((res) => {
-      socket.emit('leaveRoom', roomId.value, () => {
+      socket.emit('leaveRoom', () => {
         res(roomId.value)
         roomId.value = ''
       })
@@ -198,6 +194,16 @@ export const useCollaborativeGraph = (
 
   socket.on('edgeRemoved', (edgeId) => {
     graph.removeEdge(edgeId, { broadcast: false })
+  })
+
+  graph.subscribe('onEdgeWeightChange', (edge) => {
+    socket.emit('edgeWeightEdited', edge.id, edge.weight)
+  })
+
+  socket.on('edgeWeightEdited', (edgeId, newWeight) => {
+    const edge = graph.getEdge(edgeId)
+    if (!edge) throw new Error('edge not found')
+    edge.weight = newWeight
   })
 
   graph.subscribe('onMouseMove', (ev) => {

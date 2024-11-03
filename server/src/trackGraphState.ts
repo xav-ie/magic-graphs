@@ -23,9 +23,7 @@ export const trackGraphState = () => {
   }
 
   const getGraphState = () => {
-    if (!roomId) throw new Error('Room id not set')
-
-    const graphState = roomIdToGraphState[roomId]
+    const graphState = roomIdToGraphState[getRoomId()]
 
     if (!graphState) {
       roomIdToGraphState[roomId] = {
@@ -35,6 +33,10 @@ export const trackGraphState = () => {
     }
 
     return roomIdToGraphState[roomId]
+  }
+
+  const deleteGraphState = () => {
+    delete roomIdToGraphState[getRoomId()]
   }
 
   const updateEdge = (edgeId: GEdge['id'], edge: Partial<GEdge>) => {
@@ -92,9 +94,11 @@ export const trackGraphState = () => {
   }
 
   return {
+    getRoomId,
     setRoomId,
 
     getGraphState,
+    deleteGraphState,
 
     addNode,
     removeNode,

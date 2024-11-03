@@ -7,7 +7,6 @@ export const sockets = (httpServer: ReturnType<typeof createServer>) => {
   const io = new Server<GraphEvents, GraphEvents, {}, {}>(httpServer, {
     cors: {
       origin: '*',
-      methods: ['GET', 'POST'],
     },
   })
 
@@ -15,7 +14,6 @@ export const sockets = (httpServer: ReturnType<typeof createServer>) => {
    * a map of collaborator ids to their details and the room they are in
    */
   const collaboratorIdToCollaborator: Record<string, Collaborator & { roomId: string }> = {}
-
 
   io.on('connection', (socket) => {
 
@@ -33,47 +31,42 @@ export const sockets = (httpServer: ReturnType<typeof createServer>) => {
       callback(collaboratorIdToCollaborator, tracker.getGraphState())
     })
 
-    socket.on('leaveRoom', (roomId, confirmationCallback) => {
-      socket.leave(roomId)
-      socket.broadcast.to(roomId).emit('collaboratorLeft', socket.id)
+    socket.on('leaveRoom', (confirmationCallback) => {
+      socket.leave(tracker.getRoomId())
+      socket.broadcast.to(tracker.getRoomId()).emit('collaboratorLeft', socket.id)
 
       delete collaboratorIdToCollaborator[socket.id]
       confirmationCallback()
     })
 
     socket.on('nodeAdded', (node) => {
-      const roomId = collaboratorIdToCollaborator[socket.id]?.roomId
-      if (!roomId) return
-      addNode(roomId, node)
-      socket.broadcast.to(roomId).emit('nodeAdded', node)
+      tracker.addNode(node)
+      socket.broadcast.to(tracker.getRoomId()).emit('nodeAdded', node)
     })
 
     socket.on('nodeRemoved', (nodeId) => {
-      const roomId = collaboratorIdToCollaborator[socket.id]?.roomId
-      if (!roomId) return
-      removeNode(roomId, nodeId)
-      socket.broadcast.to(roomId).emit('nodeRemoved', nodeId)
+      tracker.removeNode(nodeId)
+      socket.broadcast.to(tracker.getRoomId()).emit('nodeRemoved', nodeId)
     })
 
     socket.on('nodeMoved', (node) => {
-      const roomId = collaboratorIdToCollaborator[socket.id]?.roomId
-      if (!roomId) return
-      updateNode(roomId, node.id, node)
-      socket.broadcast.to(roomId).emit('nodeMoved', node)
+      tracker.updateNode(node.id, node)
+      socket.broadcast.to(tracker.getRoomId()).emit('nodeMoved', node)
     })
 
     socket.on('edgeAdded', (edge) => {
-      const roomId = collaboratorIdToCollaborator[socket.id]?.roomId
-      if (!roomId) return
-      addEdge(roomId, edge)
-      socket.broadcast.to(roomId).emit('edgeAdded', edge)
+      tracker.addEdge(edge)
+      socket.broadcast.to(tracker.getRoomId()).emit('edgeAdded', edge)
     })
 
     socket.on('edgeRemoved', (edgeId) => {
-      const roomId = collaboratorIdToCollaborator[socket.id]?.roomId
-      if (!roomId) return
-      removeEdge(roomId, edgeId)
-      socket.broadcast.to(roomId).emit('edgeRemoved', edgeId)
+      tracker.removeEdge(edgeId)
+      socket.broadcast.to(tracker.getRoomId()).emit('edgeRemoved', edgeId)
+    })
+
+    socket.on('edgeWeightEdited', (edgeId, newWeight) => {
+      tracker.updateEdge(edgeId, { weight: newWeight })
+      socket.broadcast.to(tracker.getRoomId()).emit('edgeWeightEdited', edgeId, newWeight)
     })
 
     socket.on('toServerCollaboratorMoved', ({ x, y }) => {

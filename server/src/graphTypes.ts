@@ -79,6 +79,7 @@ export interface GraphEvents {
 
   edgeAdded: (edge: GEdge) => void
   edgeRemoved: (edgeId: GEdge['id']) => void
+  edgeWeightEdited: (edgeId: GEdge['id'], weight: number) => void
 
   collaboratorJoined: (collaborator: Collaborator) => void
   collaboratorLeft: (collaboratorId: Collaborator['id']) => void
@@ -91,8 +92,5 @@ export interface GraphEvents {
     mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
   ) => void
 
-  leaveRoom: (
-    roomId: string,
-    confirmationCallback: () => void
-  ) => void
+  leaveRoom: (confirmationCallback: () => void) => void
 }
