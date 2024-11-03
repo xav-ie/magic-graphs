@@ -44,16 +44,26 @@ export const useMarqueeGraph = (
     const x2 = Math.max(at.x, at.x + width)
     const y1 = Math.min(at.y, at.y + height)
     const y2 = Math.max(at.y, at.y + height)
-    const surfaceArea = width * height
+    const surfaceArea = Math.abs(width * height)
     return { x1, x2, y1, y2, surfaceArea }
   }
 
   const disableNodeCreationNextTick = () => {
     const callbacks = graph.eventBus['onDblClick']
-    const nodeCreationFn = callbacks.values().next().value
-    if (nodeCreationFn && nodeCreationFn.name !== 'handleNodeCreation') {
-      throw new Error('Node creation function not found')
+
+    let nodeCreationFn;
+    for (const callback of callbacks) {
+      if (callback.name === 'handleNodeCreation') {
+        nodeCreationFn = callback
+        break
+      }
     }
+
+    if (!nodeCreationFn) {
+      console.error('Could not find node creation function')
+      return
+    }
+
     graph.unsubscribe('onDblClick', nodeCreationFn)
     setTimeout(() => graph.subscribe('onDblClick', nodeCreationFn), 10)
   }
