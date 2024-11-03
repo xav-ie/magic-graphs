@@ -14,43 +14,46 @@ export const getEdgeSchematic = (
   graph: Pick<BaseGraph, 'edges' | 'getNode' | 'getTheme' | 'settings'>,
 ): Omit<SchemaItem, 'priority'> | undefined => {
 
+  const WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE = 2
+
   const { from, to } = getConnectedNodes(edge, graph)
 
   const isThereAnEdgeGoingTheOtherWay = graph.edges.value.some(e => e.from === to.id && e.to === from.id)
   const isSelfDirecting = to === from
 
-  const spacingAwayFromNode = 3
-
-  const fromNodeSize = graph.getTheme('nodeSize', from) + spacingAwayFromNode
-  const toNodeSize = graph.getTheme('nodeSize', to) + spacingAwayFromNode
-
+  
   const fromNodeBorderWidth = graph.getTheme('nodeBorderWidth', from)
   const toNodeBorderWidth = graph.getTheme('nodeBorderWidth', to)
 
+  
+  const fromNodeSize = graph.getTheme('nodeSize', from)
+  const toNodeSize = graph.getTheme('nodeSize', to)
+  
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
-
-  const epiCenter = {
-    x: to.x - toNodeSize * Math.cos(angle),
-    y: to.y - toNodeSize * Math.sin(angle),
+  
+  const arrowHeadSpacingAwayFromNode = (toNodeBorderWidth / 2) + WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE
+  const arrowDrawLocation = {
+    x: to.x - (toNodeSize + arrowHeadSpacingAwayFromNode) * Math.cos(angle),
+    y: to.y - (toNodeSize + arrowHeadSpacingAwayFromNode) * Math.sin(angle),
   }
 
-  const start = { x: from.x, y: from.y }
-  const end = epiCenter
+  const edgeStart = { x: from.x, y: from.y }
+  const edgeEnd = arrowDrawLocation
 
   const edgeWidth = graph.getTheme('edgeWidth', edge)
 
   const bidirectionalEdgeSpacing = edgeWidth * 1.2
 
   if (isThereAnEdgeGoingTheOtherWay) {
-    start.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
-    start.y += Math.sin(angle + Math.PI / 2) * bidirectionalEdgeSpacing
+    edgeStart.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
+    edgeStart.y += Math.sin(angle + Math.PI / 2) * bidirectionalEdgeSpacing
 
-    end.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
-    end.y += Math.sin(angle + Math.PI / 2) * bidirectionalEdgeSpacing
+    edgeEnd.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
+    edgeEnd.y += Math.sin(angle + Math.PI / 2) * bidirectionalEdgeSpacing
   }
 
   const largestAngularSpace = getLargestAngularSpace(
-    start,
+    edgeStart,
     // filter to remove self-referencing edge
     // map to convert to { x, y } format
     // filter to remove duplicates. Prevents bi-directional edges from causing angle issues when no other edges are present
@@ -89,9 +92,8 @@ export const getEdgeSchematic = (
   const { displayEdgeLabels } = graph.settings.value
   const textArea = displayEdgeLabels ? textAreaOnEdge : undefined
 
-  // Distance calculations based on the node size, border width, and the golden ratio
   const upDistance = (fromNodeSize + fromNodeBorderWidth) * GOLDEN_RATIO;
-  const downDistance = upDistance - (fromNodeSize + fromNodeBorderWidth / 2);
+  const downDistance = upDistance - (fromNodeSize + fromNodeBorderWidth / 2) - WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE;
 
   if (isSelfDirecting) {
     const shape = uturn({
@@ -112,6 +114,7 @@ export const getEdgeSchematic = (
     }
   }
 
+  // does not draw if nodes are too close together
   const sumOfToAndFromNodeSize = fromNodeSize + fromNodeBorderWidth / 2 + toNodeSize + toNodeBorderWidth / 2
   const distanceSquaredBetweenNodes = (from.x - to.x) ** 2 + (from.y - to.y) ** 2
   const areNodesTouching = (sumOfToAndFromNodeSize ** 2) > distanceSquaredBetweenNodes
@@ -135,8 +138,8 @@ export const getEdgeSchematic = (
   }
 
   const shape = arrow({
-    start,
-    end,
+    start: edgeStart,
+    end: edgeEnd,
     width: edgeWidth,
     // TODO - must take into account of actual node size.
     // TODO - 32 is approx default node size but wont work if node size is different

@@ -20,8 +20,7 @@
       }
     }, 
     theme: {
-      nodeBorderWidth: 50,
-      nodeSize: 30
+      nodeSize: 100
     },
   });
 
