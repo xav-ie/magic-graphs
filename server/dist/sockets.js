@@ -10,10 +10,11 @@ const sockets = (httpServer) => {
     });
     const collaboratorIdToCollaborator = new Map();
     io.on('connection', (socket) => {
-        socket.on('joinRoom', (joinRoomDetails) => {
+        socket.on('joinRoom', (joinRoomDetails, mapCallback) => {
             socket.join(joinRoomDetails.roomId);
-            collaboratorIdToCollaborator.set(socket.id, joinRoomDetails);
             socket.broadcast.to(joinRoomDetails.roomId).emit('collaboratorJoined', joinRoomDetails);
+            mapCallback(collaboratorIdToCollaborator);
+            collaboratorIdToCollaborator.set(socket.id, joinRoomDetails);
         });
         socket.on('nodeAdded', (node) => {
             socket.broadcast.emit('nodeAdded', node);

@@ -45,7 +45,15 @@ export interface GraphEvents {
   toServerCollaboratorMoved: (collaboratorMove: ToServerCollaboratorMove) => void
   toClientCollaboratorMoved: (collaboratorMove: ToClientCollaboratorMove) => void
 
-  joinRoom: (JoinOptions: Collaborator & { roomId: string }) => void
+  joinRoom: (
+    JoinOptions: Collaborator & { roomId: string },
+    mapCallback: (collaboratorMap: Map<Collaborator['id'], Collaborator>) => void
+  ) => void
+
+  leaveRoom: (
+    roomId: string,
+    confirmationCallback: () => void
+  ) => void
 }
 
 const collabColors = [
@@ -79,10 +87,25 @@ export const useCollaborativeGraph = (
 
   const roomId = ref('')
 
-  const joinCollaborativeRoom = (newRoomId: string) => {
-    socket.emit('joinRoom', { ...self.value, roomId: newRoomId })
-    socket.emit('collaboratorJoined', self.value)
-    roomId.value = newRoomId
+  const joinCollaborativeRoom = async (newRoomId: string) => {
+    await leaveCollaborativeRoom()
+    return new Promise<string>((res) => {
+      socket.emit('joinRoom', { ...self.value, roomId: newRoomId }, (collabMap) => {
+        collaborators.value = collabMap
+        roomId.value = newRoomId
+        res(newRoomId)
+      })
+    })
+  }
+
+  const leaveCollaborativeRoom = async () => {
+    if (!roomId.value) return Promise.resolve('')
+    return new Promise<string>((res) => {
+      socket.emit('leaveRoom', roomId.value, () => {
+        res(roomId.value)
+        roomId.value = ''
+      })
+    })
   }
 
   socket.on('connect', () => {
@@ -96,6 +119,11 @@ export const useCollaborativeGraph = (
 
   socket.on('disconnect', () => {
     console.log('socket disconnected')
+  })
+
+  socket.on('collaboratorLeft', (collaboratorId) => {
+    console.log('collaborator left', collaboratorId)
+    collaborators.value.delete(collaboratorId)
   })
 
   socket.on('collaboratorJoined', (collaborator) => {

@@ -134,18 +134,27 @@ export const useGraphBtns = (graph: Graph) => {
     id: GRAPH_BUTTON_ID.clearLocalStorage,
   };
 
-  const crazyBtn: GButton = {
+  const persistentGraphClone: GButton = {
     label: () => 'Clone Search Visualizer Graph',
     action: () => graph.settings.value.persistent = {
       storageKey: "search-visualizer-graph"
     },
     color: () => 'amber',
-    id: 'temp',
+    id: GRAPH_BUTTON_ID.persistentGraphClone,
   };
+
+  const toggleTestRoom: GButton = {
+    label: () => graph.collaborativeRoomId.value === 'test' ? 'Leave Test Room' : 'Join Test Room',
+    action: () => {
+      const isInRoom = graph.collaborativeRoomId.value === 'test';
+      if (isInRoom) {
+        graph.leaveRoom();
+      }
+    }
 
   return {
 
-    crazyBtn,
+    persistentGraphClone,
 
     // base theme
     changeNodeSize,
