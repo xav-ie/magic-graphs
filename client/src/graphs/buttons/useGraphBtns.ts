@@ -143,7 +143,13 @@ export const useGraphBtns = (graph: Graph) => {
   };
 
   const toggleTestRoom: GButton = {
-    label: () => graph.collaborativeRoomId.value === 'test' ? 'Leave Test Room' : 'Join Test Room',
+    label: () => {
+      const isInRoom = graph.collaborativeRoomId.value === 'test';
+      const peopleInRoom = graph.collaboratorCount.value + 1; // +1 for self
+      const inRoomText = `Leave Test Room ${peopleInRoom}`;
+      const notInRoomText = 'Join Test Room';
+      return isInRoom ? inRoomText : notInRoomText;
+    },
     action: () => {
       const isInRoom = graph.collaborativeRoomId.value === 'test';
       if (isInRoom) {

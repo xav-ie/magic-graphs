@@ -127,11 +127,13 @@ export const useCollaborativeGraph = (
   socket.on('collaboratorLeft', (collaboratorId) => {
     console.log('collaborator left', collaboratorId)
     delete collaborators.value[collaboratorId]
+    graph.repaint('collaborative-graph/collaborator-left')()
   })
 
   socket.on('collaboratorJoined', (collaborator) => {
     console.log('collaborator joined', collaborator)
     collaborators.value[collaborator.id] = collaborator
+    graph.repaint('collaborative-graph/collaborator-joined')()
   })
 
   graph.subscribe('onNodeAdded', (node, { broadcast }) => {
