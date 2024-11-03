@@ -146,15 +146,17 @@ export const useGraphBtns = (graph: Graph) => {
     label: () => {
       const isInRoom = graph.collaborativeRoomId.value === 'test';
       const peopleInRoom = graph.collaboratorCount.value + 1; // +1 for self
-      const inRoomText = `Leave Test Room ${peopleInRoom}`;
+      const inRoomText = `Leave Test Room (${peopleInRoom} In Room)`;
       const notInRoomText = 'Join Test Room';
       return isInRoom ? inRoomText : notInRoomText;
     },
     action: () => {
       const isInRoom = graph.collaborativeRoomId.value === 'test';
+      const names = ['Dila', 'Shannon', 'Bella', 'Joy']
       if (isInRoom) {
         graph.leaveCollaborativeRoom();
       } else {
+        graph.meAsACollaborator.value.name = names[Math.floor(Math.random() * names.length)];
         graph.joinCollaborativeRoom('test');
       }
     },

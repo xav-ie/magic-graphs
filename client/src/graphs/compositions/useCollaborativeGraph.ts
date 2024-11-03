@@ -83,7 +83,7 @@ export const useCollaborativeGraph = (
 
   const self = ref<Collaborator>({
     id: '',
-    name: 'Dila',
+    name: 'Anonymous',
     color: getRandomElement(collabColors),
     mousePosition: { x: 0, y: 0 }
   })
@@ -91,6 +91,8 @@ export const useCollaborativeGraph = (
   const roomId = ref('')
 
   const joinCollaborativeRoom = async (newRoomId: string) => {
+    if (roomId.value === newRoomId) return roomId.value
+    else if (!newRoomId) throw new Error('non-empty string newRoomId is required')
     await leaveCollaborativeRoom()
     return new Promise<string>((res) => {
       socket.emit('joinRoom', { ...self.value, roomId: newRoomId }, (collabMap) => {
@@ -102,7 +104,7 @@ export const useCollaborativeGraph = (
   }
 
   const leaveCollaborativeRoom = async () => {
-    if (!roomId.value) return Promise.resolve('')
+    if (!roomId.value) return roomId.value
     return new Promise<string>((res) => {
       socket.emit('leaveRoom', roomId.value, () => {
         res(roomId.value)
