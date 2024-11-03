@@ -71,4 +71,5 @@ export interface GraphEvents {
   collaboratorLeft: (collaboratorId: Collaborator['id']) => void
 
   collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
+
 }

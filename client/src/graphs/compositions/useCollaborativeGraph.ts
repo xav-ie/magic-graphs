@@ -20,9 +20,15 @@ export type Collaborator = {
   mousePosition: { x: number, y: number }
 }
 
-export type CollaboratorMove = {
+export type ToServerCollaboratorMove = {
+  x: number
+  y: number
+}
+
+export type ToClientCollaboratorMove = {
   id: Collaborator['id']
-  mousePosition: Collaborator['mousePosition']
+  x: number
+  y: number
 }
 
 export interface GraphEvents {
@@ -36,8 +42,24 @@ export interface GraphEvents {
   collaboratorJoined: (collaborator: Collaborator) => void
   collaboratorLeft: (collaboratorId: Collaborator['id']) => void
 
-  collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
+  toServerCollaboratorMoved: (collaboratorMove: ToServerCollaboratorMove) => void
+  toClientCollaboratorMoved: (collaboratorMove: ToClientCollaboratorMove) => void
+
+  changeRoom: (roomId: string) => void
 }
+
+const collabColors = [
+  colors.AMBER_600,
+  colors.BLUE_600,
+  colors.CYAN_600,
+  colors.GREEN_600,
+  colors.INDIGO_600,
+  colors.LIME_600,
+  colors.ORANGE_600,
+  colors.PINK_600,
+  colors.PURPLE_600,
+  colors.RED_600,
+]
 
 export const useCollaborativeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -48,12 +70,32 @@ export const useCollaborativeGraph = (
 
   const collaborators = ref<Map<Collaborator['id'], Collaborator>>(new Map())
 
+  const self = ref<Collaborator>({
+    id: '',
+    name: 'Dila',
+    color: getRandomElement(collabColors),
+    mousePosition: { x: 0, y: 0 }
+  })
+
+  const roomId = ref('')
+
+  const joinCollaborativeRoom = (newRoomId: string) => {
+    socket.emit('changeRoom', newRoomId)
+    roomId.value = newRoomId
+  }
+
   socket.on('connect', () => {
     console.log('socket connected')
+    if (!socket.id) throw new Error('Socket ID is not defined')
+    self.value.id = socket.id
   })
 
   socket.on('connect_error', (error) => {
     console.log('socket connection error', error)
+  })
+
+  socket.on('disconnect', () => {
+    console.log('socket disconnected')
   })
 
   socket.on('collaboratorJoined', (collaborator) => {
@@ -105,50 +147,23 @@ export const useCollaborativeGraph = (
     graph.removeEdge(edgeId, { broadcast: false })
   })
 
-  const names = ['Dila', 'Mila', 'Pila', 'Lila', 'Fila', 'Gila', 'Hila', 'Kila', 'Zila', 'Xila']
-  const collabColors = [
-    colors.AMBER_600,
-    colors.BLUE_600,
-    colors.CYAN_600,
-    colors.GREEN_600,
-    colors.INDIGO_600,
-    colors.LIME_600,
-    colors.ORANGE_600,
-    colors.PINK_600,
-    colors.PURPLE_600,
-    colors.RED_600,
-  ]
-
-  const me = {
-    id: '',
-    name: getRandomElement(names),
-    color: getRandomElement(collabColors),
-    mousePosition: { x: 0, y: 0 }
-  }
-
-  setTimeout(() => {
-    if (!socket.id) throw new Error('Socket ID is not defined')
-    me.id = socket.id
-    socket.emit('collaboratorJoined', me)
-  }, 1000)
-
   const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'
   const collaboratorMoveRepaint = graph.repaint(COLLAB_MOVE_REPAINT_ID)
 
   graph.subscribe('onMouseMove', (ev) => {
     const { offsetX, offsetY } = ev
-    me.mousePosition = { x: offsetX, y: offsetY }
-    socket.emit('collaboratorMoved', {
-      id: me.id,
-      mousePosition: me.mousePosition
+    self.value.mousePosition = { x: offsetX, y: offsetY }
+    socket.emit('toServerCollaboratorMoved', {
+      x: offsetX,
+      y: offsetY
     })
     collaboratorMoveRepaint()
   })
 
-  socket.on('collaboratorMoved', (collaboratorMove) => {
-    const movedCollaborator = collaborators.value.get(collaboratorMove.id)
+  socket.on('toClientCollaboratorMoved', ({ x, y, id }) => {
+    const movedCollaborator = collaborators.value.get(id)
     if (!movedCollaborator) throw new Error('moving collaborator not found')
-    movedCollaborator.mousePosition = collaboratorMove.mousePosition
+    movedCollaborator.mousePosition = { x, y }
     collaboratorMoveRepaint()
   })
 
