@@ -1,4 +1,4 @@
-import { readonly, ref } from "vue";
+import { computed, readonly, ref } from "vue";
 import type { Ref } from "vue";
 import type { UserEditableGraphOptions } from "./useUserEditableGraph";
 import { usePersistentGraph } from "./usePersistentGraph";
@@ -31,6 +31,8 @@ export type ToClientCollaboratorMove = {
   y: number
 }
 
+type CollaboratorMap = Record<Collaborator['id'], Collaborator>
+
 export interface GraphEvents {
   nodeAdded: (node: GNode) => void
   nodeRemoved: (nodeId: GNode['id']) => void
@@ -47,7 +49,7 @@ export interface GraphEvents {
 
   joinRoom: (
     JoinOptions: Collaborator & { roomId: string },
-    mapCallback: (collaboratorMap: Map<Collaborator['id'], Collaborator>) => void
+    mapCallback: (collabMap: CollaboratorMap) => void
   ) => void
 
   leaveRoom: (
@@ -76,7 +78,8 @@ export const useCollaborativeGraph = (
   const graph = usePersistentGraph(canvas, options)
   const socket: Socket<GraphEvents, GraphEvents> = io(getSocketURL())
 
-  const collaborators = ref<Map<Collaborator['id'], Collaborator>>(new Map())
+  const collaborators = ref<CollaboratorMap>({})
+  const collaboratorCount = computed(() => Object.keys(collaborators.value).length)
 
   const self = ref<Collaborator>({
     id: '',
@@ -123,16 +126,16 @@ export const useCollaborativeGraph = (
 
   socket.on('collaboratorLeft', (collaboratorId) => {
     console.log('collaborator left', collaboratorId)
-    collaborators.value.delete(collaboratorId)
+    delete collaborators.value[collaboratorId]
   })
 
   socket.on('collaboratorJoined', (collaborator) => {
     console.log('collaborator joined', collaborator)
-    collaborators.value.set(collaborator.id, collaborator)
+    collaborators.value[collaborator.id] = collaborator
   })
 
   graph.subscribe('onNodeAdded', (node, { broadcast }) => {
-    if (!broadcast || collaborators.value.size < 1) return
+    if (!broadcast || collaboratorCount.value < 1) return
     socket.emit('nodeAdded', node)
   })
 
@@ -141,7 +144,7 @@ export const useCollaborativeGraph = (
   })
 
   graph.subscribe('onNodeRemoved', (node, { broadcast }) => {
-    if (!broadcast || collaborators.value.size < 1) return
+    if (!broadcast || collaboratorCount.value < 1) return
     socket.emit('nodeRemoved', node.id)
   })
 
@@ -150,7 +153,7 @@ export const useCollaborativeGraph = (
   })
 
   graph.subscribe('onNodeMoved', (node, { broadcast }) => {
-    if (!broadcast || collaborators.value.size < 1) return
+    if (!broadcast || collaboratorCount.value < 1) return
     socket.emit('nodeMoved', node)
   })
 
@@ -159,7 +162,7 @@ export const useCollaborativeGraph = (
   })
 
   graph.subscribe('onEdgeAdded', (node, { broadcast }) => {
-    if (!broadcast || collaborators.value.size < 1) return
+    if (!broadcast || collaboratorCount.value < 1) return
     socket.emit('edgeAdded', node)
   })
 
@@ -168,7 +171,7 @@ export const useCollaborativeGraph = (
   })
 
   graph.subscribe('onEdgeRemoved', (edge, { broadcast }) => {
-    if (!broadcast || collaborators.value.size < 1) return
+    if (!broadcast || collaboratorCount.value < 1) return
     socket.emit('edgeRemoved', edge.id)
   })
 
@@ -177,7 +180,7 @@ export const useCollaborativeGraph = (
   })
 
   graph.subscribe('onMouseMove', (ev) => {
-    if (collaborators.value.size < 1) return
+    if (collaboratorCount.value < 1) return
     const { offsetX: x, offsetY: y } = ev
     self.value.mousePosition = { x, y }
     socket.emit('toServerCollaboratorMoved', self.value.mousePosition)
@@ -186,7 +189,7 @@ export const useCollaborativeGraph = (
   const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'
   const collaboratorMoveRepaint = graph.repaint(COLLAB_MOVE_REPAINT_ID)
   socket.on('toClientCollaboratorMoved', ({ x, y, id }) => {
-    const movedCollaborator = collaborators.value.get(id)
+    const movedCollaborator = collaborators.value[id]
     if (!movedCollaborator) throw new Error('moving collaborator not found')
     movedCollaborator.mousePosition = { x, y }
     collaboratorMoveRepaint()
@@ -194,7 +197,7 @@ export const useCollaborativeGraph = (
 
   graph.subscribe('onRepaint', (ctx) => {
     // TODO - update with border radius when its added to rect api
-    for (const collaborator of collaborators.value.values()) {
+    for (const collaborator of Object.values(collaborators.value)) {
       const width = collaborator.name.length * 12
       const height = 24
       rect({
@@ -234,6 +237,10 @@ export const useCollaborativeGraph = (
      * the collaborators in the current room, not including this client
      */
     collaborators: readonly(collaborators),
+    /**
+     * the number of collaborators in the current room, not including this client
+     */
+    collaboratorCount: readonly(collaboratorCount),
     /**
      * the id of the current room this client is in
      */

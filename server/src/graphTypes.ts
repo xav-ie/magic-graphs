@@ -81,7 +81,7 @@ export interface GraphEvents {
 
   joinRoom: (
     JoinOptions: Collaborator & { roomId: string },
-    mapCallback: (collaboratorMap: Map<Collaborator['id'], Collaborator>) => void
+    mapCallback: (collabMap: Record<Collaborator['id'], Collaborator>) => void
   ) => void
 
   leaveRoom: (
