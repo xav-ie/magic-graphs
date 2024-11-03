@@ -18,6 +18,11 @@ export type DeepRequired<T> = {
 };
 
 /**
+ * makes only certain keys K in an object T optional
+ */
+export type PartiallyPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+
+/**
  * helper types for nested keys
  */
 type AcceptableKeys = string | number | symbol

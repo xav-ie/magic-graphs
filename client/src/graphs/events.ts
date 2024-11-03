@@ -1,26 +1,36 @@
 import type { GEdge, GNode } from "@graph/types";
+import type { PersistentGraphSettings } from "@graph/compositions/usePersistentGraph";
+import type {
+  AddNodeOptions,
+  RemoveNodeOptions,
+  MoveNodeOptions,
+  AddEdgeOptions,
+  RemoveEdgeOptions,
+} from "@graph/baseGraphAPIs";
+import type { GraphTheme } from "@graph/themes/types";
 import type { DeepPartial } from "@utils/types";
-import type { PersistentGraphSettings } from "./compositions/usePersistentGraph";
-import type { GraphTheme } from "./themes/types";
 
 export type BaseGraphEvents = {
   /* graph dataflow events */
   onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
   onFocusChange: (newItemId: string | undefined, oldItemId: string | undefined) => void;
-  onNodeAdded: (node: GNode) => void;
-  onNodeRemoved: (node: GNode) => void;
 
-  onEdgeAdded: (edge: GEdge) => void;
-  onEdgeRemoved: (edge: GEdge) => void;
+  onNodeAdded: (node: GNode, options: AddNodeOptions) => void;
+  onNodeRemoved: (node: GNode, options: RemoveNodeOptions) => void;
+  onNodeMoved: (node: GNode, options: MoveNodeOptions) => void;
+
+  onEdgeAdded: (edge: GEdge, options: AddEdgeOptions) => void;
+  onEdgeRemoved: (edge: GEdge, options: RemoveEdgeOptions) => void;
 
   onEdgeWeightChange: (edge: GEdge) => void;
 
   /*
-    @description - this event is called when the graph needs to be redrawn
+    this event is called when the graph needs to be redrawn
     WARNING: items drawn to the canvas using ctx won't be tied to the graph event architecture.
     Use updateAggregator if you need drawn item to integrate with graph apis
   */
   onRepaint: (ctx: CanvasRenderingContext2D, repaintId: string) => void;
+
   onNodeHoverChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
   onGraphReset: () => void;
 
@@ -80,21 +90,28 @@ export type BaseGraphEmitter = Emitter<BaseGraphEvents>;
 export const getInitialEventBus = () => ({
   onStructureChange: new Set(),
   onFocusChange: new Set(),
+
   onNodeAdded: new Set(),
   onNodeRemoved: new Set(),
+  onNodeMoved: new Set(),
+
   onEdgeAdded: new Set(),
   onEdgeRemoved: new Set(),
   onEdgeWeightChange: new Set(),
+
   onRepaint: new Set(),
   onNodeHoverChange: new Set(),
   onGraphReset: new Set(),
+
   onClick: new Set(),
   onMouseDown: new Set(),
   onMouseUp: new Set(),
   onMouseMove: new Set(),
   onDblClick: new Set(),
   onContextMenu: new Set(),
+
   onKeydown: new Set(),
+
   onThemeChange: new Set(),
   onSettingsChange: new Set(),
 } as MappingsToEventBus<BaseGraphEvents>)

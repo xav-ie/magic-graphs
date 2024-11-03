@@ -1,4 +1,5 @@
-import type { AdjacencyList } from "@/graphConverters";
+import type { AdjacencyList } from "@graph/converters";
+// import type { GNode } from "@graph/types";
 
 export function getStronglyConnectedComponents(adjList: AdjacencyList) {
   const nodeToIndex = new Map<number, number>();
@@ -17,6 +18,7 @@ export function getStronglyConnectedComponents(adjList: AdjacencyList) {
     if (node === undefined) throw new Error('node not found');
     const neighbors = adjList[node];
     const neighborsIndices = neighbors.map((neighbor) => {
+      // @ts-ignore this implementation must be revisited
       const index = nodeToIndex.get(neighbor);
       if (index === undefined) throw new Error('index not found');
       return index;
