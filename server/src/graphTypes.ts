@@ -88,7 +88,8 @@ export interface GraphEvents {
   toClientCollaboratorMoved: (collaboratorMove: ToClientCollaboratorMove) => void
 
   joinRoom: (
-    JoinOptions: Collaborator & { roomId: string },
+    joinOptions: Collaborator & { roomId: string },
+    joinWithGraphState: GraphState | null,
     mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
   ) => void
 

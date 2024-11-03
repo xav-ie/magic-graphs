@@ -54,7 +54,8 @@ export interface GraphEvents {
   toClientCollaboratorMoved: (collaboratorMove: ToClientCollaboratorMove) => void
 
   joinRoom: (
-    JoinOptions: Collaborator & { roomId: string },
+    joinOptions: Collaborator & { roomId: string },
+    joinWithGraphState: GraphState | null,
     mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
   ) => void
 
@@ -102,6 +103,7 @@ export const useCollaborativeGraph = (
       socket.emit(
         'joinRoom',
         { ...meAsACollaborator.value, roomId: newRoomId },
+        { nodes: graph.nodes.value, edges: graph.edges.value },
         (collabMap, graphState) => {
           collaborators.value = collabMap
           roomId.value = newRoomId

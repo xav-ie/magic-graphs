@@ -23,16 +23,11 @@ export const trackGraphState = () => {
   }
 
   const getGraphState = () => {
-    const graphState = roomIdToGraphState[getRoomId()]
+    return roomIdToGraphState[getRoomId()]
+  }
 
-    if (!graphState) {
-      roomIdToGraphState[roomId] = {
-        nodes: [],
-        edges: []
-      }
-    }
-
-    return roomIdToGraphState[roomId]
+  const setGraphState = (graphState: GraphState) => {
+    roomIdToGraphState[getRoomId()] = graphState
   }
 
   const deleteGraphState = () => {
@@ -98,6 +93,7 @@ export const trackGraphState = () => {
     setRoomId,
 
     getGraphState,
+    setGraphState,
     deleteGraphState,
 
     addNode,

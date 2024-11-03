@@ -19,12 +19,17 @@ export const sockets = (httpServer: ReturnType<typeof createServer>) => {
 
     const tracker = trackGraphState()
 
-    socket.on('joinRoom', async (joinRoomDetails, callback) => {
+    socket.on('joinRoom', async (joinRoomDetails, initialGraphState, callback) => {
 
       tracker.setRoomId(joinRoomDetails.roomId)
-      socket.join(joinRoomDetails.roomId)
 
-      socket.broadcast.to(joinRoomDetails.roomId).emit('collaboratorJoined', joinRoomDetails)
+      socket.join(tracker.getRoomId())
+
+      socket.broadcast.to(tracker.getRoomId()).emit('collaboratorJoined', joinRoomDetails)
+
+      const graphState = tracker.getGraphState()
+      if (!graphState && initialGraphState) tracker.setGraphState(initialGraphState)
+      else if (!graphState) tracker.setGraphState({ nodes: [], edges: [] })
 
       collaboratorIdToCollaborator[socket.id] = joinRoomDetails
 

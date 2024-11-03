@@ -16,14 +16,10 @@ const trackGraphState = () => {
         return roomId;
     };
     const getGraphState = () => {
-        const graphState = roomIdToGraphState[getRoomId()];
-        if (!graphState) {
-            roomIdToGraphState[roomId] = {
-                nodes: [],
-                edges: []
-            };
-        }
-        return roomIdToGraphState[roomId];
+        return roomIdToGraphState[getRoomId()];
+    };
+    const setGraphState = (graphState) => {
+        roomIdToGraphState[getRoomId()] = graphState;
     };
     const deleteGraphState = () => {
         delete roomIdToGraphState[getRoomId()];
@@ -80,6 +76,7 @@ const trackGraphState = () => {
         getRoomId,
         setRoomId,
         getGraphState,
+        setGraphState,
         deleteGraphState,
         addNode,
         removeNode,
