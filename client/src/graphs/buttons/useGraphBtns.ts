@@ -148,37 +148,39 @@ export const useGraphBtns = (graph: Graph) => {
     action: () => {
       const isInRoom = graph.collaborativeRoomId.value === 'test';
       if (isInRoom) {
-        graph.leaveRoom();
+        graph.leaveCollaborativeRoom();
+      } else {
+        graph.joinCollaborativeRoom('test');
       }
-    }
+    },
+    color: () => graph.collaborativeRoomId.value === 'test' ? 'red' : 'green',
+    id: GRAPH_BUTTON_ID.testRoom,
+  };
 
   return {
-
-    persistentGraphClone,
-
-    // base theme
+    // base
     changeNodeSize,
-
-    // base settings
     toggleEdgeLabelDisplay,
     toggleEdgeLabelsEditable,
-
-    // base event
     reset,
 
-    // draggable settings
+    // draggable
     toggleDraggable,
 
-    // node anchor settings
+    // node anchor
     toggleNodeAnchors,
 
-    // user editable settings
+    // user editable
     toggleUserEditable,
     toggleEdgeType,
     changeEdgeWeight,
 
-    // persistent settings
+    // persistent
     changeStorageKey,
+    persistentGraphClone,
+
+    // collaborative
+    toggleTestRoom,
 
     // misc
     clearLocalStorage,

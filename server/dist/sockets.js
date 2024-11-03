@@ -16,6 +16,12 @@ const sockets = (httpServer) => {
             mapCallback(collaboratorIdToCollaborator);
             collaboratorIdToCollaborator.set(socket.id, joinRoomDetails);
         });
+        socket.on('leaveRoom', (roomId, confirmationCallback) => {
+            socket.leave(roomId);
+            socket.broadcast.to(roomId).emit('collaboratorLeft', socket.id);
+            collaboratorIdToCollaborator.delete(socket.id);
+            confirmationCallback();
+        });
         socket.on('nodeAdded', (node) => {
             socket.broadcast.emit('nodeAdded', node);
         });

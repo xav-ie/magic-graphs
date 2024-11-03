@@ -220,9 +220,26 @@ export const useCollaborativeGraph = (
 
   return {
     ...graph,
-    self,
+
+    /**
+     * this clients appearance in the collaborative room
+     */
+    meAsACollaborator: self,
+    /**
+     * join a collaborative room
+     */
     joinCollaborativeRoom,
+    /**
+     * leave the current collaborative room
+     */
+    leaveCollaborativeRoom,
+    /**
+     * the collaborators in the current room, not including this client
+     */
     collaborators: readonly(collaborators),
+    /**
+     * the id of the current room this client is in
+     */
     collaborativeRoomId: readonly(roomId),
   }
 }
