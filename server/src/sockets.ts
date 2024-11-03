@@ -27,35 +27,46 @@ export const sockets = (httpServer: ReturnType<typeof createServer>) => {
     })
 
     socket.on('nodeAdded', (node) => {
-      socket.broadcast.emit('nodeAdded', node)
+      const roomId = collaboratorIdToCollaborator.get(socket.id)?.roomId
+      if (!roomId) return
+      socket.broadcast.to(roomId).emit('nodeAdded', node)
     })
 
     socket.on('nodeRemoved', (node) => {
-      socket.broadcast.emit('nodeRemoved', node)
+      const roomId = collaboratorIdToCollaborator.get(socket.id)?.roomId
+      if (!roomId) return
+      socket.broadcast.to(roomId).emit('nodeRemoved', node)
     })
 
     socket.on('nodeMoved', (node) => {
-      socket.broadcast.emit('nodeMoved', node)
+      const roomId = collaboratorIdToCollaborator.get(socket.id)?.roomId
+      if (!roomId) return
+      socket.broadcast.to(roomId).emit('nodeMoved', node)
     })
 
     socket.on('edgeAdded', (edge) => {
-      socket.broadcast.emit('edgeAdded', edge)
+      const roomId = collaboratorIdToCollaborator.get(socket.id)?.roomId
+      if (!roomId) return
+      socket.broadcast.to(roomId).emit('edgeAdded', edge)
     })
 
     socket.on('edgeRemoved', (edge) => {
-      socket.broadcast.emit('edgeRemoved', edge)
+      const roomId = collaboratorIdToCollaborator.get(socket.id)?.roomId
+      if (!roomId) return
+      socket.broadcast.to(roomId).emit('edgeRemoved', edge)
     })
 
     socket.on('toServerCollaboratorMoved', ({ x, y }) => {
-      socket.broadcast.emit('toClientCollaboratorMoved', {
-        id: socket.id,
-        x,
-        y,
-      })
+      const roomId = collaboratorIdToCollaborator.get(socket.id)?.roomId
+      if (!roomId) return
+      socket.broadcast.to(roomId).emit('toClientCollaboratorMoved', { id: socket.id, x, y })
     })
 
     socket.on('disconnect', () => {
-      console.log('User disconnected')
+      const collaborator = collaboratorIdToCollaborator.get(socket.id)
+      if (!collaborator) return
+      socket.broadcast.to(collaborator.roomId).emit('collaboratorLeft', socket.id)
+      collaboratorIdToCollaborator.delete(socket.id)
     })
 
     socket.on('error', (error) => {

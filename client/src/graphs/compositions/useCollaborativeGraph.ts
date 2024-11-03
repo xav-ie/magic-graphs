@@ -178,12 +178,9 @@ export const useCollaborativeGraph = (
 
   graph.subscribe('onMouseMove', (ev) => {
     if (collaborators.value.size < 1) return
-    const { offsetX, offsetY } = ev
-    self.value.mousePosition = { x: offsetX, y: offsetY }
-    socket.emit('toServerCollaboratorMoved', {
-      x: offsetX,
-      y: offsetY
-    })
+    const { offsetX: x, offsetY: y } = ev
+    self.value.mousePosition = { x, y }
+    socket.emit('toServerCollaboratorMoved', self.value.mousePosition)
   })
 
   const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'
