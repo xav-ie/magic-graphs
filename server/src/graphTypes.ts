@@ -54,10 +54,23 @@ export type Collaborator = {
   mousePosition: { x: number, y: number }
 }
 
-export type CollaboratorMove = {
-  id: Collaborator['id']
-  mousePosition: Collaborator['mousePosition']
+export type ToServerCollaboratorMove = {
+  x: number
+  y: number
 }
+
+export type ToClientCollaboratorMove = {
+  id: Collaborator['id']
+  x: number
+  y: number
+}
+
+export type GraphState = {
+  nodes: GNode[],
+  edges: GEdge[]
+}
+
+type CollaboratorMap = Record<Collaborator['id'], Collaborator>
 
 export interface GraphEvents {
   nodeAdded: (node: GNode) => void
@@ -66,9 +79,19 @@ export interface GraphEvents {
 
   edgeAdded: (edge: GEdge) => void
   edgeRemoved: (edgeId: GEdge['id']) => void
+  edgeWeightEdited: (edgeId: GEdge['id'], weight: number) => void
 
   collaboratorJoined: (collaborator: Collaborator) => void
   collaboratorLeft: (collaboratorId: Collaborator['id']) => void
 
-  collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
+  toServerCollaboratorMoved: (collaboratorMove: ToServerCollaboratorMove) => void
+  toClientCollaboratorMoved: (collaboratorMove: ToClientCollaboratorMove) => void
+
+  joinRoom: (
+    joinOptions: Collaborator & { roomId: string },
+    joinWithGraphState: GraphState | null,
+    mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
+  ) => void
+
+  leaveRoom: (confirmationCallback: () => void) => void
 }

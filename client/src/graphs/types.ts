@@ -55,6 +55,11 @@ export type GEdge = {
    * id of the node that the edge is going to
    */
   from: string,
+  /**
+   * the text label that appears on the edge - NOT IMPLEMENTED
+   */
+  label: string,
+
   weight: number,
   type: 'directed' | 'undirected',
 }

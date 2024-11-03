@@ -119,9 +119,8 @@ export const useGraphBtns = (graph: Graph) => {
 
   const changeStorageKey: GButton = {
     label: () => `Change Storage Key (${storageKey.value})`,
-    action: () => {
-      // @ts-expect-error
-      persistSettings.value.storageKey = storageKey.value === 'graph' ? 'graph2' : 'graph';
+    action: () => graph.settings.value.persistent = {
+      storageKey: storageKey.value === 'graph' ? 'graph2' : 'graph',
     },
     color: () => 'blue',
     id: GRAPH_BUTTON_ID.storageKey,
@@ -134,44 +133,78 @@ export const useGraphBtns = (graph: Graph) => {
     id: GRAPH_BUTTON_ID.clearLocalStorage,
   };
 
-  const crazyBtn: GButton = {
+  const persistentGraphClone: GButton = {
     label: () => 'Clone Search Visualizer Graph',
     action: () => graph.settings.value.persistent = {
       storageKey: "search-visualizer-graph"
     },
     color: () => 'amber',
-    id: 'temp',
+    id: GRAPH_BUTTON_ID.persistentGraphClone,
   };
 
-  return {
+  const toggleTestRoom: GButton = {
+    label: () => {
+      const isInRoom = graph.collaborativeRoomId.value === 'test';
+      const peopleInRoom = graph.collaboratorCount.value + 1; // +1 for self
+      const inRoomText = `Leave Test Room (${peopleInRoom} In Room)`;
+      const notInRoomText = 'Join Test Room';
+      return isInRoom ? inRoomText : notInRoomText;
+    },
+    action: () => {
+      const isInRoom = graph.collaborativeRoomId.value === 'test';
+      const names = ['Dila', 'Shannon', 'Bella', 'Joy']
+      if (isInRoom) {
+        graph.leaveCollaborativeRoom();
+      } else {
+        graph.meAsACollaborator.value.name = names[Math.floor(Math.random() * names.length)];
+        graph.joinCollaborativeRoom('test');
+      }
+    },
+    color: () => graph.collaborativeRoomId.value === 'test' ? 'red' : 'green',
+    id: GRAPH_BUTTON_ID.testRoom,
+  };
 
-    crazyBtn,
+  const log: GButton = {
+    label: () => 'Log',
+    action: () => console.log(''),
+    color: () => 'blue',
+    id: GRAPH_BUTTON_ID.log,
+  };
 
-    // base theme
+  const btnObj = {
+    reset,
+    clearLocalStorage,
+
+    // base
     changeNodeSize,
-
-    // base settings
     toggleEdgeLabelDisplay,
     toggleEdgeLabelsEditable,
 
-    // base event
-    reset,
-
-    // draggable settings
+    // draggable
     toggleDraggable,
 
-    // node anchor settings
+    // node anchor
     toggleNodeAnchors,
 
-    // user editable settings
+    // user editable
     toggleUserEditable,
     toggleEdgeType,
     changeEdgeWeight,
 
-    // persistent settings
+    // persistent
     changeStorageKey,
+    persistentGraphClone,
 
-    // misc
-    clearLocalStorage,
+    // collaborative
+    toggleTestRoom,
+
+    log,
+  };
+
+  const btnArr = Object.values(btnObj);
+
+  return {
+    ...btnObj,
+    btnArr,
   }
 };

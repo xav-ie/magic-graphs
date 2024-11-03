@@ -13,6 +13,9 @@ export const GRAPH_BUTTON_ID = {
   nodeSize: 'node-size',
   storageKey: 'storage-key',
   clearLocalStorage: 'clear-local-storage',
+  persistentGraphClone: 'persistent-graph-clone',
+  testRoom: 'test-room',
+  log: 'log',
 } as const;
 
 type GraphButtonIdMap = typeof GRAPH_BUTTON_ID;
