@@ -33,6 +33,11 @@ export type ToClientCollaboratorMove = {
 
 type CollaboratorMap = Record<Collaborator['id'], Collaborator>
 
+type GraphState = {
+  nodes: GNode[],
+  edges: GEdge[]
+}
+
 export interface GraphEvents {
   nodeAdded: (node: GNode) => void
   nodeRemoved: (nodeId: GNode['id']) => void
@@ -49,7 +54,7 @@ export interface GraphEvents {
 
   joinRoom: (
     JoinOptions: Collaborator & { roomId: string },
-    mapCallback: (collabMap: CollaboratorMap) => void
+    mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
   ) => void
 
   leaveRoom: (
@@ -81,7 +86,7 @@ export const useCollaborativeGraph = (
   const collaborators = ref<CollaboratorMap>({})
   const collaboratorCount = computed(() => Object.keys(collaborators.value).length)
 
-  const self = ref<Collaborator>({
+  const meAsACollaborator = ref<Collaborator>({
     id: '',
     name: 'Anonymous',
     color: getRandomElement(collabColors),
@@ -93,13 +98,25 @@ export const useCollaborativeGraph = (
   const joinCollaborativeRoom = async (newRoomId: string) => {
     if (roomId.value === newRoomId) return roomId.value
     else if (!newRoomId) throw new Error('non-empty string newRoomId is required')
+    else if (!meAsACollaborator.value.id) throw new Error('socket id is not defined - is the socket connected?')
     await leaveCollaborativeRoom()
     return new Promise<string>((res) => {
-      socket.emit('joinRoom', { ...self.value, roomId: newRoomId }, (collabMap) => {
-        collaborators.value = collabMap
-        roomId.value = newRoomId
-        res(newRoomId)
-      })
+      socket.emit(
+        'joinRoom',
+        { ...meAsACollaborator.value, roomId: newRoomId },
+        (collabMap, graphState) => {
+          collaborators.value = collabMap
+          roomId.value = newRoomId
+          // TODO - add load graph method to base graph that can handle
+          // TODO - both persistent anf collaborative graph loadout switching
+          console.log('graph state received on join', graphState)
+          console.log('my id on join', meAsACollaborator.value.id)
+          graph.nodes.value = graphState.nodes
+          graph.edges.value = graphState.edges
+          graph.repaint('collaborative-graph/join-room')()
+          res(newRoomId)
+        }
+      )
     })
   }
 
@@ -115,7 +132,7 @@ export const useCollaborativeGraph = (
 
   socket.on('connect', () => {
     if (!socket.id) throw new Error('Socket ID is not defined')
-    self.value.id = socket.id
+    meAsACollaborator.value.id = socket.id
   })
 
   socket.on('connect_error', (error) => {
@@ -186,8 +203,8 @@ export const useCollaborativeGraph = (
   graph.subscribe('onMouseMove', (ev) => {
     if (collaboratorCount.value < 1) return
     const { offsetX: x, offsetY: y } = ev
-    self.value.mousePosition = { x, y }
-    socket.emit('toServerCollaboratorMoved', self.value.mousePosition)
+    meAsACollaborator.value.mousePosition = { x, y }
+    socket.emit('toServerCollaboratorMoved', meAsACollaborator.value.mousePosition)
   })
 
   const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'
@@ -228,7 +245,7 @@ export const useCollaborativeGraph = (
     /**
      * this clients appearance in the collaborative room
      */
-    meAsACollaborator: self,
+    meAsACollaborator,
     /**
      * join a collaborative room
      */

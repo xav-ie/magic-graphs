@@ -65,6 +65,13 @@ export type ToClientCollaboratorMove = {
   y: number
 }
 
+export type GraphState = {
+  nodes: GNode[],
+  edges: GEdge[]
+}
+
+type CollaboratorMap = Record<Collaborator['id'], Collaborator>
+
 export interface GraphEvents {
   nodeAdded: (node: GNode) => void
   nodeRemoved: (nodeId: GNode['id']) => void
@@ -81,7 +88,7 @@ export interface GraphEvents {
 
   joinRoom: (
     JoinOptions: Collaborator & { roomId: string },
-    mapCallback: (collabMap: Record<Collaborator['id'], Collaborator>) => void
+    mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
   ) => void
 
   leaveRoom: (

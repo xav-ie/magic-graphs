@@ -6,15 +6,74 @@ const sockets = (httpServer) => {
     const io = new socket_io_1.Server(httpServer, {
         cors: {
             origin: '*',
+            methods: ['GET', 'POST'],
         },
     });
+    /**
+     * a map of collaborator ids to their details and the room they are in
+     */
     const collaboratorIdToCollaborator = {};
+    const updateEdge = (roomId, edgeId, edge) => {
+        const graphState = roomIdToGraphState[roomId];
+        if (!graphState)
+            return;
+        const edgeIndex = graphState.edges.findIndex((e) => e.id === edgeId);
+        if (edgeIndex === -1)
+            return;
+        graphState.edges[edgeIndex] = {
+            ...graphState.edges[edgeIndex],
+            ...edge
+        };
+    };
+    const updateNode = (roomId, nodeId, node) => {
+        const graphState = roomIdToGraphState[roomId];
+        if (!graphState)
+            return;
+        const nodeIndex = graphState.nodes.findIndex((n) => n.id === nodeId);
+        if (nodeIndex === -1)
+            return;
+        graphState.nodes[nodeIndex] = {
+            ...graphState.nodes[nodeIndex],
+            ...node
+        };
+    };
+    const removeEdge = (roomId, edgeId) => {
+        const graphState = roomIdToGraphState[roomId];
+        if (!graphState)
+            return;
+        graphState.edges = graphState.edges.filter((e) => e.id !== edgeId);
+    };
+    const removeNode = (roomId, nodeId) => {
+        const graphState = roomIdToGraphState[roomId];
+        if (!graphState)
+            return;
+        graphState.nodes = graphState.nodes.filter((n) => n.id !== nodeId);
+    };
+    const addEdge = (roomId, edge) => {
+        const graphState = roomIdToGraphState[roomId];
+        if (!graphState)
+            return;
+        graphState.edges.push(edge);
+    };
+    const addNode = (roomId, node) => {
+        const graphState = roomIdToGraphState[roomId];
+        if (!graphState)
+            return;
+        graphState.nodes.push(node);
+    };
     io.on('connection', (socket) => {
-        socket.on('joinRoom', (joinRoomDetails, mapCallback) => {
+        socket.on('joinRoom', async (joinRoomDetails, callback) => {
             socket.join(joinRoomDetails.roomId);
             socket.broadcast.to(joinRoomDetails.roomId).emit('collaboratorJoined', joinRoomDetails);
-            mapCallback(collaboratorIdToCollaborator);
+            const graphState = roomIdToGraphState[joinRoomDetails.roomId];
+            if (!graphState) {
+                roomIdToGraphState[joinRoomDetails.roomId] = {
+                    nodes: [],
+                    edges: []
+                };
+            }
             collaboratorIdToCollaborator[socket.id] = joinRoomDetails;
+            callback(collaboratorIdToCollaborator, graphState);
         });
         socket.on('leaveRoom', (roomId, confirmationCallback) => {
             socket.leave(roomId);
@@ -26,31 +85,36 @@ const sockets = (httpServer) => {
             const roomId = collaboratorIdToCollaborator[socket.id]?.roomId;
             if (!roomId)
                 return;
+            addNode(roomId, node);
             socket.broadcast.to(roomId).emit('nodeAdded', node);
         });
-        socket.on('nodeRemoved', (node) => {
+        socket.on('nodeRemoved', (nodeId) => {
             const roomId = collaboratorIdToCollaborator[socket.id]?.roomId;
             if (!roomId)
                 return;
-            socket.broadcast.to(roomId).emit('nodeRemoved', node);
+            removeNode(roomId, nodeId);
+            socket.broadcast.to(roomId).emit('nodeRemoved', nodeId);
         });
         socket.on('nodeMoved', (node) => {
             const roomId = collaboratorIdToCollaborator[socket.id]?.roomId;
             if (!roomId)
                 return;
+            updateNode(roomId, node.id, node);
             socket.broadcast.to(roomId).emit('nodeMoved', node);
         });
         socket.on('edgeAdded', (edge) => {
             const roomId = collaboratorIdToCollaborator[socket.id]?.roomId;
             if (!roomId)
                 return;
+            addEdge(roomId, edge);
             socket.broadcast.to(roomId).emit('edgeAdded', edge);
         });
-        socket.on('edgeRemoved', (edge) => {
+        socket.on('edgeRemoved', (edgeId) => {
             const roomId = collaboratorIdToCollaborator[socket.id]?.roomId;
             if (!roomId)
                 return;
-            socket.broadcast.to(roomId).emit('edgeRemoved', edge);
+            removeEdge(roomId, edgeId);
+            socket.broadcast.to(roomId).emit('edgeRemoved', edgeId);
         });
         socket.on('toServerCollaboratorMoved', ({ x, y }) => {
             const roomId = collaboratorIdToCollaborator[socket.id]?.roomId;
