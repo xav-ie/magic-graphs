@@ -8,7 +8,13 @@ const sockets = (httpServer) => {
             origin: '*',
         },
     });
+    const collaboratorIdToCollaborator = new Map();
     io.on('connection', (socket) => {
+        socket.on('joinRoom', (joinRoomDetails) => {
+            socket.join(joinRoomDetails.roomId);
+            collaboratorIdToCollaborator.set(socket.id, joinRoomDetails);
+            socket.broadcast.to(joinRoomDetails.roomId).emit('collaboratorJoined', joinRoomDetails);
+        });
         socket.on('nodeAdded', (node) => {
             socket.broadcast.emit('nodeAdded', node);
         });
@@ -24,11 +30,12 @@ const sockets = (httpServer) => {
         socket.on('edgeRemoved', (edge) => {
             socket.broadcast.emit('edgeRemoved', edge);
         });
-        socket.on('collaboratorJoined', (collaborator) => {
-            socket.broadcast.emit('collaboratorJoined', collaborator);
-        });
-        socket.on('collaboratorMoved', (collaboratorMove) => {
-            socket.broadcast.emit('collaboratorMoved', collaboratorMove);
+        socket.on('toServerCollaboratorMoved', ({ x, y }) => {
+            socket.broadcast.emit('toClientCollaboratorMoved', {
+                id: socket.id,
+                x,
+                y,
+            });
         });
         socket.on('disconnect', () => {
             console.log('User disconnected');

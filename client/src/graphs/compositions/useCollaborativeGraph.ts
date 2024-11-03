@@ -86,7 +86,6 @@ export const useCollaborativeGraph = (
   }
 
   socket.on('connect', () => {
-    console.log('socket connected')
     if (!socket.id) throw new Error('Socket ID is not defined')
     self.value.id = socket.id
   })
@@ -100,11 +99,12 @@ export const useCollaborativeGraph = (
   })
 
   socket.on('collaboratorJoined', (collaborator) => {
+    console.log('collaborator joined', collaborator)
     collaborators.value.set(collaborator.id, collaborator)
   })
 
   graph.subscribe('onNodeAdded', (node, { broadcast }) => {
-    if (!broadcast) return
+    if (!broadcast || collaborators.value.size < 1) return
     socket.emit('nodeAdded', node)
   })
 
@@ -113,7 +113,7 @@ export const useCollaborativeGraph = (
   })
 
   graph.subscribe('onNodeRemoved', (node, { broadcast }) => {
-    if (!broadcast) return
+    if (!broadcast || collaborators.value.size < 1) return
     socket.emit('nodeRemoved', node.id)
   })
 
@@ -122,7 +122,7 @@ export const useCollaborativeGraph = (
   })
 
   graph.subscribe('onNodeMoved', (node, { broadcast }) => {
-    if (!broadcast) return
+    if (!broadcast || collaborators.value.size < 1) return
     socket.emit('nodeMoved', node)
   })
 
@@ -131,7 +131,7 @@ export const useCollaborativeGraph = (
   })
 
   graph.subscribe('onEdgeAdded', (node, { broadcast }) => {
-    if (!broadcast) return
+    if (!broadcast || collaborators.value.size < 1) return
     socket.emit('edgeAdded', node)
   })
 
@@ -140,7 +140,7 @@ export const useCollaborativeGraph = (
   })
 
   graph.subscribe('onEdgeRemoved', (edge, { broadcast }) => {
-    if (!broadcast) return
+    if (!broadcast || collaborators.value.size < 1) return
     socket.emit('edgeRemoved', edge.id)
   })
 
@@ -148,19 +148,18 @@ export const useCollaborativeGraph = (
     graph.removeEdge(edgeId, { broadcast: false })
   })
 
-  const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'
-  const collaboratorMoveRepaint = graph.repaint(COLLAB_MOVE_REPAINT_ID)
-
   graph.subscribe('onMouseMove', (ev) => {
+    if (collaborators.value.size < 1) return
     const { offsetX, offsetY } = ev
     self.value.mousePosition = { x: offsetX, y: offsetY }
     socket.emit('toServerCollaboratorMoved', {
       x: offsetX,
       y: offsetY
     })
-    collaboratorMoveRepaint()
   })
 
+  const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'
+  const collaboratorMoveRepaint = graph.repaint(COLLAB_MOVE_REPAINT_ID)
   socket.on('toClientCollaboratorMoved', ({ x, y, id }) => {
     const movedCollaborator = collaborators.value.get(id)
     if (!movedCollaborator) throw new Error('moving collaborator not found')
