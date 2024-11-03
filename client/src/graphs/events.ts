@@ -79,9 +79,10 @@ export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: Mappings
 /**
  * helper types for graph event architecture
  */
-export type Subscriber<T extends BaseGraphEvents> = ReturnType<typeof generateSubscriber<T>>['subscribe'];
-export type Unsubscriber<T extends BaseGraphEvents> = ReturnType<typeof generateSubscriber<T>>['unsubscribe'];
-export type Emitter<T extends BaseGraphEvents> = ReturnType<typeof generateSubscriber<T>>['emit'];
+export type GenerateSubscriber<T extends BaseGraphEvents> = typeof generateSubscriber<T>;
+export type Subscriber<T extends BaseGraphEvents> = ReturnType<GenerateSubscriber<T>>['subscribe'];
+export type Unsubscriber<T extends BaseGraphEvents> = ReturnType<GenerateSubscriber<T>>['unsubscribe'];
+export type Emitter<T extends BaseGraphEvents> = ReturnType<GenerateSubscriber<T>>['emit'];
 
 export type BaseGraphSubscriber = Subscriber<BaseGraphEvents>;
 export type BaseGraphUnsubscriber = Unsubscriber<BaseGraphEvents>;

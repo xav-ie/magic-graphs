@@ -18,7 +18,7 @@ export const trackGraphState = () => {
   }
 
   const getRoomId = () => {
-    if (!roomId) throw new Error('Room id not set')
+    if (!roomId) throw new Error('room id not set')
     return roomId
   }
 

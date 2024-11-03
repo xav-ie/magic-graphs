@@ -17,19 +17,42 @@ const sockets = (httpServer) => {
         const tracker = (0, trackGraphState_1.trackGraphState)();
         socket.on('joinRoom', async (joinRoomDetails, initialGraphState, callback) => {
             tracker.setRoomId(joinRoomDetails.roomId);
-            socket.join(tracker.getRoomId());
-            socket.broadcast.to(tracker.getRoomId()).emit('collaboratorJoined', joinRoomDetails);
+            try {
+                var roomId = tracker.getRoomId();
+            }
+            catch (error) {
+                console.error('error getting room id', error);
+                return;
+            }
+            socket.join(roomId);
+            socket.broadcast.to(roomId).emit('collaboratorJoined', joinRoomDetails);
             const graphState = tracker.getGraphState();
             if (!graphState && initialGraphState)
                 tracker.setGraphState(initialGraphState);
             else if (!graphState)
                 tracker.setGraphState({ nodes: [], edges: [] });
-            collaboratorIdToCollaborator[socket.id] = joinRoomDetails;
             callback(collaboratorIdToCollaborator, tracker.getGraphState());
+            collaboratorIdToCollaborator[socket.id] = joinRoomDetails;
         });
         socket.on('leaveRoom', (confirmationCallback) => {
             socket.leave(tracker.getRoomId());
-            socket.broadcast.to(tracker.getRoomId()).emit('collaboratorLeft', socket.id);
+            try {
+                const roomId = tracker.getRoomId();
+                const room = io.sockets.adapter.rooms.get(roomId);
+                if (!room || room.size === 0) {
+                    console.log('room is empty, deleting graph state');
+                    tracker.deleteGraphState();
+                }
+                socket.broadcast.to(roomId).emit('collaboratorLeft', socket.id);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    console.error('while trying to delete graph state -', error.message);
+                }
+                else {
+                    console.error('unknown error while trying to delete graph state', error);
+                }
+            }
             delete collaboratorIdToCollaborator[socket.id];
             confirmationCallback();
         });
@@ -64,10 +87,24 @@ const sockets = (httpServer) => {
             socket.broadcast.to(roomId).emit('toClientCollaboratorMoved', { id: socket.id, x, y });
         });
         socket.on('disconnect', () => {
-            const collaborator = collaboratorIdToCollaborator[socket.id];
-            if (!collaborator)
-                return;
-            socket.broadcast.to(collaborator.roomId).emit('collaboratorLeft', socket.id);
+            try {
+                const roomId = tracker.getRoomId();
+                const room = io.sockets.adapter.rooms.get(roomId);
+                console.log('room size:', room?.size);
+                if (!room || room.size === 0) {
+                    console.log('room is empty, deleting graph state');
+                    tracker.deleteGraphState();
+                }
+                socket.broadcast.to(roomId).emit('collaboratorLeft', socket.id);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    console.error('while trying to delete graph state -', error.message);
+                }
+                else {
+                    console.error('unknown error while trying to delete graph state', error);
+                }
+            }
             delete collaboratorIdToCollaborator[socket.id];
         });
         socket.on('error', (error) => {

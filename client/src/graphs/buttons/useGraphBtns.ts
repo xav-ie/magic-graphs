@@ -166,7 +166,11 @@ export const useGraphBtns = (graph: Graph) => {
 
   const log: GButton = {
     label: () => 'Log',
-    action: () => console.log(''),
+    action: () => {
+      console.log(JSON.stringify(graph.collaborators.value, null, 2));
+      console.log(JSON.stringify(graph.collaboratorCount.value, null, 2));
+      console.log(JSON.stringify(graph.meAsACollaborator.value, null, 2));
+    },
     color: () => 'blue',
     id: GRAPH_BUTTON_ID.log,
   };

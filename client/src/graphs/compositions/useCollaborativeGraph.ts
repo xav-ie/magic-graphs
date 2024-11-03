@@ -6,7 +6,9 @@ import { io, Socket } from "socket.io-client";
 import type { GEdge, GNode } from "@graph/types";
 import colors from "@utils/colors";
 import { getRandomElement } from "@utils/array";
-import { rect } from "@shapes";
+import { circle, rect } from "@shapes";
+import type { AddEdgeOptions, AddNodeOptions, MoveNodeOptions, RemoveNodeOptions } from "@graph/baseGraphAPIs";
+import type { BaseGraphEvents } from "@graph/events";
 
 const getSocketURL = () => {
   const isLocalhost = window.location.hostname === 'localhost'
@@ -94,40 +96,6 @@ export const useCollaborativeGraph = (
 
   const roomId = ref('')
 
-  const joinCollaborativeRoom = async (newRoomId: string) => {
-    if (roomId.value === newRoomId) return roomId.value
-    else if (!newRoomId) throw new Error('non-empty string newRoomId is required')
-    else if (!meAsACollaborator.value.id) throw new Error('socket id is not defined - is the socket connected?')
-    await leaveCollaborativeRoom()
-    return new Promise<string>((res) => {
-      socket.emit(
-        'joinRoom',
-        { ...meAsACollaborator.value, roomId: newRoomId },
-        { nodes: graph.nodes.value, edges: graph.edges.value },
-        (collabMap, graphState) => {
-          collaborators.value = collabMap
-          roomId.value = newRoomId
-          // TODO - add load graph method to base graph that can handle
-          // TODO - both persistent anf collaborative graph loadout switching
-          graph.nodes.value = graphState.nodes
-          graph.edges.value = graphState.edges
-          graph.repaint('collaborative-graph/join-room')()
-          res(newRoomId)
-        }
-      )
-    })
-  }
-
-  const leaveCollaborativeRoom = async () => {
-    if (!roomId.value) return roomId.value
-    return new Promise<string>((res) => {
-      socket.emit('leaveRoom', () => {
-        res(roomId.value)
-        roomId.value = ''
-      })
-    })
-  }
-
   socket.on('connect', () => {
     if (!socket.id) throw new Error('Socket ID is not defined')
     meAsACollaborator.value.id = socket.id
@@ -153,53 +121,86 @@ export const useCollaborativeGraph = (
     graph.repaint('collaborative-graph/collaborator-joined')()
   })
 
-  graph.subscribe('onNodeAdded', (node, { broadcast }) => {
-    if (!broadcast || collaboratorCount.value < 1) return
-    socket.emit('nodeAdded', node)
-  })
+  const collaborativeGraphEvents: Partial<BaseGraphEvents> = {
+    onNodeAdded: (node: GNode, { broadcast }: AddNodeOptions) => {
+      if (!broadcast || collaboratorCount.value < 1) return
+      socket.emit('nodeAdded', node)
+    },
+    onNodeRemoved: (node: GNode, { broadcast }: RemoveNodeOptions) => {
+      if (!broadcast || collaboratorCount.value < 1) return
+      socket.emit('nodeRemoved', node.id)
+    },
+    onNodeMoved: (node: GNode, { broadcast }: MoveNodeOptions) => {
+      if (!broadcast || collaboratorCount.value < 1) return
+      socket.emit('nodeMoved', node)
+    },
+    onEdgeAdded: (edge: GEdge, { broadcast }: AddEdgeOptions) => {
+      if (!broadcast || collaboratorCount.value < 1) return
+      socket.emit('edgeAdded', edge)
+    },
+    onEdgeRemoved: (edge: GEdge, { broadcast }: RemoveNodeOptions) => {
+      if (!broadcast || collaboratorCount.value < 1) return
+      socket.emit('edgeRemoved', edge.id)
+    },
+    onEdgeWeightChange: (edge: GEdge) => {
+      socket.emit('edgeWeightEdited', edge.id, edge.weight)
+    },
+    onMouseMove: (ev: MouseEvent) => {
+      if (collaboratorCount.value < 1) return
+      const { offsetX: x, offsetY: y } = ev
+      meAsACollaborator.value.mousePosition = { x, y }
+      socket.emit('toServerCollaboratorMoved', meAsACollaborator.value.mousePosition)
+    },
+    onRepaint: (ctx: CanvasRenderingContext2D) => {
+      // TODO - update with border radius when its added to rect api
+      for (const collaborator of Object.values(collaborators.value)) {
+        const { x, y } = collaborator.mousePosition
+        const width = meAsACollaborator.value.name.length * 11
+        const height = 20
+        const topLeftOffset = 10
+        rect({
+          at: {
+            x: x - width - topLeftOffset,
+            y: y - height - topLeftOffset,
+          },
+          width,
+          height,
+          color: meAsACollaborator.value.color,
+          text: {
+            content: meAsACollaborator.value.name,
+            color: colors.WHITE,
+            fontSize: 14,
+            fontWeight: 'bold',
+          },
+        }).draw(ctx)
+
+        circle({
+          radius: 3,
+          at: { x, y },
+          color: meAsACollaborator.value.color,
+        }).draw(ctx)
+      }
+    }
+  }
 
   socket.on('nodeAdded', (node) => {
     graph.addNode(node, { broadcast: false, focus: false })
-  })
-
-  graph.subscribe('onNodeRemoved', (node, { broadcast }) => {
-    if (!broadcast || collaboratorCount.value < 1) return
-    socket.emit('nodeRemoved', node.id)
   })
 
   socket.on('nodeRemoved', (nodeId) => {
     graph.removeNode(nodeId, { broadcast: false })
   })
 
-  graph.subscribe('onNodeMoved', (node, { broadcast }) => {
-    if (!broadcast || collaboratorCount.value < 1) return
-    socket.emit('nodeMoved', node)
-  })
-
   socket.on('nodeMoved', (node) => {
     graph.moveNode(node.id, node.x, node.y, { broadcast: false })
-  })
-
-  graph.subscribe('onEdgeAdded', (node, { broadcast }) => {
-    if (!broadcast || collaboratorCount.value < 1) return
-    socket.emit('edgeAdded', node)
   })
 
   socket.on('edgeAdded', (node) => {
     graph.addEdge(node, { broadcast: false, focus: false })
   })
 
-  graph.subscribe('onEdgeRemoved', (edge, { broadcast }) => {
-    if (!broadcast || collaboratorCount.value < 1) return
-    socket.emit('edgeRemoved', edge.id)
-  })
-
   socket.on('edgeRemoved', (edgeId) => {
     graph.removeEdge(edgeId, { broadcast: false })
-  })
-
-  graph.subscribe('onEdgeWeightChange', (edge) => {
-    socket.emit('edgeWeightEdited', edge.id, edge.weight)
   })
 
   socket.on('edgeWeightEdited', (edgeId, newWeight) => {
@@ -208,15 +209,9 @@ export const useCollaborativeGraph = (
     edge.weight = newWeight
   })
 
-  graph.subscribe('onMouseMove', (ev) => {
-    if (collaboratorCount.value < 1) return
-    const { offsetX: x, offsetY: y } = ev
-    meAsACollaborator.value.mousePosition = { x, y }
-    socket.emit('toServerCollaboratorMoved', meAsACollaborator.value.mousePosition)
-  })
-
   const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'
   const collaboratorMoveRepaint = graph.repaint(COLLAB_MOVE_REPAINT_ID)
+
   socket.on('toClientCollaboratorMoved', ({ x, y, id }) => {
     const movedCollaborator = collaborators.value[id]
     if (!movedCollaborator) throw new Error('moving collaborator not found')
@@ -224,28 +219,55 @@ export const useCollaborativeGraph = (
     collaboratorMoveRepaint()
   })
 
-  graph.subscribe('onRepaint', (ctx) => {
-    // TODO - update with border radius when its added to rect api
-    for (const collaborator of Object.values(collaborators.value)) {
-      const width = collaborator.name.length * 12
-      const height = 24
-      rect({
-        at: {
-          x: collaborator.mousePosition.x - width / 2,
-          y: collaborator.mousePosition.y - height / 2,
-        },
-        width,
-        height,
-        color: collaborator.color,
-        text: {
-          content: collaborator.name,
-          color: colors.WHITE,
-          fontSize: 14,
-          fontWeight: 'bold',
-        },
-      }).draw(ctx)
+  const onCollaborativeRoomJoined = (
+    collabMap: CollaboratorMap,
+    graphState: GraphState,
+  ) => {
+    for (const [event, handler] of Object.entries(collaborativeGraphEvents)) {
+      // @ts-ignore ts cant handle Object.entries return type
+      graph.subscribe(event, handler)
     }
-  })
+
+    collaborators.value = collabMap
+    // TODO - add load graph method to base graph that can handle
+    // TODO - both persistent anf collaborative graph loadout switching
+    graph.nodes.value = graphState.nodes
+    graph.edges.value = graphState.edges
+    graph.repaint('collaborative-graph/join-room')()
+  }
+
+  const joinCollaborativeRoom = async (newRoomId: string) => {
+    if (roomId.value === newRoomId) return roomId.value
+    else if (!newRoomId) throw new Error('non-empty string newRoomId is required')
+    else if (!meAsACollaborator.value.id) throw new Error('socket id is not defined - is the socket connected?')
+    await leaveCollaborativeRoom()
+    return new Promise<string>((res) => {
+      socket.emit(
+        'joinRoom',
+        { ...meAsACollaborator.value, roomId: newRoomId },
+        { nodes: graph.nodes.value, edges: graph.edges.value },
+        (collabMap, graphState) => {
+          onCollaborativeRoomJoined(collabMap, graphState)
+          roomId.value = newRoomId
+          res(roomId.value)
+        }
+      )
+    })
+  }
+
+  const leaveCollaborativeRoom = async () => {
+    if (!roomId.value) return roomId.value
+    return new Promise<string>((res) => {
+      socket.emit('leaveRoom', () => {
+        for (const [event, handler] of Object.entries(collaborativeGraphEvents)) {
+          // @ts-ignore ts cant handle Object.entries return type
+          graph.unsubscribe(event, handler)
+        }
+        res(roomId.value)
+        roomId.value = ''
+      })
+    })
+  }
 
   return {
     ...graph,
