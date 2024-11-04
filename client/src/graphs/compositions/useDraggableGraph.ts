@@ -11,11 +11,6 @@ import { useFocusGraph } from './useFocusGraph';
 import { DEFAULT_DRAGGABLE_SETTINGS } from '@graph/settings';
 import type { DraggableGraphSettings } from '@graph/settings';
 
-export type DraggableGraphEvents = BaseGraphEvents & {
-  onNodeDragStart: (node: GNode) => void;
-  onNodeDrop: (node: GNode) => void;
-}
-
 export type DraggableGraphOptions = GraphOptions<DraggableGraphSettings>
 
 export const useDraggableGraph = (

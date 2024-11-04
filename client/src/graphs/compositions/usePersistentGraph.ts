@@ -6,7 +6,6 @@ import type {
   GraphOptions
 } from '@graph/types'
 import { useUserEditableGraph } from '@graph/compositions/useUserEditableGraph'
-import type { DraggableGraphEvents } from './useDraggableGraph'
 import { DEFAULT_PERSISTENT_SETTINGS } from '@graph/settings'
 import type { PersistentGraphSettings, GraphSettings } from '@graph/settings'
 import type { GraphTheme } from '@graph/themes'

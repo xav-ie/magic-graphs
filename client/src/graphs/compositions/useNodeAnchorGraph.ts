@@ -90,21 +90,6 @@ const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = (
   linkPreviewWidth: graph.getTheme('edgeWidth', graph.edges.value[0]),
 })
 
-export type NodeAnchorGraphEvents = DraggableGraphEvents & {
-  /**
-   * @description event fired when the user initiates a drag on a node anchor
-   * @param parentNode - the parent node of the anchor
-   * @param nodeAnchor - the anchor being dragged
-   */
-  onNodeAnchorDragStart: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
-  /**
-   * @description event fired when the user drops a node anchor
-   * @param parentNode - the parent node of the anchor
-   * @param nodeAnchor - the anchor being dropped
-   */
-  onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
-}
-
 export type NodeAnchorGraphOptions = GraphOptions<NodeAnchorGraphSettings>
 
 /**
