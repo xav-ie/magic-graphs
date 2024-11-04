@@ -48,7 +48,7 @@ export type Shape = {
   hitbox: (point: Coordinate) => boolean,
 
   /**
-   * returns true if the point is within the text area of the shape
+   * returns true if the point is within the area of the shape
    */
   shapeHitbox: (point: Coordinate) => boolean,
 
