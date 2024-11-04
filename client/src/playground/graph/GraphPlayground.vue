@@ -24,14 +24,6 @@
 
   // const tutorialControls = useBasicsTutorial(graph);
 
-  const { toggleColorize, isColorized } = useBFSColorizer(graph);
-  const colorizeBtn = {
-    label: () => (isColorized.value ? "Stop Colorizing" : "Colorize"),
-    color: () => (isColorized.value ? "red" : "pink"),
-    action: toggleColorize,
-    id: "toggle-bfs-colorize" as any,
-  };
-
   graph.subscribe("onStructureChange", (nodes, edges) =>
     emit("update:modelValue", nodesEdgesToAdjList(nodes, edges))
   );

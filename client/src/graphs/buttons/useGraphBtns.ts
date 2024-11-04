@@ -5,6 +5,7 @@ import { resolveEditSettings } from "@graph/compositions/useUserEditableGraph";
 import { getRandomInRange } from "@graph/helpers";
 import { GRAPH_BUTTON_ID } from "@graph/buttons/types";
 import type { GButton } from "@graph/buttons/types";
+import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
 
 /**
  * a one stop shop for the dials you need to control your graph
@@ -175,6 +176,15 @@ export const useGraphBtns = (graph: Graph) => {
     id: GRAPH_BUTTON_ID.log,
   };
 
+  const { toggleColorize, isColorized } = useBFSColorizer(graph);
+
+  const bfsColorize: GButton = {
+    label: () => (isColorized.value ? "Stop Colorizing" : "Colorize"),
+    color: () => (isColorized.value ? "red" : "pink"),
+    action: toggleColorize,
+    id: "toggle-bfs-colorize",
+  };
+
   const btnObj = {
     reset,
     clearLocalStorage,
@@ -201,6 +211,9 @@ export const useGraphBtns = (graph: Graph) => {
 
     // collaborative
     toggleTestRoom,
+
+    // search visualizer - product
+    bfsColorize,
 
     log,
   };

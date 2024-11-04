@@ -16,6 +16,7 @@ export const GRAPH_BUTTON_ID = {
   persistentGraphClone: 'persistent-graph-clone',
   testRoom: 'test-room',
   log: 'log',
+  bfsColorize: 'toggle-bfs-colorize'
 } as const;
 
 type GraphButtonIdMap = typeof GRAPH_BUTTON_ID;
