@@ -1,9 +1,7 @@
 import { onUnmounted } from "vue";
 import type { Graph } from "@graph/types";
-import type {
-  GraphThemeKey,
-  ThemeMapEntry,
-} from "@graph/themes/types";
+import type { GraphThemeKey } from ".";
+import type { ThemeMapEntry } from "./types";
 
 type ThemeableGraph = Pick<Graph, 'themeMap' | 'repaint'>
 

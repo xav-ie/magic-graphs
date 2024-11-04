@@ -23,16 +23,15 @@ import {
   getThemeResolver,
   getConnectedEdges,
 } from '@graph/helpers';
-import { generateSubscriber } from '@graph/events';
 import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
 import { themes } from '@graph/themes';
 import type { BaseGraphTheme } from '@graph/themes'
 import { getInitialThemeMap } from '@graph/themes/types';
-import type { GraphTheme } from '@graph/themes/types';
+import type { GraphTheme } from '@graph/themes';
 import { delta } from '@utils/deepDelta/delta';
 import { clone } from '@utils/clone';
-import { getInitialEventBus } from '@graph/events';
+import { getInitialEventBus, generateSubscriber } from '@graph/events';
 import { useAggregator } from '@graph/useAggregator';
 import {
   ADD_NODE_OPTIONS_DEFAULTS,

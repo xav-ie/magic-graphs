@@ -56,6 +56,9 @@ export type NodeAnchorGraphTheme = {
   linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
 }
 
+export type GraphTheme = NodeAnchorGraphTheme & BaseGraphTheme
+export type GraphThemeKey = keyof GraphTheme
+
 export const DEFAULT_THEME: BaseGraphTheme = {
   nodeSize: 35,
   nodeBorderWidth: 8,

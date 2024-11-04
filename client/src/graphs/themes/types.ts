@@ -1,8 +1,9 @@
-import type { NodeAnchorGraphTheme } from "@graph/compositions/useNodeAnchorGraph"
-import type { MaybeGetter, MaybeGetterParams, UnwrapMaybeGetter } from "@graph/types"
-
-export type GraphTheme = NodeAnchorGraphTheme
-export type GraphThemeKey = keyof GraphTheme
+import type { GraphTheme, GraphThemeKey } from "."
+import type {
+  MaybeGetter,
+  MaybeGetterParams,
+  UnwrapMaybeGetter
+} from "@graph/types"
 
 /**
  * decomposes MaybeGetter<T, K> such that it turns T into T | void

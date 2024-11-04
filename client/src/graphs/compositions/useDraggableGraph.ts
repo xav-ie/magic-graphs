@@ -74,8 +74,8 @@ export const useDraggableGraph = (
   subscribe('onMouseUp', drop)
   subscribe('onMouseMove', drag)
 
-  watchEffect(() => {
-    if (!settings.value.draggable) {
+  subscribe('onSettingsChange', (diff) => {
+    if (diff.draggable === false) {
       nodeBeingDragged.value = undefined
     }
   })

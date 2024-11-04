@@ -21,16 +21,12 @@ import type {
   SchemaItem,
   GNode,
   GEdge,
-  NodeGetterOrValue,
-  MaybeGetter,
   GraphOptions,
 } from "@graph/types";
 import colors from "@colors";
-
-import type { Circle } from "@shape/circle";
 import { circle, line } from '@shapes';
 import { DEFAULT_NODE_ANCHOR_SETTINGS, type NodeAnchorGraphSettings } from '@graph/settings';
-import type { GraphTheme } from '@graph/themes/types';
+import type { GraphTheme, NodeAnchorGraphTheme } from '@graph/themes';
 
 export type NodeAnchor = {
   /**
@@ -53,7 +49,7 @@ export type NodeAnchor = {
 
 type DraggableGraph = ReturnType<typeof useDraggableGraph>
 
-type DefaultNodeGraphThemeGetter = (graph: DraggableGraph) => ExclusiveNodeAnchorGraphTheme
+type DefaultNodeGraphThemeGetter = (graph: DraggableGraph) => NodeAnchorGraphTheme
 
 /**
  * @description default options for the anchor node graph

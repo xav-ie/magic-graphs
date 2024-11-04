@@ -9,7 +9,7 @@ import { useUserEditableGraph } from '@graph/compositions/useUserEditableGraph'
 import type { DraggableGraphEvents } from './useDraggableGraph'
 import { DEFAULT_PERSISTENT_SETTINGS } from '@graph/settings'
 import type { PersistentGraphSettings, GraphSettings } from '@graph/settings'
-import type { GraphTheme } from '@graph/themes/types'
+import type { GraphTheme } from '@graph/themes'
 
 export type PersistentGraphOptions = GraphOptions<PersistentGraphSettings>
 
@@ -154,36 +154,37 @@ export const usePersistentGraph = (
     stopListeningForGraphStateEvents()
   }
 
-  // graph.subscribe('onSettingsChange', (diff) => {
+  graph.subscribe('onSettingsChange', (diff) => {
+    stopListeningForEvents()
 
-  // })
+    // persistent was true, but now it is false
+    const persistenceTurnedOff = 'persistent' in diff && !diff.persistent
+    if (persistenceTurnedOff) return
 
-  // watch(persistSettings, (newSettings, oldSettings) => {
-  //   stopListeningForEvents()
+    // persistent was false, but now it is true
+    const persistenceTurnedOn = 'persistent' in diff && diff.persistent
+    if (persistenceTurnedOn) {
+      load()
+      listenForGraphStateEvents()
+      if (settings.value.persistentTrackSettings || settings.value.persistentTrackTheme) {
+        listenForOptionsEvents()
+      }
 
-  //   const graphPersistenceTurnedOff = !newSettings
-  //   if (graphPersistenceTurnedOff) return
+      return
+    }
 
-  //   // persistent was false, but now it is true
-  //   if (!oldSettings) {
-  //     load()
-  //   }
+    // from here on out, persistent was true, but it was not in the diff
 
-  //   // persistent was true, so we had to check if the storage key changed
-  //   // to ensure we dont load the same graph twice
-  //   if (oldSettings && newSettings.storageKey !== oldSettings.storageKey) {
-  //     load()
-  //   }
+    if ('persistentStorageKey' in diff) {
+      load()
+    }
 
-  //   listenForGraphStateEvents()
+    listenForGraphStateEvents()
 
-  //   if (newSettings.trackSettings || newSettings.trackTheme) {
-  //     listenForOptionsEvents()
-  //   }
-  // }, {
-  //   immediate: true,
-  //   deep: true
-  // })
+    if (settings.value.persistentTrackSettings || settings.value.persistentTrackTheme) {
+      listenForOptionsEvents()
+    }
+  })
 
   return {
     ...graph,
