@@ -4,7 +4,6 @@ import {
   onUnmounted,
 } from 'vue';
 import type { GNode, Graph } from '@graph/types';
-import { getValue } from '@graph/helpers';
 import { useTheme } from '@graph/themes/useTheme';
 import colors from '@colors';
 import { SEARCH_VISUALIZER_THEME_ID } from './types';
@@ -77,5 +76,8 @@ export const useBFSColorizer = (graph: Graph) => {
     colorize,
     decolorize,
     toggleColorize: () => isColorized.value = !isColorized.value,
+
+    bfsLevelRecord,
+    startNode,
   }
 }

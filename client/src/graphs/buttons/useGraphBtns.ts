@@ -176,10 +176,15 @@ export const useGraphBtns = (graph: Graph) => {
     id: GRAPH_BUTTON_ID.log,
   };
 
-  const { toggleColorize, isColorized } = useBFSColorizer(graph);
+  const { toggleColorize, isColorized, startNode } = useBFSColorizer(graph);
 
   const bfsColorize: GButton = {
-    label: () => (isColorized.value ? "Stop Colorizing" : "Colorize"),
+    label: () => {
+      const startText = 'Colorize';
+      const node = graph.getNode(startNode.value!);
+      const stopText = `Stop Colorizing (${node?.label})`;
+      return isColorized.value ? stopText : startText;
+    },
     color: () => (isColorized.value ? "red" : "pink"),
     action: toggleColorize,
     id: "toggle-bfs-colorize",

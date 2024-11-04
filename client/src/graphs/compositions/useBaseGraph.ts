@@ -282,7 +282,7 @@ export const useBaseGraph = (
   }
 
   const addEdge = (
-    edge: PartiallyPartial<GEdge, 'id' | 'weight'>,
+    edge: PartiallyPartial<GEdge, 'id' | 'weight' | 'label'>,
     options: Partial<AddEdgeOptions> = {}
   ) => {
     const fullOptions = {
@@ -308,6 +308,7 @@ export const useBaseGraph = (
       id: edge.id ?? generateId(),
       to: edge.to,
       from: edge.from,
+      label: edge.label ?? '',
       weight: edge.weight ?? 1,
       type: edge.type,
     }
