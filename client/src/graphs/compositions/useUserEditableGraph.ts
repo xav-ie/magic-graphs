@@ -1,8 +1,4 @@
-/**
- * @module useUserEditableGraph
- */
-
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import type { Ref } from 'vue'
 import type {
   SchemaItem,
@@ -10,58 +6,17 @@ import type {
   GraphOptions
 } from "@graph/types"
 import type {
-  NodeAnchorGraphTheme,
   NodeAnchor,
-  NodeAnchorGraphSettings,
   NodeAnchorGraphEvents
 } from "@graph/compositions/useNodeAnchorGraph"
 import { useMarqueeGraph } from './useMarqueeGraph'
-
-export type EditSettings = {
-  /**
-   * the type of edge to add when creating an edge between nodes
-   * @default "directed"
-   */
-  addedEdgeType: 'directed' | 'undirected',
-  /**
-   * the default weight to assign to edges when created using the UI
-   * @default 1
-   */
-  addedEdgeWeight: number,
-}
-
-const defaultEditSettings = {
-  addedEdgeType: 'directed',
-  addedEdgeWeight: 1,
-} as const
-
-export type EditSettingsOption = Partial<EditSettings> | boolean
+import { DEFAULT_USER_EDITABLE_SETTINGS, type UserEditableGraphSettings } from '@graph/settings'
 
 export type UserEditableGraphEvents = NodeAnchorGraphEvents
-export type UserEditableGraphTheme = NodeAnchorGraphTheme
 
-export type UserEditableGraphSettings = NodeAnchorGraphSettings & {
-  userEditable: EditSettingsOption
-}
-
-export type UserEditableGraphOptions = GraphOptions<UserEditableGraphTheme, UserEditableGraphSettings>
-
-const defaultUserEditableGraphSettings = {
-  userEditable: true,
-} as const
-
-export const resolveEditSettings = (settings: EditSettingsOption) => {
-  if (settings === false) return null
-  if (settings === true) return defaultEditSettings
-  return {
-    ...defaultEditSettings,
-    ...settings,
-  }
-}
+export type UserEditableGraphOptions = GraphOptions<UserEditableGraphSettings>
 
 /**
- * @requires a graph interface with node anchors
- *
  * The user editable graph implements handlers for node creation,
  * edge creation and deletion driven by user input.
  *
@@ -77,11 +32,9 @@ export const useUserEditableGraph = (
   const graph = useMarqueeGraph(canvas, options)
 
   const settings = ref<UserEditableGraphSettings>(Object.assign(graph.settings.value, {
-    ...defaultUserEditableGraphSettings,
+    ...DEFAULT_USER_EDITABLE_SETTINGS,
     ...options.settings,
   }))
-
-  const editSettings = computed(() => resolveEditSettings(settings.value.userEditable))
 
   const handleNodeCreation = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev
@@ -89,7 +42,7 @@ export const useUserEditableGraph = (
   }
 
   const handleEdgeCreation = (parentNode: GNode, anchor: NodeAnchor) => {
-    if (!editSettings.value) return
+    if (!settings.value.userEditable) return
     const { x, y } = anchor
     const itemStack = graph.getSchemaItemsByCoordinates(x, y)
     const nodeSchema = itemStack.findLast((item: SchemaItem) => item.graphType === 'node')
@@ -99,8 +52,8 @@ export const useUserEditableGraph = (
     graph.addEdge({
       from: parentNode.id,
       to: node.id,
-      type: editSettings.value.addedEdgeType,
-      weight: editSettings.value.addedEdgeWeight,
+      type: settings.value.userEditableAddedEdgeType,
+      weight: settings.value.userEditableAddedEdgeWeight,
     })
   }
 

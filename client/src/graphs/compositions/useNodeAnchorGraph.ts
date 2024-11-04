@@ -1,7 +1,5 @@
 /**
- * @module useNodeAnchorGraph
- *
- * Helpful terms:
+ * @Helpful terms:
  * - Parent Node: The node that the anchors spawn around.
  * - Node Anchor/Anchor: A draggable handle that spawns around the parent node.
  * - Link Preview: The line that appears between the parent node and the anchor when the anchor is being dragged.
@@ -18,24 +16,17 @@ import type { Ref } from 'vue'
 import { generateId, prioritizeNode } from "@graph/helpers";
 import type { MappingsToEventBus } from '@graph/events';
 import { generateSubscriber } from '@graph/events';
-import { useDraggableGraph } from "@graph/compositions/useDraggableGraph";
-import type {
-  DraggableGraphEvents,
-  DraggableGraphSettings,
-  DraggableGraphTheme,
-} from "@graph/compositions/useDraggableGraph";
+import { useDraggableGraph, type DraggableGraphEvents } from "@graph/compositions/useDraggableGraph";
 import type {
   SchemaItem,
   GNode,
   GEdge,
-  NodeGetterOrValue,
-  MaybeGetter,
   GraphOptions,
 } from "@graph/types";
 import colors from "@colors";
-
-import type { Circle } from "@shape/circle";
 import { circle, line } from '@shapes';
+import { DEFAULT_NODE_ANCHOR_SETTINGS, type NodeAnchorGraphSettings } from '@graph/settings';
+import type { GraphTheme, NodeAnchorGraphTheme } from '@graph/themes';
 
 export type NodeAnchor = {
   /**
@@ -58,7 +49,7 @@ export type NodeAnchor = {
 
 type DraggableGraph = ReturnType<typeof useDraggableGraph>
 
-type DefaultNodeGraphThemeGetter = (graph: DraggableGraph) => ExclusiveNodeAnchorGraphTheme
+type DefaultNodeGraphThemeGetter = (graph: DraggableGraph) => NodeAnchorGraphTheme
 
 /**
  * @description default options for the anchor node graph
@@ -99,16 +90,6 @@ const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = (
   linkPreviewWidth: graph.getTheme('edgeWidth', graph.edges.value[0]),
 })
 
-export type ExclusiveNodeAnchorGraphTheme = {
-  nodeAnchorRadius: NodeGetterOrValue<number>;
-  nodeAnchorColor: NodeGetterOrValue<string>;
-  nodeAnchorColorWhenParentFocused: NodeGetterOrValue<string>;
-  linkPreviewColor: MaybeGetter<string, [GNode, NodeAnchor]>;
-  linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
-}
-
-export type NodeAnchorGraphTheme = DraggableGraphTheme & ExclusiveNodeAnchorGraphTheme
-
 export type NodeAnchorGraphEvents = DraggableGraphEvents & {
   /**
    * @description event fired when the user initiates a drag on a node anchor
@@ -124,19 +105,9 @@ export type NodeAnchorGraphEvents = DraggableGraphEvents & {
   onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
 }
 
-const defaultNodeAnchorSettings = {
-  nodeAnchors: true,
-} as const
-
-export type NodeAnchorGraphSettings = DraggableGraphSettings & {
-  nodeAnchors: boolean;
-}
-
-export type NodeAnchorGraphOptions = GraphOptions<NodeAnchorGraphTheme, NodeAnchorGraphSettings>
+export type NodeAnchorGraphOptions = GraphOptions<NodeAnchorGraphSettings>
 
 /**
- * @requires a draggable graph interface.
- *
  * Node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
  * when hovered over.
  *
@@ -154,13 +125,13 @@ export const useNodeAnchorGraph = (
 
   const graph = useDraggableGraph(canvas, options)
 
-  const theme = ref<NodeAnchorGraphTheme>(Object.assign(graph.theme.value, {
+  const theme = ref<GraphTheme>(Object.assign(graph.theme.value, {
     ...defaultNodeAnchorTheme(graph),
     ...options.theme,
   }))
 
   const settings = ref<NodeAnchorGraphSettings>(Object.assign(graph.settings.value, {
-    ...defaultNodeAnchorSettings,
+    ...DEFAULT_NODE_ANCHOR_SETTINGS,
     ...options.settings,
   }))
 

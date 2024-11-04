@@ -23,17 +23,15 @@ import {
   getThemeResolver,
   getConnectedEdges,
 } from '@graph/helpers';
-import { generateSubscriber } from '@graph/events';
 import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
 import { themes } from '@graph/themes';
 import type { BaseGraphTheme } from '@graph/themes'
 import { getInitialThemeMap } from '@graph/themes/types';
-import type { GraphTheme } from '@graph/themes/types';
+import type { GraphTheme } from '@graph/themes';
 import { delta } from '@utils/deepDelta/delta';
 import { clone } from '@utils/clone';
-import { getInitialEventBus } from '@graph/events';
-import { fractionToDecimal } from '@utils/fracDecConverter/fracDec';
+import { getInitialEventBus, generateSubscriber } from '@graph/events';
 import { useAggregator } from '@graph/useAggregator';
 import {
   ADD_NODE_OPTIONS_DEFAULTS,
@@ -50,38 +48,10 @@ import type {
   MoveNodeOptions,
 } from '@graph/baseGraphAPIs';
 import type { PartiallyPartial } from '@utils/types';
+import { DEFAULT_BASE_SETTINGS } from '@graph/settings';
+import type { BaseGraphSettings } from '@graph/settings';
 
-export type BaseGraphSettings = {
-  /**
-   * whether to display edge labels
-   * @default true
-   */
-  displayEdgeLabels: boolean;
-  /**
-   * whether edge labels should be editable
-   * @default true
-   */
-  edgeLabelsEditable: boolean;
-  /**
-   * a setter for edge weights, takes the inputted string and returns a number that will be set as the edge weight
-   * or undefined if the edge weight should not be set
-   * @default function that attempts to parse the input as a number and if successful returns the number
-   */
-  edgeInputToWeight: (input: string) => number | undefined;
-}
-
-const defaultSettings = {
-  displayEdgeLabels: true,
-  edgeLabelsEditable: true,
-  edgeInputToWeight: (input: string) => {
-    const trimmed = input.trim()
-    if (!trimmed) return
-    const decimalNum = fractionToDecimal(trimmed)?.toFixed(2)
-    return Number(decimalNum ?? trimmed)
-  }
-} as const
-
-export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
+export type BaseGraphOptions = GraphOptions<BaseGraphSettings>
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -97,7 +67,7 @@ export const useBaseGraph = (
   const getTheme = getThemeResolver(theme, themeMap)
 
   const settings = ref<BaseGraphSettings>({
-    ...defaultSettings,
+    ...DEFAULT_BASE_SETTINGS,
     ...options.settings,
   })
 

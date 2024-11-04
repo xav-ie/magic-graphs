@@ -1,11 +1,10 @@
-import { computed } from "vue";
-import { isObject } from "@vueuse/core";
 import type { Graph } from "@graph/types";
-import { resolveEditSettings } from "@graph/compositions/useUserEditableGraph";
 import { getRandomInRange } from "@graph/helpers";
 import { GRAPH_BUTTON_ID } from "@graph/buttons/types";
 import type { GButton } from "@graph/buttons/types";
 import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
+import { getRandomElement } from "@utils/array";
+import { COLLAB_COLORS, COLLAB_NAMES } from "@graph/compositions/useCollaborativeGraph";
 
 /**
  * a one stop shop for the dials you need to control your graph
@@ -14,33 +13,6 @@ import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
  * @returns a set of buttons that can be added to the graph toolbar
  */
 export const useGraphBtns = (graph: Graph) => {
-
-  const toggleEdgeTypeAction = () => {
-    const editSettings = resolveEditSettings(graph.settings.value.userEditable);
-    if (!editSettings) return;
-    graph.settings.value.userEditable = {
-      ...editSettings,
-      addedEdgeType: editSettings.addedEdgeType === 'directed' ? 'undirected' : 'directed',
-    }
-  }
-
-  const settings = computed(() => graph.settings.value);
-  const userEditSettings = computed(() => settings.value.userEditable);
-  const persistSettings = computed(() => settings.value.persistent);
-
-  const storageKey = computed(() => {
-    if (isObject(persistSettings.value)) {
-      return persistSettings.value.storageKey;
-    } else {
-      return 'graph';
-    }
-  });
-
-  const addedEdgeType = computed(() => {
-    const editSettings = resolveEditSettings(userEditSettings.value);
-    if (!editSettings) return null;
-    return editSettings.addedEdgeType;
-  });
 
   const reset: GButton = {
     label: () => 'Reset',
@@ -86,26 +58,30 @@ export const useGraphBtns = (graph: Graph) => {
 
   const toggleEdgeType: GButton = {
     cond: () => !!graph.settings.value.userEditable,
-    label: () => addedEdgeType.value === 'directed' ? 'Directed' : 'Undirected',
-    action: toggleEdgeTypeAction,
-    color: () => addedEdgeType.value === 'directed' ? 'blue' : 'purple',
+    label: () => graph.settings.value.userEditableAddedEdgeType,
+    action: () => {
+      const addedEdgeType = graph.settings.value.userEditableAddedEdgeType;
+      if (addedEdgeType === 'directed') {
+        graph.settings.value.userEditableAddedEdgeType = 'undirected';
+      } else {
+        graph.settings.value.userEditableAddedEdgeType = 'directed';
+      }
+    },
+    color: () => {
+      const { userEditableAddedEdgeType } = graph.settings.value;
+      return userEditableAddedEdgeType === 'directed' ? 'blue' : 'purple';
+    },
     id: GRAPH_BUTTON_ID.edgeType,
   };
 
   const changeEdgeWeight: GButton = {
     cond: () => !!graph.settings.value.userEditable,
     label: () => {
-      const editSettings = resolveEditSettings(userEditSettings.value);
-      if (!editSettings) return '';
-      return `Change Added Edge Weight (${editSettings.addedEdgeWeight})`;
+      const { userEditableAddedEdgeWeight } = graph.settings.value;
+      return `Change Added Edge Weight (${userEditableAddedEdgeWeight})`;
     },
     action: () => {
-      const editSettings = resolveEditSettings(userEditSettings.value);
-      if (!editSettings) return;
-      graph.settings.value.userEditable = {
-        ...editSettings,
-        addedEdgeWeight: getRandomInRange(1, 10),
-      }
+      graph.settings.value.userEditableAddedEdgeWeight = getRandomInRange(1, 10);
     },
     color: () => 'green',
     id: GRAPH_BUTTON_ID.edgeWeight,
@@ -119,9 +95,14 @@ export const useGraphBtns = (graph: Graph) => {
   };
 
   const changeStorageKey: GButton = {
-    label: () => `Change Storage Key (${storageKey.value})`,
-    action: () => graph.settings.value.persistent = {
-      storageKey: storageKey.value === 'graph' ? 'graph2' : 'graph',
+    label: () => {
+      const { persistentStorageKey } = graph.settings.value;
+      return `Change Storage Key (${persistentStorageKey})`;
+    },
+    action: () => {
+      const { persistentStorageKey } = graph.settings.value;
+      const newStorageKey = persistentStorageKey === 'graph' ? 'graph2' : 'graph';
+      graph.settings.value.persistentStorageKey = newStorageKey;
     },
     color: () => 'blue',
     id: GRAPH_BUTTON_ID.storageKey,
@@ -136,8 +117,8 @@ export const useGraphBtns = (graph: Graph) => {
 
   const persistentGraphClone: GButton = {
     label: () => 'Clone Search Visualizer Graph',
-    action: () => graph.settings.value.persistent = {
-      storageKey: "search-visualizer-graph"
+    action: () => {
+      graph.settings.value.persistentStorageKey = 'search-visualizer-graph'
     },
     color: () => 'amber',
     id: GRAPH_BUTTON_ID.persistentGraphClone,
@@ -145,23 +126,28 @@ export const useGraphBtns = (graph: Graph) => {
 
   const toggleTestRoom: GButton = {
     label: () => {
-      const isInRoom = graph.collaborativeRoomId.value === 'test';
-      const peopleInRoom = graph.collaboratorCount.value + 1; // +1 for self
-      const inRoomText = `Leave Test Room (${peopleInRoom} In Room)`;
+      const {
+        collaborativeRoomId: room,
+        collaboratorCount: peopleInRoom,
+        inCollaborativeRoom: inRoom
+      } = graph
+      const inRoomText = `Leave ${room.value} Room (${peopleInRoom.value + 1} In Room)`;
       const notInRoomText = 'Join Test Room';
-      return isInRoom ? inRoomText : notInRoomText;
+      return inRoom.value ? inRoomText : notInRoomText;
     },
     action: () => {
-      const isInRoom = graph.collaborativeRoomId.value === 'test';
-      const names = ['Joud', 'Zavier', 'Thomas', 'Jaime', 'Dila', 'Bella', 'Julian', 'Adriana', 'Juliana', 'Yona']
-      if (isInRoom) {
-        graph.leaveCollaborativeRoom();
-      } else {
-        graph.meAsACollaborator.value.name = names[Math.floor(Math.random() * names.length)];
-        graph.joinCollaborativeRoom('test');
-      }
+      const name = getRandomElement(COLLAB_NAMES);
+      const color = getRandomElement(COLLAB_COLORS);
+      graph.meAsACollaborator.value.name = name;
+      graph.meAsACollaborator.value.color = color;
+      const {
+        joinCollaborativeRoom: joinRoom,
+        leaveCollaborativeRoom: leaveRoom,
+        inCollaborativeRoom: inRoom
+      } = graph;
+      inRoom.value ? leaveRoom() : joinRoom('test');
     },
-    color: () => graph.collaborativeRoomId.value === 'test' ? 'red' : 'green',
+    color: () => graph.inCollaborativeRoom.value ? 'red' : 'green',
     id: GRAPH_BUTTON_ID.testRoom,
   };
 

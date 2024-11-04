@@ -8,13 +8,14 @@ import type { Ref } from "vue";
 import type {
   GEdge,
   GNode,
+  GraphOptions,
   SchemaItem
 } from "@graph/types";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
-import type { BaseGraphOptions } from "@graph/compositions/useBaseGraph";
 import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
+import type { FocusGraphSettings } from "@graph/settings";
 
 type Id = SchemaItem['id']
 type MaybeId = Id | undefined
@@ -32,9 +33,11 @@ type ValidFocusableTypes = SchemaItem['graphType'] & FocusedItem['type']
 const FOCUSABLE_GRAPH_TYPES: ValidFocusableTypes[] = ['node', 'edge']
 const FOCUS_THEME_ID = 'use-focus-graph'
 
+type FocusGraphOptions = GraphOptions<FocusGraphSettings>
+
 export const useFocusGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<BaseGraphOptions> = {},
+  options: Partial<FocusGraphOptions> = {},
 ) => {
 
   const graph = useBaseGraph(canvas, options);

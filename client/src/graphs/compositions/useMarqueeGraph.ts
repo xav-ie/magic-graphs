@@ -6,6 +6,7 @@ import type {
   GNode,
   SchemaItem,
   Aggregator,
+  GraphOptions,
 } from '@graph/types'
 import { useTheme } from '@graph/themes/useTheme'
 import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
@@ -14,6 +15,7 @@ import { getValue } from '@graph/helpers'
 import type { Rect } from '@shape/rect'
 import colors from '@colors'
 import { rect } from '@shapes'
+import type { MarqueeGraphSettings } from '@graph/settings'
 
 export type SelectionBox = Pick<Rect, 'at' | 'width' | 'height'>
 
@@ -23,9 +25,11 @@ const MARQUEE_SELECTION_BORDER_COLOR = colors.WHITE
 const MARQUEE_SELECTION_BG_COLOR = colors.WHITE + '10'
 const MARQUEE_THEME_ID = 'use-marquee-graph'
 
+type MarqueeGraphOptions = GraphOptions<MarqueeGraphSettings>
+
 export const useMarqueeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<NodeAnchorGraphOptions> = {},
+  options: Partial<MarqueeGraphOptions> = {},
 ) => {
 
   const selectionBox = ref<SelectionBox | undefined>()

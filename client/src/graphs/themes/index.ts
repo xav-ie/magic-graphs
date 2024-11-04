@@ -2,12 +2,14 @@ import type {
   GNode,
   NodeGetterOrValue,
   EdgeGetterOrValue,
-  GEdge
+  GEdge,
+  MaybeGetter
 } from "@graph/types"
 import type { SupportedNodeShapes } from "@graph/schematics/node"
 import type { TextFontWeight } from "@shape/types"
 import colors from "@colors"
 import type { ThemeGetter } from "@graph/helpers"
+import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph"
 
 export type BaseGraphNodeTheme = {
   nodeSize: number,
@@ -45,6 +47,17 @@ export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEd
   graphBgColor: string,
   graphBgPatternColor: string,
 }
+
+export type NodeAnchorGraphTheme = {
+  nodeAnchorRadius: NodeGetterOrValue<number>;
+  nodeAnchorColor: NodeGetterOrValue<string>;
+  nodeAnchorColorWhenParentFocused: NodeGetterOrValue<string>;
+  linkPreviewColor: MaybeGetter<string, [GNode, NodeAnchor]>;
+  linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
+}
+
+export type GraphTheme = NodeAnchorGraphTheme & BaseGraphTheme
+export type GraphThemeKey = keyof GraphTheme
 
 export const DEFAULT_THEME: BaseGraphTheme = {
   nodeSize: 35,
