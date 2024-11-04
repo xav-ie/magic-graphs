@@ -14,24 +14,10 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
   if (borderRadius === 0) return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
   else {
     const radius = Math.min(borderRadius, width / 2, height / 2);
-
-  if (
-    point.x >= x + radius &&
-    point.x <= x + width - radius &&
-    point.y >= y &&
-    point.y <= y + height
-  ) {
-    return true;
-  }
-
-  if (
-    point.x >= x &&
-    point.x <= x + width &&
-    point.y >= y + radius &&
-    point.y <= y + height - radius
-  ) {
-    return true;
-  }
+    
+    const rectVertical = rectHitbox({ ...rectangle, at: { x: x + radius, y }, width: width - 2 * radius, borderRadius: 0 });
+    const rectHorizontal = rectHitbox({ ...rectangle, at: { x, y: y + radius }, height: height - 2 * radius, borderRadius: 0 });
+    if (rectVertical(point) || rectHorizontal(point)) return true
 
   const isInTopLeftCircle = circleHitbox({ at: { x: x + radius, y: y + radius }, radius });
   const isInTopRightCircle = circleHitbox({ at: { x: x + width - radius, y: y + radius }, radius });
