@@ -175,3 +175,10 @@ export type OnlyCollaborativeGraphSettings = {}
 export const DEFAULT_COLLABORATIVE_SETTINGS: OnlyCollaborativeGraphSettings = {}
 
 export type CollaborativeGraphSettings = PersistentGraphSettings & OnlyCollaborativeGraphSettings
+
+
+/**
+ * GRAPH SETTINGS - represents all settings on a graph instance
+ */
+
+export type GraphSettings = CollaborativeGraphSettings

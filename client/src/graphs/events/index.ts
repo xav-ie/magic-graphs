@@ -1,5 +1,5 @@
 import type { GEdge, GNode } from "@graph/types";
-import type { PersistentGraphSettings } from "@graph/compositions/usePersistentGraph";
+import type { GraphSettings } from "@graph/settings";
 import type {
   AddNodeOptions,
   RemoveNodeOptions,
@@ -47,9 +47,7 @@ export type BaseGraphEvents = {
 
   /* reactivity events */
   onThemeChange: (diff: DeepPartial<GraphTheme>) => void;
-  // TODO - PersistentGraphSettings is the top layer
-  // TODO - but should be replaced with an alias to the top layer for clarity
-  onSettingsChange: (diff: DeepPartial<PersistentGraphSettings>) => void;
+  onSettingsChange: (diff: DeepPartial<GraphSettings>) => void;
 }
 
 /**

@@ -1,8 +1,4 @@
-import {
-  ref,
-  computed,
-  watch,
-} from 'vue'
+import { ref } from 'vue'
 import type { Ref } from 'vue'
 import type {
   GNode,
@@ -10,13 +6,10 @@ import type {
   GraphOptions
 } from '@graph/types'
 import { useUserEditableGraph } from '@graph/compositions/useUserEditableGraph'
-import type {
-  UserEditableGraphOptions,
-  UserEditableGraphSettings,
-  UserEditableGraphTheme
-} from '@graph/compositions/useUserEditableGraph'
 import type { DraggableGraphEvents } from './useDraggableGraph'
-import { DEFAULT_PERSISTENT_SETTINGS, type PersistentGraphSettings } from '@graph/settings'
+import { DEFAULT_PERSISTENT_SETTINGS } from '@graph/settings'
+import type { PersistentGraphSettings, GraphSettings } from '@graph/settings'
+import type { GraphTheme } from '@graph/themes/types'
 
 export type PersistentGraphOptions = GraphOptions<PersistentGraphSettings>
 
@@ -33,7 +26,7 @@ export type PersistentGraphOptions = GraphOptions<PersistentGraphSettings>
  */
 export const usePersistentGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<UserEditableGraphOptions> = {}
+  options: Partial<PersistentGraphOptions> = {}
 ) => {
 
   const graph = useUserEditableGraph(canvas, options)
@@ -45,22 +38,42 @@ export const usePersistentGraph = (
 
   const nodeStorage = {
     get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-nodes') ?? '[]'),
-    set: (nodes: GNode[]) => localStorage.setItem(settings.value.persistentStorageKey + '-nodes', JSON.stringify(nodes))
+    set: (nodes: GNode[]) => {
+      localStorage.setItem(
+        settings.value.persistentStorageKey + '-nodes',
+        JSON.stringify(nodes)
+      )
+    }
   }
 
   const edgeStorage = {
     get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-edges') ?? '[]'),
-    set: (edges: GEdge[]) => localStorage.setItem(settings.value.persistentStorageKey + '-edges', JSON.stringify(edges))
+    set: (edges: GEdge[]) => {
+      localStorage.setItem(
+        settings.value.persistentStorageKey + '-edges',
+        JSON.stringify(edges)
+      )
+    }
   }
 
   const themeStorage = {
     get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-theme') ?? '{}'),
-    set: (theme: UserEditableGraphTheme) => localStorage.setItem(settings.value.persistentStorageKey + '-theme', JSON.stringify(theme))
+    set: (graphThemes: GraphTheme) => {
+      localStorage.setItem(
+        settings.value.persistentStorageKey + '-theme',
+        JSON.stringify(graphThemes)
+      )
+    }
   }
 
   const settingsStorage = {
     get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-settings') ?? '{}'),
-    set: (settings: UserEditableGraphSettings) => localStorage.setItem(settings.value.persistentStorageKey + '-settings', JSON.stringify(settings))
+    set: (graphSettings: GraphSettings) => {
+      localStorage.setItem(
+        settings.value.persistentStorageKey + '-settings',
+        JSON.stringify(graphSettings)
+      )
+    }
   }
 
   const trackGraphState = () => {
@@ -141,33 +154,36 @@ export const usePersistentGraph = (
     stopListeningForGraphStateEvents()
   }
 
-  // CIRCLE-BACK
-  watch(persistSettings, (newSettings, oldSettings) => {
-    stopListeningForEvents()
+  // graph.subscribe('onSettingsChange', (diff) => {
 
-    const graphPersistenceTurnedOff = !newSettings
-    if (graphPersistenceTurnedOff) return
+  // })
 
-    // persistent was false, but now it is true
-    if (!oldSettings) {
-      load()
-    }
+  // watch(persistSettings, (newSettings, oldSettings) => {
+  //   stopListeningForEvents()
 
-    // persistent was true, so we had to check if the storage key changed
-    // to ensure we dont load the same graph twice
-    if (oldSettings && newSettings.storageKey !== oldSettings.storageKey) {
-      load()
-    }
+  //   const graphPersistenceTurnedOff = !newSettings
+  //   if (graphPersistenceTurnedOff) return
 
-    listenForGraphStateEvents()
+  //   // persistent was false, but now it is true
+  //   if (!oldSettings) {
+  //     load()
+  //   }
 
-    if (newSettings.trackSettings || newSettings.trackTheme) {
-      listenForOptionsEvents()
-    }
-  }, {
-    immediate: true,
-    deep: true
-  })
+  //   // persistent was true, so we had to check if the storage key changed
+  //   // to ensure we dont load the same graph twice
+  //   if (oldSettings && newSettings.storageKey !== oldSettings.storageKey) {
+  //     load()
+  //   }
+
+  //   listenForGraphStateEvents()
+
+  //   if (newSettings.trackSettings || newSettings.trackTheme) {
+  //     listenForOptionsEvents()
+  //   }
+  // }, {
+  //   immediate: true,
+  //   deep: true
+  // })
 
   return {
     ...graph,
