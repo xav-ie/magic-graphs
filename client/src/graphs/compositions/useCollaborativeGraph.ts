@@ -244,6 +244,7 @@ export const useCollaborativeGraph = (
     }
     roomId.value = ''
     collaborators.value = {}
+    graph.repaint('collaborative-graph/leave-room')()
   }
 
   const leaveCollaborativeRoom = async () => {
