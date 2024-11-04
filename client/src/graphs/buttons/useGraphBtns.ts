@@ -5,6 +5,7 @@ import type { GButton } from "@graph/buttons/types";
 import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
 import { getRandomElement } from "@utils/array";
 import { COLLAB_COLORS, COLLAB_NAMES } from "@graph/compositions/useCollaborativeGraph";
+import { capitalize } from "@utils/string";
 
 /**
  * a one stop shop for the dials you need to control your graph
@@ -58,7 +59,7 @@ export const useGraphBtns = (graph: Graph) => {
 
   const toggleEdgeType: GButton = {
     cond: () => !!graph.settings.value.userEditable,
-    label: () => graph.settings.value.userEditableAddedEdgeType,
+    label: () => capitalize(graph.settings.value.userEditableAddedEdgeType),
     action: () => {
       const addedEdgeType = graph.settings.value.userEditableAddedEdgeType;
       if (addedEdgeType === 'directed') {
@@ -145,7 +146,7 @@ export const useGraphBtns = (graph: Graph) => {
         leaveCollaborativeRoom: leaveRoom,
         inCollaborativeRoom: inRoom
       } = graph;
-      inRoom.value ? leaveRoom() : joinRoom('test');
+      inRoom.value ? leaveRoom() : joinRoom('Test');
     },
     color: () => graph.inCollaborativeRoom.value ? 'red' : 'green',
     id: GRAPH_BUTTON_ID.testRoom,
