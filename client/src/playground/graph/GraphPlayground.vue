@@ -1,8 +1,6 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
-  import { nodesEdgesToAdjList } from "@graph/converters";
-  import type { AdjacencyList } from "@graph/converters";
   import { useBasicsTutorial } from "@graph/tutorials/useTutorial";
   import TutorialControls from "@graph/tutorials/TutorialControls.vue";
   import TutorialHint from "@graph/tutorials/TutorialHint.vue";
@@ -61,10 +59,20 @@
       />
 
       <Button
+        v-if="!graph.inCollaborativeRoom.value"
         @click="graph.joinCollaborativeRoom(roomId)"
         class="bg-blue-500 text-white"
-      > Join Room </Button>
+      >
+        Join Room
+      </Button>
 
+      <Button
+        v-else="graph.inCollaborativeRoom.value"
+        @click="graph.leaveCollaborativeRoom()"
+        class="bg-red-500 text-white"
+      >
+        Leave Room
+      </Button>
     </div>
 
     <!-- <div class="bottom-0 absolute flex gap-2 m-2">
