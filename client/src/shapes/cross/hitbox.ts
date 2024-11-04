@@ -19,7 +19,7 @@ export const crossHitbox = (cross: Cross) => {
     ...cross
   }
 
-
+// TODO: convert these to rectangles once rectangles support rotation
   const points = [
     { x: center.x - size / 2, y: center.y },
     { x: center.x + size / 2, y: center.y },

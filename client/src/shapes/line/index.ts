@@ -37,6 +37,11 @@ export const LINE_DEFAULTS = {
 } as const
 
 export const line = (options: Line): Shape => {
+
+  if (options.width && options.width < 0) {
+    throw new Error('lineWidth must be positive')
+  }
+
   const drawShape = drawLineWithCtx(options);
 
   const hitbox = lineHitbox(options);

@@ -19,6 +19,11 @@ export type Arrow = Line
 export const ARROW_DEFAULTS = LINE_DEFAULTS
 
 export const arrow = (options: Arrow): Shape => {
+
+  if (options.width && options.width < 0) {
+    throw new Error('width must be positive')
+  }
+  
   const drawShape = drawArrowWithCtx(options);
 
   const hitbox = arrowHitbox(options);

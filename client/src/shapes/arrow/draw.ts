@@ -39,7 +39,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
 
   const shaft = {
     start: lineStart,
-    // TODO - make sure there is overlap with triangle when drawing (gh issue #24)
+    // Add sines to make solve overlap issue with triangle when drawing (gh issue #24)
     end: {
       x: shaftEnd.x + Math.cos(angle),
       y: shaftEnd.y + Math.sin(angle)

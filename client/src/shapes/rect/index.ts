@@ -24,6 +24,11 @@ export const RECT_DEFAULTS = {
 } as const
 
 export const rect = (options: Rect): Shape => {
+
+  if (options.borderRadius && options.borderRadius < 0) {
+    throw new Error('borderRadius must be positive')
+  }
+
   const drawShape = drawRectWithCtx(options)
   const hitbox = rectHitbox(options)
 

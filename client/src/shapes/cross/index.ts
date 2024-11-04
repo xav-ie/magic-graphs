@@ -22,6 +22,11 @@ import type {
   } as const
   
   export const cross = (options: Cross): Shape => {
+
+    if (options.lineWidth && options.lineWidth < 0) {
+      throw new Error('lineWidth must be positive')
+    }
+    
     const drawShape = drawCrossWithCtx(options)
     const hitbox = crossHitbox(options)
   

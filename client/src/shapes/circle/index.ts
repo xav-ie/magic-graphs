@@ -21,6 +21,11 @@ export const CIRCLE_DEFAULTS = {
 } as const
 
 export const circle = (options: Circle): Shape => {
+
+  if (options.radius < 0) {
+    throw new Error('radius must be positive')
+  }
+  
   const drawShape = drawCircleWithCtx(options);
   const hitbox = circleHitbox(options);
 
