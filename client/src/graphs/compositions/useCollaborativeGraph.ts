@@ -103,11 +103,12 @@ export const useCollaborativeGraph = (
   })
 
   socket.on('connect_error', (error) => {
-    console.log('socket connection error', error)
+    console.warn('socket connection error', error)
   })
 
-  socket.on('disconnect', () => {
-    console.log('socket disconnected')
+  socket.on('disconnect', async () => {
+    console.warn('socket disconnected - leaving collaborative room')
+    await leaveCollaborativeRoom()
   })
 
   socket.on('collaboratorLeft', (collaboratorId) => {
