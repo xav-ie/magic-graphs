@@ -124,23 +124,23 @@ export const useCollaborativeGraph = (
 
   const collaborativeGraphEvents: Partial<BaseGraphEvents> = {
     onNodeAdded: (node: GNode, { broadcast }: AddNodeOptions) => {
-      if (!broadcast || collaboratorCount.value < 1) return
+      if (!broadcast) return
       socket.emit('nodeAdded', node)
     },
     onNodeRemoved: (node: GNode, { broadcast }: RemoveNodeOptions) => {
-      if (!broadcast || collaboratorCount.value < 1) return
+      if (!broadcast) return
       socket.emit('nodeRemoved', node.id)
     },
     onNodeMoved: (node: GNode, { broadcast }: MoveNodeOptions) => {
-      if (!broadcast || collaboratorCount.value < 1) return
+      if (!broadcast) return
       socket.emit('nodeMoved', node)
     },
     onEdgeAdded: (edge: GEdge, { broadcast }: AddEdgeOptions) => {
-      if (!broadcast || collaboratorCount.value < 1) return
+      if (!broadcast) return
       socket.emit('edgeAdded', edge)
     },
     onEdgeRemoved: (edge: GEdge, { broadcast }: RemoveNodeOptions) => {
-      if (!broadcast || collaboratorCount.value < 1) return
+      if (!broadcast) return
       socket.emit('edgeRemoved', edge.id)
     },
     onEdgeWeightChange: (edge: GEdge) => {
