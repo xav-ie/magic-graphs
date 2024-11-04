@@ -12,7 +12,7 @@ const trackGraphState = () => {
     };
     const getRoomId = () => {
         if (!roomId)
-            throw new Error('room id not set');
+            console.warn('room id not set');
         return roomId;
     };
     const getGraphState = () => {

@@ -16,7 +16,6 @@ export const collabTagShapes = (collaborator: Collaborator) => {
   const height = 20
   const topLeftOffset = 10
 
-  // TODO - update with border radius when its added to rect api
   const tag: Rect = {
     at: {
       x: x - width - topLeftOffset,
@@ -25,6 +24,7 @@ export const collabTagShapes = (collaborator: Collaborator) => {
     width,
     height,
     color: collaboratorColor,
+    borderRadius: 5,
     text: {
       content: collaboratorName,
       color: colors.WHITE,
