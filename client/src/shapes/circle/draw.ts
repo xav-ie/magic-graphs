@@ -31,11 +31,13 @@ export const drawCircleWithCtx = (options: Circle) => (ctx: CanvasRenderingConte
       color,
     } = { ...TEXT_DEFAULTS, ...circleText };
 
+    const textVerticalOffset = fontSize >=50 ? 0.3 : 0.1;
+
     ctx.font = `${fontWeight} ${fontSize}px Arial`;
     ctx.fillStyle = color;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(content, at.x, at.y);
+    ctx.fillText(content, at.x, at.y + fontSize ** textVerticalOffset);
   }
 
   ctx.closePath();
