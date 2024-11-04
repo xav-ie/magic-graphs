@@ -153,7 +153,7 @@ export const useGraphBtns = (graph: Graph) => {
     },
     action: () => {
       const isInRoom = graph.collaborativeRoomId.value === 'test';
-      const names = ['Dila', 'Shannon', 'Bella', 'Joy']
+      const names = ['Joud', 'Zavier', 'Thomas', 'Jaime', 'Dila', 'Bella', 'Julian', 'Adriana', 'Juliana', 'Yona']
       if (isInRoom) {
         graph.leaveCollaborativeRoom();
       } else {
