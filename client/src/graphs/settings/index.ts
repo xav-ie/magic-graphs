@@ -10,24 +10,24 @@ export type OnlyBaseGraphSettings = {
    * whether to display edge labels
    * @default true
    */
-  displayEdgeLabels: boolean;
+  baseDisplayEdgeLabels: boolean;
   /**
    * whether edge labels should be editable
    * @default true
    */
-  edgeLabelsEditable: boolean;
+  baseEdgeLabelsEditable: boolean;
   /**
-   * a setter for edge weights, takes the inputted string and returns a number that will be set as the edge weight
-   * or undefined if the edge weight should not be set
+   * a setter for edge weights, takes the inputted string and returns a number that will
+   * be set as the edge weight or undefined if the edge weight should not be set
    * @default function that attempts to parse the input as a number and if successful returns the number
    */
-  edgeInputToWeight: (input: string) => number | undefined;
+  baseEdgeInputToWeight: (input: string) => number | undefined;
 }
 
 export const DEFAULT_BASE_SETTINGS: OnlyBaseGraphSettings = {
-  displayEdgeLabels: true,
-  edgeLabelsEditable: true,
-  edgeInputToWeight: (input: string) => {
+  baseDisplayEdgeLabels: true,
+  baseEdgeLabelsEditable: true,
+  baseEdgeInputToWeight: (input: string) => {
     const trimmed = input.trim()
     if (!trimmed) return
     const decimalNum = fractionToDecimal(trimmed)?.toFixed(2)
@@ -131,24 +131,24 @@ export type OnlyPersistentGraphSettings = {
    * the key to use for storing the graph in local storage
    * @default "graph"
    */
-  storageKey: string,
+  persistentStorageKey: string,
   /**
    * whether to track theme changes
    * @default false
    */
-  trackTheme: boolean,
+  persistentTrackTheme: boolean,
   /**
    * whether to track settings changes
    * @default false
    */
-  trackSettings: boolean,
+  persistentTrackSettings: boolean,
 }
 
 export const DEFAULT_PERSISTENT_SETTINGS: OnlyPersistentGraphSettings = {
   persistent: true,
-  storageKey: 'graph',
-  trackTheme: false,
-  trackSettings: false,
+  persistentStorageKey: 'graph',
+  persistentTrackTheme: false,
+  persistentTrackSettings: false,
 }
 
 export type PersistentGraphSettings = UserEditableGraphSettings & OnlyPersistentGraphSettings
