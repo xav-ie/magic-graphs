@@ -10,7 +10,7 @@ export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D
     color,
     borderRadius,
   } = {
-    ...RECT_DEFAULTS, 
+    ...RECT_DEFAULTS,
     ...options
   };
 
@@ -20,7 +20,8 @@ export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D
     ctx.fillStyle = color;
     ctx.fill();
   } else {
-    const radius = Math.min(borderRadius, width / 2, height / 2); // ensure radius doesn't exceed width/height
+    // ensure radius doesn't exceed width/height
+    const radius = Math.min(borderRadius, width / 2, height / 2);
 
     ctx.beginPath();
     ctx.moveTo(at.x + radius, at.y);
@@ -33,7 +34,7 @@ export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D
     ctx.lineTo(at.x, at.y + radius);
     ctx.arcTo(at.x, at.y, at.x + radius, at.y, radius);
     ctx.closePath();
-  
+
     ctx.fillStyle = color;
     ctx.fill();
   }
@@ -46,7 +47,6 @@ export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D
   }
 
   if (options.text) {
-
     const {
       content,
       fontSize,

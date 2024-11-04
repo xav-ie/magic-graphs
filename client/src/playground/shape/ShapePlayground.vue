@@ -80,9 +80,9 @@
     items.value.push(
       square({
         at: { x: 500, y: 300 },
-        color: colors.PINK_500,
+        color: colors.PINK_800,
         size: 500,
-        borderRadius: 100,
+        borderRadius: 250,
       })
     );
 
