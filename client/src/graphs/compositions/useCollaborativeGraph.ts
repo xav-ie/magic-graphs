@@ -106,9 +106,9 @@ export const useCollaborativeGraph = (
     console.warn('socket connection error', error)
   })
 
-  socket.on('disconnect', async () => {
+  socket.on('disconnect', () => {
     console.warn('socket disconnected - leaving collaborative room')
-    await leaveCollaborativeRoom()
+    leaveCollaborativeRoom()
   })
 
   socket.on('collaboratorLeft', (collaboratorId) => {
@@ -235,16 +235,26 @@ export const useCollaborativeGraph = (
     })
   }
 
+  const onLeaveCollaborativeRoom = () => {
+    for (const [event, handler] of Object.entries(collaborativeGraphEvents)) {
+      // @ts-ignore ts cant handle Object.entries return type
+      graph.unsubscribe(event, handler)
+    }
+    roomId.value = ''
+    collaborators.value = {}
+  }
+
   const leaveCollaborativeRoom = async () => {
     if (!roomId.value) return roomId.value
+    // check if socket is connected
+    if (socket.disconnected) {
+      onLeaveCollaborativeRoom()
+      return roomId.value
+    }
     return new Promise<string>((res) => {
       socket.emit('leaveRoom', () => {
-        for (const [event, handler] of Object.entries(collaborativeGraphEvents)) {
-          // @ts-ignore ts cant handle Object.entries return type
-          graph.unsubscribe(event, handler)
-        }
+        onLeaveCollaborativeRoom()
         res(roomId.value)
-        roomId.value = ''
       })
     })
   }
