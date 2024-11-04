@@ -14,11 +14,13 @@ export type Rect = {
   height: number,
   color?: string,
   stroke?: Stroke,
-  text?: Text
+  text?: Text,
+  borderRadius?: number,
 }
 
 export const RECT_DEFAULTS = {
   color: 'black',
+  borderRadius: 0,
 } as const
 
 export const rect = (options: Rect): Shape => {

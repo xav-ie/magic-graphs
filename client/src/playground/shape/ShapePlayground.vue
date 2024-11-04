@@ -82,6 +82,7 @@
         at: { x: 500, y: 300 },
         color: colors.PINK_500,
         size: 500,
+        borderRadius: 100,
       })
     );
 
