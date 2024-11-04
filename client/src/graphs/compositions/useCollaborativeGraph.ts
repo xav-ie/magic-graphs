@@ -87,6 +87,7 @@ export const useCollaborativeGraph = (
 
   const collaborators = ref<CollaboratorMap>({})
   const collaboratorCount = computed(() => Object.keys(collaborators.value).length)
+  const inCollaborativeRoom = computed(() => !!roomId.value)
 
   const meAsACollaborator = ref<Collaborator>({
     id: '',
@@ -107,6 +108,7 @@ export const useCollaborativeGraph = (
   })
 
   socket.on('disconnect', () => {
+    if (!inCollaborativeRoom.value) return
     console.warn('socket disconnected - leaving collaborative room')
     leaveCollaborativeRoom()
   })
@@ -245,12 +247,13 @@ export const useCollaborativeGraph = (
   }
 
   const leaveCollaborativeRoom = async () => {
-    if (!roomId.value) return roomId.value
-    // check if socket is connected
+    if (!inCollaborativeRoom.value) return
+
     if (socket.disconnected) {
       onLeaveCollaborativeRoom()
       return roomId.value
     }
+
     return new Promise<string>((res) => {
       socket.emit('leaveRoom', () => {
         onLeaveCollaborativeRoom()
@@ -286,5 +289,9 @@ export const useCollaborativeGraph = (
      * the id of the current room this client is in
      */
     collaborativeRoomId: readonly(roomId),
+    /**
+     * whether this client is in a collaborative room
+     */
+    inCollaborativeRoom: readonly(inCollaborativeRoom),
   }
 }
