@@ -7,7 +7,6 @@ import type { Coordinate } from "@shape/types";
  * @returns a function that checks if the point is in the square
 */
 export const squareHitbox = (square: Square) => {
-  console.log(square.borderRadius)
   const isInRect = rectHitbox({
     at: square.at,
     width: square.size,

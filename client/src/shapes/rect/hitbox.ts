@@ -1,6 +1,7 @@
 import type { Coordinate } from "@shape/types";
 import type { Rect } from ".";
 import { RECT_DEFAULTS } from "."
+import { circleHitbox } from "@shape/circle/hitbox";
 
 /**
  * @param point - the point to check if it is in the rectangle
@@ -10,7 +11,6 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
   const { at, width, height, borderRadius } = { ...RECT_DEFAULTS, ...rectangle };
   const { x, y } = at;
 
-  console.log(borderRadius)
   if (borderRadius === 0) return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
   else {
     const radius = Math.min(borderRadius, width / 2, height / 2);
@@ -33,17 +33,11 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
     return true;
   }
 
-  const isPointInCircle = (px: number, py: number, cx: number, cy: number, r: number) => {
-    const dx = px - cx;
-    const dy = py - cy;
-    return dx * dx + dy * dy <= r * r;
-  };
+  const isInTopLeftCircle = circleHitbox({ at: { x: x + radius, y: y + radius }, radius });
+  const isInTopRightCircle = circleHitbox({ at: { x: x + width - radius, y: y + radius }, radius });
+  const isInBottomLeftCircle = circleHitbox({ at: { x: x + radius, y: y + height - radius }, radius }); 
+  const isInBottomRightCircle = circleHitbox({ at: { x: x + width - radius, y: y + height - radius }, radius });
 
-  return (
-    isPointInCircle(point.x, point.y, x + radius, y + radius, radius) || 
-    isPointInCircle(point.x, point.y, x + width - radius, y + radius, radius) || 
-    isPointInCircle(point.x, point.y, x + radius, y + height - radius, radius) ||
-    isPointInCircle(point.x, point.y, x + width - radius, y + height - radius, radius)
-  );
+  return isInTopLeftCircle(point) || isInTopRightCircle(point) || isInBottomLeftCircle(point) || isInBottomRightCircle(point);
   }
 }
