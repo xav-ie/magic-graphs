@@ -33,7 +33,6 @@ import type { GraphTheme } from '@graph/themes/types';
 import { delta } from '@utils/deepDelta/delta';
 import { clone } from '@utils/clone';
 import { getInitialEventBus } from '@graph/events';
-import { fractionToDecimal } from '@utils/fracDecConverter/fracDec';
 import { useAggregator } from '@graph/useAggregator';
 import {
   ADD_NODE_OPTIONS_DEFAULTS,
@@ -50,36 +49,6 @@ import type {
   MoveNodeOptions,
 } from '@graph/baseGraphAPIs';
 import type { PartiallyPartial } from '@utils/types';
-
-export type BaseGraphSettings = {
-  /**
-   * whether to display edge labels
-   * @default true
-   */
-  displayEdgeLabels: boolean;
-  /**
-   * whether edge labels should be editable
-   * @default true
-   */
-  edgeLabelsEditable: boolean;
-  /**
-   * a setter for edge weights, takes the inputted string and returns a number that will be set as the edge weight
-   * or undefined if the edge weight should not be set
-   * @default function that attempts to parse the input as a number and if successful returns the number
-   */
-  edgeInputToWeight: (input: string) => number | undefined;
-}
-
-const defaultSettings = {
-  displayEdgeLabels: true,
-  edgeLabelsEditable: true,
-  edgeInputToWeight: (input: string) => {
-    const trimmed = input.trim()
-    if (!trimmed) return
-    const decimalNum = fractionToDecimal(trimmed)?.toFixed(2)
-    return Number(decimalNum ?? trimmed)
-  }
-} as const
 
 export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
 
