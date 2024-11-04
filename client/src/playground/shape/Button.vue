@@ -1,37 +1,46 @@
 <script setup lang="ts">
-import { computed, useAttrs } from 'vue';
+  import { computed, type StyleValue } from 'vue';
 
-const DEFAULT_CLASSES = [
-  'px-2',
-  'py-1',
+  const props = defineProps<{
+    /**
+     * The color of the button.
+     */
+    color?: string;
+    /**
+     * The text color of the button.
+     */
+    textColor?: string;
+  }>();
 
-  'bg-gray-800',
-  'text-gray-200',
-
-  'dark:bg-gray-200',
-  'dark:text-gray-800',
-
-  'hover:bg-gray-700',
-  'dark:hover:bg-gray-300',
-
-  'rounded-md',
-  'cursor-pointer',
-  'font-bold',
-];
-
-const { class: className } = useAttrs();
-
-const classes = computed(() => {
-  return [
-    ...DEFAULT_CLASSES,
-    className.value,
-  ].join(' ');
-});
+  const styling = computed(() => {
+    const style: StyleValue = {}
+    if (props.color) style['backgroundColor'] = props.color;
+    if (props.textColor) style['color'] = props.textColor;
+    return style;
+  });
 </script>
 
 <template>
   <button
-    :class="classes"
+    :class="[
+      'px-2',
+      'py-1',
+
+      'bg-gray-800',
+      'text-gray-200',
+
+      'dark:bg-gray-200',
+      'dark:text-gray-800',
+
+      'hover:bg-gray-700',
+      'dark:hover:bg-gray-300',
+
+      'rounded-md',
+      'cursor-pointer',
+      'font-bold',
+    ]"
+
+    :style="styling"
   >
     <slot></slot>
   </button>
