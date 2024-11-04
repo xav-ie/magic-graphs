@@ -9,6 +9,7 @@ import { getRandomElement } from "@utils/array";
 import { circle, rect } from "@shapes";
 import type { AddEdgeOptions, AddNodeOptions, MoveNodeOptions, RemoveNodeOptions } from "@graph/baseGraphAPIs";
 import type { BaseGraphEvents } from "@graph/events";
+import { collabTagShapes } from "@graph/schematics/collabTag";
 
 const getSocketURL = () => {
   const isLocalhost = window.location.hostname === 'localhost'
@@ -152,33 +153,10 @@ export const useCollaborativeGraph = (
       socket.emit('toServerCollaboratorMoved', meAsACollaborator.value.mousePosition)
     },
     onRepaint: (ctx: CanvasRenderingContext2D) => {
-      // TODO - update with border radius when its added to rect api
       for (const collaborator of Object.values(collaborators.value)) {
-        const { x, y } = collaborator.mousePosition
-        const width = meAsACollaborator.value.name.length * 11
-        const height = 20
-        const topLeftOffset = 10
-        rect({
-          at: {
-            x: x - width - topLeftOffset,
-            y: y - height - topLeftOffset,
-          },
-          width,
-          height,
-          color: meAsACollaborator.value.color,
-          text: {
-            content: meAsACollaborator.value.name,
-            color: colors.WHITE,
-            fontSize: 14,
-            fontWeight: 'bold',
-          },
-        }).draw(ctx)
-
-        circle({
-          radius: 3,
-          at: { x, y },
-          color: meAsACollaborator.value.color,
-        }).draw(ctx)
+        const { tag, cursorPoint } = collabTagShapes(collaborator)
+        rect(tag).draw(ctx)
+        circle(cursorPoint).draw(ctx)
       }
     }
   }
