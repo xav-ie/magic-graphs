@@ -10,24 +10,24 @@ export type OnlyBaseGraphSettings = {
    * whether to display edge labels
    * @default true
    */
-  baseDisplayEdgeLabels: boolean;
+  displayEdgeLabels: boolean;
   /**
    * whether edge labels should be editable
    * @default true
    */
-  baseEdgeLabelsEditable: boolean;
+  edgeLabelsEditable: boolean;
   /**
    * a setter for edge weights, takes the inputted string and returns a number that will
    * be set as the edge weight or undefined if the edge weight should not be set
    * @default function that attempts to parse the input as a number and if successful returns the number
    */
-  baseEdgeInputToWeight: (input: string) => number | undefined;
+  edgeInputToWeight: (input: string) => number | undefined;
 }
 
 export const DEFAULT_BASE_SETTINGS: OnlyBaseGraphSettings = {
-  baseDisplayEdgeLabels: true,
-  baseEdgeLabelsEditable: true,
-  baseEdgeInputToWeight: (input: string) => {
+  displayEdgeLabels: true,
+  edgeLabelsEditable: true,
+  edgeInputToWeight: (input: string) => {
     const trimmed = input.trim()
     if (!trimmed) return
     const decimalNum = fractionToDecimal(trimmed)?.toFixed(2)
@@ -108,10 +108,22 @@ export type OnlyUserEditableGraphSettings = {
    * @default true
    */
   userEditable: boolean;
+  /**
+   * the type of edge to add when creating an edge between nodes
+   * @default "directed"
+   */
+  userEditableAddedEdgeType: 'directed' | 'undirected',
+  /**
+   * the default weight to assign to edges when created using the UI
+   * @default 1
+   */
+  userEditableAddedEdgeWeight: number,
 }
 
 export const DEFAULT_USER_EDITABLE_SETTINGS: OnlyUserEditableGraphSettings = {
   userEditable: true,
+  userEditableAddedEdgeType: 'directed',
+  userEditableAddedEdgeWeight: 1,
 }
 
 export type UserEditableGraphSettings = MarqueeGraphSettings & OnlyUserEditableGraphSettings

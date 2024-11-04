@@ -4,28 +4,19 @@ import {
   watchEffect
 } from 'vue'
 import type { Ref } from 'vue'
-import type { BaseGraphSettings } from '@graph/compositions/useBaseGraph'
 import { generateSubscriber } from '@graph/events';
 import type { BaseGraphEvents, MappingsToEventBus } from '@graph/events';
-import type { BaseGraphTheme } from '@graph/themes';
 import type { GNode, GraphOptions } from '@graph/types'
 import { useFocusGraph } from './useFocusGraph';
+import { DEFAULT_DRAGGABLE_SETTINGS } from '@graph/settings';
+import type { DraggableGraphSettings } from '@graph/settings';
 
 export type DraggableGraphEvents = BaseGraphEvents & {
   onNodeDragStart: (node: GNode) => void;
   onNodeDrop: (node: GNode) => void;
 }
 
-export type DraggableGraphTheme = BaseGraphTheme
-export type DraggableGraphSettings = BaseGraphSettings & {
-  draggable: boolean;
-}
-
-export type DraggableGraphOptions = GraphOptions<DraggableGraphTheme, DraggableGraphSettings>
-
-export const defaultDraggableGraphSettings = {
-  draggable: true,
-} as const
+export type DraggableGraphOptions = GraphOptions<DraggableGraphSettings>
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -35,7 +26,7 @@ export const useDraggableGraph = (
   const graph = useFocusGraph(canvas, options)
 
   const settings = ref<DraggableGraphSettings>(Object.assign(graph.settings.value, {
-    ...defaultDraggableGraphSettings,
+    ...DEFAULT_DRAGGABLE_SETTINGS,
     ...options.settings,
   }))
 

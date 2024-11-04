@@ -96,7 +96,6 @@ export const useCollaborativeGraph = (
     mousePosition: { x: 0, y: 0 }
   })
 
-
   const roomId = ref('')
 
   socket.on('connect', () => {

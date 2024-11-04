@@ -49,8 +49,10 @@ import type {
   MoveNodeOptions,
 } from '@graph/baseGraphAPIs';
 import type { PartiallyPartial } from '@utils/types';
+import { DEFAULT_BASE_SETTINGS } from '@graph/settings';
+import type { BaseGraphSettings } from '@graph/settings';
 
-export type BaseGraphOptions = GraphOptions<BaseGraphTheme, BaseGraphSettings>
+export type BaseGraphOptions = GraphOptions<BaseGraphSettings>
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -66,7 +68,7 @@ export const useBaseGraph = (
   const getTheme = getThemeResolver(theme, themeMap)
 
   const settings = ref<BaseGraphSettings>({
-    ...defaultSettings,
+    ...DEFAULT_BASE_SETTINGS,
     ...options.settings,
   })
 

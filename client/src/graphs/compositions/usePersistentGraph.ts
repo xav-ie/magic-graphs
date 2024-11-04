@@ -16,55 +16,15 @@ import type {
   UserEditableGraphTheme
 } from '@graph/compositions/useUserEditableGraph'
 import type { DraggableGraphEvents } from './useDraggableGraph'
+import { DEFAULT_PERSISTENT_SETTINGS, type PersistentGraphSettings } from '@graph/settings'
 
-export type PersistentGraphTheme = UserEditableGraphTheme
-export type PersistSettings = {
-  /**
-   * the key to use for storing the graph in local storage
-   * @default "graph"
-   */
-  storageKey: string,
-  /**
-   * whether to track theme changes
-   * @default false
-   */
-  trackTheme: boolean,
-  /**
-   * whether to track settings changes
-   * @default false
-   */
-  trackSettings: boolean,
-}
-
-export const defaultPersistSettings = {
-  storageKey: 'graph',
-  trackTheme: false,
-  trackSettings: false,
-} as const
-
-export type PersistentGraphSettings = UserEditableGraphSettings & {
-  persistent: boolean | Partial<PersistSettings>
-}
-
-export const defaultPersistentGraphSettings = {
-  persistent: true,
-} as const
-
-export type PersistentGraphOptions = GraphOptions<UserEditableGraphTheme, PersistentGraphSettings>
-
-const resolvePersistSettings = (settings: PersistentGraphSettings) => {
-  if (settings.persistent === false) return null
-  if (settings.persistent === true) return defaultPersistSettings
-  return {
-    ...defaultPersistSettings,
-    ...settings.persistent
-  }
-}
+export type PersistentGraphOptions = GraphOptions<PersistentGraphSettings>
 
 /**
  * extends the useGraph interface to include capabilities for storing and retrieving a graph from local storage.
  *
- * LIMITATION: the graph is stored in local storage as a JSON string. This means that functions and other non-serializable
+ * LIMITATION: the graph is stored in local storage as a JSON string. This means that functions and
+ * other non-serializable
  * properties will not be stored. This is especially important for graph themes.
  *
  * @param canvas
@@ -78,34 +38,29 @@ export const usePersistentGraph = (
 
   const graph = useUserEditableGraph(canvas, options)
 
-  // return graph
-
   const settings = ref<PersistentGraphSettings>(Object.assign(graph.settings.value, {
-    ...defaultPersistentGraphSettings,
+    ...DEFAULT_PERSISTENT_SETTINGS,
     ...options.settings,
   }))
 
-  const persistSettings = computed(() => resolvePersistSettings(settings.value))
-  const storageKey = computed(() => persistSettings.value?.storageKey ?? defaultPersistSettings.storageKey)
-
   const nodeStorage = {
-    get: () => JSON.parse(localStorage.getItem(storageKey.value + '-nodes') ?? '[]'),
-    set: (nodes: GNode[]) => localStorage.setItem(storageKey.value + '-nodes', JSON.stringify(nodes))
+    get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-nodes') ?? '[]'),
+    set: (nodes: GNode[]) => localStorage.setItem(settings.value.persistentStorageKey + '-nodes', JSON.stringify(nodes))
   }
 
   const edgeStorage = {
-    get: () => JSON.parse(localStorage.getItem(storageKey.value + '-edges') ?? '[]'),
-    set: (edges: GEdge[]) => localStorage.setItem(storageKey.value + '-edges', JSON.stringify(edges))
+    get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-edges') ?? '[]'),
+    set: (edges: GEdge[]) => localStorage.setItem(settings.value.persistentStorageKey + '-edges', JSON.stringify(edges))
   }
 
   const themeStorage = {
-    get: () => JSON.parse(localStorage.getItem(storageKey.value + '-theme') ?? '{}'),
-    set: (theme: UserEditableGraphTheme) => localStorage.setItem(storageKey.value + '-theme', JSON.stringify(theme))
+    get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-theme') ?? '{}'),
+    set: (theme: UserEditableGraphTheme) => localStorage.setItem(settings.value.persistentStorageKey + '-theme', JSON.stringify(theme))
   }
 
   const settingsStorage = {
-    get: () => JSON.parse(localStorage.getItem(storageKey.value + '-settings') ?? '{}'),
-    set: (settings: UserEditableGraphSettings) => localStorage.setItem(storageKey.value + '-settings', JSON.stringify(settings))
+    get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-settings') ?? '{}'),
+    set: (settings: UserEditableGraphSettings) => localStorage.setItem(settings.value.persistentStorageKey + '-settings', JSON.stringify(settings))
   }
 
   const trackGraphState = () => {
@@ -113,9 +68,9 @@ export const usePersistentGraph = (
     edgeStorage.set(graph.edges.value)
   }
 
-  let previousKey = storageKey.value
+  let previousKey = settings.value.persistentStorageKey
   const trackOptions = () => {
-    const currentKey = storageKey.value
+    const currentKey = settings.value.persistentStorageKey
 
     // trackOptions was triggered by a change in the storage key, so we cannot update storage
     if (previousKey !== currentKey) {
@@ -123,11 +78,11 @@ export const usePersistentGraph = (
       return
     }
 
-    if (persistSettings.value?.trackTheme) {
+    if (settings.value.persistentTrackTheme) {
       themeStorage.set(graph.theme.value)
     }
 
-    if (persistSettings.value?.trackSettings) {
+    if (settings.value.persistentTrackSettings) {
       settingsStorage.set(settings.value)
     }
 
@@ -139,11 +94,11 @@ export const usePersistentGraph = (
     graph.edges.value = edgeStorage.get()
 
 
-    if (persistSettings.value?.trackTheme) {
+    if (settings.value.persistentTrackTheme) {
       graph.theme.value = Object.assign(graph.theme.value, themeStorage.get())
     }
 
-    if (persistSettings.value?.trackSettings) {
+    if (settings.value.persistentTrackSettings) {
       settings.value = Object.assign(settings.value, settingsStorage.get())
     }
 
@@ -186,6 +141,7 @@ export const usePersistentGraph = (
     stopListeningForGraphStateEvents()
   }
 
+  // CIRCLE-BACK
   watch(persistSettings, (newSettings, oldSettings) => {
     stopListeningForEvents()
 
