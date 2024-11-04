@@ -65,7 +65,7 @@ export interface GraphEvents {
   leaveRoom: (confirmationCallback: () => void) => void
 }
 
-const collabColors = [
+export const COLLAB_COLORS = [
   colors.AMBER_600,
   colors.BLUE_600,
   colors.CYAN_600,
@@ -76,6 +76,19 @@ const collabColors = [
   colors.PINK_600,
   colors.PURPLE_600,
   colors.RED_600,
+]
+
+export const COLLAB_NAMES = [
+  'Joud',
+  'Zavier',
+  'Thomas',
+  'Jaime',
+  'Dila',
+  'Bella',
+  'Julian',
+  'Adriana',
+  'Juliana',
+  'Yona'
 ]
 
 export const useCollaborativeGraph = (
@@ -91,8 +104,8 @@ export const useCollaborativeGraph = (
 
   const meAsACollaborator = ref<Collaborator>({
     id: '',
-    name: 'Anonymous',
-    color: getRandomElement(collabColors),
+    name: getRandomElement(COLLAB_NAMES),
+    color: getRandomElement(COLLAB_COLORS),
     mousePosition: { x: 0, y: 0 }
   })
 
