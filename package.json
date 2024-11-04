@@ -2,7 +2,6 @@
   "name": "magic-graphs",
   "version": "1.0.0",
   "scripts": {
-    "build": "cd client && npm run build-only",
     "start": "cd server && npm i --omit=dev && node dist/index.js",
     "dev": "concurrently \"npm run dev-client\" \"npm run dev-server\"",
     "dev-client": "cd client && npm run dev",
