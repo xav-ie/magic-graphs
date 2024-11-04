@@ -14,6 +14,7 @@ export type Square = {
   color?: string,
   stroke?: Stroke,
   text?: Text,
+  borderRadius?: number
 }
 
 /**

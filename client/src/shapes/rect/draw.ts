@@ -7,16 +7,36 @@ export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D
     at,
     width,
     height,
-    color
+    color,
+    borderRadius,
   } = {
-    ...RECT_DEFAULTS,
+    ...RECT_DEFAULTS, 
     ...options
   };
 
-  ctx.beginPath();
-  ctx.rect(at.x, at.y, width, height);
-  ctx.fillStyle = color;
-  ctx.fill();
+  if (borderRadius === 0) {
+    ctx.beginPath();
+    ctx.rect(at.x, at.y, width, height);
+    ctx.fillStyle = color;
+    ctx.fill();
+  } else {
+    const radius = Math.min(borderRadius, width / 2, height / 2); // ensure radius doesn't exceed width/height
+
+    ctx.beginPath();
+    ctx.moveTo(at.x + radius, at.y);
+    ctx.lineTo(at.x + width - radius, at.y);
+    ctx.arcTo(at.x + width, at.y, at.x + width, at.y + radius, radius);
+    ctx.lineTo(at.x + width, at.y + height - radius);
+    ctx.arcTo(at.x + width, at.y + height, at.x + width - radius, at.y + height, radius);
+    ctx.lineTo(at.x + radius, at.y + height);
+    ctx.arcTo(at.x, at.y + height, at.x, at.y + height - radius, radius);
+    ctx.lineTo(at.x, at.y + radius);
+    ctx.arcTo(at.x, at.y, at.x + radius, at.y, radius);
+    ctx.closePath();
+  
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
 
   if (options.stroke) {
     const { color, width } = options.stroke;

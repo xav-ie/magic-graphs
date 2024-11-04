@@ -11,6 +11,7 @@ export const squareHitbox = (square: Square) => {
     at: square.at,
     width: square.size,
     height: square.size,
+    borderRadius: square.borderRadius
   });
   return (point: Coordinate) => isInRect(point);
 }
