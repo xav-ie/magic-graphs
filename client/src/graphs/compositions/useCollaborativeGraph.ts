@@ -1,5 +1,6 @@
 import { computed, readonly, ref } from "vue";
 import type { Ref } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 import type { UserEditableGraphOptions } from "./useUserEditableGraph";
 import { usePersistentGraph } from "./usePersistentGraph";
 import { io, Socket } from "socket.io-client";
@@ -7,7 +8,12 @@ import type { GEdge, GNode } from "@graph/types";
 import colors from "@utils/colors";
 import { getRandomElement } from "@utils/array";
 import { circle, rect } from "@shapes";
-import type { AddEdgeOptions, AddNodeOptions, MoveNodeOptions, RemoveNodeOptions } from "@graph/baseGraphAPIs";
+import type {
+  AddEdgeOptions,
+  AddNodeOptions,
+  MoveNodeOptions,
+  RemoveNodeOptions
+} from "@graph/baseGraphAPIs";
 import type { BaseGraphEvents } from "@graph/events";
 import { collabTagShapes } from "@graph/schematics/collabTag";
 
@@ -102,9 +108,9 @@ export const useCollaborativeGraph = (
   const collaboratorCount = computed(() => Object.keys(collaborators.value).length)
   const inCollaborativeRoom = computed(() => !!roomId.value)
 
-  const meAsACollaborator = ref<Collaborator>({
+  const meAsACollaborator = useLocalStorage<Collaborator>('collaborator', {
     id: '',
-    name: getRandomElement(COLLAB_NAMES),
+    name: '',
     color: getRandomElement(COLLAB_COLORS),
     mousePosition: { x: 0, y: 0 }
   })

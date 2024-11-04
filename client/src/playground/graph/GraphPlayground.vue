@@ -67,7 +67,7 @@
       </Button>
 
       <Button
-        v-else="graph.inCollaborativeRoom.value"
+        v-else
         @click="graph.leaveCollaborativeRoom()"
         class="bg-red-500 text-white"
       >

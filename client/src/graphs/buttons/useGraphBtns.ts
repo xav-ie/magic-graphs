@@ -1,5 +1,3 @@
-import { computed } from "vue";
-import { isObject } from "@vueuse/core";
 import type { Graph } from "@graph/types";
 import { getRandomInRange } from "@graph/helpers";
 import { GRAPH_BUTTON_ID } from "@graph/buttons/types";
@@ -128,10 +126,14 @@ export const useGraphBtns = (graph: Graph) => {
 
   const toggleTestRoom: GButton = {
     label: () => {
-      const { collaborativeRoomId: room, collaboratorCount: peopleInRoom } = graph
+      const {
+        collaborativeRoomId: room,
+        collaboratorCount: peopleInRoom,
+        inCollaborativeRoom: inRoom
+      } = graph
       const inRoomText = `Leave ${room.value} Room (${peopleInRoom.value + 1} In Room)`;
       const notInRoomText = 'Join Test Room';
-      return graph.inCollaborativeRoom ? inRoomText : notInRoomText;
+      return inRoom.value ? inRoomText : notInRoomText;
     },
     action: () => {
       const name = getRandomElement(COLLAB_NAMES);
@@ -143,9 +145,9 @@ export const useGraphBtns = (graph: Graph) => {
         leaveCollaborativeRoom: leaveRoom,
         inCollaborativeRoom: inRoom
       } = graph;
-      inRoom ? leaveRoom() : joinRoom('test');
+      inRoom.value ? leaveRoom() : joinRoom('test');
     },
-    color: () => graph.inCollaborativeRoom ? 'red' : 'green',
+    color: () => graph.inCollaborativeRoom.value ? 'red' : 'green',
     id: GRAPH_BUTTON_ID.testRoom,
   };
 
