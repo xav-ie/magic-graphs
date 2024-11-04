@@ -185,6 +185,7 @@ export const useCollaborativeGraph = (
     const edge = graph.getEdge(edgeId)
     if (!edge) throw new Error('edge not found')
     edge.weight = newWeight
+    graph.repaint('collaborative-graph/edge-weight-edit')()
   })
 
   const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'
