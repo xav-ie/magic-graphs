@@ -1,8 +1,5 @@
 import type { Graph } from '@graph/types';
-import type { UserEditableGraphEvents } from '@graph/compositions/useUserEditableGraph';
-
-export type EventMap = UserEditableGraphEvents;
-export type GraphEventName = keyof EventMap;
+import type { GraphEventMap, GraphEvent } from '@graph/events';
 
 /**
  * css class defined in App.vue, should move later, used as default for ElementHighlightOptions -> highlightElement.className
@@ -12,7 +9,7 @@ export const DEFAULT_HIGHLIGHT_CLASS_NAME = 'element-highlight'
 /**
  * describes a step in a tutorial sequence for graph events defined in the useGraph event map
  */
-export type TutorialStepForEvent<T extends GraphEventName> = {
+export type TutorialStepForEvent<T extends GraphEvent> = {
   /**
    * the hint to display to the user in order to complete the step
    */
@@ -28,7 +25,7 @@ export type TutorialStepForEvent<T extends GraphEventName> = {
      * @param args the arguments passed to the event handler as defined in the event map
      * @returns true if the step should be dismissed
      */
-    predicate: (...args: Parameters<EventMap[T]>) => boolean
+    predicate: (...args: Parameters<GraphEventMap[T]>) => boolean
   };
 };
 
@@ -111,8 +108,8 @@ export const DEFAULT_INTERVAL = 1000;
  * describes a step in a tutorial sequence for a graph event
  */
 export type GraphEventStep = {
-  [K in GraphEventName]: TutorialStepForEvent<K>
-}[GraphEventName];
+  [K in GraphEvent]: TutorialStepForEvent<K>
+}[GraphEvent];
 
 /**
  * describes a step in a tutorial sequence

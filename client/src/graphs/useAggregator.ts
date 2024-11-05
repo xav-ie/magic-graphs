@@ -1,11 +1,11 @@
 import { ref } from "vue"
 import type { Ref } from "vue"
 import type { Aggregator, UpdateAggregator } from "./types"
-import type { BaseGraphEmitter } from "./events"
+import type { Emitter as GraphEventEmitter } from "@graph/events"
 
 export type UseAggregatorOptions = {
   canvas: Ref<HTMLCanvasElement | null | undefined>
-  emit: BaseGraphEmitter
+  emit: GraphEventEmitter
 }
 
 export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {

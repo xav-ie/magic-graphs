@@ -5,14 +5,10 @@ import type {
   GNode,
   GraphOptions
 } from "@graph/types"
-import type {
-  NodeAnchor,
-  NodeAnchorGraphEvents
-} from "@graph/compositions/useNodeAnchorGraph"
+import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph"
 import { useMarqueeGraph } from './useMarqueeGraph'
-import { DEFAULT_USER_EDITABLE_SETTINGS, type UserEditableGraphSettings } from '@graph/settings'
-
-export type UserEditableGraphEvents = NodeAnchorGraphEvents
+import { DEFAULT_USER_EDITABLE_SETTINGS } from '@graph/settings'
+import type { UserEditableGraphSettings } from '@graph/settings'
 
 export type UserEditableGraphOptions = GraphOptions<UserEditableGraphSettings>
 

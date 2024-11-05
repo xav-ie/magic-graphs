@@ -1,59 +1,18 @@
-import type { GEdge, GNode } from "@graph/types";
-import type { GraphSettings } from "@graph/settings";
-import type {
-  AddNodeOptions,
-  RemoveNodeOptions,
-  MoveNodeOptions,
-  AddEdgeOptions,
-  RemoveEdgeOptions,
-} from "@graph/baseGraphAPIs";
-import type { GraphTheme } from "@graph/themes/types";
-import type { DeepPartial } from "@utils/types";
+import type { GraphEventMap as ImportedGraphEventMap } from './types'
 
-export type BaseGraphEvents = {
-  /* graph dataflow events */
-  onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
-  onFocusChange: (newItemId: string | undefined, oldItemId: string | undefined) => void;
-
-  onNodeAdded: (node: GNode, options: AddNodeOptions) => void;
-  onNodeRemoved: (node: GNode, options: RemoveNodeOptions) => void;
-  onNodeMoved: (node: GNode, options: MoveNodeOptions) => void;
-
-  onEdgeAdded: (edge: GEdge, options: AddEdgeOptions) => void;
-  onEdgeRemoved: (edge: GEdge, options: RemoveEdgeOptions) => void;
-
-  onEdgeWeightChange: (edge: GEdge) => void;
-
-  /*
-    this event is called when the graph needs to be redrawn
-    WARNING: items drawn to the canvas using ctx won't be tied to the graph event architecture.
-    Use updateAggregator if you need drawn item to integrate with graph apis
-  */
-  onRepaint: (ctx: CanvasRenderingContext2D, repaintId: string) => void;
-
-  onNodeHoverChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
-  onGraphReset: () => void;
-
-  /* canvas dom events */
-  onClick: (ev: MouseEvent) => void;
-  onMouseDown: (ev: MouseEvent) => void;
-  onMouseUp: (ev: MouseEvent) => void;
-  onMouseMove: (ev: MouseEvent) => void;
-  onDblClick: (ev: MouseEvent) => void;
-  onContextMenu: (ev: MouseEvent) => void;
-
-  /* global dom events */
-  onKeydown: (ev: KeyboardEvent) => void;
-
-  /* reactivity events */
-  onThemeChange: (diff: DeepPartial<GraphTheme>) => void;
-  onSettingsChange: (diff: DeepPartial<GraphSettings>) => void;
-}
+/**
+ * a complete mapping of all graph events to their callback functions
+ */
+export type GraphEventMap = ImportedGraphEventMap
 
 /**
  * turns a type that maps an events callback fn type to an actual event bus
  */
-export type MappingsToEventBus<T> = Record<keyof T, Set<any>>
+export type EventMapToEventBus<T> = Record<keyof T, Set<any>>
+
+export type GraphEventBus = EventMapToEventBus<GraphEventMap>;
+
+export type GraphEvent = keyof GraphEventMap;
 
 /**
  * a version of Parameters<T> that removes constraints on T
@@ -64,7 +23,7 @@ type PermissiveParams<T> = T extends (...args: infer P) => any ? P : never;
   generates a "subscribe" and "unsubscribe" function for the event bus
   in order to registering, deregistering and broadcast graph events in a type-safe manner
 */
-export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: MappingsToEventBus<T>) => ({
+export const generateSubscriber = <T extends GraphEventMap>(eventBus: EventMapToEventBus<T>) => ({
   subscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].add(fn),
   unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].delete(fn),
   emit: <K extends keyof T>(event: K, ...args: PermissiveParams<T[K]>) => {
@@ -77,40 +36,74 @@ export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: Mappings
 /**
  * helper types for graph event architecture
  */
-export type GenerateSubscriber<T extends BaseGraphEvents> = typeof generateSubscriber<T>;
-export type Subscriber<T extends BaseGraphEvents> = ReturnType<GenerateSubscriber<T>>['subscribe'];
-export type Unsubscriber<T extends BaseGraphEvents> = ReturnType<GenerateSubscriber<T>>['unsubscribe'];
-export type Emitter<T extends BaseGraphEvents> = ReturnType<GenerateSubscriber<T>>['emit'];
 
-export type BaseGraphSubscriber = Subscriber<BaseGraphEvents>;
-export type BaseGraphUnsubscriber = Unsubscriber<BaseGraphEvents>;
-export type BaseGraphEmitter = Emitter<BaseGraphEvents>;
+export type GenerateSubscriber<
+  T extends GraphEventMap = GraphEventMap
+> = typeof generateSubscriber<T>;
 
-export const getInitialEventBus = () => ({
-  onStructureChange: new Set(),
-  onFocusChange: new Set(),
+export type Subscriber<
+  T extends GraphEventMap = GraphEventMap
+> = ReturnType<GenerateSubscriber<T>>['subscribe'];
 
-  onNodeAdded: new Set(),
-  onNodeRemoved: new Set(),
-  onNodeMoved: new Set(),
+export type Unsubscriber<
+  T extends GraphEventMap = GraphEventMap
+> = ReturnType<GenerateSubscriber<T>>['unsubscribe'];
 
-  onEdgeAdded: new Set(),
-  onEdgeRemoved: new Set(),
-  onEdgeWeightChange: new Set(),
+export type Emitter<
+  T extends GraphEventMap = GraphEventMap
+> = ReturnType<GenerateSubscriber<T>>['emit'];
 
-  onRepaint: new Set(),
-  onNodeHoverChange: new Set(),
-  onGraphReset: new Set(),
+/**
+ * @returns an empty event bus with all events initialized to empty sets
+ */
+export const getInitialEventBus = () => {
+  const eventBus: GraphEventBus = {
+    /**
+     * BaseGraphEvents
+     */
+    onStructureChange: new Set(),
 
-  onClick: new Set(),
-  onMouseDown: new Set(),
-  onMouseUp: new Set(),
-  onMouseMove: new Set(),
-  onDblClick: new Set(),
-  onContextMenu: new Set(),
+    onNodeAdded: new Set(),
+    onNodeRemoved: new Set(),
+    onNodeMoved: new Set(),
 
-  onKeydown: new Set(),
+    onEdgeAdded: new Set(),
+    onEdgeRemoved: new Set(),
+    onEdgeWeightChange: new Set(),
 
-  onThemeChange: new Set(),
-  onSettingsChange: new Set(),
-} as MappingsToEventBus<BaseGraphEvents>)
+    onRepaint: new Set(),
+    onNodeHoverChange: new Set(),
+    onGraphReset: new Set(),
+
+    onClick: new Set(),
+    onMouseDown: new Set(),
+    onMouseUp: new Set(),
+    onMouseMove: new Set(),
+    onDblClick: new Set(),
+    onContextMenu: new Set(),
+
+    onKeydown: new Set(),
+
+    onThemeChange: new Set(),
+    onSettingsChange: new Set(),
+
+    /**
+     * FocusGraphEvents
+     */
+    onFocusChange: new Set(),
+
+    /**
+     * DraggableGraphEvents
+     */
+    onNodeDragStart: new Set(),
+    onNodeDrop: new Set(),
+
+    /**
+     * NodeAnchorGraphEvents
+     */
+    onNodeAnchorDragStart: new Set(),
+    onNodeAnchorDrop: new Set(),
+  }
+
+  return eventBus
+}

@@ -14,8 +14,8 @@ import type {
   MoveNodeOptions,
   RemoveNodeOptions
 } from "@graph/baseGraphAPIs";
-import type { BaseGraphEvents } from "@graph/events";
 import { collabTagShapes } from "@graph/schematics/collabTag";
+import type { GraphEventMap } from "@graph/events/types";
 
 const getSocketURL = () => {
   const isLocalhost = window.location.hostname === 'localhost'
@@ -144,7 +144,7 @@ export const useCollaborativeGraph = (
     graph.repaint('collaborative-graph/collaborator-joined')()
   })
 
-  const collaborativeGraphEvents: Partial<BaseGraphEvents> = {
+  const collaborativeGraphEvents: Partial<GraphEventMap> = {
     onNodeAdded: (node: GNode, { broadcast }: AddNodeOptions) => {
       if (!broadcast) return
       socket.emit('nodeAdded', node)

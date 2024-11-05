@@ -10,7 +10,6 @@ import type {
 } from '@graph/types'
 import { useTheme } from '@graph/themes/useTheme'
 import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
-import type { NodeAnchorGraphOptions } from '@graph/compositions/useNodeAnchorGraph'
 import { getValue } from '@graph/helpers'
 import type { Rect } from '@shape/rect'
 import colors from '@colors'
