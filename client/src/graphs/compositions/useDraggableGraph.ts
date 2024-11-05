@@ -2,8 +2,6 @@ import { ref, readonly } from 'vue'
 import type { Ref } from 'vue'
 import type { GNode, GraphOptions } from '@graph/types'
 import { useFocusGraph } from './useFocusGraph';
-import { DEFAULT_DRAGGABLE_SETTINGS } from '@graph/settings';
-import type { DraggableGraphSettings } from '@graph/settings';
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,

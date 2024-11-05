@@ -4,7 +4,7 @@ import type {
   GNode,
   GraphOptions
 } from "@graph/types"
-import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph"
+import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraphTypes"
 import { useMarqueeGraph } from './useMarqueeGraph'
 
 /**

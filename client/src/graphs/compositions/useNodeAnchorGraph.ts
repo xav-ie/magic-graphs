@@ -15,6 +15,7 @@ import {
 import type { Ref } from 'vue'
 import { generateId, prioritizeNode } from "@graph/helpers";
 import { useDraggableGraph } from "@graph/compositions/useDraggableGraph";
+import type { NodeAnchor } from '@graph/compositions/useNodeAnchorGraphTypes';
 import type {
   SchemaItem,
   GNode,
@@ -22,27 +23,6 @@ import type {
   GraphOptions,
 } from "@graph/types";
 import { circle, line } from '@shapes';
-import { DEFAULT_NODE_ANCHOR_SETTINGS } from '@graph/settings';
-import type { NodeAnchorGraphSettings } from '@graph/settings';
-
-export type NodeAnchor = {
-  /**
-   * @description the x-coordinate of the anchor
-   */
-  x: number,
-  /**
-   * @description the y-coordinate of the anchor
-   */
-  y: number,
-  /**
-   * @description the direction of the anchor relative to the parent node
-   */
-  direction: 'north' | 'east' | 'south' | 'west',
-  /**
-   * @description the unique id of the anchor
-   */
-  id: string,
-}
 
 /**
  * Node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
