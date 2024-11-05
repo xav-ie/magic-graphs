@@ -4,7 +4,7 @@ import { drawRectWithCtx } from "@shape/rect/draw";
 
 export const drawCrossWithCtx = (options: Cross) => {
   const {
-    at,
+    at: crossAt,
     size,
     rotation,
     color,
@@ -12,14 +12,14 @@ export const drawCrossWithCtx = (options: Cross) => {
     borderRadius,
   } = {
     ...CROSS_DEFAULTS,
-    ...options
+    ...options,
   };
 
   const halfLineWidth = lineWidth / 2;
 
   return (ctx: CanvasRenderingContext2D) => {
     drawRectWithCtx({
-      at: { x: at.x - halfLineWidth, y: at.y - size / 2 },
+      at: { x: crossAt.x - halfLineWidth, y: crossAt.y - size / 2 },
       width: lineWidth,
       height: size,
       color,
@@ -27,7 +27,7 @@ export const drawCrossWithCtx = (options: Cross) => {
       rotation,
     })(ctx);
     drawRectWithCtx({
-      at: { x: at.x - size / 2, y: at.y - halfLineWidth },
+      at: { x: crossAt.x - size / 2, y: crossAt.y - halfLineWidth },
       width: size,
       height: lineWidth,
       color,

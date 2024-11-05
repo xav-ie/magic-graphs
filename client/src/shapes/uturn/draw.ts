@@ -41,7 +41,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     y: at.y + spacing 
   }, at, rotation);
 
-  const arcat = rotatePoint({ 
+  const arcAt = rotatePoint({ 
     x: at.x + upDistance, 
     y: at.y 
   }, at, rotation);
@@ -95,7 +95,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
 
     // draw the part that uturns
     ctx.beginPath();
-    ctx.arc(arcat.x, arcat.y, spacing, Math.PI / 2 + rotation + 0.05, -Math.PI / 2 + rotation - 0.05, true);
+    ctx.arc(arcAt.x, arcAt.y, spacing, Math.PI / 2 + rotation + 0.05, -Math.PI / 2 + rotation - 0.05, true);
     ctx.strokeStyle = color;
     ctx.stroke();
     ctx.closePath();
