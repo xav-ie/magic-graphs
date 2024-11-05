@@ -1,13 +1,6 @@
 import type { Ref } from 'vue'
-import type {
-  FullThemeMap,
-  GraphTheme,
-  GraphThemeKey
-} from '@graph/themes/types'
-import type {
-  BaseGraphEdgeTheme,
-  BaseGraphNodeTheme,
-} from '@graph/themes'
+import type { GraphTheme, GraphThemeKey } from '@graph/themes'
+import type { FullThemeMap } from '@graph/themes/types'
 import type {
   MaybeGetter,
   SchemaItem,

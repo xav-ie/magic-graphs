@@ -70,8 +70,6 @@ export type GraphTheme = (
   CollaborativeGraphTheme
 )
 
-export type GraphThemeKey = keyof GraphTheme
-
 /**
  * decomposes MaybeGetter<T, K> such that it turns T into T | void
  */
@@ -85,13 +83,13 @@ type WrapWithEdgeGetter<T extends Record<string, any>> = {
   [K in keyof T]: EdgeGetterOrValue<T[K]>
 }
 
-export type ThemeMapEntry<T extends GraphThemeKey> = {
+export type ThemeMapEntry<T extends keyof GraphTheme> = {
   value: MaybeGetterOrVoid<GraphTheme[T]>,
   useThemeId: string,
 }
 
 export type FullThemeMap = {
-  [K in GraphThemeKey]: ThemeMapEntry<K>[]
+  [K in keyof GraphTheme]: ThemeMapEntry<K>[]
 }
 
 export type PartialThemeMap = Partial<FullThemeMap>

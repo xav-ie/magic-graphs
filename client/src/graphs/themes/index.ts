@@ -9,9 +9,10 @@ import { DARK_THEME } from "./loadouts/dark"
 import { LIGHT_THEME } from "./loadouts/light"
 
 export type GraphTheme = GraphThemeImport
+export type GraphThemeKey = keyof GraphTheme
 
 export const THEMES = {
-  default: LIGHT_THEME,
+  light: LIGHT_THEME,
   dark: DARK_THEME,
 } as const satisfies Record<string, GraphTheme>
 
