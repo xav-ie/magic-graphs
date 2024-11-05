@@ -45,7 +45,7 @@
         upDistance: 50,
         lineWidth: 10,
         color: colors.BLUE_500,
-        angle: Math.PI * 0.2,
+        rotation: Math.PI * 0.2,
         spacing: 20,
         textArea: {
           color: colors.PURPLE_500,

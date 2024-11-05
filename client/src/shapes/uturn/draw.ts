@@ -11,7 +11,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     at,
     upDistance,
     downDistance,
-    angle,
+    rotation,
     lineWidth,
     color
   } = {
@@ -25,52 +25,52 @@ export const drawUTurnWithCtx = (options: UTurn) => {
   const longLegFrom = rotatePoint({ 
     x: at.x, 
     y: at.y - spacing 
-  }, at, angle);
+  }, at, rotation);
 
   const longLegTo = rotatePoint({ 
     x: at.x + upDistance, 
     y: at.y - spacing
-  }, at, angle);
+  }, at, rotation);
 
   const shortLegFrom = rotatePoint({ 
     x: at.x + upDistance, 
     y: at.y + spacing 
-  }, at, angle);
+  }, at, rotation);
   const shortLegTo = rotatePoint({ 
     x: at.x + upDistance - downDistance + arrowHeadHeight, 
     y: at.y + spacing 
-  }, at, angle);
+  }, at, rotation);
 
   const arcat = rotatePoint({ 
     x: at.x + upDistance, 
     y: at.y 
-  }, at, angle);
+  }, at, rotation);
 
   const epiat = {
-    x: shortLegTo.x + pLineLength * Math.cos(angle),
-    y: shortLegTo.y + pLineLength * Math.sin(angle),
+    x: shortLegTo.x + pLineLength * Math.cos(rotation),
+    y: shortLegTo.y + pLineLength * Math.sin(rotation),
   }
 
-  const trianglePt1 = rotatePoint({ 
+  const trirotationPt1 = rotatePoint({ 
       x: at.x + upDistance - downDistance, 
       y: at.y + spacing 
-    }, at, angle
+    }, at, rotation
   );
 
-  const trianglePt2 = {
-    x: epiat.x + pLineLength * Math.cos(angle + Math.PI / 2),
-    y: epiat.y + pLineLength * Math.sin(angle + Math.PI / 2),
+  const trirotationPt2 = {
+    x: epiat.x + pLineLength * Math.cos(rotation + Math.PI / 2),
+    y: epiat.y + pLineLength * Math.sin(rotation + Math.PI / 2),
   }
 
-  const trianglePt3 = {
-    x: epiat.x - pLineLength * Math.cos(angle + Math.PI / 2),
-    y: epiat.y - pLineLength * Math.sin(angle + Math.PI / 2),
+  const trirotationPt3 = {
+    x: epiat.x - pLineLength * Math.cos(rotation + Math.PI / 2),
+    y: epiat.y - pLineLength * Math.sin(rotation + Math.PI / 2),
   }
 
   const drawHead = drawTriangleWithCtx({
-    point1: trianglePt1,
-    point2: trianglePt2,
-    point3: trianglePt3,
+    point1: trirotationPt1,
+    point2: trirotationPt2,
+    point3: trirotationPt3,
     color
   });
 
@@ -95,7 +95,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
 
     // draw the part that uturns
     ctx.beginPath();
-    ctx.arc(arcat.x, arcat.y, spacing, Math.PI / 2 + angle + 0.05, -Math.PI / 2 + angle - 0.05, true);
+    ctx.arc(arcat.x, arcat.y, spacing, Math.PI / 2 + rotation + 0.05, -Math.PI / 2 + rotation - 0.05, true);
     ctx.strokeStyle = color;
     ctx.stroke();
     ctx.closePath();

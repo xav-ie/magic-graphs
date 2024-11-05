@@ -21,7 +21,7 @@ export type UTurn = {
   at: Coordinate,
   upDistance: number,
   downDistance: number,
-  angle: number,
+  rotation: number,
   lineWidth: number,
   color?: string,
   textArea?: TextAreaNoLocation

@@ -104,7 +104,7 @@ export const getEdgeSchematic = (
       at: { x: from.x, y: from.y },
       upDistance,
       downDistance,
-      angle: largestAngularSpace,
+      rotation: largestAngularSpace,
       lineWidth: edgeWidth,
       color,
       textArea,
