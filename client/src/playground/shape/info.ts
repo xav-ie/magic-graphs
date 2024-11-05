@@ -10,7 +10,7 @@ const route: ProductInfo = {
   productId: 'shape-playground',
   menu: {
     name: 'Shape Playground',
-    description: 'A playground for shape algorithms',
+    description: 'A playground for magic shapes',
     thumbnail: '/products/thumbnails/shape-playground.png',
   },
 }

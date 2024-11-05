@@ -10,7 +10,7 @@ const info: ProductInfo = {
   productId: 'graph-playground',
   menu: {
     name: 'Graph Playground',
-    description: 'A playground for graph algorithms',
+    description: 'A playground for magic graphs',
     thumbnail: '/products/thumbnails/graph-playground.png',
   },
 }
