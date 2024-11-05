@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import { computed, type StyleValue } from 'vue';
+  import { computed } from 'vue';
+  import type { StyleValue } from 'vue';
 
   const props = defineProps<{
     /**
