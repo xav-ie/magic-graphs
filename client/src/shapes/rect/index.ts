@@ -1,12 +1,21 @@
 import type {
-  Text,
+  TextAreaNoLocation,
   Stroke,
   Coordinate,
   Shape
 } from "@shape/types"
 import { rectHitbox } from "./hitbox"
 import { drawRectWithCtx } from "./draw"
-import { generateId } from "@graph/helpers"
+import {
+  rectTextHitbox,
+  drawTextAreaOnRect,
+  drawTextAreaMatteOnRect,
+  drawTextOnRect,
+  getTextAreaLocationOnRect
+} from './text'
+import { generateId } from "@graph/helpers";
+import { getFullTextArea } from "@shape/text";
+import { engageTextarea } from "@shape/textarea";
 
 export type Rect = {
   at: Coordinate
@@ -14,7 +23,7 @@ export type Rect = {
   height: number
   color?: string
   stroke?: Stroke
-  text?: Text
+  textArea?: TextAreaNoLocation
   borderRadius?: number
   rotation?: number
 }
@@ -31,11 +40,26 @@ export const rect = (options: Rect): Shape => {
     throw new Error('borderRadius must be positive')
   }
 
-  const drawShape = drawRectWithCtx(options)
-  const hitbox = rectHitbox(options)
+  const drawShape = drawRectWithCtx(options);
+
+  const hitbox = rectHitbox(options);
+  const textHitbox = rectTextHitbox(options);
+
+  const drawTextArea = drawTextAreaOnRect(options);
+
+  const drawTextAreaMatte = drawTextAreaMatteOnRect(options);
+  const drawText = drawTextOnRect(options);
 
   const draw = (ctx: CanvasRenderingContext2D) => {
-    drawShape(ctx)
+    drawShape(ctx);
+    drawTextArea?.(ctx);
+  }
+
+  const activateTextArea = (handler: (str: string) => void) => {
+    if (!options.textArea) return;
+    const location = getTextAreaLocationOnRect(options);
+    const fullTextArea = getFullTextArea(options.textArea, location);
+    engageTextarea(fullTextArea, handler);
   }
 
   return {
@@ -43,9 +67,15 @@ export const rect = (options: Rect): Shape => {
     name: 'rect',
 
     draw,
+
     drawShape,
+    drawTextArea,
+    drawTextAreaMatte,
+    drawText,
 
+    hitbox,
+    textHitbox,
 
-    hitbox
+    activateTextArea,
   }
 }

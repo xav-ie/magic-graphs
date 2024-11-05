@@ -1,19 +1,28 @@
 import type {
   Coordinate,
   Stroke,
-  Text,
-  Shape
+  TextAreaNoLocation,
+  Shape,
 } from "@shape/types"
 import { drawCircleWithCtx } from "@shape/circle/draw";
 import { circleHitbox } from "./hitbox";
+import {
+  circleTextHitbox,
+  drawTextAreaOnCircle,
+  drawTextAreaMatteOnCircle,
+  drawTextOnCircle,
+  getTextAreaLocationOnCircle
+} from './text'
 import { generateId } from "@graph/helpers";
+import { getFullTextArea } from "@shape/text";
+import { engageTextarea } from "@shape/textarea";
 
 export type Circle = {
   at: Coordinate,
   radius: number,
   color?: string,
   stroke?: Stroke,
-  text?: Text
+  textArea?: TextAreaNoLocation,
 }
 
 export const CIRCLE_DEFAULTS = {
@@ -27,10 +36,25 @@ export const circle = (options: Circle): Shape => {
   }
   
   const drawShape = drawCircleWithCtx(options);
+
   const hitbox = circleHitbox(options);
+  const textHitbox = circleTextHitbox(options);
+
+  const drawTextArea = drawTextAreaOnCircle(options);
+
+  const drawTextAreaMatte = drawTextAreaMatteOnCircle(options);
+  const drawText = drawTextOnCircle(options);
 
   const draw = (ctx: CanvasRenderingContext2D) => {
     drawShape(ctx);
+    drawTextArea?.(ctx);
+  }
+
+  const activateTextArea = (handler: (str: string) => void) => {
+    if (!options.textArea) return;
+    const location = getTextAreaLocationOnCircle(options);
+    const fullTextArea = getFullTextArea(options.textArea, location);
+    engageTextarea(fullTextArea, handler);
   }
 
   return {
@@ -38,8 +62,15 @@ export const circle = (options: Circle): Shape => {
     name: 'circle',
 
     draw,
-    drawShape,
 
-    hitbox
+    drawShape,
+    drawTextArea,
+    drawTextAreaMatte,
+    drawText,
+
+    hitbox,
+    textHitbox,
+
+    activateTextArea,
   }
 }

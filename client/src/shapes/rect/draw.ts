@@ -53,17 +53,5 @@ export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D
     ctx.stroke();
   }
 
-  if (options.text) {
-    const { content, fontSize, fontWeight, color } = {
-      ...TEXT_DEFAULTS,
-      ...options.text
-    };
-    ctx.font = `${fontWeight} ${fontSize}px Arial`;
-    ctx.fillStyle = color;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(content, 0, 0);
-  }
-
   ctx.restore();
 };

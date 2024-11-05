@@ -1,6 +1,7 @@
 import type { ThemeGetter } from '@graph/themes/getThemeResolver'
 import type { GNode, SchemaItem } from '@graph/types'
 import { circle, square } from '@shapes'
+import colors from '@colors'
 
 export type SupportedNodeShapes = 'circle' | 'square'
 
@@ -29,11 +30,14 @@ export const getNodeSchematic = (
       color: borderColor,
       width: borderWidth,
     },
-    text: {
-      content: text,
-      fontSize: textSize,
-      fontWeight: 'bold',
-      color: textColor,
+    textArea: {
+      text: {
+        content: text,
+        fontSize: textSize,
+        fontWeight: 'bold',
+        color: textColor,
+      },
+      color: colors.TRANSPARENT
     }
   })
 

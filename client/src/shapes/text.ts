@@ -16,13 +16,13 @@ export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({
 });
 
 export const drawTextMatteWithTextArea = (textArea: DeepRequired<TextArea>) => {
-  const { at } = textArea;
+  const { at, color } = textArea;
   const { width, height } = getTextAreaDimension(textArea);
   const matte = rect({
     at,
     width,
     height,
-    color: textArea.color,
+    color,
   })
   return (ctx: CanvasRenderingContext2D) => matte.drawShape(ctx);
 }

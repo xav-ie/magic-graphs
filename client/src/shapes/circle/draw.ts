@@ -21,24 +21,5 @@ export const drawCircleWithCtx = (options: Circle) => (ctx: CanvasRenderingConte
     ctx.lineWidth = width;
     ctx.stroke();
   }
-
-  const circleText = options.text;
-  if (circleText) {
-    const {
-      content,
-      fontSize,
-      fontWeight,
-      color,
-    } = { ...TEXT_DEFAULTS, ...circleText };
-
-    const textVerticalOffset = fontSize >=50 ? 0.3 : 0.1;
-
-    ctx.font = `${fontWeight} ${fontSize}px Arial`;
-    ctx.fillStyle = color;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(content, at.x, at.y + fontSize ** textVerticalOffset);
-  }
-
   ctx.closePath();
 }
