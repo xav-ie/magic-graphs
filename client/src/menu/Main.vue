@@ -17,15 +17,15 @@
 
 <template>
   <div
-    class="w-full h-full relative flex items-center justify-center flex-col bg-gradient-to-tl to-purple-100 from-gray-50"
+    class="w-full h-full relative flex items-center justify-center flex-col bg-gradient-to-tl to-purple-100 from-gray-50 dark:to-gray-900 dark:via-gray-900 dark:from-purple-900 text-gray-800 dark:text-gray-50"
   >
     <div class="mb-10 text-center">
       <h1
-        class="font-black text-7xl bg-gradient-to-tr from-purple-500 to-orange-500 text-transparent bg-clip-text p-4"
+        class="font-black text-7xl bg-gradient-to-tr dark:from-purple-700 dark:to-orange-600 from-purple-500 to-orange-500 text-transparent bg-clip-text p-4"
       >
         Magic Computer Science
       </h1>
-      <h3 class="font-bold text-2xl text-gray-800">
+      <h3 class="font-bold text-2xl">
         Select An Experience To Begin
       </h3>
     </div>

@@ -17,14 +17,14 @@
           :alt="product.menu.name"
           class="w-full h-full object-cover rounded-2xl"
         />
-        <div class="absolute top-0 w-full h-full opacity-0 group-hover:opacity-100 transition duration-500 bg-gray-800 bg-opacity-90 rounded-2xl p-4 ">
+        <div class="absolute top-0 w-full h-full opacity-0 group-hover:opacity-100 transition duration-500 bg-gray-900 bg-opacity-90 rounded-2xl p-4 ">
           <p class="text-white font-bold">
             {{ product.menu.description }}
           </p>
         </div>
       </div>
       <h2
-        class="text-center font-bold text-2xl mt-4 text-gray-800 transition duration-500"
+        class="text-center font-bold text-2xl mt-4 transition duration-500"
       >
         {{ product.name }}
       </h2>
