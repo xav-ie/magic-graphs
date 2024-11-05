@@ -46,31 +46,31 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     y: at.y 
   }, at, rotation);
 
-  const epiat = {
+  const epiAt = {
     x: shortLegTo.x + pLineLength * Math.cos(rotation),
     y: shortLegTo.y + pLineLength * Math.sin(rotation),
   }
 
-  const trirotationPt1 = rotatePoint({ 
+  const triRotationPoint1 = rotatePoint({ 
       x: at.x + upDistance - downDistance, 
       y: at.y + spacing 
     }, at, rotation
   );
 
-  const trirotationPt2 = {
-    x: epiat.x + pLineLength * Math.cos(rotation + Math.PI / 2),
-    y: epiat.y + pLineLength * Math.sin(rotation + Math.PI / 2),
+  const triRotationPoint2 = {
+    x: epiAt.x + pLineLength * Math.cos(rotation + Math.PI / 2),
+    y: epiAt.y + pLineLength * Math.sin(rotation + Math.PI / 2),
   }
 
-  const trirotationPt3 = {
-    x: epiat.x - pLineLength * Math.cos(rotation + Math.PI / 2),
-    y: epiat.y - pLineLength * Math.sin(rotation + Math.PI / 2),
+  const triRotationPoint3 = {
+    x: epiAt.x - pLineLength * Math.cos(rotation + Math.PI / 2),
+    y: epiAt.y - pLineLength * Math.sin(rotation + Math.PI / 2),
   }
 
   const drawHead = drawTriangleWithCtx({
-    point1: trirotationPt1,
-    point2: trirotationPt2,
-    point3: trirotationPt3,
+    point1: triRotationPoint1,
+    point2: triRotationPoint2,
+    point3: triRotationPoint3,
     color
   });
 
