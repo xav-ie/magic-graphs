@@ -35,6 +35,14 @@
           color: colors.BLUE_700,
           width: 10,
         },
+        textArea: {
+          text: {
+            content: '51',
+            color: colors.WHITE,
+            fontSize: 20,
+          },
+          color: colors.TRANSPARENT
+        }
       })
     );
 
