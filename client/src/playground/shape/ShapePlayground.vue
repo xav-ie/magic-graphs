@@ -97,10 +97,9 @@
     );
 
     items.value.push(
-      rect({
+      square({
         at: { x: 600, y: 400 },
-        width: 80,
-        height:120,
+        size:120,
         rotation: Math.PI / 0.7,
         color: colors.GREEN_600,
         borderRadius: 25,
