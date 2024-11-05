@@ -11,7 +11,6 @@ defineProps<{
 }>()
 
 const roomId = ref("graph-playground");
-
 </script>
 
 <template>
@@ -35,7 +34,6 @@ const roomId = ref("graph-playground");
   <Button
     v-if="!graph.inCollaborativeRoom.value"
     @click="graph.joinCollaborativeRoom(roomId)"
-    class="bg-blue-500 text-white"
   >
     Join Room
   </Button>
