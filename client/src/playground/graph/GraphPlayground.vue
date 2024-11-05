@@ -13,7 +13,9 @@
   const graphElement = ref<HTMLCanvasElement>();
 
   const graph = useGraph(graphElement, {
-    theme: {}
+    theme: {
+      nodeBorderColor:colors.BLUE_500,
+    }
   });
 
   const roomId = "graph-playground";
