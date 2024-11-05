@@ -6,7 +6,7 @@ const info: ProductInfo = {
     component: () => import('./Main.vue'),
   },
   name: 'Main Page',
-  description: 'The main page of the website',
+  description: 'The main page of the application.',
   productId: 'main',
 }
 
