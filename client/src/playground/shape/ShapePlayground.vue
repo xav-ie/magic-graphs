@@ -40,7 +40,7 @@
 
     items.value.push(
       uturn({
-        center: { x: 600, y: 100 },
+        at: { x: 600, y: 100 },
         downDistance: 50,
         upDistance: 50,
         lineWidth: 10,
