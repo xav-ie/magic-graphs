@@ -2,7 +2,7 @@
   import { ref, computed } from "vue";
   import { useDark } from "@vueuse/core";
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
-  import colors from "@colors";
+  import colors, { AMBER_400 } from "@colors";
   import { shapes } from "@shapes";
   import type { Shape } from "@shape/types";
   import { getCtx } from "@utils/ctx";
@@ -24,7 +24,7 @@
   const draw = () => {
     const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    const { circle, uturn, cross } = shapes;
+    const { circle, uturn, cross, rect, square } = shapes;
 
     items.value.push(
       circle({
@@ -95,6 +95,25 @@
         lineWidth: 80,
       })
     );
+
+    items.value.push(
+      rect({
+        at: { x: 600, y: 400 },
+        width: 80,
+        height:120,
+        rotation: Math.PI / 0.7,
+        color: colors.GREEN_600,
+        borderRadius: 25,
+        textArea: {
+          text: {
+            content: '13',
+            color: colors.WHITE,
+            fontSize: 20,
+          },
+          color: AMBER_400
+        }
+      })
+    )
 
     items.value.forEach((item) => item.draw(ctx));
   };
