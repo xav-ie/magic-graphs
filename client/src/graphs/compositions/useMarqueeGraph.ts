@@ -24,11 +24,9 @@ const MARQUEE_SELECTION_BORDER_COLOR = colors.WHITE
 const MARQUEE_SELECTION_BG_COLOR = colors.WHITE + '10'
 const MARQUEE_THEME_ID = 'use-marquee-graph'
 
-type MarqueeGraphOptions = GraphOptions<MarqueeGraphSettings>
-
 export const useMarqueeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<MarqueeGraphOptions> = {},
+  options: Partial<GraphOptions> = {},
 ) => {
 
   const selectionBox = ref<SelectionBox | undefined>()

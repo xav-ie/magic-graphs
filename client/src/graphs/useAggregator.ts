@@ -1,6 +1,6 @@
 import { ref } from "vue"
 import type { Ref } from "vue"
-import type { Aggregator, UpdateAggregator } from "./types"
+import type { Aggregator, UpdateAggregator } from "@graph/types"
 import type { Emitter as GraphEventEmitter } from "@graph/events"
 
 export type UseAggregatorOptions = {

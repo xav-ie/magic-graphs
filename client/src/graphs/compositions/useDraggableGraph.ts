@@ -5,11 +5,9 @@ import { useFocusGraph } from './useFocusGraph';
 import { DEFAULT_DRAGGABLE_SETTINGS } from '@graph/settings';
 import type { DraggableGraphSettings } from '@graph/settings';
 
-export type DraggableGraphOptions = GraphOptions<DraggableGraphSettings>
-
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<DraggableGraphOptions> = {},
+  options: Partial<GraphOptions> = {},
 ) => {
 
   const graph = useFocusGraph(canvas, options)

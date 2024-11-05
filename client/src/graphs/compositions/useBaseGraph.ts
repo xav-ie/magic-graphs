@@ -20,15 +20,13 @@ import type {
 import {
   generateId,
   prioritizeNode,
-  getThemeResolver,
   getConnectedEdges,
 } from '@graph/helpers';
 import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
-import { themes } from '@graph/themes';
-import type { BaseGraphTheme } from '@graph/themes'
+import { THEMES } from '@graph/themes';
+import type { GraphTheme } from '@graph/themes'
 import { getInitialThemeMap } from '@graph/themes/types';
-import type { GraphTheme } from '@graph/themes';
 import { delta } from '@utils/deepDelta/delta';
 import { clone } from '@utils/clone';
 import { getInitialEventBus, generateSubscriber } from '@graph/events';
@@ -50,16 +48,15 @@ import type {
 import type { PartiallyPartial } from '@utils/types';
 import { DEFAULT_BASE_SETTINGS } from '@graph/settings';
 import type { BaseGraphSettings } from '@graph/settings';
-
-export type BaseGraphOptions = GraphOptions<BaseGraphSettings>
+import { getThemeResolver } from '@graph/themes/getThemeResolver';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<BaseGraphOptions> = {},
+  options: Partial<GraphOptions> = {},
 ) => {
 
-  const theme = ref<BaseGraphTheme>({
-    ...themes.default,
+  const theme = ref<GraphTheme>({
+    ...THEMES.light,
     ...options.theme,
   })
 

@@ -6,10 +6,11 @@
  */
 
 import type { Ref } from 'vue'
-import { themes } from '@graph/themes'
+import { THEMES } from '@graph/themes'
 import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
 import type { PersistentGraphOptions } from '@graph/compositions/usePersistentGraph'
-import { useCollaborativeGraph } from './compositions/useCollaborativeGraph'
+import { useCollaborativeGraph } from '@graph/compositions/useCollaborativeGraph'
+import type { Collab}
 
 export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -26,7 +27,7 @@ export const useDarkGraph = (
 ) => useCollaborativeGraph(canvas, {
   theme: {
     ...options.theme,
-    ...themes.dark,
+    ...THEMES.dark,
   },
   settings: options.settings,
 })
