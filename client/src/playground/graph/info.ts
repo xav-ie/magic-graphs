@@ -1,0 +1,18 @@
+import type { ProductInfo } from 'src/types'
+
+const info: ProductInfo = {
+  route: {
+    path: '/graph-playground',
+    component: () => import('./GraphPlayground.vue'),
+  },
+  name: 'Graph Playground',
+  description: 'A playground for graph algorithms',
+  productId: 'graph-playground',
+  menu: {
+    name: 'Graph Playground',
+    description: 'A playground for graph algorithms',
+    thumbnail: '/src/assets/graph-playground.png',
+  },
+}
+
+export default info
