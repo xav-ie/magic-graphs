@@ -37,17 +37,17 @@ import {
   ADD_EDGE_OPTIONS_DEFAULTS,
   REMOVE_EDGE_OPTIONS_DEFAULTS,
   MOVE_NODE_OPTIONS_DEFAULTS,
-} from '@graph/baseGraphAPIs';
+} from '@graph/compositions/useBaseGraphTypes';
 import type {
   AddNodeOptions,
   RemoveNodeOptions,
   AddEdgeOptions,
   RemoveEdgeOptions,
   MoveNodeOptions,
-} from '@graph/baseGraphAPIs';
+} from '@graph/compositions/useBaseGraphTypes';
 import type { PartiallyPartial } from '@utils/types';
-import { DEFAULT_BASE_SETTINGS } from '@graph/settings';
-import type { BaseGraphSettings } from '@graph/settings';
+import { DEFAULT_GRAPH_SETTINGS } from '@graph/settings';
+import type { GraphSettings } from '@graph/settings';
 import { getThemeResolver } from '@graph/themes/getThemeResolver';
 
 export const useBaseGraph = (
@@ -63,8 +63,8 @@ export const useBaseGraph = (
   const themeMap = getInitialThemeMap()
   const getTheme = getThemeResolver(theme, themeMap)
 
-  const settings = ref<BaseGraphSettings>({
-    ...DEFAULT_BASE_SETTINGS,
+  const settings = ref<GraphSettings>({
+    ...DEFAULT_GRAPH_SETTINGS,
     ...options.settings,
   })
 

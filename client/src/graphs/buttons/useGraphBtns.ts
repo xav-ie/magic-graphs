@@ -4,7 +4,7 @@ import { GRAPH_BUTTON_ID } from "@graph/buttons/types";
 import type { GButton } from "@graph/buttons/types";
 import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
 import { getRandomElement } from "@utils/array";
-import { COLLAB_COLORS, COLLAB_NAMES } from "@graph/compositions/useCollaborativeGraph";
+import { COLLAB_COLORS, COLLAB_NAMES } from "@graph/compositions/useCollaborativeGraphTypes";
 import { capitalize } from "@utils/string";
 
 /**

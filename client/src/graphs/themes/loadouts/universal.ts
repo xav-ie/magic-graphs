@@ -22,10 +22,11 @@ export const NON_COLOR_THEMES: NonColorGraphThemes = {
   nodeSize: 35,
   nodeBorderWidth: 8,
   nodeTextSize: 24,
-  nodeAnchorRadius: 10,
+  // Math.ceil(Math.sqrt(nodeSize) * 2)
+  nodeAnchorRadius: Math.ceil(Math.sqrt(35) * 2),
   edgeWidth: 10,
   edgeTextSize: 20,
   nodeText: ({ label }) => label,
   edgeTextFontWeight: 'bold',
-  linkPreviewWidth: 5,
+  linkPreviewWidth: 10,
 }

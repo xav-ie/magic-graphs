@@ -2,8 +2,8 @@
   import { computed, toRefs } from "vue";
   import type { Shape } from "@shape/types";
   import { useHeatmap } from "@playground/shape/useHeatmap";
-  import Button from "./Button.vue";
-  import Slider from "./Slider.vue";
+  import Button from "@playground/ui/Button.vue";
+  import InputRange from "@playground/ui/InputRange.vue";
 
   const props = defineProps<{
     canvas: HTMLCanvasElement | undefined;
@@ -47,7 +47,7 @@
     <div>
       <p>Opacity {{ heatmapOpacity }}</p>
 
-      <Slider
+      <InputRange
         v-model.number="heatmapOpacity"
         min="0"
         max="100"
@@ -57,7 +57,7 @@
     <div>
       <p>Resolution {{ heatmapResolution }}</p>
 
-      <Slider
+      <InputRange
         v-model.number="heatmapResolution"
         min="1"
         max="10"

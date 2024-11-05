@@ -15,6 +15,7 @@ import {
 import type { Ref } from 'vue'
 import { generateId, prioritizeNode } from "@graph/helpers";
 import { useDraggableGraph } from "@graph/compositions/useDraggableGraph";
+import type { NodeAnchor } from '@graph/compositions/useNodeAnchorGraphTypes';
 import type {
   SchemaItem,
   GNode,
@@ -22,27 +23,6 @@ import type {
   GraphOptions,
 } from "@graph/types";
 import { circle, line } from '@shapes';
-import { DEFAULT_NODE_ANCHOR_SETTINGS } from '@graph/settings';
-import type { NodeAnchorGraphSettings } from '@graph/settings';
-
-export type NodeAnchor = {
-  /**
-   * @description the x-coordinate of the anchor
-   */
-  x: number,
-  /**
-   * @description the y-coordinate of the anchor
-   */
-  y: number,
-  /**
-   * @description the direction of the anchor relative to the parent node
-   */
-  direction: 'north' | 'east' | 'south' | 'west',
-  /**
-   * @description the unique id of the anchor
-   */
-  id: string,
-}
 
 /**
  * Node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
@@ -62,18 +42,13 @@ export const useNodeAnchorGraph = (
 
   const graph = useDraggableGraph(canvas, options)
 
-  const settings = ref<NodeAnchorGraphSettings>(Object.assign(graph.settings.value, {
-    ...DEFAULT_NODE_ANCHOR_SETTINGS,
-    ...options.settings,
-  }))
-
   const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
 
   const getAnchorSchemas = (node: GNode) => {
     if (
       graph.nodeBeingDragged.value ||
-      !settings.value.nodeAnchors
+      !graph.settings.value.nodeAnchors
     ) return []
 
     const { getTheme } = graph
@@ -198,7 +173,7 @@ export const useNodeAnchorGraph = (
    * @param {MouseEvent} ev - the mouse event to update the parent node
    */
   const updateParentNode = (ev: MouseEvent) => {
-    if (activeAnchor.value || !settings.value.nodeAnchors) return
+    if (activeAnchor.value || !graph.settings.value.nodeAnchors) return
     const topItem = graph.getSchemaItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     if (!topItem) return parentNode.value = undefined
     else if (topItem.graphType === 'node-anchor') return
@@ -301,8 +276,14 @@ export const useNodeAnchorGraph = (
 
   return {
     ...graph,
-    activeNodeAnchor: readonly(activeAnchor),
 
-    settings,
+    /**
+     * the node anchor that is currently being dragged by the user
+     */
+    nodeAnchorActiveAnchor: readonly(activeAnchor),
+    /**
+     * the parent node of the active anchor
+     */
+    nodeAnchorParentNode: readonly(parentNode),
   }
 }

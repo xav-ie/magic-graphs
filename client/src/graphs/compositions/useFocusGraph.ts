@@ -11,27 +11,12 @@ import type {
   GraphOptions,
   SchemaItem
 } from "@graph/types";
-import { useBaseGraph } from "@graph/compositions/useBaseGraph";
 import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
-import type { FocusGraphSettings } from "@graph/settings";
-
-type Id = SchemaItem['id']
-type MaybeId = Id | undefined
-
-type FocusedItem = {
-  type: 'node',
-  item: GNode,
-} | {
-  type: 'edge',
-  item: GEdge,
-}
-
-type ValidFocusableTypes = SchemaItem['graphType'] & FocusedItem['type']
-
-const FOCUSABLE_GRAPH_TYPES: ValidFocusableTypes[] = ['node', 'edge']
-const FOCUS_THEME_ID = 'use-focus-graph'
+import { useBaseGraph } from "@graph/compositions/useBaseGraph";
+import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES} from "@graph/compositions/useFocusGraphTypes";
+import type { FocusedItem, MaybeId } from "@graph/compositions/useFocusGraphTypes";
 
 export const useFocusGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -135,8 +120,18 @@ export const useFocusGraph = (
 
   return {
     ...graph,
-    focusedItem,
+
+    /**
+     * The focused item in the graph, if any
+     */
+    focusedItem: readonly(focusedItem),
+    /**
+     * The id of the focused item in the graph, if any
+     */
     focusedItemId: readonly(focusedItemId),
+    /**
+     * Sets the focus to the item with the given id
+     */
     setFocus,
   }
 }

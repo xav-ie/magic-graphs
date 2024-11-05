@@ -2,8 +2,6 @@ import { ref, readonly } from 'vue'
 import type { Ref } from 'vue'
 import type { GNode, GraphOptions } from '@graph/types'
 import { useFocusGraph } from './useFocusGraph';
-import { DEFAULT_DRAGGABLE_SETTINGS } from '@graph/settings';
-import type { DraggableGraphSettings } from '@graph/settings';
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -12,16 +10,11 @@ export const useDraggableGraph = (
 
   const graph = useFocusGraph(canvas, options)
 
-  const settings = ref<DraggableGraphSettings>(Object.assign(graph.settings.value, {
-    ...DEFAULT_DRAGGABLE_SETTINGS,
-    ...options.settings,
-  }))
-
   const nodeBeingDragged = ref<GNode | undefined>()
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | undefined>()
 
   const beginDrag = (ev: MouseEvent) => {
-    if (!settings.value.draggable) return
+    if (!graph.settings.value.draggable) return
     const { offsetX, offsetY } = ev;
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
     const node = graph.getNodeByCoordinates(offsetX, offsetY);
@@ -41,7 +34,7 @@ export const useDraggableGraph = (
     if (
       !nodeBeingDragged.value ||
       !startingCoordinatesOfDrag.value ||
-      !settings.value.draggable
+      !graph.settings.value.draggable
     ) return
     const { offsetX, offsetY } = ev;
     const dx = offsetX - startingCoordinatesOfDrag.value.x;
@@ -67,7 +60,5 @@ export const useDraggableGraph = (
   return {
     ...graph,
     nodeBeingDragged: readonly(nodeBeingDragged),
-
-    settings,
   }
 }

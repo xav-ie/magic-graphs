@@ -1,10 +1,11 @@
-import { ref } from 'vue'
 import type { Ref } from 'vue'
-import type { SchemaItem, GNode, GraphOptions } from "@graph/types"
-import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph"
+import type {
+  SchemaItem,
+  GNode,
+  GraphOptions
+} from "@graph/types"
+import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraphTypes"
 import { useMarqueeGraph } from './useMarqueeGraph'
-import { DEFAULT_USER_EDITABLE_SETTINGS } from '@graph/settings'
-import type { UserEditableGraphSettings } from '@graph/settings'
 
 /**
  * The user editable graph implements handlers for node creation,
@@ -21,18 +22,13 @@ export const useUserEditableGraph = (
 
   const graph = useMarqueeGraph(canvas, options)
 
-  const settings = ref<UserEditableGraphSettings>(Object.assign(graph.settings.value, {
-    ...DEFAULT_USER_EDITABLE_SETTINGS,
-    ...options.settings,
-  }))
-
   const handleNodeCreation = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev
     graph.addNode({ x: offsetX, y: offsetY })
   }
 
   const handleEdgeCreation = (parentNode: GNode, anchor: NodeAnchor) => {
-    if (!settings.value.userEditable) return
+    if (!graph.settings.value.userEditable) return
     const { x, y } = anchor
     const itemStack = graph.getSchemaItemsByCoordinates(x, y)
     const nodeSchema = itemStack.findLast((item: SchemaItem) => item.graphType === 'node')
@@ -42,8 +38,8 @@ export const useUserEditableGraph = (
     graph.addEdge({
       from: parentNode.id,
       to: node.id,
-      type: settings.value.userEditableAddedEdgeType,
-      weight: settings.value.userEditableAddedEdgeWeight,
+      type: graph.settings.value.userEditableAddedEdgeType,
+      weight: graph.settings.value.userEditableAddedEdgeWeight,
     })
   }
 
@@ -70,29 +66,26 @@ export const useUserEditableGraph = (
     graph.subscribe('onDblClick', handleNodeCreation)
     graph.subscribe('onKeydown', handleDeletion)
     graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
-    settings.value.nodeAnchors = true
-    settings.value.draggable = true
-    settings.value.edgeLabelsEditable = true
+    graph.settings.value.nodeAnchors = true
+    graph.settings.value.draggable = true
+    graph.settings.value.edgeLabelsEditable = true
   }
 
   const deactivate = () => {
     graph.unsubscribe('onDblClick', handleNodeCreation)
     graph.unsubscribe('onKeydown', handleDeletion)
     graph.unsubscribe('onNodeAnchorDrop', handleEdgeCreation)
-    settings.value.nodeAnchors = false
-    settings.value.draggable = false
-    settings.value.edgeLabelsEditable = false
+    graph.settings.value.nodeAnchors = false
+    graph.settings.value.draggable = false
+    graph.settings.value.edgeLabelsEditable = false
   }
 
-  if (settings.value.userEditable) active()
+  if (graph.settings.value.userEditable) active()
 
   graph.subscribe('onSettingsChange', (diff) => {
     if (diff.userEditable === true) active()
     else if (diff.userEditable === false) deactivate()
   })
 
-  return {
-    ...graph,
-    settings,
-  }
+  return graph
 }

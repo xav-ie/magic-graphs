@@ -10,31 +10,31 @@ import type {
 } from '@graph/types'
 import { useTheme } from '@graph/themes/useTheme'
 import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
+import type { SelectionBox } from '@graph/compositions/useMarqueeGraphTypes'
+import { MARQUEE_CONSTANTS } from '@graph/compositions/useMarqueeGraphTypes'
 import { getValue } from '@graph/helpers'
-import type { Rect } from '@shape/rect'
 import colors from '@colors'
 import { rect } from '@shapes'
-import type { MarqueeGraphSettings } from '@graph/settings'
-
-export type SelectionBox = Pick<Rect, 'at' | 'width' | 'height'>
-
-const MARQUEE_SELECTABLE_GRAPH_TYPES: SchemaItem['graphType'][] = ['node', 'edge']
-const MARQUEE_SAMPLING_RATE = 5;
-const MARQUEE_SELECTION_BORDER_COLOR = colors.WHITE
-const MARQUEE_SELECTION_BG_COLOR = colors.WHITE + '10'
-const MARQUEE_THEME_ID = 'use-marquee-graph'
 
 export const useMarqueeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
 ) => {
 
+  const {
+    THEME_ID,
+    SELECTABLE_GRAPH_TYPES,
+    SAMPLING_RATE,
+    SELECTION_BORDER_COLOR,
+    SELECTION_BG_COLOR,
+  } = MARQUEE_CONSTANTS
+
   const selectionBox = ref<SelectionBox | undefined>()
   const graph = useNodeAnchorGraph(canvas, options)
 
   const marqueedItemIDs = new Set<string>()
 
-  const { setTheme, removeTheme } = useTheme(graph, MARQUEE_THEME_ID)
+  const { setTheme, removeTheme } = useTheme(graph, THEME_ID)
 
   const hideNodeAnchors = () => setTheme('nodeAnchorColor', colors.TRANSPARENT)
   const showNodeAnchors = () => removeTheme('nodeAnchorColor')
@@ -95,7 +95,7 @@ export const useMarqueeGraph = (
   const coordinateCache = new Map<string, SchemaItem | null>()
 
   const getFromCache = (xInp: number, yInp: number) => {
-    const CACHE_BUCKET_SIZE = MARQUEE_SAMPLING_RATE / 2
+    const CACHE_BUCKET_SIZE = SAMPLING_RATE / 2
     const x = Math.round(xInp / CACHE_BUCKET_SIZE) * CACHE_BUCKET_SIZE
     const y = Math.round(yInp / CACHE_BUCKET_SIZE) * CACHE_BUCKET_SIZE
     const key = `${x}:${y}`
@@ -113,12 +113,12 @@ export const useMarqueeGraph = (
 
     const { x1, x2, y1, y2 } = getSelectionBoxProps(box)
 
-    for (let x = x1; x < x2; x += MARQUEE_SAMPLING_RATE) {
-      for (let y = y1; y < y2; y += MARQUEE_SAMPLING_RATE) {
+    for (let x = x1; x < x2; x += SAMPLING_RATE) {
+      for (let y = y1; y < y2; y += SAMPLING_RATE) {
         const topItem = getFromCache(x, y)
         if (!topItem) continue
 
-        const isMarqueeable = MARQUEE_SELECTABLE_GRAPH_TYPES.some(type => topItem.graphType === type)
+        const isMarqueeable = SELECTABLE_GRAPH_TYPES.some(type => topItem.graphType === type)
         if (isMarqueeable) marqueedItemIDs.add(topItem.id)
       }
     }
@@ -141,9 +141,9 @@ export const useMarqueeGraph = (
   const getSelectionBoxSchema = (box: SelectionBox) => {
     const shape = rect({
       ...box,
-      color: MARQUEE_SELECTION_BG_COLOR,
+      color: SELECTION_BG_COLOR,
       stroke: {
-        color: MARQUEE_SELECTION_BORDER_COLOR,
+        color: SELECTION_BORDER_COLOR,
         width: 1,
       }
     })
