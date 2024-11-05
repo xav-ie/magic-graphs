@@ -1,11 +1,9 @@
 import { fractionToDecimal } from "@utils/fracDecConverter/fracDec";
 
-
 /**
  * BASE GRAPH SETTINGS
  */
-
-export type OnlyBaseGraphSettings = {
+export type BaseGraphSettings = {
   /**
    * whether to display edge labels
    * @default true
@@ -24,7 +22,7 @@ export type OnlyBaseGraphSettings = {
   edgeInputToWeight: (input: string) => number | undefined;
 }
 
-export const DEFAULT_BASE_SETTINGS: OnlyBaseGraphSettings = {
+export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
   displayEdgeLabels: true,
   edgeLabelsEditable: true,
   edgeInputToWeight: (input: string) => {
@@ -35,25 +33,17 @@ export const DEFAULT_BASE_SETTINGS: OnlyBaseGraphSettings = {
   }
 }
 
-export type BaseGraphSettings = OnlyBaseGraphSettings
-
-
 /**
  * FOCUS GRAPH SETTINGS
  */
+export type FocusGraphSettings = {}
 
-export type OnlyFocusGraphSettings = {}
-
-export const DEFAULT_FOCUS_SETTINGS: OnlyFocusGraphSettings = {}
-
-export type FocusGraphSettings = BaseGraphSettings
-
+export const DEFAULT_FOCUS_SETTINGS: FocusGraphSettings = {}
 
 /**
  * DRAGGABLE GRAPH SETTINGS
  */
-
-export type OnlyDraggableGraphSettings = {
+export type DraggableGraphSettings = {
   /**
    * whether the graph is draggable
    * @default true
@@ -61,18 +51,14 @@ export type OnlyDraggableGraphSettings = {
   draggable: boolean;
 }
 
-export const DEFAULT_DRAGGABLE_SETTINGS: OnlyDraggableGraphSettings = {
+export const DEFAULT_DRAGGABLE_SETTINGS: DraggableGraphSettings = {
   draggable: true,
 }
-
-export type DraggableGraphSettings = FocusGraphSettings & OnlyDraggableGraphSettings
-
 
 /**
  * NODE ANCHOR GRAPH SETTINGS
  */
-
-export type OnlyNodeAnchorGraphSettings = {
+export type NodeAnchorGraphSettings = {
   /**
    * whether node anchors are enabled
    * @default true
@@ -80,29 +66,21 @@ export type OnlyNodeAnchorGraphSettings = {
   nodeAnchors: boolean
 }
 
-export const DEFAULT_NODE_ANCHOR_SETTINGS: OnlyNodeAnchorGraphSettings = {
+export const DEFAULT_NODE_ANCHOR_SETTINGS: NodeAnchorGraphSettings = {
   nodeAnchors: true
 }
-
-export type NodeAnchorGraphSettings = DraggableGraphSettings & OnlyNodeAnchorGraphSettings
-
 
 /**
  * MARQUEE GRAPH SETTINGS
  */
+export type MarqueeGraphSettings = {}
 
-export type OnlyMarqueeGraphSettings = {}
-
-export const DEFAULT_MARQUEE_SETTINGS: OnlyMarqueeGraphSettings = {}
-
-export type MarqueeGraphSettings = NodeAnchorGraphSettings & OnlyMarqueeGraphSettings
-
+export const DEFAULT_MARQUEE_SETTINGS: MarqueeGraphSettings = {}
 
 /**
  * USER EDITABLE GRAPH SETTINGS
  */
-
-export type OnlyUserEditableGraphSettings = {
+export type UserEditableGraphSettings = {
   /**
    * whether the user can edit the graph
    * @default true
@@ -120,20 +98,16 @@ export type OnlyUserEditableGraphSettings = {
   userEditableAddedEdgeWeight: number,
 }
 
-export const DEFAULT_USER_EDITABLE_SETTINGS: OnlyUserEditableGraphSettings = {
+export const DEFAULT_USER_EDITABLE_SETTINGS: UserEditableGraphSettings = {
   userEditable: true,
   userEditableAddedEdgeType: 'directed',
   userEditableAddedEdgeWeight: 1,
 }
 
-export type UserEditableGraphSettings = MarqueeGraphSettings & OnlyUserEditableGraphSettings
-
-
 /**
  * PERSISTENT GRAPH SETTINGS
  */
-
-export type OnlyPersistentGraphSettings = {
+export type PersistentGraphSettings = {
   /**
    * whether the graph is persistent
    * @default true
@@ -156,29 +130,44 @@ export type OnlyPersistentGraphSettings = {
   persistentTrackSettings: boolean,
 }
 
-export const DEFAULT_PERSISTENT_SETTINGS: OnlyPersistentGraphSettings = {
+export const DEFAULT_PERSISTENT_SETTINGS: PersistentGraphSettings = {
   persistent: true,
   persistentStorageKey: 'graph',
   persistentTrackTheme: false,
   persistentTrackSettings: false,
 }
 
-export type PersistentGraphSettings = UserEditableGraphSettings & OnlyPersistentGraphSettings
-
-
 /**
  * COLLABORATIVE GRAPH SETTINGS
  */
+export type CollaborativeGraphSettings = {}
 
-export type OnlyCollaborativeGraphSettings = {}
-
-export const DEFAULT_COLLABORATIVE_SETTINGS: OnlyCollaborativeGraphSettings = {}
-
-export type CollaborativeGraphSettings = PersistentGraphSettings & OnlyCollaborativeGraphSettings
-
+export const DEFAULT_COLLABORATIVE_SETTINGS: CollaborativeGraphSettings = {}
 
 /**
- * GRAPH SETTINGS - represents all settings on a graph instance
+ * represents all settings on a graph instance
  */
+export type GraphSettings = (
+  BaseGraphSettings &
+  FocusGraphSettings &
+  DraggableGraphSettings &
+  NodeAnchorGraphSettings &
+  MarqueeGraphSettings &
+  UserEditableGraphSettings &
+  PersistentGraphSettings &
+  CollaborativeGraphSettings
+)
 
-export type GraphSettings = CollaborativeGraphSettings
+/**
+ * the default settings for a graph instance
+ */
+export const DEFAULT_GRAPH_SETTINGS = {
+  ...DEFAULT_BASE_SETTINGS,
+  ...DEFAULT_FOCUS_SETTINGS,
+  ...DEFAULT_DRAGGABLE_SETTINGS,
+  ...DEFAULT_NODE_ANCHOR_SETTINGS,
+  ...DEFAULT_MARQUEE_SETTINGS,
+  ...DEFAULT_USER_EDITABLE_SETTINGS,
+  ...DEFAULT_PERSISTENT_SETTINGS,
+  ...DEFAULT_COLLABORATIVE_SETTINGS,
+} as const satisfies GraphSettings

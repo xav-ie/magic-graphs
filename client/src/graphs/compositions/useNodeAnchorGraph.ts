@@ -62,18 +62,13 @@ export const useNodeAnchorGraph = (
 
   const graph = useDraggableGraph(canvas, options)
 
-  const settings = ref<NodeAnchorGraphSettings>(Object.assign(graph.settings.value, {
-    ...DEFAULT_NODE_ANCHOR_SETTINGS,
-    ...options.settings,
-  }))
-
   const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
 
   const getAnchorSchemas = (node: GNode) => {
     if (
       graph.nodeBeingDragged.value ||
-      !settings.value.nodeAnchors
+      !graph.settings.value.nodeAnchors
     ) return []
 
     const { getTheme } = graph
@@ -198,7 +193,7 @@ export const useNodeAnchorGraph = (
    * @param {MouseEvent} ev - the mouse event to update the parent node
    */
   const updateParentNode = (ev: MouseEvent) => {
-    if (activeAnchor.value || !settings.value.nodeAnchors) return
+    if (activeAnchor.value || !graph.settings.value.nodeAnchors) return
     const topItem = graph.getSchemaItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     if (!topItem) return parentNode.value = undefined
     else if (topItem.graphType === 'node-anchor') return
@@ -301,8 +296,14 @@ export const useNodeAnchorGraph = (
 
   return {
     ...graph,
-    activeNodeAnchor: readonly(activeAnchor),
 
-    settings,
+    /**
+     * the node anchor that is currently being dragged by the user
+     */
+    nodeAnchorActiveAnchor: readonly(activeAnchor),
+    /**
+     * the parent node of the active anchor
+     */
+    nodeAnchorParentNode: readonly(parentNode),
   }
 }

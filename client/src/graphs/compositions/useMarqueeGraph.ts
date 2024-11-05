@@ -14,7 +14,6 @@ import { getValue } from '@graph/helpers'
 import type { Rect } from '@shape/rect'
 import colors from '@colors'
 import { rect } from '@shapes'
-import type { MarqueeGraphSettings } from '@graph/settings'
 
 export type SelectionBox = Pick<Rect, 'at' | 'width' | 'height'>
 

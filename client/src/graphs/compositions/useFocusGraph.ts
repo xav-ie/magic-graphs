@@ -15,7 +15,6 @@ import { useBaseGraph } from "@graph/compositions/useBaseGraph";
 import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
-import type { FocusGraphSettings } from "@graph/settings";
 
 type Id = SchemaItem['id']
 type MaybeId = Id | undefined
@@ -135,8 +134,18 @@ export const useFocusGraph = (
 
   return {
     ...graph,
-    focusedItem,
+
+    /**
+     * The focused item in the graph, if any
+     */
+    focusedItem: readonly(focusedItem),
+    /**
+     * The id of the focused item in the graph, if any
+     */
     focusedItemId: readonly(focusedItemId),
+    /**
+     * Sets the focus to the item with the given id
+     */
     setFocus,
   }
 }

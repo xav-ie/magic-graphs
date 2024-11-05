@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import type { Ref } from 'vue'
 import type {
   GNode,
@@ -6,8 +5,7 @@ import type {
   GraphOptions
 } from '@graph/types'
 import { useUserEditableGraph } from '@graph/compositions/useUserEditableGraph'
-import { DEFAULT_PERSISTENT_SETTINGS } from '@graph/settings'
-import type { PersistentGraphSettings, GraphSettings } from '@graph/settings'
+import type { GraphSettings } from '@graph/settings'
 import type { GraphTheme } from '@graph/themes'
 import type { GraphEvent } from '@graph/events'
 
@@ -29,46 +27,41 @@ export const usePersistentGraph = (
 
   const graph = useUserEditableGraph(canvas, options)
 
-  const settings = ref<PersistentGraphSettings>(Object.assign(graph.settings.value, {
-    ...DEFAULT_PERSISTENT_SETTINGS,
-    ...options.settings,
-  }))
-
   const nodeStorage = {
-    get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-nodes') ?? '[]'),
+    get: () => JSON.parse(localStorage.getItem(graph.settings.value.persistentStorageKey + '-nodes') ?? '[]'),
     set: (nodes: GNode[]) => {
       localStorage.setItem(
-        settings.value.persistentStorageKey + '-nodes',
+        graph.settings.value.persistentStorageKey + '-nodes',
         JSON.stringify(nodes)
       )
     }
   }
 
   const edgeStorage = {
-    get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-edges') ?? '[]'),
+    get: () => JSON.parse(localStorage.getItem(graph.settings.value.persistentStorageKey + '-edges') ?? '[]'),
     set: (edges: GEdge[]) => {
       localStorage.setItem(
-        settings.value.persistentStorageKey + '-edges',
+        graph.settings.value.persistentStorageKey + '-edges',
         JSON.stringify(edges)
       )
     }
   }
 
   const themeStorage = {
-    get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-theme') ?? '{}'),
+    get: () => JSON.parse(localStorage.getItem(graph.settings.value.persistentStorageKey + '-theme') ?? '{}'),
     set: (graphThemes: GraphTheme) => {
       localStorage.setItem(
-        settings.value.persistentStorageKey + '-theme',
+        graph.settings.value.persistentStorageKey + '-theme',
         JSON.stringify(graphThemes)
       )
     }
   }
 
   const settingsStorage = {
-    get: () => JSON.parse(localStorage.getItem(settings.value.persistentStorageKey + '-settings') ?? '{}'),
+    get: () => JSON.parse(localStorage.getItem(graph.settings.value.persistentStorageKey + '-settings') ?? '{}'),
     set: (graphSettings: GraphSettings) => {
       localStorage.setItem(
-        settings.value.persistentStorageKey + '-settings',
+        graph.settings.value.persistentStorageKey + '-settings',
         JSON.stringify(graphSettings)
       )
     }
@@ -79,9 +72,9 @@ export const usePersistentGraph = (
     edgeStorage.set(graph.edges.value)
   }
 
-  let previousKey = settings.value.persistentStorageKey
+  let previousKey = graph.settings.value.persistentStorageKey
   const trackOptions = () => {
-    const currentKey = settings.value.persistentStorageKey
+    const currentKey = graph.settings.value.persistentStorageKey
 
     // trackOptions was triggered by a change in the storage key, so we cannot update storage
     if (previousKey !== currentKey) {
@@ -89,12 +82,12 @@ export const usePersistentGraph = (
       return
     }
 
-    if (settings.value.persistentTrackTheme) {
+    if (graph.settings.value.persistentTrackTheme) {
       themeStorage.set(graph.theme.value)
     }
 
-    if (settings.value.persistentTrackSettings) {
-      settingsStorage.set(settings.value)
+    if (graph.settings.value.persistentTrackSettings) {
+      settingsStorage.set(graph.settings.value)
     }
 
     previousKey = currentKey
@@ -105,12 +98,12 @@ export const usePersistentGraph = (
     graph.edges.value = edgeStorage.get()
 
 
-    if (settings.value.persistentTrackTheme) {
+    if (graph.settings.value.persistentTrackTheme) {
       graph.theme.value = Object.assign(graph.theme.value, themeStorage.get())
     }
 
-    if (settings.value.persistentTrackSettings) {
-      settings.value = Object.assign(settings.value, settingsStorage.get())
+    if (graph.settings.value.persistentTrackSettings) {
+      graph.settings.value = Object.assign(graph.settings.value, settingsStorage.get())
     }
 
     // wait for the next microtask to ensure caller of useGraph has a chance to sub to onStructureChange
@@ -164,7 +157,7 @@ export const usePersistentGraph = (
     if (persistenceTurnedOn) {
       load()
       listenForGraphStateEvents()
-      if (settings.value.persistentTrackSettings || settings.value.persistentTrackTheme) {
+      if (graph.settings.value.persistentTrackSettings || graph.settings.value.persistentTrackTheme) {
         listenForOptionsEvents()
       }
 
@@ -179,13 +172,10 @@ export const usePersistentGraph = (
 
     listenForGraphStateEvents()
 
-    if (settings.value.persistentTrackSettings || settings.value.persistentTrackTheme) {
+    if (graph.settings.value.persistentTrackSettings || graph.settings.value.persistentTrackTheme) {
       listenForOptionsEvents()
     }
   })
 
-  return {
-    ...graph,
-    settings,
-  }
+  return graph
 }
