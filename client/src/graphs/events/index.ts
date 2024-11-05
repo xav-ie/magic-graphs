@@ -1,4 +1,9 @@
-import type { GraphEventMap } from './types'
+import type { GraphEventMap as ImportedGraphEventMap } from './types'
+
+/**
+ * a complete mapping of all graph events to their callback functions
+ */
+export type GraphEventMap = ImportedGraphEventMap
 
 /**
  * turns a type that maps an events callback fn type to an actual event bus
@@ -31,10 +36,22 @@ export const generateSubscriber = <T extends GraphEventMap>(eventBus: EventMapTo
 /**
  * helper types for graph event architecture
  */
-export type GenerateSubscriber<T extends GraphEventMap> = typeof generateSubscriber<T>;
-export type Subscriber<T extends GraphEventMap> = ReturnType<GenerateSubscriber<T>>['subscribe'];
-export type Unsubscriber<T extends GraphEventMap> = ReturnType<GenerateSubscriber<T>>['unsubscribe'];
-export type Emitter<T extends GraphEventMap> = ReturnType<GenerateSubscriber<T>>['emit'];
+
+export type GenerateSubscriber<
+  T extends GraphEventMap = GraphEventMap
+> = typeof generateSubscriber<T>;
+
+export type Subscriber<
+  T extends GraphEventMap = GraphEventMap
+> = ReturnType<GenerateSubscriber<T>>['subscribe'];
+
+export type Unsubscriber<
+  T extends GraphEventMap = GraphEventMap
+> = ReturnType<GenerateSubscriber<T>>['unsubscribe'];
+
+export type Emitter<
+  T extends GraphEventMap = GraphEventMap
+> = ReturnType<GenerateSubscriber<T>>['emit'];
 
 /**
  * @returns an empty event bus with all events initialized to empty sets

@@ -21,16 +21,16 @@ export const getEdgeSchematic = (
   const isThereAnEdgeGoingTheOtherWay = graph.edges.value.some(e => e.from === to.id && e.to === from.id)
   const isSelfDirecting = to === from
 
-  
+
   const fromNodeBorderWidth = graph.getTheme('nodeBorderWidth', from)
   const toNodeBorderWidth = graph.getTheme('nodeBorderWidth', to)
 
-  
+
   const fromNodeSize = graph.getTheme('nodeSize', from)
   const toNodeSize = graph.getTheme('nodeSize', to)
-  
+
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
-  
+
   const arrowHeadSpacingAwayFromNode = (toNodeBorderWidth / 2) + WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE
   const arrowDrawLocation = {
     x: to.x - (toNodeSize + arrowHeadSpacingAwayFromNode) * Math.cos(angle),
@@ -54,9 +54,12 @@ export const getEdgeSchematic = (
 
   const largestAngularSpace = getLargestAngularSpace(
     edgeStart,
-    // filter to remove self-referencing edge
-    // map to convert to { x, y } format
-    // filter to remove duplicates. Prevents bi-directional edges from causing angle issues when no other edges are present
+    /**
+     * 1. Filter to remove self-referencing edge
+     * 2. Map to convert to { x, y } format
+     * 3. Filter to remove duplicates. Prevents bi-directional edges
+     *  from causing angle issues when no other edges are present
+     */
     graph.edges.value
       .filter((e) => (e.from === from.id || e.to === to.id) && e.from !== e.to)
       .map((e) => {
@@ -66,7 +69,7 @@ export const getEdgeSchematic = (
       .filter((point, index, self) =>
         index === self.findIndex(
           (p) => p.x === point.x && p.y === point.y
-        ) 
+        )
       )
   )
 
@@ -114,11 +117,11 @@ export const getEdgeSchematic = (
     }
   }
 
-  // does not draw if nodes are too close together
   const sumOfToAndFromNodeSize = fromNodeSize + fromNodeBorderWidth / 2 + toNodeSize + toNodeBorderWidth / 2
   const distanceSquaredBetweenNodes = (from.x - to.x) ** 2 + (from.y - to.y) ** 2
   const areNodesTouching = (sumOfToAndFromNodeSize ** 2) > distanceSquaredBetweenNodes
 
+  // unregisters the edge if the linked nodes are cozy together
   if (areNodesTouching) return
 
   if (edge.type === 'undirected') {
