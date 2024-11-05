@@ -8,12 +8,11 @@
   import GraphBtns from "@graph/buttons/GraphBtns.vue";
   import Graph from "@graph/Graph.vue";
   import CollabControls from "./CollabControls.vue";
+  import ThemeControls from "./ThemeControls.vue";
 
   const graphElement = ref<HTMLCanvasElement>();
 
-  const graph = useGraph(graphElement, {
-    theme: {},
-  });
+  const graph = useGraph(graphElement);
 
   const tutorialControls = useBasicsTutorial(graph);
 
@@ -39,6 +38,10 @@
 
     <div class="bottom-0 absolute flex gap-2 m-2">
       <TutorialControls :tutorial="tutorialControls" />
+    </div>
+
+    <div class="absolute h-1/2 w-[350px] top-1/4 overflow-auto bg-gray-800 rounded-r-xl">
+      <ThemeControls :graph="graph" />
     </div>
 
     <div
