@@ -1,16 +1,10 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
-import type {
-  SchemaItem,
-  GNode,
-  GraphOptions
-} from "@graph/types"
+import type { SchemaItem, GNode, GraphOptions } from "@graph/types"
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph"
 import { useMarqueeGraph } from './useMarqueeGraph'
 import { DEFAULT_USER_EDITABLE_SETTINGS } from '@graph/settings'
 import type { UserEditableGraphSettings } from '@graph/settings'
-
-export type UserEditableGraphOptions = GraphOptions<UserEditableGraphSettings>
 
 /**
  * The user editable graph implements handlers for node creation,
@@ -22,7 +16,7 @@ export type UserEditableGraphOptions = GraphOptions<UserEditableGraphSettings>
  */
 export const useUserEditableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<UserEditableGraphOptions> = {}
+  options: Partial<GraphOptions> = {}
 ) => {
 
   const graph = useMarqueeGraph(canvas, options)

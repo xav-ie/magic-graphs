@@ -21,11 +21,9 @@ import type {
   GEdge,
   GraphOptions,
 } from "@graph/types";
-import colors from "@colors";
 import { circle, line } from '@shapes';
 import { DEFAULT_NODE_ANCHOR_SETTINGS } from '@graph/settings';
 import type { NodeAnchorGraphSettings } from '@graph/settings';
-import type { GraphTheme, NodeAnchorGraphTheme } from '@graph/themes';
 
 export type NodeAnchor = {
   /**
@@ -46,51 +44,6 @@ export type NodeAnchor = {
   id: string,
 }
 
-type DraggableGraph = ReturnType<typeof useDraggableGraph>
-
-type DefaultNodeGraphThemeGetter = (graph: DraggableGraph) => NodeAnchorGraphTheme
-
-/**
- * @description default options for the anchor node graph
- * @param getTheme - the function to retrieve the theme value
- * @param theme - the theme of the graph
- * @param edges - the edges of the graph
- * @returns the default options for the anchor node graph
- */
-const defaultNodeAnchorTheme: DefaultNodeGraphThemeGetter = (
-  graph: DraggableGraph,
-) => ({
-  /**
-   * @description calculates the radius of the default node anchor - scales with 2 * sqrt(nodeSize)
-   * @param node - the parent node of the anchor
-   * @returns the radius of the node anchor
-   */
-  nodeAnchorRadius: (node: GNode) => {
-    const nodeSize = graph.getTheme('nodeSize', node)
-    return Math.ceil(Math.sqrt(nodeSize) * 2)
-  },
-  /**
-   * the color of the node anchor
-   */
-  nodeAnchorColor: colors.BLACK,
-  /**
-   * the color of the node anchor when the parent node is focused
-   */
-  nodeAnchorColorWhenParentFocused: graph.theme.value.nodeFocusBorderColor,
-  /**
-   * TODO - i dont think these defaults work because persistent graph fires load after this runs
-   * TODO - the edges wont be there yet
-   * the color of the link preview
-   */
-  linkPreviewColor: graph.edges.value[0] ? graph.getTheme('edgeColor', graph.edges.value[0]) : colors.BLACK,
-  /**
-   * the width of the link preview
-   */
-  linkPreviewWidth: graph.getTheme('edgeWidth', graph.edges.value[0]),
-})
-
-export type NodeAnchorGraphOptions = GraphOptions<NodeAnchorGraphSettings>
-
 /**
  * Node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
  * when hovered over.
@@ -104,15 +57,10 @@ export type NodeAnchorGraphOptions = GraphOptions<NodeAnchorGraphSettings>
  */
 export const useNodeAnchorGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<NodeAnchorGraphOptions> = {},
+  options: Partial<GraphOptions> = {},
 ) => {
 
   const graph = useDraggableGraph(canvas, options)
-
-  const theme = ref<GraphTheme>(Object.assign(graph.theme.value, {
-    ...defaultNodeAnchorTheme(graph),
-    ...options.theme,
-  }))
 
   const settings = ref<NodeAnchorGraphSettings>(Object.assign(graph.settings.value, {
     ...DEFAULT_NODE_ANCHOR_SETTINGS,
@@ -355,7 +303,6 @@ export const useNodeAnchorGraph = (
     ...graph,
     activeNodeAnchor: readonly(activeAnchor),
 
-    theme,
     settings,
   }
 }

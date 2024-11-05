@@ -1,10 +1,9 @@
 import { computed, readonly, ref } from "vue";
 import type { Ref } from "vue";
 import { useLocalStorage } from "@vueuse/core";
-import type { UserEditableGraphOptions } from "./useUserEditableGraph";
 import { usePersistentGraph } from "./usePersistentGraph";
 import { io, Socket } from "socket.io-client";
-import type { GEdge, GNode } from "@graph/types";
+import type { GEdge, GNode, GraphOptions } from "@graph/types";
 import colors from "@utils/colors";
 import { getRandomElement } from "@utils/array";
 import { circle, rect } from "@shapes";
@@ -99,7 +98,7 @@ export const COLLAB_NAMES = [
 
 export const useCollaborativeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<UserEditableGraphOptions> = {}
+  options: Partial<GraphOptions> = {}
 ) => {
   const graph = usePersistentGraph(canvas, options)
   const socket: Socket<GraphEvents, GraphEvents> = io(getSocketURL())

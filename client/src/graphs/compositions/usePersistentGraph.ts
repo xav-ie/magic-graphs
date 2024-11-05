@@ -11,8 +11,6 @@ import type { PersistentGraphSettings, GraphSettings } from '@graph/settings'
 import type { GraphTheme } from '@graph/themes'
 import type { GraphEvent } from '@graph/events'
 
-export type PersistentGraphOptions = GraphOptions<PersistentGraphSettings>
-
 /**
  * extends the useGraph interface to include capabilities for storing and retrieving a graph from local storage.
  *
@@ -22,11 +20,11 @@ export type PersistentGraphOptions = GraphOptions<PersistentGraphSettings>
  *
  * @param canvas
  * @param options
- * @returns
+ * @returns the graph interface with additional persistent graph functionality
  */
 export const usePersistentGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<PersistentGraphOptions> = {}
+  options: Partial<GraphOptions> = {}
 ) => {
 
   const graph = useUserEditableGraph(canvas, options)

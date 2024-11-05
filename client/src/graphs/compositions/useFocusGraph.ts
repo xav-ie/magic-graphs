@@ -33,11 +33,9 @@ type ValidFocusableTypes = SchemaItem['graphType'] & FocusedItem['type']
 const FOCUSABLE_GRAPH_TYPES: ValidFocusableTypes[] = ['node', 'edge']
 const FOCUS_THEME_ID = 'use-focus-graph'
 
-type FocusGraphOptions = GraphOptions<FocusGraphSettings>
-
 export const useFocusGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<FocusGraphOptions> = {},
+  options: Partial<GraphOptions> = {},
 ) => {
 
   const graph = useBaseGraph(canvas, options);

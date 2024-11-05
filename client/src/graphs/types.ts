@@ -1,6 +1,7 @@
 import type { Shape } from "@shape/types"
 import { useGraph } from "@graph/useGraph";
 import type { GraphTheme } from "./themes/types";
+import type { GraphSettings } from "./settings";
 
 /**
  * @describes the useGraph composition function
@@ -14,11 +15,10 @@ export type Graph = ReturnType<UseGraph>
 
 /**
  * @describes the options argument for all useGraph composition functions
- * @template S - the type of the settings
  */
-export type GraphOptions<S> = {
+export type GraphOptions = {
   theme: Partial<GraphTheme>;
-  settings: Partial<S>;
+  settings: Partial<GraphSettings>;
 }
 
 /**
