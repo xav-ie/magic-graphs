@@ -6,10 +6,10 @@ import type {
   MoveNodeOptions,
   AddEdgeOptions,
   RemoveEdgeOptions,
-} from "@graph/baseGraphAPIs";
+} from "@graph/compositions/useBaseGraphTypes";
+import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraphTypes";
 import type { GraphTheme } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
-import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph";
 
 export type BaseGraphEventMap = {
   /**
