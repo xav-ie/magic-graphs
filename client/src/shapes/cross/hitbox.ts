@@ -9,7 +9,7 @@ import type { Coordinate } from "@shape/types";
  */
 export const crossHitbox = (cross: Cross) => {
   const {
-    center,
+    at,
     size,
     angle,
     lineWidth,
@@ -22,14 +22,14 @@ export const crossHitbox = (cross: Cross) => {
   const halfLineWidth = lineWidth / 2;
 
   const horizontalHitbox = rectHitbox({
-    at: { x: center.x - size / 2, y: center.y - halfLineWidth },
+    at: { x: at.x - size / 2, y: at.y - halfLineWidth },
     width: size,
     height: lineWidth,
     rotation: angle,
     borderRadius,
   });
   const verticalHitbox = rectHitbox({
-    at: { x: center.x - halfLineWidth, y: center.y - size / 2 },
+    at: { x: at.x - halfLineWidth, y: at.y - size / 2 },
     width: lineWidth,
     height: size,
     rotation: angle,

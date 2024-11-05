@@ -79,7 +79,7 @@
 
     items.value.push(
       cross({
-        center: { x: 500, y: 300 },
+        at: { x: 500, y: 300 },
         color: colors.SLATE_600,
         size: 150,
         angle: Math.PI / 4,

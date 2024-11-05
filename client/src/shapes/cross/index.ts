@@ -8,7 +8,7 @@ import type {
   import { generateId } from "@graph/helpers"
   
   export type Cross = {
-      center: Coordinate
+      at: Coordinate
       size: number
       angle?: number
       color?: string
