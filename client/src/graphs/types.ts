@@ -9,12 +9,12 @@ import type { GraphSettings } from "./settings";
 export type UseGraph = typeof useGraph
 
 /**
- * @describes an instance of the useGraph composition function
+ * @describes an instance returned by useGraph
  */
 export type Graph = ReturnType<UseGraph>
 
 /**
- * @describes the options argument for all useGraph composition functions
+ * @describes the options argument for useGraph and all of its sub-functions
  */
 export type GraphOptions = {
   theme: Partial<GraphTheme>;

@@ -7,20 +7,21 @@
   import { useGraphBtns } from "@graph/buttons/useGraphBtns";
   import GraphBtns from "@graph/buttons/GraphBtns.vue";
   import Graph from "@graph/Graph.vue";
-  import Button from "@playground/shape/Button.vue";
+  import Button from "@playground/ui/Button.vue";
   import colors from "@colors";
 
   const graphElement = ref<HTMLCanvasElement>();
 
   const graph = useGraph(graphElement, {
     theme: {
-      nodeBorderColor:colors.BLUE_500,
+
     }
   });
 
-  const roomId = "graph-playground";
+  const tutorialControls = useBasicsTutorial(graph);
 
-  // const tutorialControls = useBasicsTutorial(graph);
+  const roomId = ref("graph-playground");
+
 
   const { btnArr } = useGraphBtns(graph);
 </script>
@@ -82,13 +83,13 @@
       </Button>
     </div>
 
-    <!-- <div class="bottom-0 absolute flex gap-2 m-2">
+    <div class="bottom-0 absolute flex gap-2 m-2">
       <TutorialControls :tutorial="tutorialControls" />
     </div>
 
     <div class="absolute w-full dark:text-white bottom-[10%] grid place-items-center">
       <TutorialHint :tutorial="tutorialControls" />
-    </div> -->
+    </div>
 
   </div>
 </template>
