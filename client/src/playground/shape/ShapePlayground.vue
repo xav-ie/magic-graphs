@@ -24,7 +24,7 @@
   const draw = () => {
     const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    const { circle, uturn, square } = shapes;
+    const { circle, uturn, cross } = shapes;
 
     items.value.push(
       circle({
@@ -78,11 +78,13 @@
     items.value.push(lineTest);
 
     items.value.push(
-      square({
-        at: { x: 500, y: 300 },
-        color: colors.PINK_800,
-        size: 500,
-        borderRadius: 250,
+      cross({
+        center: { x: 500, y: 300 },
+        color: colors.SLATE_600,
+        size: 150,
+        angle: Math.PI / 4,
+        borderRadius: 10,
+        lineWidth: 80,
       })
     );
 

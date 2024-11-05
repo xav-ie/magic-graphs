@@ -9,18 +9,20 @@ import { drawRectWithCtx } from "./draw"
 import { generateId } from "@graph/helpers"
 
 export type Rect = {
-  at: Coordinate,
-  width: number,
-  height: number,
-  color?: string,
-  stroke?: Stroke,
-  text?: Text,
-  borderRadius?: number,
+  at: Coordinate
+  width: number
+  height: number
+  color?: string
+  stroke?: Stroke
+  text?: Text
+  borderRadius?: number
+  rotation?: number
 }
 
 export const RECT_DEFAULTS = {
   color: 'black',
   borderRadius: 0,
+  rotation: 0,
 } as const
 
 export const rect = (options: Rect): Shape => {

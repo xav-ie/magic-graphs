@@ -2,48 +2,59 @@ import type { Coordinate } from "@shape/types";
 import type { Rect } from ".";
 import { RECT_DEFAULTS } from "."
 import { circleHitbox } from "@shape/circle/hitbox";
+import { rotatePoint } from "@shape/helpers";
 
 /**
- * @param point - the point to check if it is in the rectangle
- * @returns a function that checks if the point is in the rectangle with rounded corners
+ * @param point - the point to check if it is in the rotated rectangle
+ * @returns a function that checks if the point is in the rotated rectangle with rounded corners
  */
 export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
   const {
     at,
     width,
     height,
-    borderRadius
+    borderRadius,
+    rotation,
   } = {
     ...RECT_DEFAULTS,
     ...rectangle
   };
 
-  const { x, y } = at;
+  const centerX = at.x + width / 2;
+  const centerY = at.y + height / 2;
+
+  const localPoint = rotatePoint(point, { x: centerX, y: centerY }, -rotation);
+
+  const { x, y } = { x: centerX - width / 2, y: centerY - height / 2 };
 
   if (borderRadius === 0) {
-    return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
+    return (
+      localPoint.x >= x &&
+      localPoint.x <= x + width &&
+      localPoint.y >= y &&
+      localPoint.y <= y + height
+    );
   }
 
   const radius = Math.min(borderRadius, width / 2, height / 2);
 
   const rectVertical = rectHitbox({
     ...rectangle,
-    at: {
-      x: x + radius,
-      y
-    },
+    at: { x: x + radius, y },
     width: width - 2 * radius,
-    borderRadius: 0
+    borderRadius: 0,
+    rotation: 0
   });
 
   const rectHorizontal = rectHitbox({
     ...rectangle,
     at: { x, y: y + radius },
     height: height - 2 * radius,
-    borderRadius: 0
+    borderRadius: 0,
+    rotation: 0
   });
 
-  if (rectVertical(point) || rectHorizontal(point)) return true
+  if (rectVertical(localPoint) || rectHorizontal(localPoint)) return true;
 
   const isInTopLeftCircle = circleHitbox({
     at: { x: x + radius, y: y + radius },
@@ -66,9 +77,9 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
   });
 
   return (
-    isInTopLeftCircle(point) ||
-    isInTopRightCircle(point) ||
-    isInBottomLeftCircle(point) ||
-    isInBottomRightCircle(point)
+    isInTopLeftCircle(localPoint) ||
+    isInTopRightCircle(localPoint) ||
+    isInBottomLeftCircle(localPoint) ||
+    isInBottomRightCircle(localPoint)
   );
-}
+};
