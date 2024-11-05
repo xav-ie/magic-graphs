@@ -1,5 +1,5 @@
+import type { ThemeGetter } from '@graph/themes/getThemeResolver'
 import type { GNode, SchemaItem } from '@graph/types'
-import type { ThemeGetter } from '@graph/helpers'
 import { circle, square } from '@shapes'
 
 export type SupportedNodeShapes = 'circle' | 'square'

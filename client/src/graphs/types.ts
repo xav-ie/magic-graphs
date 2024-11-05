@@ -13,7 +13,6 @@ export type UseGraph = typeof useGraph
  */
 export type Graph = ReturnType<UseGraph>
 
-
 /**
  * @describes the options argument for all useGraph composition functions
  */
