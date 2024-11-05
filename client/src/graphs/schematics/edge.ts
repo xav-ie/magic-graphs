@@ -101,10 +101,10 @@ export const getEdgeSchematic = (
   if (isSelfDirecting) {
     const shape = uturn({
       spacing: edgeWidth * 1.2,
-      center: { x: from.x, y: from.y },
+      at: { x: from.x, y: from.y },
       upDistance,
       downDistance,
-      angle: largestAngularSpace,
+      rotation: largestAngularSpace,
       lineWidth: edgeWidth,
       color,
       textArea,

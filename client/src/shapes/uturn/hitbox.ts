@@ -6,7 +6,7 @@ import type { UTurn } from ".";
 export const uturnHitbox = (uturn: UTurn) => {
   const {
     spacing,
-    center,
+    at,
     upDistance,
     lineWidth,
     angle
@@ -14,12 +14,12 @@ export const uturnHitbox = (uturn: UTurn) => {
 
   // rotated rectangle checked with line
   const end = rotatePoint({
-    x: center.x + upDistance,
-    y: center.y
-  }, center, angle)
+    x: at.x + upDistance,
+    y: at.y
+  }, at, angle)
 
   const isInLine = lineHitbox({
-    start: center,
+    start: at,
     end,
     width: 2 * spacing + lineWidth
   })

@@ -13,9 +13,9 @@ import type { UTurn } from ".";
 
 export const getTextAreaLocationOnUTurn = (uturn: UTurn) => {
   const {
-    center,
+    at,
     upDistance,
-    angle,
+    rotation,
     textArea,
     spacing,
   } = {
@@ -33,13 +33,13 @@ export const getTextAreaLocationOnUTurn = (uturn: UTurn) => {
   }
 
   const endPoint = rotatePoint({
-    x: center.x + upDistance + spacing ,
-    y: center.y
-  }, center, angle)
+    x: at.x + upDistance + spacing,
+    y: at.y
+  }, at, rotation)
 
   return {
-    x: endPoint.x - fontSize + Math.cos(angle) * 15,
-    y: endPoint.y - fontSize + Math.sin(angle) * 15
+    x: endPoint.x - fontSize + Math.cos(rotation) * 15,
+    y: endPoint.y - fontSize + Math.sin(rotation) * 15
   }
 }
 

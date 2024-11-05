@@ -40,12 +40,12 @@
 
     items.value.push(
       uturn({
-        center: { x: 600, y: 100 },
+        at: { x: 600, y: 100 },
         downDistance: 50,
         upDistance: 50,
         lineWidth: 10,
         color: colors.BLUE_500,
-        angle: Math.PI * 0.2,
+        rotation: Math.PI * 0.2,
         spacing: 20,
         textArea: {
           color: colors.PURPLE_500,
@@ -79,10 +79,10 @@
 
     items.value.push(
       cross({
-        center: { x: 500, y: 300 },
+        at: { x: 500, y: 300 },
         color: colors.SLATE_600,
         size: 150,
-        angle: Math.PI / 4,
+        rotation: Math.PI / 0.6,
         borderRadius: 10,
         lineWidth: 80,
       })

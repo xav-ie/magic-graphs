@@ -18,10 +18,10 @@ import { engageTextarea } from "@shape/textarea"
 
 export type UTurn = {
   spacing: number,
-  center: Coordinate,
+  at: Coordinate,
   upDistance: number,
   downDistance: number,
-  angle: number,
+  rotation: number,
   lineWidth: number,
   color?: string,
   textArea?: TextAreaNoLocation
