@@ -11,7 +11,7 @@ const route: ProductInfo = {
   menu: {
     name: 'Search Visualizer',
     description: 'A visualizer for search algorithms',
-    thumbnail: '/src/assets/search-visualizer.png',
+    thumbnail: '/products/thumbnails/search-visualizer.png',
   },
 }
 

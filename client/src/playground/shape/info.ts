@@ -11,7 +11,7 @@ const route: ProductInfo = {
   menu: {
     name: 'Shape Playground',
     description: 'A playground for shape algorithms',
-    thumbnail: '/src/assets/shape-playground.png',
+    thumbnail: '/products/thumbnails/shape-playground.png',
   },
 }
 

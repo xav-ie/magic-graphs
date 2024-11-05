@@ -11,7 +11,7 @@ const info: ProductInfo = {
   menu: {
     name: 'Graph Playground',
     description: 'A playground for graph algorithms',
-    thumbnail: '/src/assets/graph-playground.png',
+    thumbnail: '/products/thumbnails/graph-playground.png',
   },
 }
 
