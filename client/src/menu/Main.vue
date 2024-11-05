@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type { ProductInfo } from "src/types";
   import { ref } from "vue";
+  import ProductCatalog from "./ProductCatalog.vue";
 
   const infoModules = import.meta.glob<{
     default: ProductInfo;
@@ -8,13 +9,16 @@
 
   const productInfos = Object.values(infoModules).map((m) => m.default);
 
-  const mainMenuData = ref(
+  // pull all products we can display on the main menu
+  const products = ref(
     productInfos.filter((info) => info?.menu) as Required<ProductInfo>[]
   );
 </script>
 
 <template>
-  <div class="w-full h-full relative flex items-center justify-center flex-col bg-gradient-to-tl to-purple-100 from-gray-50 ">
+  <div
+    class="w-full h-full relative flex items-center justify-center flex-col bg-gradient-to-tl to-purple-100 from-gray-50"
+  >
     <div class="mb-10 text-center">
       <h1
         class="font-black text-7xl bg-gradient-to-tr from-purple-500 to-orange-500 text-transparent bg-clip-text p-4"
@@ -25,21 +29,7 @@
         Select An Experience To Begin
       </h3>
     </div>
-    <div class="flex items-center justify-center gap-10">
-      <div v-for="product in mainMenuData">
-        <router-link :to="product.route.path">
-          <div>
-            <img
-              :src="product.menu.thumbnail"
-              :alt="product.menu.name"
-              class="w-60 h-60 object-cover rounded-2xl"
-            />
-            <h2 class="text-center font-bold text-2xl mt-4 text-gray-800">
-              {{ product.name }}
-            </h2>
-          </div>
-        </router-link>
-      </div>
-    </div>
+
+    <ProductCatalog :products="products" />
   </div>
 </template>
