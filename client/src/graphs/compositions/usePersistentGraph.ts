@@ -177,5 +177,13 @@ export const usePersistentGraph = (
     }
   })
 
+  if (graph.settings.value.persistent) {
+    load()
+    listenForGraphStateEvents()
+    if (graph.settings.value.persistentTrackSettings || graph.settings.value.persistentTrackTheme) {
+      listenForOptionsEvents()
+    }
+  }
+
   return graph
 }

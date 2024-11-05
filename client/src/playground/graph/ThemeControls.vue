@@ -13,7 +13,7 @@
 <template>
   <div
     v-for="(theme, themeKey) in graph.theme.value"
-    class="my-2 p-1 pl-3"
+    class="my-2 px-4"
   >
     <div class="text-white mb-2">
       <h3 class="font-bold text-lg">
@@ -41,7 +41,7 @@
     <InputRange
       v-else-if="typeof theme === 'number'"
       v-model="(graph.theme.value[themeKey] as number)"
-      style="width: 85%"
+      style="width: 100%"
       :min="0"
       :max="100"
     />
