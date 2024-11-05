@@ -1,6 +1,7 @@
 import { TEXT_DEFAULTS } from "@shape/types";
 import { RECT_DEFAULTS } from ".";
 import type { Rect } from ".";
+import { rotatePoint } from "@shape/helpers";
 
 export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D) => {
   const {
@@ -9,30 +10,36 @@ export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D
     height,
     color,
     borderRadius,
+    rotation = 0,
   } = {
     ...RECT_DEFAULTS,
     ...options
   };
 
+  ctx.save();
+
+  const centerX = at.x + width / 2;
+  const centerY = at.y + height / 2;
+  ctx.translate(centerX, centerY);
+  ctx.rotate(rotation);
+
   if (borderRadius === 0) {
     ctx.beginPath();
-    ctx.rect(at.x, at.y, width, height);
+    ctx.rect(-width / 2, -height / 2, width, height);
     ctx.fillStyle = color;
     ctx.fill();
   } else {
-    // ensure radius doesn't exceed width/height
     const radius = Math.min(borderRadius, width / 2, height / 2);
-
     ctx.beginPath();
-    ctx.moveTo(at.x + radius, at.y);
-    ctx.lineTo(at.x + width - radius, at.y);
-    ctx.arcTo(at.x + width, at.y, at.x + width, at.y + radius, radius);
-    ctx.lineTo(at.x + width, at.y + height - radius);
-    ctx.arcTo(at.x + width, at.y + height, at.x + width - radius, at.y + height, radius);
-    ctx.lineTo(at.x + radius, at.y + height);
-    ctx.arcTo(at.x, at.y + height, at.x, at.y + height - radius, radius);
-    ctx.lineTo(at.x, at.y + radius);
-    ctx.arcTo(at.x, at.y, at.x + radius, at.y, radius);
+    ctx.moveTo(-width / 2 + radius, -height / 2);
+    ctx.lineTo(width / 2 - radius, -height / 2);
+    ctx.arcTo(width / 2, -height / 2, width / 2, -height / 2 + radius, radius);
+    ctx.lineTo(width / 2, height / 2 - radius);
+    ctx.arcTo(width / 2, height / 2, width / 2 - radius, height / 2, radius);
+    ctx.lineTo(-width / 2 + radius, height / 2);
+    ctx.arcTo(-width / 2, height / 2, -width / 2, height / 2 - radius, radius);
+    ctx.lineTo(-width / 2, -height / 2 + radius);
+    ctx.arcTo(-width / 2, -height / 2, -width / 2 + radius, -height / 2, radius);
     ctx.closePath();
 
     ctx.fillStyle = color;
@@ -47,22 +54,16 @@ export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D
   }
 
   if (options.text) {
-    const {
-      content,
-      fontSize,
-      fontWeight,
-      color
-    } = {
+    const { content, fontSize, fontWeight, color } = {
       ...TEXT_DEFAULTS,
       ...options.text
-    }
-
+    };
     ctx.font = `${fontWeight} ${fontSize}px Arial`;
     ctx.fillStyle = color;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(content, at.x + width / 2, at.y + height / 2);
+    ctx.fillText(content, 0, 0);
   }
 
-  ctx.closePath();
-}
+  ctx.restore();
+};

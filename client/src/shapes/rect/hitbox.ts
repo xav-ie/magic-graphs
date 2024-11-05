@@ -12,7 +12,8 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
     at,
     width,
     height,
-    borderRadius
+    borderRadius,
+    rotation,
   } = {
     ...RECT_DEFAULTS,
     ...rectangle

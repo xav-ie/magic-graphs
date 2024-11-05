@@ -9,12 +9,13 @@ import { squareHitbox } from "./hitbox"
 import { generateId } from "@graph/helpers"
 
 export type Square = {
-  at: Coordinate,
-  size: number,
-  color?: string,
-  stroke?: Stroke,
-  text?: Text,
+  at: Coordinate
+  size: number
+  color?: string
+  stroke?: Stroke
+  text?: Text
   borderRadius?: number
+  rotation?: number
 }
 
 /**

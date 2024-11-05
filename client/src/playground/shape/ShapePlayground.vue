@@ -80,9 +80,15 @@
     items.value.push(
       square({
         at: { x: 500, y: 300 },
-        color: colors.PINK_800,
-        size: 500,
-        borderRadius: 250,
+        color: colors.SLATE_600,
+        size: 400,
+        borderRadius: 20,
+        rotation: Math.PI / 6,
+        text: {
+          content: "Hello Rotation",
+          color: colors.WHITE,
+          fontSize: 35,
+        }
       })
     );
 
