@@ -15,4 +15,13 @@ const router = createRouter({
   routes,
 })
 
+router.beforeEach((to, _, next) => {
+  const goingExternal = to.path.includes('https')
+  if (goingExternal) {
+    window.open(to.path.slice(1), '_blank')
+    return next(false) // cancel the navigation
+  }
+  next()
+})
+
 export default router
