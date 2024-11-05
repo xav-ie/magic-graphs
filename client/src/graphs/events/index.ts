@@ -1,9 +1,13 @@
-import type { BaseGraphEvents, GraphEvents } from './types'
+import type { GraphEventMap } from './types'
 
 /**
  * turns a type that maps an events callback fn type to an actual event bus
  */
-export type MappingsToEventBus<T> = Record<keyof T, Set<any>>
+export type EventMapToEventBus<T> = Record<keyof T, Set<any>>
+
+export type GraphEventBus = EventMapToEventBus<GraphEventMap>;
+
+export type GraphEvent = keyof GraphEventMap;
 
 /**
  * a version of Parameters<T> that removes constraints on T
@@ -14,7 +18,7 @@ type PermissiveParams<T> = T extends (...args: infer P) => any ? P : never;
   generates a "subscribe" and "unsubscribe" function for the event bus
   in order to registering, deregistering and broadcast graph events in a type-safe manner
 */
-export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: MappingsToEventBus<T>) => ({
+export const generateSubscriber = <T extends GraphEventMap>(eventBus: EventMapToEventBus<T>) => ({
   subscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].add(fn),
   unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].delete(fn),
   emit: <K extends keyof T>(event: K, ...args: PermissiveParams<T[K]>) => {
@@ -27,17 +31,16 @@ export const generateSubscriber = <T extends BaseGraphEvents>(eventBus: Mappings
 /**
  * helper types for graph event architecture
  */
-export type GenerateSubscriber<T extends BaseGraphEvents> = typeof generateSubscriber<T>;
-export type Subscriber<T extends BaseGraphEvents> = ReturnType<GenerateSubscriber<T>>['subscribe'];
-export type Unsubscriber<T extends BaseGraphEvents> = ReturnType<GenerateSubscriber<T>>['unsubscribe'];
-export type Emitter<T extends BaseGraphEvents> = ReturnType<GenerateSubscriber<T>>['emit'];
+export type GenerateSubscriber<T extends GraphEventMap> = typeof generateSubscriber<T>;
+export type Subscriber<T extends GraphEventMap> = ReturnType<GenerateSubscriber<T>>['subscribe'];
+export type Unsubscriber<T extends GraphEventMap> = ReturnType<GenerateSubscriber<T>>['unsubscribe'];
+export type Emitter<T extends GraphEventMap> = ReturnType<GenerateSubscriber<T>>['emit'];
 
-export type BaseGraphSubscriber = Subscriber<BaseGraphEvents>;
-export type BaseGraphUnsubscriber = Unsubscriber<BaseGraphEvents>;
-export type BaseGraphEmitter = Emitter<BaseGraphEvents>;
-
+/**
+ * @returns an empty event bus with all events initialized to empty sets
+ */
 export const getInitialEventBus = () => {
-  const eventBus: MappingsToEventBus<GraphEvents> = {
+  const eventBus: GraphEventBus = {
     /**
      * BaseGraphEvents
      */

@@ -1,11 +1,5 @@
-import {
-  ref,
-  readonly,
-  watchEffect
-} from 'vue'
+import { ref, readonly } from 'vue'
 import type { Ref } from 'vue'
-import { generateSubscriber } from '@graph/events';
-import type { BaseGraphEvents, MappingsToEventBus } from '@graph/events';
 import type { GNode, GraphOptions } from '@graph/types'
 import { useFocusGraph } from './useFocusGraph';
 import { DEFAULT_DRAGGABLE_SETTINGS } from '@graph/settings';
@@ -25,13 +19,6 @@ export const useDraggableGraph = (
     ...options.settings,
   }))
 
-  const eventBus: MappingsToEventBus<DraggableGraphEvents> = Object.assign(graph.eventBus, {
-    onNodeDragStart: new Set(),
-    onNodeDrop: new Set(),
-  })
-
-  const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
-
   const nodeBeingDragged = ref<GNode | undefined>()
   const startingCoordinatesOfDrag = ref<{ x: number, y: number } | undefined>()
 
@@ -42,12 +29,12 @@ export const useDraggableGraph = (
     const node = graph.getNodeByCoordinates(offsetX, offsetY);
     if (!node) return
     nodeBeingDragged.value = node;
-    emit('onNodeDragStart', node)
+    graph.emit('onNodeDragStart', node)
   }
 
   const drop = () => {
     if (!nodeBeingDragged.value) return
-    emit('onNodeDrop', nodeBeingDragged.value)
+    graph.emit('onNodeDrop', nodeBeingDragged.value)
     nodeBeingDragged.value = undefined;
     setTimeout(graph.repaint('draggable-graph/drop'), 10)
   }
@@ -61,15 +48,19 @@ export const useDraggableGraph = (
     const { offsetX, offsetY } = ev;
     const dx = offsetX - startingCoordinatesOfDrag.value.x;
     const dy = offsetY - startingCoordinatesOfDrag.value.y;
-    graph.moveNode(nodeBeingDragged.value.id, nodeBeingDragged.value.x + dx, nodeBeingDragged.value.y + dy);
+    graph.moveNode(
+      nodeBeingDragged.value.id,
+      nodeBeingDragged.value.x + dx,
+      nodeBeingDragged.value.y + dy
+    );
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
   }
 
-  subscribe('onMouseDown', beginDrag)
-  subscribe('onMouseUp', drop)
-  subscribe('onMouseMove', drag)
+  graph.subscribe('onMouseDown', beginDrag)
+  graph.subscribe('onMouseUp', drop)
+  graph.subscribe('onMouseMove', drag)
 
-  subscribe('onSettingsChange', (diff) => {
+  graph.subscribe('onSettingsChange', (diff) => {
     if (diff.draggable === false) {
       nodeBeingDragged.value = undefined
     }
@@ -78,11 +69,6 @@ export const useDraggableGraph = (
   return {
     ...graph,
     nodeBeingDragged: readonly(nodeBeingDragged),
-
-    eventBus,
-    subscribe,
-    unsubscribe,
-    emit,
 
     settings,
   }

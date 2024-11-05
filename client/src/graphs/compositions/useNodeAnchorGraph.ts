@@ -14,9 +14,7 @@ import {
 } from 'vue'
 import type { Ref } from 'vue'
 import { generateId, prioritizeNode } from "@graph/helpers";
-import type { MappingsToEventBus } from '@graph/events';
-import { generateSubscriber } from '@graph/events';
-import { useDraggableGraph, type DraggableGraphEvents } from "@graph/compositions/useDraggableGraph";
+import { useDraggableGraph } from "@graph/compositions/useDraggableGraph";
 import type {
   SchemaItem,
   GNode,
@@ -25,7 +23,8 @@ import type {
 } from "@graph/types";
 import colors from "@colors";
 import { circle, line } from '@shapes';
-import { DEFAULT_NODE_ANCHOR_SETTINGS, type NodeAnchorGraphSettings } from '@graph/settings';
+import { DEFAULT_NODE_ANCHOR_SETTINGS } from '@graph/settings';
+import type { NodeAnchorGraphSettings } from '@graph/settings';
 import type { GraphTheme, NodeAnchorGraphTheme } from '@graph/themes';
 
 export type NodeAnchor = {
@@ -119,13 +118,6 @@ export const useNodeAnchorGraph = (
     ...DEFAULT_NODE_ANCHOR_SETTINGS,
     ...options.settings,
   }))
-
-  const eventBus: MappingsToEventBus<NodeAnchorGraphEvents> = Object.assign(graph.eventBus, {
-    onNodeAnchorDragStart: new Set(),
-    onNodeAnchorDrop: new Set(),
-  })
-
-  const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
 
   const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
@@ -270,12 +262,12 @@ export const useNodeAnchorGraph = (
     const anchor = getAnchor(ev.offsetX, ev.offsetY)
     if (!anchor) return
     activeAnchor.value = anchor
-    emit('onNodeAnchorDragStart', parentNode.value, anchor)
+    graph.emit('onNodeAnchorDragStart', parentNode.value, anchor)
   }
 
-  subscribe('onMouseMove', updateParentNode)
+  graph.subscribe('onMouseMove', updateParentNode)
 
-  subscribe('onMouseDown', setActiveAnchor)
+  graph.subscribe('onMouseDown', setActiveAnchor)
 
   /**
    * @description updates the position of the active anchor based on the mouse event
@@ -288,7 +280,7 @@ export const useNodeAnchorGraph = (
     graph.repaint('node-anchor-graph/update-active-anchor-position')()
   }
 
-  subscribe('onMouseMove', updateActiveAnchorPosition)
+  graph.subscribe('onMouseMove', updateActiveAnchorPosition)
 
   /**
    * @description drops the active anchor and triggers the onNodeAnchorDrop
@@ -297,11 +289,11 @@ export const useNodeAnchorGraph = (
   const dropAnchor = () => {
     if (!activeAnchor.value) return
     else if (!parentNode.value) throw new Error('active anchor without parent node')
-    emit('onNodeAnchorDrop', parentNode.value, activeAnchor.value)
+    graph.emit('onNodeAnchorDrop', parentNode.value, activeAnchor.value)
     deactivateAnchors()
   }
 
-  subscribe('onMouseUp', dropAnchor)
+  graph.subscribe('onMouseUp', dropAnchor)
 
   const insertAnchorsIntoAggregator = (aggregator: SchemaItem[]) => {
     if (!parentNode.value) return aggregator
@@ -343,12 +335,12 @@ export const useNodeAnchorGraph = (
     activeAnchor.value = undefined
   }
 
-  subscribe('onNodeRemoved', (node) => {
+  graph.subscribe('onNodeRemoved', (node) => {
     if (parentNode.value?.id !== node.id) return
     deactivateAnchors()
   })
 
-  subscribe('onSettingsChange', (diff) => {
+  graph.subscribe('onSettingsChange', (diff) => {
     if (diff.nodeAnchors === false) deactivateAnchors()
   })
 
@@ -362,11 +354,6 @@ export const useNodeAnchorGraph = (
   return {
     ...graph,
     activeNodeAnchor: readonly(activeAnchor),
-
-    eventBus,
-    subscribe,
-    unsubscribe,
-    emit,
 
     theme,
     settings,

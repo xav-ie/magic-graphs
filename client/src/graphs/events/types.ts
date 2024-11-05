@@ -11,7 +11,7 @@ import type { GraphTheme } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph";
 
-export type BaseGraphEvents = {
+export type BaseGraphEventMap = {
   /* graph dataflow events */
   onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
   onFocusChange: (newItemId: string | undefined, oldItemId: string | undefined) => void;
@@ -51,16 +51,16 @@ export type BaseGraphEvents = {
   onSettingsChange: (diff: DeepPartial<GraphSettings>) => void;
 }
 
-export type FocusGraphEvents = {
+export type FocusGraphEventMap = {
   onFocusChange: (newItemId: string | undefined, oldItemId: string | undefined) => void;
 }
 
-export type DraggableGraphEvents = {
+export type DraggableGraphEventMap = {
   onNodeDragStart: (node: GNode) => void;
   onNodeDrop: (node: GNode) => void;
 }
 
-export type NodeAnchorGraphEvents = {
+export type NodeAnchorGraphEventMap = {
   /**
    * when the user initiates a drag on a node anchor
    * @param parentNode - the parent node of the anchor
@@ -75,21 +75,21 @@ export type NodeAnchorGraphEvents = {
   onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
 }
 
-export type MarqueeGraphEvents = {}
+export type MarqueeGraphEventMap = {}
 
-export type UserEditableGraphEvents = {}
+export type UserEditableGraphEventMap = {}
 
-export type PersistentGraphEvents = {}
+export type PersistentGraphEventMap = {}
 
-export type CollaborativeGraphEvents = {}
+export type CollaborativeGraphEventMap = {}
 
-export type GraphEvents = (
-  BaseGraphEvents &
-  FocusGraphEvents &
-  DraggableGraphEvents &
-  NodeAnchorGraphEvents &
-  MarqueeGraphEvents &
-  UserEditableGraphEvents &
-  PersistentGraphEvents &
-  CollaborativeGraphEvents
+export type GraphEventMap = (
+  BaseGraphEventMap &
+  FocusGraphEventMap &
+  DraggableGraphEventMap &
+  NodeAnchorGraphEventMap &
+  MarqueeGraphEventMap &
+  UserEditableGraphEventMap &
+  PersistentGraphEventMap &
+  CollaborativeGraphEventMap
 )
