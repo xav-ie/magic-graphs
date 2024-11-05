@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import GraphPlayground from '@playground/graph/GraphPlayground.vue';
-import ShapePlayground from '@playground/shape/ShapePlayground.vue';
-import SearchVisualizer from '@product/search-visualizer/Main.vue'
+
 
 </script>
 
 <template>
   <div class="w-[100vw] h-[100vh] relative">
-    <GraphPlayground />
-    <!-- <ShapePlayground /> -->
-    <!-- <SearchVisualizer /> -->
+    <router-view />
   </div>
 </template>
 

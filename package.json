@@ -12,5 +12,8 @@
     "concurrently": "^8.2.2"
   },
   "license": "ISC",
-  "description": "magic products entry point"
+  "description": "magic products entry point",
+  "dependencies": {
+    "vue-router": "^4.4.5"
+  }
 }
