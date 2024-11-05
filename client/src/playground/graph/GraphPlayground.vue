@@ -11,6 +11,7 @@
   import ThemeControls from "./ThemeControls.vue";
   import type { GraphPlaygroundControls as Controls } from "./types";
   import GraphPlaygroundControls from "./GraphPlaygroundControls.vue";
+  import { useLocalStorage } from "@vueuse/core";
 
   const graphElement = ref<HTMLCanvasElement>();
 
@@ -20,7 +21,7 @@
 
   const { btnArr } = useGraphBtns(graph);
 
-  const controls = ref<Controls>({
+  const controls = useLocalStorage<Controls>("graph-playground-controls", {
     tutorial: true,
     theme: true,
     collab: true,
@@ -72,7 +73,9 @@
       <ThemeControls :graph="graph" />
     </div>
 
-    <div class="absolute w-[150px] top-1/4 overflow-auto bg-gray-800 bg-opacity-80 rounded-r-xl">
+    <div
+      class="absolute w-[150px] top-1/4 overflow-auto bg-gray-800 bg-opacity-80 rounded-r-xl"
+    >
       <GraphPlaygroundControls :playgroundControls="controls" />
     </div>
   </div>

@@ -48,7 +48,7 @@
 
     <h5
       v-else
-      class="text-red-500"
+      class="text-red-500 font-bold"
     >
       Not Supported
     </h5>
