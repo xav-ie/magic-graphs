@@ -13,12 +13,14 @@ import type {
       angle?: number
       color?: string
       lineWidth?: number
+      borderRadius?: number
   }
 
   export const CROSS_DEFAULTS = {
     angle: 0,
     color: 'black',
-    lineWidth: LINE_DEFAULTS.width
+    lineWidth: LINE_DEFAULTS.width,
+    borderRadius: 0,
   } as const
   
   export const cross = (options: Cross): Shape => {
