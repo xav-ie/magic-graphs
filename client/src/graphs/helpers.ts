@@ -1,19 +1,10 @@
-import type { Ref } from 'vue'
-import type { GraphTheme, GraphThemeKey } from '@graph/themes'
-import type { FullThemeMap } from '@graph/themes/types'
 import type {
   MaybeGetter,
   SchemaItem,
   GNode,
   GEdge,
-  UnwrapMaybeGetter,
   Graph
 } from '@graph/types'
-import type {
-  DeepRequired,
-  DeepValue,
-  NestedKeys
-} from '@utils/types'
 
 /**
   unwraps MaybeGetter type into a value of type T.
@@ -25,55 +16,6 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
   }
   return value
 }
-
-/**
- * slightly modified extract utility useful for replacing the never type with R.
- */
-type ModifiedExtract<T, U, R = never> = T extends U ? T : R
-
-/**
- * implements ModifiedExtract with a noop function as the replacement type.
- */
-type FuncExtract<T, U> = ModifiedExtract<T, U, () => void>
-
-/**
- * extracts the parameters out of a graph theme properties getter function
- */
-type ThemeParams<T extends GraphThemeKey> = Parameters<FuncExtract<GraphTheme[T], Function>>
-
-/**
- * if the theme properties getter has no parameters
- * return an empty array, otherwise return the parameters
- */
-type ResolvedThemeParams<T extends GraphThemeKey> = ThemeParams<T> extends [] ? [] : Exclude<ThemeParams<T>, []>
-
-export const getThemeResolver = (
-  theme: Ref<Partial<GraphTheme>>,
-  themeMap: FullThemeMap,
-) => <
-  T extends GraphThemeKey,
-  K extends ResolvedThemeParams<T>
->(
-  prop: T,
-  ...args: K
-) => {
-    const themeMapEntry = themeMap[prop].findLast((themeMapEntryItem: FullThemeMap[T][number]) => {
-      const themeGetterOrValue = themeMapEntryItem.value
-      const themeValue = getValue<typeof themeGetterOrValue, K>(
-        themeGetterOrValue,
-        ...args
-      ) as UnwrapMaybeGetter<GraphTheme[T]>
-      return themeValue ?? false
-    })
-    const getter = themeMapEntry?.value ?? theme.value[prop]
-    if (!getter) throw new Error(`Theme property "${prop}" not found`)
-    return getValue<typeof getter, K>(getter, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
-  }
-
-/**
- * describes the function that gets a value from a theme inquiry
- */
-export type ThemeGetter = ReturnType<typeof getThemeResolver>
 
 /**
   generates an id. Every item on the canvas must have a unique id
@@ -173,15 +115,3 @@ export const doesEdgeFlowOutOfToNode = (edge: GEdge, node: GNode) => {
 export const getConnectedEdges = (node: GNode, edges: GEdge[]) => edges.filter(edge => {
   return edge.from === node.id || edge.to === node.id
 })
-
-export const setting = <S extends {}, P extends NestedKeys<S>>(settings: S, path: P) => {
-  return path
-    // @ts-ignore this works because P is always a string in settings
-    .split('.')
-    // @ts-ignore the nested key type does the checking for the acc[key] indexing
-    .reduce((acc, key) => {
-      if (acc === undefined) return acc
-      return acc[key]
-      // @ts-ignore
-    }, settings) as DeepValue<DeepRequired<S>, P>
-}

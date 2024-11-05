@@ -1,12 +1,12 @@
 import type { GNode, GEdge } from "@graph/types"
-import type { ThemeGetter } from "@graph/helpers"
+import type { ThemeGetter } from "@graph/themes/getThemeResolver"
 import type {
   BaseGraphEdgeTheme,
   BaseGraphNodeTheme,
   GraphTheme as GraphThemeImport,
-} from "./types"
-import { DARK_THEME } from "./loadouts/dark"
-import { LIGHT_THEME } from "./loadouts/light"
+} from "@graph/themes/types"
+import { DARK_THEME } from "@graph/themes/loadouts/dark"
+import { LIGHT_THEME } from "@graph/themes/loadouts/light"
 
 export type GraphTheme = GraphThemeImport
 export type GraphThemeKey = keyof GraphTheme
