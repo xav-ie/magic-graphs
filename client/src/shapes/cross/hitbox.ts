@@ -11,7 +11,7 @@ export const crossHitbox = (cross: Cross) => {
   const {
     at,
     size,
-    angle,
+    rotation,
     lineWidth,
     borderRadius,
   } = {
@@ -25,14 +25,14 @@ export const crossHitbox = (cross: Cross) => {
     at: { x: at.x - size / 2, y: at.y - halfLineWidth },
     width: size,
     height: lineWidth,
-    rotation: angle,
+    rotation,
     borderRadius,
   });
   const verticalHitbox = rectHitbox({
     at: { x: at.x - halfLineWidth, y: at.y - size / 2 },
     width: lineWidth,
     height: size,
-    rotation: angle,
+    rotation,
     borderRadius,
   });
 

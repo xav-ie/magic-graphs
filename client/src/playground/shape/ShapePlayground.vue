@@ -82,7 +82,7 @@
         at: { x: 500, y: 300 },
         color: colors.SLATE_600,
         size: 150,
-        angle: Math.PI / 4,
+        rotation: Math.PI / 0.6,
         borderRadius: 10,
         lineWidth: 80,
       })

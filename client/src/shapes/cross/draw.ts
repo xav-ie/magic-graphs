@@ -6,7 +6,7 @@ export const drawCrossWithCtx = (options: Cross) => {
   const {
     at,
     size,
-    angle,
+    rotation,
     color,
     lineWidth,
     borderRadius,
@@ -24,7 +24,7 @@ export const drawCrossWithCtx = (options: Cross) => {
       height: size,
       color,
       borderRadius,
-      rotation: angle,
+      rotation,
     })(ctx);
     drawRectWithCtx({
       at: { x: at.x - size / 2, y: at.y - halfLineWidth },
@@ -32,7 +32,7 @@ export const drawCrossWithCtx = (options: Cross) => {
       height: lineWidth,
       color,
       borderRadius,
-      rotation: angle,
+      rotation,
     })(ctx);
   };
 };

@@ -33,7 +33,7 @@ export const getTextAreaLocationOnUTurn = (uturn: UTurn) => {
   }
 
   const endPoint = rotatePoint({
-    x: at.x + upDistance + spacing ,
+    x: at.x + upDistance + spacing,
     y: at.y
   }, at, rotation)
 
