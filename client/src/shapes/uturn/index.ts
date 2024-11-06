@@ -43,8 +43,11 @@ export const uturn = (options: UTurn): Shape => {
 
   const drawShape = drawUTurnWithCtx(options);
 
-  const hitbox = uturnHitbox(options);
+  const shapeHitbox = uturnHitbox(options);
   const textHitbox = uturnTextHitbox(options);
+  const hitbox = (point: Coordinate) => {
+    return textHitbox?.(point) || shapeHitbox(point)
+  }
 
   const drawTextArea = drawTextAreaOnUTurn(options);
 
@@ -75,6 +78,7 @@ export const uturn = (options: UTurn): Shape => {
     drawText,
 
     hitbox,
+    shapeHitbox,
     textHitbox,
 
     activateTextArea,
