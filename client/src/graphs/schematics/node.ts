@@ -52,11 +52,14 @@ export const getNodeSchematic = (
       color: borderColor,
       width: borderWidth,
     },
-    text: {
-      content: text,
-      fontSize: textSize,
-      fontWeight: 'bold',
-      color: textColor,
+    textArea: {
+      text: {
+        content: text,
+        fontSize: textSize,
+        fontWeight: 'bold',
+        color: textColor,
+      },
+      color: colors.TRANSPARENT
     }
   })
 

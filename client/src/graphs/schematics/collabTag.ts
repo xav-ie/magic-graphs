@@ -33,7 +33,6 @@ export const collabTagShapes = (collaborator: Collaborator) => {
         fontWeight: 'bold',
       },
       color: colors.TRANSPARENT
-
     },
   }
 
