@@ -37,8 +37,12 @@ export const circle = (options: Circle): Shape => {
   
   const drawShape = drawCircleWithCtx(options);
 
-  const hitbox = circleHitbox(options);
+  const shapeHitbox = circleHitbox(options);
   const textHitbox = circleTextHitbox(options);
+  const hitbox = (point: Coordinate) => {
+    return textHitbox?.(point) || shapeHitbox(point)
+  }
+
 
   const drawTextArea = drawTextAreaOnCircle(options);
 
@@ -69,6 +73,7 @@ export const circle = (options: Circle): Shape => {
     drawText,
 
     hitbox,
+    shapeHitbox,
     textHitbox,
 
     activateTextArea,
