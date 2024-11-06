@@ -19,7 +19,8 @@
     "codemirror-readonly-ranges": "^0.1.0-alpha.2",
     "socket.io-client": "^4.8.1",
     "vue": "^3.4.29",
-    "vue-codemirror": "^6.1.1"
+    "vue-codemirror": "^6.1.1",
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
