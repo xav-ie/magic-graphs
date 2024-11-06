@@ -6,21 +6,14 @@ const infoModules = import.meta.glob<{
   default: ProductInfo
 }>('/src/**/info.ts', { eager: true })
 
-const routes = [
-  ...Object.values(infoModules).flatMap((mod) => mod.default.route ?? []),
-]
-
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes: Object.values(infoModules).flatMap((mod) => mod.default.route ?? []),
 })
 
 router.beforeEach((to, _, next) => {
   const goingExternal = to.path.includes('https')
-  if (goingExternal) {
-    window.open(to.path.slice(1), '_blank')
-    return next(false) // cancel the navigation
-  }
+  if (goingExternal) window.location.replace(to.path.slice(1))
   next()
 })
 

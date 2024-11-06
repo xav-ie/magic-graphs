@@ -61,7 +61,7 @@
 
     <div
       v-if="controls.tutorial"
-      class="absolute w-full dark:text-white bottom-[10%] grid place-items-center"
+      class="absolute w-full dark:text-white bottom-[10%] grid place-items-center pointer-events-none"
     >
       <TutorialHint :tutorial="tutorialControls" />
     </div>

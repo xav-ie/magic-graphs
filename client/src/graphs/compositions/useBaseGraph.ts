@@ -271,6 +271,15 @@ export const useBaseGraph = (
 
     if (directedEdgeOnPath) return
 
+    // if the edge type is undirected, check the other directed way
+    if (edge.type === 'undirected') {
+      const directedEdgeOnPath = edges.value.find(e => {
+        return e.to === edge.from && e.from === edge.to
+      })
+
+      if (directedEdgeOnPath) return
+    }
+
     const newEdge: GEdge = {
       id: edge.id ?? generateId(),
       to: edge.to,
