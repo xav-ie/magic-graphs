@@ -47,7 +47,7 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
   const getSchemaItemsByCoordinates = (x: number, y: number) => {
     return aggregator.value
       .sort((a, b) => a.priority - b.priority)
-      .filter(item => item.shape.hitbox({ x, y }) || item.shape.textHitbox?.({ x, y }))
+      .filter(item => item.shape.shapeHitbox({ x, y }) || item.shape.textHitbox?.({ x, y }))
   }
 
   return {
