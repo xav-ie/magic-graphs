@@ -67,7 +67,7 @@ export const useHeatmap = (
 
   const processPoint = (coords: Coordinate) => {
     const shapeHit = drawItems.value
-      .findLast((item) => item.hitbox(coords))
+      .findLast((item) => item.shapeHitbox(coords))
 
     const textHit = drawItems.value
       .findLast((item) => item.textHitbox?.(coords))
