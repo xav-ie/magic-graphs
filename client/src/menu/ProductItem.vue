@@ -26,7 +26,7 @@
       <h2
         class="text-center font-bold text-2xl mt-4 transition duration-500"
       >
-        {{ product.name }}
+        {{ product.menu.name }}
       </h2>
     </div>
 
