@@ -42,8 +42,11 @@ export const rect = (options: Rect): Shape => {
 
   const drawShape = drawRectWithCtx(options);
 
-  const hitbox = rectHitbox(options);
+  const shapeHitbox = rectHitbox(options);
   const textHitbox = rectTextHitbox(options);
+  const hitbox = (point: Coordinate) => {
+    return textHitbox?.(point) || shapeHitbox(point)
+  }
 
   const drawTextArea = drawTextAreaOnRect(options);
 
@@ -74,6 +77,7 @@ export const rect = (options: Rect): Shape => {
     drawText,
 
     hitbox,
+    shapeHitbox,
     textHitbox,
 
     activateTextArea,
