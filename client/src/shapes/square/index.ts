@@ -33,8 +33,11 @@ export type Square = {
 export const square = (options: Square): Shape => {
   const drawShape = drawSquareWithCtx(options);
 
-  const hitbox = squareHitbox(options);
+  const shapeHitbox = squareHitbox(options);
   const textHitbox = squareTextHitbox(options);
+  const hitbox = (point: Coordinate) => {
+    return textHitbox?.(point) || shapeHitbox(point)
+  }
 
   const drawTextArea = drawTextAreaOnSquare(options);
 
@@ -65,6 +68,7 @@ export const square = (options: Square): Shape => {
     drawText,
 
     hitbox,
+    shapeHitbox,
     textHitbox,
 
     activateTextArea,
