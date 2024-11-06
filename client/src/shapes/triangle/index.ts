@@ -16,7 +16,10 @@ export const TRIANGLE_DEFAULTS = {
 
 export const triangle = (options: Triangle): Shape => {
   const drawShape = drawTriangleWithCtx(options)
-  const hitbox = triangleHitbox(options)
+  const shapeHitbox = triangleHitbox(options)
+  const hitbox = (point: Coordinate) => {
+    return shapeHitbox(point) // text not implemented yet
+  }
 
   const draw = (ctx: CanvasRenderingContext2D) => {
     drawShape(ctx)
@@ -30,5 +33,6 @@ export const triangle = (options: Triangle): Shape => {
     drawShape,
 
     hitbox,
+    shapeHitbox,
   }
 }
