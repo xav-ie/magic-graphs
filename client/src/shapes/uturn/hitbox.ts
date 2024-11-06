@@ -9,14 +9,14 @@ export const uturnHitbox = (uturn: UTurn) => {
     at,
     upDistance,
     lineWidth,
-    angle
+    rotation
   } = uturn;
 
   // rotated rectangle checked with line
   const end = rotatePoint({
     x: at.x + upDistance,
     y: at.y
-  }, at, angle)
+  }, at, rotation)
 
   const isInLine = lineHitbox({
     start: at,
