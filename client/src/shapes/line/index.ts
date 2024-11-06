@@ -44,8 +44,11 @@ export const line = (options: Line): Shape => {
 
   const drawShape = drawLineWithCtx(options);
 
-  const hitbox = lineHitbox(options);
+  const shapeHitbox = lineHitbox(options);
   const textHitbox = lineTextHitbox(options);
+  const hitbox = (point: Coordinate) => {
+    return textHitbox?.(point) || shapeHitbox(point)
+  }
 
   const drawTextArea = drawTextAreaOnLine(options);
 
@@ -76,6 +79,7 @@ export const line = (options: Line): Shape => {
     drawText,
 
     hitbox,
+    shapeHitbox,
     textHitbox,
 
     activateTextArea,

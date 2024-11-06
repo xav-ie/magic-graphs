@@ -30,7 +30,11 @@ export const cross = (options: Cross): Shape => {
   }
 
   const drawShape = drawCrossWithCtx(options)
-  const hitbox = crossHitbox(options)
+  const shapeHitbox = crossHitbox(options)
+  const hitbox = (point: Coordinate) => {
+    return shapeHitbox(point) // text not implemented yet
+  }
+
 
   const draw = (ctx: CanvasRenderingContext2D) => {
     drawShape(ctx)
@@ -43,7 +47,7 @@ export const cross = (options: Cross): Shape => {
     draw,
     drawShape,
 
-
+    shapeHitbox,
     hitbox
   }
 }

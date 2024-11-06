@@ -1,7 +1,7 @@
 import { generateId } from "@graph/helpers";
 import { LINE_DEFAULTS } from "@shape/line";
 import type { Line } from "@shape/line";
-import type { Shape } from "@shape/types";
+import type { Shape, Coordinate } from "@shape/types";
 import { drawArrowWithCtx } from "./draw";
 import { arrowHitbox } from "./hitbox";
 import { engageTextarea } from "@shape/textarea";
@@ -26,8 +26,11 @@ export const arrow = (options: Arrow): Shape => {
   
   const drawShape = drawArrowWithCtx(options);
 
-  const hitbox = arrowHitbox(options);
+  const shapeHitbox = arrowHitbox(options);
   const textHitbox = arrowTextHitbox(options);
+  const hitbox = (point: Coordinate) => {
+    return textHitbox?.(point) || shapeHitbox(point)
+  }
 
   const drawTextArea = drawTextAreaOnArrow(options);
 
@@ -58,6 +61,7 @@ export const arrow = (options: Arrow): Shape => {
     drawText,
 
     hitbox,
+    shapeHitbox,
     textHitbox,
 
     activateTextArea,
