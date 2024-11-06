@@ -1,5 +1,5 @@
 import { Server } from 'socket.io'
-import type { Collaborator, GraphEvents } from './graphTypes'
+import type { Collaborator, GraphEvents } from '../clientTypes'
 import { createServer } from 'http'
 import { trackGraphState } from './trackGraphState'
 

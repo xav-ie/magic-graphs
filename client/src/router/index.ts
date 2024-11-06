@@ -1,5 +1,5 @@
-import type { ProductInfo } from 'src/types'
 import { createWebHistory, createRouter } from 'vue-router'
+import type { ProductInfo } from 'src/types'
 
 // import all route.ts files dynamically
 const infoModules = import.meta.glob<{
