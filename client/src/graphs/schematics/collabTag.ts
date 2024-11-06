@@ -25,11 +25,15 @@ export const collabTagShapes = (collaborator: Collaborator) => {
     height,
     color: collaboratorColor,
     borderRadius: 5,
-    text: {
-      content: collaboratorName,
-      color: colors.WHITE,
-      fontSize: 14,
-      fontWeight: 'bold',
+    textArea: {
+      text: {
+        content: collaboratorName,
+        color: colors.WHITE,
+        fontSize: 14,
+        fontWeight: 'bold',
+      },
+      color: colors.TRANSPARENT
+
     },
   }
 
