@@ -24,14 +24,35 @@ type PermissiveParams<T> = T extends (...args: infer P) => any ? P : never;
   in order to registering, deregistering and broadcast graph events in a type-safe manner
 */
 export const generateSubscriber = <T extends GraphEventMap>(eventBus: EventMapToEventBus<T>) => ({
+  /**
+   * lets you subscribe to a specific event to receive updates when it is emitted
+   *
+   * @param event the name of the event to subscribe to
+   * @param fn the callback function to be called when the event is emitted
+   * @example subscribe('onNodeAdded', (node) => console.log(node)) // logs the node that was added
+   */
   subscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].add(fn),
+  /**
+   * lets you unsubscribe from a specific event to stop receiving updates when it is emitted
+   *
+   * @param event the name of the event to unsubscribe from
+   * @param fn the callback function to be removed from the event
+   * @example unsubscribe('onNodeAdded', (node) => console.log(node)) // stops logging the node that was added
+   */
   unsubscribe: <K extends keyof T>(event: K, fn: T[K]) => eventBus[event].delete(fn),
+  /**
+   * lets you emit an event with the arguments corresponding to the event's callback function
+   *
+   * @param event the name of the event to emit
+   * @param args the arguments to be passed to the event's callback functions
+   * @example emit('onNodeAdded', node) // calls all onNodeAdded callbacks with the node as an argument
+   */
   emit: <K extends keyof T>(event: K, ...args: PermissiveParams<T[K]>) => {
     for (const fn of eventBus[event]) {
       fn(...args)
     }
   }
-})
+});
 
 /**
  * helper types for graph event architecture
