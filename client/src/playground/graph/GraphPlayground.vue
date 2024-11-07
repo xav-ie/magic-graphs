@@ -17,7 +17,6 @@
 
   const graph = useGraph(graphElement);
 
-
   const tutorialControls = useBasicsTutorial(graph);
 
   const { btnArr } = useGraphBtns(graph);

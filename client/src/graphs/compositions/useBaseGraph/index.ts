@@ -218,8 +218,8 @@ export const useBaseGraph = (
       ...options
     }
 
-    node.x = x
-    node.y = y
+    node.x = coords.x
+    node.y = coords.y
     emit('onNodeMoved', node, fullOptions)
     repaintMoveNode()
   }
@@ -414,12 +414,49 @@ export const useBaseGraph = (
      * @returns void
      */
     moveNode,
+    /**
+     * remove a node from the graph
+     *
+     * @param id - the id of the node to remove
+     * @param options - override default effects (onNodeRemoved event)
+     * @returns the removed node or undefined if not removed
+     */
     removeNode,
 
+    /**
+     * add an edge to the graph
+     *
+     * @param edge - the edge to add
+     * @param options - override default effects (onEdgeAdded event)
+     * @returns the added edge or undefined if not added
+     */
     addEdge,
+    /**
+     * remove an edge from the graph
+     *
+     * @param edgeId - the id of the edge to remove
+     * @param options - override default effects (onEdgeRemoved event)
+     * @returns the removed edge or undefined if not removed
+     */
     removeEdge,
 
+    /**
+     * get a node by its coordinates
+     *
+     * @param x - the x coord
+     * @param y - the y coord
+     * @returns the node at given coords or undefined if not there or obscured by another schema item
+     */
     getNodeByCoordinates,
+    /**
+     * get all schema items at given coordinates
+     *
+     * @param x - the x coord
+     * @param y - the y coord
+     * @returns an array where the first item is the bottom most schema item and the last is the top most
+     * @example // returns [node, nodeAnchor] where a nodeAnchor is sitting on top of a node
+     * getSchemaItemsByCoordinates(200, 550)
+     */
     getSchemaItemsByCoordinates,
 
     /**
