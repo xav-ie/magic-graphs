@@ -43,6 +43,12 @@ export const ADD_EDGE_OPTIONS_DEFAULTS: AddEdgeOptions = {
   focus: false,
 }
 
+export const ADD_EDGE_DEFAULTS = {
+  type: 'directed',
+  weight: 1,
+  label: '',
+} as const
+
 export type RemoveEdgeOptions = BroadcastOption
 
 export const REMOVE_EDGE_OPTIONS_DEFAULTS: RemoveEdgeOptions = {
