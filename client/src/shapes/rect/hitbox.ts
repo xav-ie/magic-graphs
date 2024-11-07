@@ -1,4 +1,4 @@
-import type { Coordinate } from "@shape/types";
+import type { Coordinate, BoundingBox } from "@shape/types";
 import type { Rect } from ".";
 import { RECT_DEFAULTS } from "."
 import { circleHitbox } from "@shape/circle/hitbox";
@@ -83,3 +83,29 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
     isInBottomRightCircle(localPoint)
   );
 };
+
+
+export const rectEfficientHitbox = (rectangle: Rect) => (boxToCheck: BoundingBox) => {
+  const {
+    at: rectAt,
+    width: rectWidth,
+    height: rectHeight,
+  } = rectangle
+
+  const {
+    at: boxAt,
+    width: boxWidth,
+    height: boxHeight,
+  } = boxToCheck
+
+  if (rectAt.x + rectWidth <= boxAt.x || boxAt.x + boxWidth <= rectAt.x) {
+    return false;
+  }
+
+  if (rectAt.y + rectHeight <= boxAt.y || boxAt.y + boxHeight <= rectAt.y) {
+    return false;
+  }
+
+  return true;
+
+}
