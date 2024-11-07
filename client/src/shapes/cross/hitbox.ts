@@ -47,9 +47,9 @@ export const crossEfficientHitbox = (cross: Cross) => {
   } = cross
 
   const isInRectEfficientHitbox = rectEfficientHitbox({
-    at: { x: at.x - size, y: at.y - size },
-    width: 2 * size,
-    height: 2 * size
+    at: { x: at.x - size / 2, y: at.y - size / 2 },
+    width: size,
+    height: size
   })
   return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
 }
