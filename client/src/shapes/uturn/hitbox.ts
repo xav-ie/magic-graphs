@@ -43,8 +43,8 @@ export const uturnEfficientHitbox = (uturn: UTurn) => {
     y: at.y
   }, at, rotation)
 
-  const minX = Math.min(at.x - end.x)
-  const minY = Math.min(at.y - end.y)
+  const minX = Math.min(at.x, end.x)
+  const minY = Math.min(at.y, end.y)
   const hitboxWidth = Math.abs(at.x - end.x)
   const hitboxHeight = Math.abs(at.y - end.y)
 
