@@ -35,6 +35,7 @@ import {
   ADD_NODE_OPTIONS_DEFAULTS,
   REMOVE_NODE_OPTIONS_DEFAULTS,
   ADD_EDGE_OPTIONS_DEFAULTS,
+  ADD_EDGE_DEFAULTS,
   REMOVE_EDGE_OPTIONS_DEFAULTS,
   MOVE_NODE_OPTIONS_DEFAULTS,
 } from '@graph/compositions/useBaseGraph/types';
@@ -203,7 +204,7 @@ export const useBaseGraph = (
     options: Partial<MoveNodeOptions> = {}
   ) => {
     const node = getNode(id)
-    if (!node) throw new Error('tried to move node that does not exist')
+    if (!node) return
 
     const fullOptions = {
       ...MOVE_NODE_OPTIONS_DEFAULTS,
@@ -230,7 +231,7 @@ export const useBaseGraph = (
 
   const removeNode = (id: GNode['id'], options: Partial<RemoveNodeOptions> = {}) => {
     const node = getNode(id)
-    if (!node) throw new Error('tried to remove node that does not exist')
+    if (!node) return
 
     const fullOptions = {
       ...REMOVE_NODE_OPTIONS_DEFAULTS,
@@ -249,13 +250,16 @@ export const useBaseGraph = (
   }
 
   const addEdge = (
-    edge: PartiallyPartial<GEdge, 'id' | 'weight' | 'label'>,
+    edge: PartiallyPartial<GEdge, keyof typeof ADD_EDGE_DEFAULTS | 'id'>,
     options: Partial<AddEdgeOptions> = {}
   ) => {
     const fullOptions = {
       ...ADD_EDGE_OPTIONS_DEFAULTS,
       ...options
     }
+
+    const [fromNode, toNode] = [getNode(edge.from), getNode(edge.to)]
+    if (!fromNode || !toNode) return
 
     const undirectedEdgeOnPath = edges.value.find(e => {
       const connectedToFrom = e.to === edge.to && e.from === edge.from
@@ -281,18 +285,16 @@ export const useBaseGraph = (
     }
 
     const newEdge: GEdge = {
-      id: edge.id ?? generateId(),
-      to: edge.to,
-      from: edge.from,
-      label: edge.label ?? '',
-      weight: edge.weight ?? 1,
-      type: edge.type,
+      ...ADD_EDGE_DEFAULTS,
+      id: generateId(),
+      ...edge,
     }
 
     edges.value.push(newEdge)
 
     emit('onEdgeAdded', newEdge, fullOptions)
     emit('onStructureChange', nodes.value, edges.value)
+
     repaint('base-graph/add-edge')()
     return newEdge
   }
@@ -302,7 +304,7 @@ export const useBaseGraph = (
     options: Partial<RemoveEdgeOptions> = {}
   ) => {
     const edge = getEdge(edgeId)
-    if (!edge) throw new Error('tried to remove edge that does not exist')
+    if (!edge) return
 
     const fullOptions = {
       ...REMOVE_EDGE_OPTIONS_DEFAULTS,
