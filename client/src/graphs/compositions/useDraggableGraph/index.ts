@@ -1,4 +1,4 @@
-import { ref, readonly } from 'vue'
+import { ref, computed } from 'vue'
 import type { Ref } from 'vue'
 import type { GNode, GraphOptions } from '@graph/types'
 import { useFocusGraph } from '@graph/compositions/useFocusGraph';
@@ -10,56 +10,68 @@ export const useDraggableGraph = (
 
   const graph = useFocusGraph(canvas, options)
 
-  const nodeBeingDragged = ref<GNode | undefined>()
-  const startingCoordinatesOfDrag = ref<{ x: number, y: number } | undefined>()
+  const activeDragNode = ref<{
+    node: GNode,
+    startingCoordinates: { x: number, y: number }
+  } | undefined>()
 
   const beginDrag = (ev: MouseEvent) => {
-    if (!graph.settings.value.draggable) return
     const { offsetX, offsetY } = ev;
-    startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
     const node = graph.getNodeByCoordinates(offsetX, offsetY);
     if (!node) return
-    nodeBeingDragged.value = node;
+    activeDragNode.value = {
+      node,
+      startingCoordinates: { x: offsetX, y: offsetY },
+    }
     graph.emit('onNodeDragStart', node)
   }
 
   const drop = () => {
-    if (!nodeBeingDragged.value) return
-    graph.emit('onNodeDrop', nodeBeingDragged.value)
-    nodeBeingDragged.value = undefined;
+    if (!activeDragNode.value) return
+    graph.emit('onNodeDrop', activeDragNode.value.node)
+    activeDragNode.value = undefined;
     setTimeout(graph.repaint('draggable-graph/drop'), 10)
   }
 
   const drag = (ev: MouseEvent) => {
-    if (
-      !nodeBeingDragged.value ||
-      !startingCoordinatesOfDrag.value ||
-      !graph.settings.value.draggable
-    ) return
+    if (!activeDragNode.value) return
     const { offsetX, offsetY } = ev;
-    const dx = offsetX - startingCoordinatesOfDrag.value.x;
-    const dy = offsetY - startingCoordinatesOfDrag.value.y;
-    graph.moveNode(
-      nodeBeingDragged.value.id, {
-        x: nodeBeingDragged.value.x + dx,
-        y: nodeBeingDragged.value.y + dy
-      },
-    );
-    startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
+    const { node, startingCoordinates } = activeDragNode.value;
+    const dx = offsetX - node.x;
+    const dy = offsetY - node.y;
+    graph.moveNode(node.id, {
+      x: startingCoordinates.x + dx,
+      y: startingCoordinates.y + dy
+    });
+    activeDragNode.value.startingCoordinates = { x: offsetX, y: offsetY }
   }
 
-  graph.subscribe('onMouseDown', beginDrag)
-  graph.subscribe('onMouseUp', drop)
-  graph.subscribe('onMouseMove', drag)
+  const enableDrag = () => {
+    graph.subscribe('onMouseDown', beginDrag)
+    graph.subscribe('onMouseUp', drop)
+    graph.subscribe('onMouseMove', drag)
+  }
+
+  const disableDrag = () => {
+    graph.unsubscribe('onMouseDown', beginDrag)
+    graph.unsubscribe('onMouseUp', drop)
+    graph.unsubscribe('onMouseMove', drag)
+    activeDragNode.value = undefined
+  }
 
   graph.subscribe('onSettingsChange', (diff) => {
-    if (diff.draggable === false) {
-      nodeBeingDragged.value = undefined
-    }
+    if (diff.draggable === false) disableDrag()
+    else if (diff.draggable === true) enableDrag()
   })
+
+  if (graph.settings.value.draggable) enableDrag()
 
   return {
     ...graph,
-    nodeBeingDragged: readonly(nodeBeingDragged),
+
+    /**
+     * the node that is currently being dragged or undefined if no node is being dragged
+     */
+    activeDragNode: computed(() => activeDragNode.value?.node),
   }
 }

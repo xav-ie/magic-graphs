@@ -47,7 +47,7 @@ export const useNodeAnchorGraph = (
 
   const getAnchorSchemas = (node: GNode) => {
     if (
-      graph.nodeBeingDragged.value ||
+      graph.activeDraggedNode.value ||
       !graph.settings.value.nodeAnchors
     ) return []
 
