@@ -4,32 +4,36 @@ import path from 'path';
 const CLIENT_DIR = './client/src';
 const OUTPUT_FILE = './server/src/clientTypes.ts';
 
-// /^(export type|export interface|type|interface)/gm
-// /(?:export\s+)?(interface|type)\s+(\w+)\s*=\s*{|(?:export\s+)?interface\s+(\w+)\s*{/g
 function extractInterfaces(fileContent) {
   const interfaces = [];
-  const regex = /(?:export\s+)?(interface|type)\s+(\w+)\s*=\s*{|(?:export\s+)?interface\s+(\w+)\s*{/g;
-  let match;
+  const regex = /^((export type )|(export interface )|(type )|(interface ))/gm;
 
-  while ((match = regex.exec(fileContent)) !== null) {
-    const startIndex = match.index;
-    let braceCount = 1;
-    let endIndex = startIndex + match[0].length;
+  const lines = fileContent.split('\n');
 
-    // Traverse the content from the match position to find the closing brace
-    while (braceCount > 0 && endIndex < fileContent.length) {
-      const char = fileContent[endIndex];
-      if (char === '{') braceCount++;
-      if (char === '}') braceCount--;
-      endIndex++;
-    }
+  for (let i = 0; i < lines.length; i++) {
+    const isLineMatched = regex.test(lines[i].trim());
 
-    if (braceCount === 0) {
-      const interfaceContent = fileContent.substring(startIndex, endIndex);
-      interfaces.push(interfaceContent);
+    if (isLineMatched) {
+      const interfaceDef = [lines[i]];
+
+      if (!lines[i+1]?.trim()) {
+        interfaces.push(interfaceDef.join('\n'));
+        continue;
+      }
+
+      for (let j = i + 1; j < lines.length; j++) {
+        interfaceDef.push(lines[j]);
+        if (lines[j] === '}') {
+          break;
+        }
+      }
+
+      i = i + interfaceDef.length;
+      interfaces.push(interfaceDef.join('\n'));
     }
   }
 
+  // if (interfaces.length > 0) console.log(interfaces);
   return interfaces;
 }
 

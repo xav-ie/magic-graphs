@@ -1,3 +1,9 @@
+type GraphButtonIdMap = typeof GRAPH_BUTTON_ID;
+type GraphButtonId = GraphButtonIdMap[keyof GraphButtonIdMap];
+
+/**
+ * @describes a button that can be added to the graph toolbar
+ */
 export type GButton = {
   cond?: () => boolean,
   label: () => string,
@@ -5,6 +11,8 @@ export type GButton = {
   color: () => string,
   id: GraphButtonId,
 }
+
+export type BaseGraph = ReturnType<typeof useBaseGraph>
 
 export type FocusOption = {
   /**
@@ -23,6 +31,14 @@ export type BroadcastOption = {
   broadcast: boolean
 }
 
+export type RemoveNodeOptions = BroadcastOption
+
+export type AddEdgeOptions = FocusOption & BroadcastOption
+
+export type RemoveEdgeOptions = BroadcastOption
+
+export type MoveNodeOptions = BroadcastOption
+
 export type Collaborator = {
   id: string
   name: string
@@ -40,6 +56,8 @@ export type ToClientCollaboratorMove = {
   x: number
   y: number
 }
+
+export type CollaboratorMap = Record<Collaborator['id'], Collaborator>
 
 export type GraphState = {
   nodes: GNode[],
@@ -70,10 +88,18 @@ export interface GraphEvents {
   leaveRoom: (confirmationCallback: () => void) => void
 }
 
+export type Id = SchemaItem['id']
+export type MaybeId = Id | undefined
+
 export type FocusedItem = {
   type: 'node',
   item: GNode,
+} | {
+  type: 'edge',
+  item: GEdge,
 }
+
+export type SelectionBox = Pick<Rect, 'at' | 'width' | 'height'>
 
 export type NodeAnchor = {
   /**
@@ -93,6 +119,89 @@ export type NodeAnchor = {
    * the unique id of the anchor
    */
   id: string,
+}
+
+export type AdjacencyList = Record<string, string[]>;
+
+export type GraphEventMap = ImportedGraphEventMap
+
+export type EventMapToEventBus<T> = Record<keyof T, Set<any>>
+
+export type GraphEventBus = EventMapToEventBus<GraphEventMap>;
+
+export type GraphEvent = keyof GraphEventMap;
+
+type PermissiveParams<T> = T extends (...args: infer P) => any ? P : never;
+
+export type GenerateSubscriber<
+  T extends GraphEventMap = GraphEventMap
+> = typeof generateSubscriber<T>;
+
+export type Subscriber<
+  T extends GraphEventMap = GraphEventMap
+> = ReturnType<GenerateSubscriber<T>>['subscribe'];
+
+export type Unsubscriber<
+  T extends GraphEventMap = GraphEventMap
+> = ReturnType<GenerateSubscriber<T>>['unsubscribe'];
+
+export type Emitter<
+  T extends GraphEventMap = GraphEventMap
+> = ReturnType<GenerateSubscriber<T>>['emit'];
+
+/**
+ * @returns an empty event bus with all events initialized to empty sets
+ */
+export const getInitialEventBus = () => {
+  const eventBus: GraphEventBus = {
+    /**
+     * BaseGraphEvents
+     */
+    onStructureChange: new Set(),
+
+    onNodeAdded: new Set(),
+    onNodeRemoved: new Set(),
+    onNodeMoved: new Set(),
+
+    onEdgeAdded: new Set(),
+    onEdgeRemoved: new Set(),
+    onEdgeWeightChange: new Set(),
+
+    onRepaint: new Set(),
+    onNodeHoverChange: new Set(),
+    onGraphReset: new Set(),
+
+    onClick: new Set(),
+    onMouseDown: new Set(),
+    onMouseUp: new Set(),
+    onMouseMove: new Set(),
+    onDblClick: new Set(),
+    onContextMenu: new Set(),
+
+    onKeydown: new Set(),
+
+    onThemeChange: new Set(),
+    onSettingsChange: new Set(),
+
+    /**
+     * FocusGraphEvents
+     */
+    onFocusChange: new Set(),
+
+    /**
+     * DraggableGraphEvents
+     */
+    onNodeDragStart: new Set(),
+    onNodeDrop: new Set(),
+
+    /**
+     * NodeAnchorGraphEvents
+     */
+    onNodeAnchorDragStart: new Set(),
+    onNodeAnchorDrop: new Set(),
+  }
+
+  return eventBus
 }
 
 export type BaseGraphEventMap = {
@@ -178,14 +287,6 @@ export type BaseGraphEventMap = {
   onSettingsChange: (diff: DeepPartial<GraphSettings>) => void;
 }
 
-export type FocusGraphEventMap = {
-  /**
-   * when the focus item (ie nodes or edges) changes.
-   * undefined if the user is not focusing on an item
-   */
-  onFocusChange: (newItemId: string | undefined, oldItemId: string | undefined) => void;
-}
-
 export type DraggableGraphEventMap = {
   /**
    * when the user initiates a drag on a node
@@ -197,17 +298,6 @@ export type DraggableGraphEventMap = {
   onNodeDrop: (node: GNode) => void;
 }
 
-export type NodeAnchorGraphEventMap = {
-  /**
-   * when the user initiates a drag on a node anchor
-   */
-  onNodeAnchorDragStart: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
-  /**
-   * when the user drops a node anchor
-   */
-  onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
-}
-
 export type MarqueeGraphEventMap = {}
 
 export type UserEditableGraphEventMap = {}
@@ -215,6 +305,19 @@ export type UserEditableGraphEventMap = {}
 export type PersistentGraphEventMap = {}
 
 export type CollaborativeGraphEventMap = {}
+
+export type GraphEventMap = (
+  BaseGraphEventMap &
+  FocusGraphEventMap &
+  DraggableGraphEventMap &
+  NodeAnchorGraphEventMap &
+  MarqueeGraphEventMap &
+  UserEditableGraphEventMap &
+  PersistentGraphEventMap &
+  CollaborativeGraphEventMap
+)
+
+export type SupportedNodeShapes = 'circle' | 'square'
 
 export type BaseGraphSettings = {
   /**
@@ -298,6 +401,146 @@ export type PersistentGraphSettings = {
 
 export type CollaborativeGraphSettings = {}
 
+export type GraphSettings = (
+  BaseGraphSettings &
+  FocusGraphSettings &
+  DraggableGraphSettings &
+  NodeAnchorGraphSettings &
+  MarqueeGraphSettings &
+  UserEditableGraphSettings &
+  PersistentGraphSettings &
+  CollaborativeGraphSettings
+)
+
+/**
+ * the default settings for a graph instance
+ */
+export const DEFAULT_GRAPH_SETTINGS = {
+  ...DEFAULT_BASE_SETTINGS,
+  ...DEFAULT_FOCUS_SETTINGS,
+  ...DEFAULT_DRAGGABLE_SETTINGS,
+  ...DEFAULT_NODE_ANCHOR_SETTINGS,
+  ...DEFAULT_MARQUEE_SETTINGS,
+  ...DEFAULT_USER_EDITABLE_SETTINGS,
+  ...DEFAULT_PERSISTENT_SETTINGS,
+  ...DEFAULT_COLLABORATIVE_SETTINGS,
+} as const satisfies GraphSettings
+
+type ModifiedExtract<T, U, R = never> = T extends U ? T : R
+
+type FuncExtract<T, U> = ModifiedExtract<T, U, () => void>
+
+type ThemeParams<T extends keyof GraphTheme> = Parameters<FuncExtract<GraphTheme[T], Function>>
+
+type ResolvedThemeParams<T extends keyof GraphTheme> = ThemeParams<T> extends []
+  ? [] : Exclude<ThemeParams<T>, []>;
+
+
+export const getThemeResolver = (
+  theme: Ref<Partial<GraphTheme>>,
+  themeMap: FullThemeMap,
+) => <
+  T extends keyof GraphTheme,
+  K extends ResolvedThemeParams<T>
+>(
+  prop: T,
+  ...args: K
+) => {
+    const themeMapEntry = themeMap[prop].findLast((themeMapEntryItem: FullThemeMap[T][number]) => {
+      const themeGetterOrValue = themeMapEntryItem.value
+      const themeValue = getValue<typeof themeGetterOrValue, K>(
+        themeGetterOrValue,
+        ...args
+      ) as UnwrapMaybeGetter<GraphTheme[T]>
+      return themeValue ?? false
+    })
+    const getter = themeMapEntry?.value ?? theme.value[prop]
+    if (!getter) throw new Error(`Theme property "${prop}" not found`)
+    return getValue<typeof getter, K>(getter, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
+  }
+
+/**
+ * describes the function that gets a value from a theme inquiry
+ */
+export type ThemeGetter = ReturnType<typeof getThemeResolver>
+
+export type GraphTheme = GraphThemeImport
+export type GraphThemeKey = keyof GraphTheme
+
+export const THEMES = {
+  light: LIGHT_THEME,
+  dark: DARK_THEME,
+} as const satisfies Record<string, GraphTheme>
+
+/**
+ * gets the theme attributes for a GNode at the point in time the function is called
+ *
+ * @param getTheme - the theme getter function
+ * @param node - the node to get the theme for
+ * @returns the theme attributes for the node
+ */
+export const resolveThemeForNode = (getTheme: ThemeGetter, node: GNode): BaseGraphNodeTheme => ({
+  nodeSize: getTheme('nodeSize', node),
+  nodeBorderWidth: getTheme('nodeBorderWidth', node),
+  nodeColor: getTheme('nodeColor', node),
+  nodeBorderColor: getTheme('nodeBorderColor', node),
+  nodeFocusColor: getTheme('nodeFocusColor', node),
+  nodeFocusBorderColor: getTheme('nodeFocusBorderColor', node),
+  nodeTextSize: getTheme('nodeTextSize', node),
+  nodeTextColor: getTheme('nodeTextColor', node),
+  nodeFocusTextColor: getTheme('nodeFocusTextColor', node),
+  nodeText: getTheme('nodeText', node),
+  nodeShape: getTheme('nodeShape', node),
+})
+
+/**
+ * gets the theme attributes for a GEdge at the point in time the function is called
+ *
+ * @param getTheme - the theme getter function
+ * @param edge - the edge to get the theme for
+ * @returns the theme attributes for the edge
+ */
+export const resolveThemeForEdge = (getTheme: ThemeGetter, edge: GEdge): BaseGraphEdgeTheme => ({
+  edgeWidth: getTheme('edgeWidth', edge),
+  edgeColor: getTheme('edgeColor', edge),
+  edgeTextSize: getTheme('edgeTextSize', edge),
+  edgeTextColor: getTheme('edgeTextColor', edge),
+  edgeFocusColor: getTheme('edgeFocusColor', edge),
+  edgeFocusTextColor: getTheme('edgeFocusTextColor', edge),
+  edgeTextFontWeight: getTheme('edgeTextFontWeight', edge),
+})
+
+export type NonColorGraphThemes = Pick<
+  GraphTheme,
+  'nodeShape' |
+  'nodeSize' |
+  'nodeBorderWidth' |
+  'nodeTextSize' |
+  'nodeAnchorRadius' |
+  'edgeWidth' |
+  'edgeTextSize' |
+  'nodeText' |
+  'edgeTextFontWeight' |
+  'linkPreviewWidth'
+>
+
+/**
+ * themes that do not depend on color scheme
+ */
+export const NON_COLOR_THEMES: NonColorGraphThemes = {
+  nodeShape: 'circle',
+  nodeSize: 35,
+  nodeBorderWidth: 8,
+  nodeTextSize: 24,
+  // Math.ceil(Math.sqrt(nodeSize) * 2)
+  nodeAnchorRadius: Math.ceil(Math.sqrt(35) * 2),
+  edgeWidth: 10,
+  edgeTextSize: 20,
+  nodeText: ({ label }) => label,
+  edgeTextFontWeight: 'bold',
+  linkPreviewWidth: 10,
+}
+
 export type BaseGraphNodeTheme = {
   nodeSize: number,
   nodeBorderWidth: number,
@@ -312,17 +555,10 @@ export type BaseGraphNodeTheme = {
   nodeShape: SupportedNodeShapes,
 }
 
-export type BaseGraphEdgeTheme = {
-  edgeColor: string,
-  edgeWidth: number,
-  edgeTextSize: number,
-  edgeTextColor: string,
-  edgeFocusTextColor: string,
-  edgeTextFontWeight: TextFontWeight,
-  edgeFocusColor: string,
+export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEdgeGetter<BaseGraphEdgeTheme> & {
+  graphBgColor: string,
+  graphBgPatternColor: string,
 }
-
-export type FocusGraphTheme = {}
 
 export type DraggableGraphTheme = {}
 
@@ -334,18 +570,64 @@ export type NodeAnchorGraphTheme = {
   linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
 }
 
-export type MarqueeGraphTheme = {}
-
 export type UserEditableGraphTheme = {}
 
 export type PersistentGraphTheme = {}
 
 export type CollaborativeGraphTheme = {}
 
-export type FullThemeMap = {
-  [K in keyof GraphTheme]: ThemeMapEntry<K>[]
+export type GraphTheme = (
+  BaseGraphTheme &
+  FocusGraphTheme &
+  DraggableGraphTheme &
+  NodeAnchorGraphTheme &
+  MarqueeGraphTheme &
+  UserEditableGraphTheme &
+  PersistentGraphTheme &
+  CollaborativeGraphTheme
+)
+
+/**
+ * decomposes MaybeGetter<T, K> such that it turns T into T | void
+ */
+export type MaybeGetterOrVoid<T> = MaybeGetter<UnwrapMaybeGetter<T> | void, MaybeGetterParams<T>>
+
+type WrapWithNodeGetter<T extends Record<string, any>> = {
+  [K in keyof T]: NodeGetterOrValue<T[K]>
 }
 
+export type ThemeMapEntry<T extends keyof GraphTheme> = {
+  value: MaybeGetterOrVoid<GraphTheme[T]>,
+  useThemeId: string,
+}
+
+export type PartialThemeMap = Partial<FullThemeMap>
+
+type ThemeableGraph = Pick<Graph, 'themeMap' | 'repaint'>
+
+export type TutorialStepForEvent<T extends GraphEvent> = {
+  /**
+   * the hint to display to the user in order to complete the step
+   */
+  hint: string;
+  /**
+   * the event that triggers a dismiss inquiry, if its just the event itself (T), then the step will be dismissed
+   * upon invocation of the event via event bus, if its an object, then the step will be dismissed upon invocation
+   * of the event and only if the predicate returns true
+   */
+  dismiss: T | {
+    event: T,
+    /**
+     * @param args the arguments passed to the event handler as defined in the event map
+     * @returns true if the step should be dismissed
+     */
+    predicate: (...args: Parameters<GraphEventMap[T]>) => boolean
+  };
+};
+
+/**
+ * describes a step that will resolve after a set amount of time
+ */
 export type TimeoutStep = {
   hint: string,
   dismiss: 'onTimeout',
@@ -353,7 +635,7 @@ export type TimeoutStep = {
    * time to wait before the next step, in milliseconds
    */
   after: number,
-}
+};
 
 type SharedStepProps = {
   /**
@@ -413,7 +695,35 @@ export type IntervalStep = {
 
 export type GraphEventStep = {
   [K in GraphEvent]: TutorialStepForEvent<K>
-}
+}[GraphEvent];
+
+/**
+ * describes a step in a tutorial sequence
+ */
+export type TutorialStep = (
+  GraphEventStep |
+  TimeoutStep |
+  IntervalStep
+) & SharedStepProps;
+
+/**
+ * describes a list of tutorial steps that will be executed in order from index 0 to n - 1
+ */
+export type TutorialSequence = TutorialStep[];
+
+
+/**
+ * time to wait (in milliseconds) between the dismissal of a step and the initialization of the next step
+ */
+export const DELAY_UNTIL_NEXT_STEP = 1000;
+
+export const TUTORIAL_THEME_ID = 'tutorial'
+
+export type TutorialControls = ReturnType<typeof useBasicsTutorial>;
+
+export type UseGraph = typeof useGraph
+
+export type Graph = ReturnType<UseGraph>
 
 export type GraphOptions = {
   theme: Partial<GraphTheme>;
@@ -456,6 +766,51 @@ export type GEdge = {
   type: 'directed' | 'undirected',
 }
 
+export type Aggregator = SchemaItem[]
+
+export type UpdateAggregator = (aggregator: Aggregator) => Aggregator
+
+export type RemoveAnyArray<T extends any[]> = T extends ['!!!-@-NOT-A-TYPE-@-!!!'][] ? never : T
+
+export type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
+
+export type NodeGetterOrValue<T> = MaybeGetter<T, [GNode]>
+export type EdgeGetterOrValue<T> = MaybeGetter<T, [GEdge]>
+
+/**
+ * @describes the value of a MaybeGetter
+*/
+export type UnwrapMaybeGetter<T> = T extends MaybeGetter<infer U, infer _> ? U : T
+
+/**
+ * @describes the parameters of a MaybeGetter
+*/
+export type MaybeGetterParams<T> = RemoveAnyArray<T extends MaybeGetter<infer _, infer K> ? K : []>
+
+type EventNames = keyof HTMLElementEventMap
+
+type FilterEventNames<T> = {
+  [K in EventNames]: HTMLElementEventMap[K] extends T ? K : never
+}[EventNames]
+
+type MouseEventNames = FilterEventNames<MouseEvent>
+type KeyboardEventNames = FilterEventNames<KeyboardEvent>
+
+type EventMap<T extends EventNames, E> = Record<T, (ev: E) => void>
+
+export type MouseEventMap = EventMap<MouseEventNames, MouseEvent>
+export type KeyboardEventMap = EventMap<KeyboardEventNames, KeyboardEvent>
+
+export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][]
+export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
+
+type BaseGraphTypes = 'node' | 'edge'
+type MarqueeGraphTypes = 'marquee-selection-box'
+type NodeAnchorGraphTypes = 'node-anchor' | 'link-preview'
+
+/**
+ * @describes a schema item that can be fed into the aggregator in order to be rendered on the canvas
+ */
 export type SchemaItem = {
   /**
    * unique identifier for the schema item
@@ -489,6 +844,57 @@ export type GraphPlaygroundControls = {
   collab: boolean,
   settings: boolean,
 }
+
+export type AdjacencyMap = Map<number, number[]>;
+
+type Color
+} from "@colors";
+import { TRANSIENT_COLOR } from "./colors";
+import { useMarkovChainSCC } from "./useSCC";
+import type { GNode, Graph } from "@graph/types";
+
+const defaultColors = [
+  color.RED,
+  color.YELLOW,
+  color.GREEN,
+  color.BLUE,
+  color.INDIGO,
+  color.PURPLE,
+  color.PINK,
+];
+
+export const markovSccColorizer = (
+  graph: Graph,
+  colors: Color[] = defaultColors
+) => {
+
+  const adjList = computed(() => nodesEdgesToAdjList(graph.nodes.value, graph.edges.value));
+
+  const { markovClasses, nodeToConnectedComponentMap } = useMarkovChainSCC(adjList);
+  const transientStates = computed(() => markovClasses.value.transientClasses.flat());
+
+  const getColor = (node: GNode) => {
+    const label = Number(node.label);
+    if (transientStates.value.includes(label)) return TRANSIENT_COLOR;
+    const componentIndex = nodeToConnectedComponentMap.value.get(label);
+    if (componentIndex === undefined) return TRANSIENT_COLOR;
+    return colors[componentIndex % colors.length];
+  }
+
+  graph.theme.value.nodeBorderColor = getColor;
+  graph.theme.value.nodeAnchorColor = getColor;
+  graph.theme.value.nodeAnchorColorWhenParentFocused = getColor;
+  graph.theme.value.nodeFocusBorderColor = getColor;
+  graph.theme.value.nodeFocusColor = GRAY_800;
+}
+
+export type AlgoName = keyof typeof algos
+
+export type Trace = string[]
+
+export type BFSLevelRecord = Record<GNode['id'], number>;
+
+export type Arrow = Line
 
 export type Circle = {
   at: Coordinate,
@@ -549,6 +955,8 @@ export type Triangle = {
   color?: string,
 }
 
+export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'arrow' | 'uturn' | 'cross'
+
 export type Shape = {
   /**
    * a unique identifier for the shape
@@ -607,11 +1015,6 @@ export type Shape = {
   activateTextArea?: (handler: (str: string) => void) => void,
 }
 
-export type Coordinate = {
-  x: number,
-  y: number,
-}
-
 export type TextAreaNoLocation = {
   /**
    * the text areas inner text
@@ -630,8 +1033,11 @@ export type TextAreaNoLocation = {
 
 export type TextArea = {
   at: Coordinate,
-}
+} & TextAreaNoLocation
 
+export type TextFontWeight = 'lighter' | 'normal' | 'bold' | 'bolder'
+
+// the text displayed in the text area
 export type Text = {
   content: string,
   fontSize?: number,
@@ -694,3 +1100,67 @@ export type ProductInfo = {
    */
   menu?: MainPageInfo,
 }
+
+export type Color = string;
+
+interface Array<T> {
+    findLast<S extends T>(
+      predicate: (value: T, index: number, array: T[]) => value is S,
+      thisArg?: any
+    ): S | undefined;
+    findLast(
+      predicate: (value: T, index: number, array: T[]) => unknown,
+      thisArg?: any
+    ): T | undefined;
+    findLastIndex(
+      predicate: (value: T, index: number, array: T[]) => unknown,
+      thisArg?: any
+    ): number;
+  }
+}
+
+export type DeepPartial<T> = {
+  [K in keyof T]?: K extends Record<any, any>
+  ? DeepPartial<T[K]>
+  : T[K];
+};
+
+/**
+ * make every key in an object required including nested objects
+ */
+export type DeepRequired<T> = {
+  [K in keyof T]-?: T[K] extends Record<any, any>
+  ? DeepRequired<T[K]>
+  : T[K];
+};
+
+/**
+ * makes only certain keys K in an object T optional
+ */
+export type PartiallyPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+
+/**
+ * helper types for nested keys
+ */
+type AcceptableKeys = string | number | symbol
+type AcceptableObject = Record<AcceptableKeys, any>
+
+/**
+ * get a clean union of all paths in an object
+ */
+export type NestedKeys<T extends AcceptableObject> = T extends AcceptableObject ? {
+  [K in keyof T]: K | (
+    Extract<T[K], AcceptableObject> extends AcceptableObject
+    ? K extends string
+    // @ts-ignore this works
+    ? `${K}.${NestedKeys<Required<T[K]>>}` : never : never
+  )
+}[keyof T] : never
+
+type OnlyObj<T> = Extract<T, object>
+
+type OnlyObjNested<T> = {
+  [K in keyof T]: OnlyObj<T[K]> extends never ? T[K] : OnlyObj<T[K]>
+}
+
+export type DeepValue<T, Path extends string> = ExecuteDeepValue<OnlyObjNested<T>, Path>
