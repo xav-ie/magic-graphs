@@ -2,7 +2,7 @@ import type { GEdge, GNode } from "@graph/types";
 import { computed } from "vue";
 import type { Ref } from "vue";
 
-export const useNodeEdgeMap = (nodes: Ref<GNode>, edges: Ref<GEdge>) => {
+export const useNodeEdgeMap = (nodes: Ref<GNode[]>, edges: Ref<GEdge[]>) => {
   const nodeIdToNodeMap = computed(() => {
     const map = new Map<GNode['id'], GNode>()
     for (const node of nodes.value) {
@@ -21,3 +21,7 @@ export const useNodeEdgeMap = (nodes: Ref<GNode>, edges: Ref<GEdge>) => {
 
   return { nodeIdToNodeMap, edgeIdToEdgeMap }
 }
+
+export type UseNodeEdgeMap = typeof useNodeEdgeMap
+export type NodeMap = ReturnType<UseNodeEdgeMap>['nodeIdToNodeMap']
+export type EdgeMap = ReturnType<UseNodeEdgeMap>['edgeIdToEdgeMap']
