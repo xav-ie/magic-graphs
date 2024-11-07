@@ -1,6 +1,8 @@
-import type { Coordinate } from "@shape/types";
+import type { Coordinate, BoundingBox } from "@shape/types";
 import { LINE_DEFAULTS } from ".";
 import type { Line } from ".";
+import { rectEfficientHitbox } from "@shape/rect/hitbox";
+
 
 /**
  * @param point - the point to check if it is in the line
@@ -38,3 +40,27 @@ export const lineHitbox = (line: Line) => (point: Coordinate) => {
 
   return distanceSquared <= (width / 2) ** 2;
 };
+
+export const lineEfficientHitbox = (line: Line) => {
+  const {
+    start,
+    end,
+    width
+  } = {
+    ...LINE_DEFAULTS,
+    ...line
+  }
+
+  const minX = Math.min(start.x, end.x)
+  const minY = Math.min(start.y, end.y)
+  const hitboxWidth = Math.abs(start.x - end.x)
+  const hitboxHeight = Math.abs(start.y - end.y)
+
+  const isInRectEfficientHitbox = rectEfficientHitbox({
+    at: { x: minX - width / 2, y: minY - width / 2 },
+    width: hitboxWidth + width / 2,
+    height: hitboxHeight + width / 2
+  })
+
+  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
+}

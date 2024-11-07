@@ -1,6 +1,6 @@
 import { generateId } from "@graph/helpers"
 import type { Coordinate, Shape } from "@shape/types"
-import { triangleHitbox } from "./hitbox"
+import { triangleHitbox, triangleEfficientHitbox } from "./hitbox"
 import { drawTriangleWithCtx } from "./draw"
 
 export type Triangle = {
@@ -17,6 +17,7 @@ export const TRIANGLE_DEFAULTS = {
 export const triangle = (options: Triangle): Shape => {
   const drawShape = drawTriangleWithCtx(options)
   const shapeHitbox = triangleHitbox(options)
+  const efficientHitbox = triangleEfficientHitbox(options)
   const hitbox = (point: Coordinate) => {
     return shapeHitbox(point) // text not implemented yet
   }
@@ -34,5 +35,6 @@ export const triangle = (options: Triangle): Shape => {
 
     hitbox,
     shapeHitbox,
+    efficientHitbox,
   }
 }
