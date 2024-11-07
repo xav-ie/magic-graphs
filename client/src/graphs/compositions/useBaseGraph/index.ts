@@ -174,12 +174,7 @@ export const useBaseGraph = (
 
 
   const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
-  /**
-   * get an edge by its id
-   *
-   * @param id
-   * @returns the edge or undefined if not found
-   */
+
   const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
 
   const addNode = (
@@ -224,11 +219,6 @@ export const useBaseGraph = (
     repaintMoveNode()
   }
 
-  /**
-    @param x - the x coord
-    @param y - the y coord
-    @returns the node at given coords or undefined if not there or obscured by another schema item
-  */
   const getNodeByCoordinates = (x: number, y: number) => {
     const topItem = getSchemaItemsByCoordinates(x, y).pop()
     if (!topItem) return
