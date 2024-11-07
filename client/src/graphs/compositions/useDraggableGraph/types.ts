@@ -1,3 +1,9 @@
+import type { GNode } from "@graph/types"
+
 /**
- * type declarations for draggable graph api
+ * information for the node being dragged
  */
+export type ActiveDragNode = {
+  node: GNode,
+  startingCoordinates: { x: number, y: number }
+}

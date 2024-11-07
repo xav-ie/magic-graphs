@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import type { Ref } from 'vue'
 import type { GNode, GraphOptions } from '@graph/types'
 import { useFocusGraph } from '@graph/compositions/useFocusGraph';
+import type { ActiveDragNode } from './types';
 
 export const useDraggableGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -10,10 +11,7 @@ export const useDraggableGraph = (
 
   const graph = useFocusGraph(canvas, options)
 
-  const activeDragNode = ref<{
-    node: GNode,
-    startingCoordinates: { x: number, y: number }
-  } | undefined>()
+  const activeDragNode = ref<ActiveDragNode | undefined>()
 
   const beginDrag = (ev: MouseEvent) => {
     const { offsetX, offsetY } = ev;
