@@ -5,7 +5,7 @@ import type {
   TextAreaNoLocation
 } from "@shape/types"
 import { drawUTurnWithCtx } from "./draw"
-import { uturnHitbox } from "./hitbox"
+import { uturnHitbox, uturnEfficientHitbox } from "./hitbox"
 import {
   drawTextAreaMatteOnUTurn,
   drawTextAreaOnUTurn,
@@ -45,6 +45,7 @@ export const uturn = (options: UTurn): Shape => {
 
   const shapeHitbox = uturnHitbox(options);
   const textHitbox = uturnTextHitbox(options);
+  const efficientHitbox = uturnEfficientHitbox(options)
   const hitbox = (point: Coordinate) => {
     return textHitbox?.(point) || shapeHitbox(point)
   }
@@ -80,6 +81,7 @@ export const uturn = (options: UTurn): Shape => {
     hitbox,
     shapeHitbox,
     textHitbox,
+    efficientHitbox,
 
     activateTextArea,
   }
