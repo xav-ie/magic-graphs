@@ -44,18 +44,22 @@ export const lineHitbox = (line: Line) => (point: Coordinate) => {
 export const lineEfficientHitbox = (line: Line) => {
   const {
     start,
-    end
-  } = line
+    end,
+    width
+  } = {
+    ...LINE_DEFAULTS,
+    ...line
+  }
 
   const minX = Math.min(start.x, end.x)
   const minY = Math.min(start.y, end.y)
-  const width = Math.abs(start.x - end.x)
-  const height = Math.abs(start.y - end.y)
+  const hitboxWidth = Math.abs(start.x - end.x)
+  const hitboxHeight = Math.abs(start.y - end.y)
 
   const isInRectEfficientHitbox = rectEfficientHitbox({
-    at: { x: minX, y: minY },
-    width,
-    height
+    at: { x: minX - width / 2, y: minY - width / 2 },
+    width: hitboxWidth + width / 2,
+    height: hitboxHeight + width / 2
   })
 
   return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
