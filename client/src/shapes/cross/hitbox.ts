@@ -1,7 +1,7 @@
 import { CROSS_DEFAULTS } from ".";
 import type { Cross } from ".";
-import { rectHitbox } from "@shape/rect/hitbox";
-import type { Coordinate } from "@shape/types";
+import { rectHitbox, rectEfficientHitbox } from "@shape/rect/hitbox";
+import type { Coordinate, BoundingBox } from "@shape/types";
 
 /**
  * @param point - the point to check if it is in the cross
@@ -38,3 +38,18 @@ export const crossHitbox = (cross: Cross) => {
 
   return (point: Coordinate) => horizontalHitbox(point) || verticalHitbox(point);
 };
+
+export const crossEfficientHitbox = (cross: Cross) => {
+
+  const {
+    at,
+    size
+  } = cross
+
+  const isInRectEfficientHitbox = rectEfficientHitbox({
+    at: { x: at.x - size, y: at.y - size },
+    width: 2 * size,
+    height: 2 * size
+  })
+  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
+}
