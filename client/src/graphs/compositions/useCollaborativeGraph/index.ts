@@ -122,7 +122,7 @@ export const useCollaborativeGraph = (
   })
 
   socket.on('nodeMoved', (node) => {
-    graph.moveNode(node.id, node.x, node.y, { broadcast: false })
+    graph.moveNode(node.id, node, { broadcast: false })
   })
 
   socket.on('edgeAdded', (node) => {

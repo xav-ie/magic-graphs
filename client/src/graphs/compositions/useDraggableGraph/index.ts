@@ -40,9 +40,10 @@ export const useDraggableGraph = (
     const dx = offsetX - startingCoordinatesOfDrag.value.x;
     const dy = offsetY - startingCoordinatesOfDrag.value.y;
     graph.moveNode(
-      nodeBeingDragged.value.id,
-      nodeBeingDragged.value.x + dx,
-      nodeBeingDragged.value.y + dy
+      nodeBeingDragged.value.id, {
+        x: nodeBeingDragged.value.x + dx,
+        y: nodeBeingDragged.value.y + dy
+      },
     );
     startingCoordinatesOfDrag.value = { x: offsetX, y: offsetY }
   }

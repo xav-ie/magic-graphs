@@ -5,7 +5,7 @@
 
 export type FocusOption = {
   /**
-   * whether to focus the newly added item via useFocusGraph
+   * whether to focus the newly added item
    * @default true
    */
   focus: boolean
@@ -16,8 +16,8 @@ export type FocusOption = {
  */
 export type BroadcastOption = {
   /**
-   * whether to broadcast the newly added node to
-   * connected collaborators via useCollaborativeGraph (socket.io)
+   * whether to broadcast the newly added item to
+   * connected collaborators
    * @default true
    */
   broadcast: boolean

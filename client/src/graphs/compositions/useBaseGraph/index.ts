@@ -73,6 +73,7 @@ export const useBaseGraph = (
 
   const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
 
+
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
 
@@ -171,7 +172,14 @@ export const useBaseGraph = (
     return map
   })
 
+
   const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
+  /**
+   * get an edge by its id
+   *
+   * @param id
+   * @returns the edge or undefined if not found
+   */
   const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
 
   const addNode = (
@@ -199,8 +207,7 @@ export const useBaseGraph = (
   const repaintMoveNode = repaint('base-graph/move-node')
   const moveNode = (
     id: GNode['id'],
-    x: number,
-    y: number,
+    coords: { x: number, y: number },
     options: Partial<MoveNodeOptions> = {}
   ) => {
     const node = getNode(id)
@@ -211,8 +218,8 @@ export const useBaseGraph = (
       ...options
     }
 
-    node.x = x
-    node.y = y
+    node.x = coords.x
+    node.y = coords.y
     emit('onNodeMoved', node, fullOptions)
     repaintMoveNode()
   }
@@ -366,22 +373,95 @@ export const useBaseGraph = (
   subscribe('onEdgeWeightChange', () => repaint('base-graph/on-edge-weight-change')())
 
   return {
+    /**
+     * all the nodes contained in the graph
+     */
     nodes,
-    getNode,
-
+    /**
+     * all the edges contained in the graph
+     */
     edges,
+
+    /**
+     * get a node by its id
+     *
+     * @param id
+     * @returns the node or undefined if not found
+     */
+    getNode,
+    /**
+     * get an edge by its id
+     *
+     * @param id
+     * @returns the edge or undefined if not found
+     */
     getEdge,
 
+    /**
+     * add a node to the graph
+     *
+     * @param node - the node to add
+     * @param options - override default effects (onNodeAdded event)
+     * @returns the added node or undefined if not added
+     */
     addNode,
+    /**
+     * move a node to a new position (in place mutation)
+     *
+     * @param id - the id of the node to move
+     * @param coords - the new coordinates (x, y)
+     * @param options - override default effects (onNodeMoved event)
+     * @returns void
+     */
     moveNode,
+    /**
+     * remove a node from the graph
+     *
+     * @param id - the id of the node to remove
+     * @param options - override default effects (onNodeRemoved event)
+     * @returns the removed node or undefined if not removed
+     */
     removeNode,
 
+    /**
+     * add an edge to the graph
+     *
+     * @param edge - the edge to add
+     * @param options - override default effects (onEdgeAdded event)
+     * @returns the added edge or undefined if not added
+     */
     addEdge,
+    /**
+     * remove an edge from the graph
+     *
+     * @param edgeId - the id of the edge to remove
+     * @param options - override default effects (onEdgeRemoved event)
+     * @returns the removed edge or undefined if not removed
+     */
     removeEdge,
 
+    /**
+     * get a node by its coordinates
+     *
+     * @param x - the x coord
+     * @param y - the y coord
+     * @returns the node at given coords or undefined if not there or obscured by another schema item
+     */
     getNodeByCoordinates,
+    /**
+     * get all schema items at given coordinates
+     *
+     * @param x - the x coord
+     * @param y - the y coord
+     * @returns an array where the first item is the bottom most schema item and the last is the top most
+     * @example // returns [node, nodeAnchor] where a nodeAnchor is sitting on top of a node
+     * getSchemaItemsByCoordinates(200, 550)
+     */
     getSchemaItemsByCoordinates,
 
+    /**
+     * a mapping of all graph events to a set of their callback functions
+     */
     eventBus,
     subscribe,
     unsubscribe,

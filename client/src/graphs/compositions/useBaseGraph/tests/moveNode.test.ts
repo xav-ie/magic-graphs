@@ -10,8 +10,8 @@ describe("base graph - moveNode", () => {
     const { id: node1Id } = graph.addNode({ x: 0, y: 0 });
     const { id: node2Id } = graph.addNode({ x: 1, y: 1 });
 
-    graph.moveNode(node1Id, 2, 2);
-    graph.moveNode(node2Id, 3, 3);
+    graph.moveNode(node1Id, { x: 2, y: 2 });
+    graph.moveNode(node2Id, { x: 3, y: 3 });
 
     expect(graph.nodes.value).toMatchObject([
       { x: 2, y: 2 },
@@ -23,7 +23,7 @@ describe("base graph - moveNode", () => {
     graph.nodes.value = []
     const node = graph.addNode({ x: 1, y: 1 });
 
-    graph.moveNode("invalid-id", 2, 2);
+    graph.moveNode("invalid-id", { x: 2, y: 2 });
 
     expect(node.x).toEqual(1);
     expect(node.y).toEqual(1);
