@@ -12,9 +12,6 @@ function extractInterfaces(fileContent) {
 
   for (let i = 0; i < lines.length; i++) {
     const isLineMatched = regex.test(lines[i]);
-    if (lines[i].includes('GraphEvents')) {
-      console.log('Found interface:', lines[i]);
-    }
     if (isLineMatched) {
       const interfaceDef = [];
       interfaceDef.push('// @ts-ignore');
