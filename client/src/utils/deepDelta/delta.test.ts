@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { delta } from './delta';
+import { delta } from '.';
 
 test('deepDelta standard', () => {
 
