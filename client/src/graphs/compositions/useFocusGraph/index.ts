@@ -15,8 +15,8 @@ import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
-import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES} from "@graph/compositions/useFocusGraphTypes";
-import type { FocusedItem, MaybeId } from "@graph/compositions/useFocusGraphTypes";
+import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES} from "@graph/compositions/useFocusGraph/types";
+import type { FocusedItem, MaybeId } from "@graph/compositions/useFocusGraph/types";
 
 export const useFocusGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -60,11 +60,11 @@ export const useFocusGraph = (
     // handle text areas
     const inATextArea = topItem.shape.textHitbox?.({ x, y })
     const canEdit = (
-      inATextArea && 
-      graph.settings.value.edgeLabelsEditable && 
+      inATextArea &&
+      graph.settings.value.edgeLabelsEditable &&
       topItem.graphType === 'edge'
     )
-    
+
     if (canEdit) return handleTextArea(topItem)
 
     const canFocus = FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)

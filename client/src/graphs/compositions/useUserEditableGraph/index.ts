@@ -4,8 +4,8 @@ import type {
   GNode,
   GraphOptions
 } from "@graph/types"
-import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraphTypes"
-import { useMarqueeGraph } from './useMarqueeGraph'
+import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types"
+import { useMarqueeGraph } from '@graph/compositions/useMarqueeGraph'
 
 /**
  * The user editable graph implements handlers for node creation,

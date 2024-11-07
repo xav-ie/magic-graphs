@@ -6,8 +6,8 @@ import type {
   MoveNodeOptions,
   AddEdgeOptions,
   RemoveEdgeOptions,
-} from "@graph/compositions/useBaseGraphTypes";
-import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraphTypes";
+} from "@graph/compositions/useBaseGraph/types";
+import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types";
 import type { GraphTheme } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
 

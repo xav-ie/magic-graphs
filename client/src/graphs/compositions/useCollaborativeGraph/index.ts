@@ -10,16 +10,16 @@ import type {
   AddNodeOptions,
   MoveNodeOptions,
   RemoveNodeOptions
-} from "@graph/compositions/useBaseGraphTypes";
+} from "@graph/compositions/useBaseGraph/types";
 import { collabTagShapes } from "@graph/schematics/collabTag";
 import type { GraphEventMap } from "@graph/events/types";
-import { COLLAB_COLORS } from "@graph/compositions/useCollaborativeGraphTypes";
+import { COLLAB_COLORS } from "@graph/compositions/useCollaborativeGraph/types";
 import type {
   Collaborator,
   CollaboratorMap,
   GraphEvents,
   GraphState
-} from "@graph/compositions/useCollaborativeGraphTypes";
+} from "@graph/compositions/useCollaborativeGraph/types";
 import { circle, rect } from "@shapes";
 
 const getSocketURL = () => {
