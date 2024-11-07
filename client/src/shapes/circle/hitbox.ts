@@ -30,5 +30,4 @@ export const circleEfficientHitbox = (circle: Circle) => {
   })
 
   return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
-
 }
