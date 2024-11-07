@@ -2,7 +2,7 @@ import {
   GEdge,
   GNode,
   GraphState
-} from "./graphTypes"
+} from "./clientTypes"
 
 /**
  * maps the room id to the live version of the graph for that room

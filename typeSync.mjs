@@ -6,34 +6,40 @@ const OUTPUT_FILE = './server/src/clientTypes.ts';
 
 function extractInterfaces(fileContent) {
   const interfaces = [];
-  const regex = /^((export type )|(export interface )|(type )|(interface ))/gm;
+  const regex = /^((export type )|(export interface )|(type ))/gm;
 
   const lines = fileContent.split('\n');
 
   for (let i = 0; i < lines.length; i++) {
-    const isLineMatched = regex.test(lines[i].trim());
-
+    const isLineMatched = regex.test(lines[i]);
+    if (lines[i].includes('GraphEvents')) {
+      console.log('Found interface:', lines[i]);
+    }
     if (isLineMatched) {
-      const interfaceDef = [lines[i]];
+      const interfaceDef = [];
+      interfaceDef.push('// @ts-ignore');
+      interfaceDef.push(lines[i]);
 
-      if (!lines[i+1]?.trim()) {
+      i++;
+      if (!lines[i]?.trim()) {
         interfaces.push(interfaceDef.join('\n'));
         continue;
       }
 
-      for (let j = i + 1; j < lines.length; j++) {
-        interfaceDef.push(lines[j]);
-        if (lines[j] === '}') {
-          break;
-        }
+      while (lines[i] !== '}' && lines[i] !== undefined) {
+        interfaceDef.push('// @ts-ignore');
+        interfaceDef.push(lines[i]);
+        i++;
       }
 
-      i = i + interfaceDef.length;
+      if (lines[i] === '}') {
+        interfaceDef.push('}');
+      }
+
       interfaces.push(interfaceDef.join('\n'));
     }
   }
 
-  // if (interfaces.length > 0) console.log(interfaces);
   return interfaces;
 }
 
