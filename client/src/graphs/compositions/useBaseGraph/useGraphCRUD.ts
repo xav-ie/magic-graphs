@@ -1,12 +1,26 @@
-import type { GEdge, GNode, Graph } from "@graph/types";
+import type { GEdge, GNode } from "@graph/types";
 import type { NodeMap, EdgeMap } from "./useNodeEdgeMap";
 import type { PartiallyPartial } from "@utils/types";
-import { ADD_EDGE_DEFAULTS, ADD_EDGE_OPTIONS_DEFAULTS, ADD_NODE_OPTIONS_DEFAULTS, MOVE_NODE_OPTIONS_DEFAULTS, REMOVE_EDGE_OPTIONS_DEFAULTS, REMOVE_NODE_OPTIONS_DEFAULTS, type AddEdgeOptions, type AddNodeOptions, type MoveNodeOptions, type RemoveEdgeOptions, type RemoveNodeOptions } from "./types";
+import {
+  ADD_EDGE_DEFAULTS,
+  ADD_EDGE_OPTIONS_DEFAULTS,
+  ADD_NODE_OPTIONS_DEFAULTS,
+  MOVE_NODE_OPTIONS_DEFAULTS,
+  REMOVE_EDGE_OPTIONS_DEFAULTS,
+  REMOVE_NODE_OPTIONS_DEFAULTS
+} from "./types";
+import type {
+  AddEdgeOptions,
+  RemoveEdgeOptions,
+  MoveNodeOptions,
+  RemoveNodeOptions,
+  AddNodeOptions,
+} from "./types";
 import { generateId, getConnectedEdges } from "@graph/helpers";
 import type { Ref } from "vue";
 import type { Emitter } from "@graph/events";
 
-type Options = {
+type GraphCRUDOptions = {
   emit: Emitter,
   repaint: (key: string) => () => void,
   nodes: Ref<GNode[]>,
@@ -29,7 +43,7 @@ export const useGraphCRUD = ({
   edgeMap,
   repaint,
   emit,
-}: Options) => {
+}: GraphCRUDOptions) => {
 
   // READ OPERATIONS
 
