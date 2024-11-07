@@ -78,7 +78,7 @@ export type Emitter<
  * @returns an empty event bus with all events initialized to empty sets
  */
 export const getInitialEventBus = () => {
-  const eventBus: GraphEventBus = {
+  const eventBus = {
     /**
      * BaseGraphEvents
      */
@@ -124,7 +124,7 @@ export const getInitialEventBus = () => {
      */
     onNodeAnchorDragStart: new Set(),
     onNodeAnchorDrop: new Set(),
-  }
+  } as const satisfies GraphEventBus
 
   return eventBus
 }
