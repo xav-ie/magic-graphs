@@ -44,10 +44,10 @@ export const rect = (options: Rect): Shape => {
 
   const shapeHitbox = rectHitbox(options);
   const textHitbox = rectTextHitbox(options);
+  const efficientHitbox = rectEfficientHitbox(options)
   const hitbox = (point: Coordinate) => {
     return textHitbox?.(point) || shapeHitbox(point)
   }
-  const efficientHitbox = rectEfficientHitbox(options)
 
   const drawTextArea = drawTextAreaOnRect(options);
 
