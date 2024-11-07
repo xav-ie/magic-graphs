@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { useBaseGraph } from ".";
+import { useBaseGraph } from "..";
 import { ref } from "vue";
 
 describe("base graph - addNode", () => {

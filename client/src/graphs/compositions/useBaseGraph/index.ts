@@ -204,7 +204,7 @@ export const useBaseGraph = (
     options: Partial<MoveNodeOptions> = {}
   ) => {
     const node = getNode(id)
-    if (!node) throw new Error('tried to move node that does not exist')
+    if (!node) return
 
     const fullOptions = {
       ...MOVE_NODE_OPTIONS_DEFAULTS,
@@ -231,7 +231,7 @@ export const useBaseGraph = (
 
   const removeNode = (id: GNode['id'], options: Partial<RemoveNodeOptions> = {}) => {
     const node = getNode(id)
-    if (!node) throw new Error('tried to remove node that does not exist')
+    if (!node) return
 
     const fullOptions = {
       ...REMOVE_NODE_OPTIONS_DEFAULTS,
@@ -304,7 +304,7 @@ export const useBaseGraph = (
     options: Partial<RemoveEdgeOptions> = {}
   ) => {
     const edge = getEdge(edgeId)
-    if (!edge) throw new Error('tried to remove edge that does not exist')
+    if (!edge) return
 
     const fullOptions = {
       ...REMOVE_EDGE_OPTIONS_DEFAULTS,

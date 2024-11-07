@@ -1,9 +1,9 @@
 import { ref } from "vue";
-import { useBaseGraph } from ".";
+import { useBaseGraph } from "..";
 import { describe, expect, test } from "vitest";
 import { generateId } from "@graph/helpers";
 import type { GEdge } from "@graph/types";
-import { ADD_EDGE_DEFAULTS } from "./types";
+import { ADD_EDGE_DEFAULTS } from "../types";
 
 describe("base graph - addEdge", () => {
   const graph = useBaseGraph(ref());
