@@ -3,7 +3,6 @@ import {
   onMounted,
   onBeforeUnmount,
   watch,
-  computed,
 } from 'vue'
 import type { Ref } from 'vue'
 import type {
@@ -30,7 +29,6 @@ import { getInitialThemeMap } from '@graph/themes/types';
 import { delta } from '@utils/deepDelta/delta';
 import { clone } from '@utils/clone';
 import { getInitialEventBus, generateSubscriber } from '@graph/events';
-import { useAggregator } from '@graph/useAggregator';
 import {
   ADD_NODE_OPTIONS_DEFAULTS,
   REMOVE_NODE_OPTIONS_DEFAULTS,
@@ -50,6 +48,8 @@ import type { PartiallyPartial } from '@utils/types';
 import { DEFAULT_GRAPH_SETTINGS } from '@graph/settings';
 import type { GraphSettings } from '@graph/settings';
 import { getThemeResolver } from '@graph/themes/getThemeResolver';
+import { useNodeEdgeMap } from './useNodeEdgeMap';
+import { useAggregator } from './useAggregator';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -160,19 +160,14 @@ export const useBaseGraph = (
     return label.toString()
   }
 
-  const nodeIdToNodeMap = computed(() => {
-    const map = new Map<GNode['id'], GNode>()
-    for (const node of nodes.value) map.set(node.id, node)
-    return map
-  })
+  const { nodeIdToNodeMap, edgeIdToEdgeMap } = useNodeEdgeMap(nodes, edges)
 
-  const edgeIdToEdgeMap = computed(() => {
-    const map = new Map<GEdge['id'], GEdge>()
-    for (const edge of edges.value) map.set(edge.id, edge)
-    return map
-  })
-
-
+  /**
+   * get a node by its id
+   *
+   * @param id
+   * @returns the node or undefined if not found
+   */
   const getNode = (id: GNode['id']) => nodeIdToNodeMap.value.get(id)
 
   const getEdge = (id: GEdge['id']) => edgeIdToEdgeMap.value.get(id)
@@ -246,6 +241,12 @@ export const useBaseGraph = (
     setTimeout(repaint('base-graph/remove-node'), 5)
   }
 
+  /**
+   * get an edge by its id
+   *
+   * @param id
+   * @returns the edge or undefined if not found
+   */
   const addEdge = (
     edge: PartiallyPartial<GEdge, keyof typeof ADD_EDGE_DEFAULTS | 'id'>,
     options: Partial<AddEdgeOptions> = {}
@@ -372,19 +373,7 @@ export const useBaseGraph = (
      */
     edges,
 
-    /**
-     * get a node by its id
-     *
-     * @param id
-     * @returns the node or undefined if not found
-     */
     getNode,
-    /**
-     * get an edge by its id
-     *
-     * @param id
-     * @returns the edge or undefined if not found
-     */
     getEdge,
 
     /**
@@ -438,15 +427,7 @@ export const useBaseGraph = (
      * @returns the node at given coords or undefined if not there or obscured by another schema item
      */
     getNodeByCoordinates,
-    /**
-     * get all schema items at given coordinates
-     *
-     * @param x - the x coord
-     * @param y - the y coord
-     * @returns an array where the first item is the bottom most schema item and the last is the top most
-     * @example // returns [node, nodeAnchor] where a nodeAnchor is sitting on top of a node
-     * getSchemaItemsByCoordinates(200, 550)
-     */
+
     getSchemaItemsByCoordinates,
 
     /**

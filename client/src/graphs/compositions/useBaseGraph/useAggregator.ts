@@ -12,6 +12,12 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
   const aggregator = ref<Aggregator>([])
   const updateAggregator: UpdateAggregator[] = []
 
+  /**
+   * refresh the canvas
+   *
+   * @param repaintId - the id of the repaint event (for tracking)
+   * @returns a function that will repaint the canvas
+   */
   const repaint = (repaintId: string) => () => {
     if (!canvas.value) return
     const ctx = canvas.value.getContext('2d')
@@ -44,6 +50,15 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
     emit('onRepaint', ctx, repaintId)
   }
 
+  /**
+   * get all schema items at given coordinates
+   *
+   * @param x - the x coord
+   * @param y - the y coord
+   * @returns an array where the first item is the bottom most schema item and the last is the top most
+   * @example // returns [node, nodeAnchor] where a nodeAnchor is sitting on top of a node
+   * getSchemaItemsByCoordinates(200, 550)
+   */
   const getSchemaItemsByCoordinates = (x: number, y: number) => {
     return aggregator.value
       .sort((a, b) => a.priority - b.priority)

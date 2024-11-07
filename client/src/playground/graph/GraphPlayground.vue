@@ -16,6 +16,7 @@
   const graphElement = ref<HTMLCanvasElement>();
 
   const graph = useGraph(graphElement);
+  // graph.repaint();
 
   const tutorialControls = useBasicsTutorial(graph);
 
