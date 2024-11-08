@@ -57,12 +57,12 @@ export const getLabelAdjacencyList = ({
  * @returns an object containing the adjacency list and a human readable version of it using labels
  */
 export const useAdjacencyList = (graph: Graph) => {
-  const adjList = ref<AdjacencyList>({});
-  const labelAdjList = ref<AdjacencyList>({});
+  const adjacencyList = ref<AdjacencyList>({});
+  const labelAdjacencyList = ref<AdjacencyList>({});
 
   const makeAdjLists = () => {
-    adjList.value = getAdjacencyList(graph);
-    labelAdjList.value = getLabelAdjacencyList(graph);
+    adjacencyList.value = getAdjacencyList(graph);
+    labelAdjacencyList.value = getLabelAdjacencyList(graph);
   }
 
   makeAdjLists();
@@ -71,7 +71,13 @@ export const useAdjacencyList = (graph: Graph) => {
   onUnmounted(() => graph.unsubscribe('onStructureChange', makeAdjLists));
 
   return {
-    adjacencyList: adjList,
-    humanReadableAdjList: labelAdjList
+    /**
+     * an adjacency list representation of a graph where the keys are the ids of the nodes
+     */
+    adjacencyList,
+    /**
+     * an adjacency list representation of a graph where the keys are the labels of the nodes
+     */
+    labelAdjacencyList
   };
 };

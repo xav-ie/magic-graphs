@@ -15,20 +15,18 @@
 
   const graph = useGraph(graphEl, {
     settings: {
-      persistent: {
-        storageKey: "search-visualizer-graph",
-      }
-    }, 
+      persistentStorageKey: "search-visualizer-graph"
+    },
   });
 
-  const { humanReadableAdjList } = useAdjacencyList(graph);
+  const { labelAdjacencyList } = useAdjacencyList(graph);
 
   /**
    * a graph with traps to collect the traversal trace
    */
   const trappedGraph = computed(
     () =>
-      new Proxy(humanReadableAdjList.value, {
+      new Proxy(labelAdjacencyList.value, {
         get(target, prop, receiver) {
           trace.value.push(prop.toString());
           if (trace.value.length > 100)
