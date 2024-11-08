@@ -1,5 +1,5 @@
-import type { Graph } from '@graph/types';
-import { onUnmounted, ref } from 'vue';
+import type { GNode, Graph } from '@graph/types';
+import { computed, onUnmounted, ref } from 'vue';
 import { doesEdgeFlowOutOfToNode } from './helpers';
 
 /**
@@ -56,7 +56,14 @@ export const getLabelAdjacencyList = ({
  * @param graph - the graph instance
  * @returns an object containing the adjacency list and a human readable version of it using labels
  */
-export const useAdjacencyList = (graph: Graph) => {
+export const useAdjacencyList = (graph: Pick<
+  Graph,
+  'nodes' |
+  'edges' |
+  'getNode' |
+  'subscribe' |
+  'unsubscribe'
+>) => {
   const adjacencyList = ref<AdjacencyList>({});
   const labelAdjacencyList = ref<AdjacencyList>({});
 
@@ -64,6 +71,15 @@ export const useAdjacencyList = (graph: Graph) => {
     adjacencyList.value = getAdjacencyList(graph);
     labelAdjacencyList.value = getLabelAdjacencyList(graph);
   }
+
+  const fullNodeAdjacencyList = computed(() => {
+    const entries = Object.entries(adjacencyList.value);
+    const fullAdjList: Record<string, GNode[]> = {};
+    for (const [from, tos] of entries) {
+      fullAdjList[from] = tos.map(to => graph.getNode(to)!);
+    }
+    return fullAdjList;
+  })
 
   makeAdjLists();
 
@@ -78,6 +94,11 @@ export const useAdjacencyList = (graph: Graph) => {
     /**
      * an adjacency list representation of a graph where the keys are the labels of the nodes
      */
-    labelAdjacencyList
+    labelAdjacencyList,
+    /**
+     * an adjacency list representation of a graph where the keys are the ids of the nodes
+     * and the values are the full node objects instead of just their ids or labels
+     */
+    fullNodeAdjacencyList,
   };
 };
