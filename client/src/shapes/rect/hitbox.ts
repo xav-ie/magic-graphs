@@ -98,33 +98,23 @@ export const rectEfficientHitbox = (rectangle: Rect) => (boxToCheck: BoundingBox
     height: boxHeight,
   } = boxToCheck;
 
+  const rectLeft = Math.min(rectAt.x, rectAt.x + rectWidth);
+  const rectRight = Math.max(rectAt.x, rectAt.x + rectWidth);
+  const rectTop = Math.min(rectAt.y, rectAt.y + rectHeight);
+  const rectBottom = Math.max(rectAt.y, rectAt.y + rectHeight);
+
   const boxLeft = Math.min(boxAt.x, boxAt.x + boxWidth);
   const boxRight = Math.max(boxAt.x, boxAt.x + boxWidth);
   const boxTop = Math.min(boxAt.y, boxAt.y + boxHeight);
   const boxBottom = Math.max(boxAt.y, boxAt.y + boxHeight);
 
-  const corners = [
-    { x: rectAt.x, y: rectAt.y }, 
-    { x: rectAt.x + rectWidth, y: rectAt.y },
-    { x: rectAt.x, y: rectAt.y + rectHeight },
-    { x: rectAt.x + rectWidth, y: rectAt.y + rectHeight }, 
-  ];
-
-  let insideCount = 0;
-  for (const corner of corners) {
-    if (
-      corner.x >= boxLeft &&
-      corner.x <= boxRight &&
-      corner.y >= boxTop &&
-      corner.y <= boxBottom
-    ) {
-      insideCount++;
-    }
-
-    if (insideCount >= 2) {
-      return true;
-    }
+  if (rectRight <= boxLeft || boxRight <= rectLeft) {
+    return false;
   }
 
-  return false;
+  if (rectBottom <= boxTop || boxBottom <= rectTop) {
+    return false;
+  }
+
+  return true;
 };
