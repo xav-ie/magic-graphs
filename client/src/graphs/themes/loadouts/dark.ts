@@ -23,5 +23,8 @@ export const DARK_THEME: GraphTheme = {
   nodeAnchorColor: colors.GRAY_900,
   linkPreviewColor: colors.BLACK,
 
+  marqueeSelectionBoxColor: colors.WHITE + '15',
+  marqueeSelectionBoxBorderColor: colors.WHITE,
+
   ...NON_COLOR_THEMES,
 }

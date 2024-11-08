@@ -52,7 +52,10 @@ export type NodeAnchorGraphTheme = {
   linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
 }
 
-export type MarqueeGraphTheme = {}
+export type MarqueeGraphTheme = {
+  marqueeSelectionBoxColor: string,
+  marqueeSelectionBoxBorderColor: string,
+}
 
 export type UserEditableGraphTheme = {}
 
@@ -129,4 +132,10 @@ export const getInitialThemeMap = () => ({
   nodeAnchorColorWhenParentFocused: [],
   linkPreviewColor: [],
   linkPreviewWidth: [],
+
+  /**
+   * marquee themes
+   */
+  marqueeSelectionBoxColor: [],
+  marqueeSelectionBoxBorderColor: [],
 } as FullThemeMap)

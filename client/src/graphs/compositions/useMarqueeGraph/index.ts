@@ -20,11 +20,7 @@ export const useMarqueeGraph = (
   options: Partial<GraphOptions> = {},
 ) => {
 
-  const {
-    THEME_ID,
-    SELECTION_BORDER_COLOR,
-    SELECTION_BG_COLOR,
-  } = MARQUEE_CONSTANTS
+  const { THEME_ID } = MARQUEE_CONSTANTS
 
   const selectionBox = ref<BoundingBox | undefined>()
   const graph = useNodeAnchorGraph(canvas, options)
@@ -109,9 +105,9 @@ export const useMarqueeGraph = (
   const getSelectionBoxSchema = (box: BoundingBox) => {
     const shape = rect({
       ...box,
-      color: SELECTION_BG_COLOR,
+      color: graph.getTheme('marqueeSelectionBoxColor'),
       stroke: {
-        color: SELECTION_BORDER_COLOR,
+        color: graph.getTheme('marqueeSelectionBoxBorderColor'),
         width: 1,
       }
     })
