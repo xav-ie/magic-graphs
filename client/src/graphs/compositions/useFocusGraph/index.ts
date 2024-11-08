@@ -15,8 +15,9 @@ import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
-import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES} from "@graph/compositions/useFocusGraph/types";
+import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "@graph/compositions/useFocusGraph/types";
 import type { FocusedItem, MaybeId } from "@graph/compositions/useFocusGraph/types";
+import type { AddNodeOptions, FocusOption } from "../useBaseGraph/types";
 
 export const useFocusGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -70,11 +71,10 @@ export const useFocusGraph = (
   }
 
   const resetFocus = () => setFocus(undefined)
-  const setFocusToAddedNode = (node: GNode) => setFocus(node.id)
 
-  graph.subscribe('onGraphReset', resetFocus)
-  graph.subscribe('onMouseDown', handleFocusChange)
-  graph.subscribe('onNodeAdded', setFocusToAddedNode)
+  const setFocusToAddedItem = ({ id }: { id: string }, { focus }: FocusOption) => {
+    if (focus) setFocus(id)
+  }
 
   const focusedItem = computed<FocusedItem | undefined>(() => {
     if (!focusedItemId.value) return
@@ -109,18 +109,34 @@ export const useFocusGraph = (
     return getValue(graph.theme.value.edgeFocusColor, edge)
   })
 
-  graph.subscribe('onFocusChange', () => setTimeout(graph.repaint('focus-graph/on-focus-change'), 10))
-
-  graph.subscribe('onNodeAdded', (node, { focus }) => {
-    if (focus) setFocus(node.id)
-  })
-
-  graph.subscribe('onEdgeAdded', (edge, { focus }) => {
-    if (focus) setFocus(edge.id)
-  })
+  const repaintOnFocusChange = () => setTimeout(graph.repaint('focus-graph/on-focus-change'), 10)
 
   const stopClickOutsideListener = onClickOutside(canvas, resetFocus)
   onUnmounted(stopClickOutsideListener)
+
+  const activate = () => {
+    graph.subscribe('onFocusChange', repaintOnFocusChange)
+    graph.subscribe('onNodeAdded', setFocusToAddedItem)
+    graph.subscribe('onEdgeAdded', setFocusToAddedItem)
+    graph.subscribe('onMouseDown', handleFocusChange)
+    graph.subscribe('onGraphReset', resetFocus)
+  }
+
+  const deactivate = () => {
+    graph.unsubscribe('onFocusChange', repaintOnFocusChange)
+    graph.unsubscribe('onNodeAdded', setFocusToAddedItem)
+    graph.unsubscribe('onEdgeAdded', setFocusToAddedItem)
+    graph.unsubscribe('onMouseDown', handleFocusChange)
+    graph.unsubscribe('onGraphReset', resetFocus)
+    resetFocus()
+  }
+
+  graph.subscribe('onSettingsChange', (diff) => {
+    if (diff.focusable === false) deactivate()
+    else if (diff.focusable === true) activate()
+  })
+
+  if (graph.settings.value.focusable) activate()
 
   return {
     ...graph,

@@ -39,9 +39,13 @@ export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
 /**
  * FOCUS GRAPH SETTINGS
  */
-export type FocusGraphSettings = {}
+export type FocusGraphSettings = {
+  focusable: boolean;
+}
 
-export const DEFAULT_FOCUS_SETTINGS: FocusGraphSettings = {}
+export const DEFAULT_FOCUS_SETTINGS: FocusGraphSettings = {
+  focusable: true,
+}
 
 /**
  * DRAGGABLE GRAPH SETTINGS
