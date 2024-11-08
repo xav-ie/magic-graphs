@@ -95,8 +95,8 @@ export const useCollaborativeGraph = (
       if (!broadcast) return
       socket.emit('edgeRemoved', edge.id)
     },
-    onEdgeWeightChange: (edge: GEdge) => {
-      socket.emit('edgeWeightEdited', edge.id, edge.weight)
+    onEdgeLabelChange: (edge: GEdge) => {
+      socket.emit('edgeLabelEdited', edge.id, edge.label)
     },
     onMouseMove: (ev: MouseEvent) => {
       if (collaboratorCount.value < 1) return
@@ -133,11 +133,11 @@ export const useCollaborativeGraph = (
     graph.removeEdge(edgeId, { broadcast: false })
   })
 
-  socket.on('edgeWeightEdited', (edgeId, newWeight) => {
+  socket.on('edgeLabelEdited', (edgeId, newLabel) => {
     const edge = graph.getEdge(edgeId)
     if (!edge) throw new Error('edge not found')
-    edge.weight = newWeight
-    graph.repaint('collaborative-graph/edge-weight-edit')()
+    edge.label = newLabel
+    graph.repaint('collaborative-graph/edge-label-edit')()
   })
 
   const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'

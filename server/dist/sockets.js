@@ -76,9 +76,9 @@ const sockets = (httpServer) => {
             tracker.removeEdge(edgeId);
             socket.broadcast.to(tracker.getRoomId()).emit('edgeRemoved', edgeId);
         });
-        socket.on('edgeWeightEdited', (edgeId, newWeight) => {
-            tracker.updateEdge(edgeId, { weight: newWeight });
-            socket.broadcast.to(tracker.getRoomId()).emit('edgeWeightEdited', edgeId, newWeight);
+        socket.on('edgeLabelEdited', (edgeId, newLabel) => {
+            tracker.updateEdge(edgeId, { label: newLabel });
+            socket.broadcast.to(tracker.getRoomId()).emit('edgeLabelEdited', edgeId, newLabel);
         });
         socket.on('toServerCollaboratorMoved', ({ x, y }) => {
             const roomId = collaboratorIdToCollaborator[socket.id]?.roomId;

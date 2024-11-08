@@ -38,14 +38,10 @@ export const useFocusGraph = (
     schemaItem.shape.activateTextArea?.((str: string) => {
       const edge = graph.getEdge(schemaItem.id)
       if (!edge) throw new Error('textarea only implemented for edges')
-      const newWeight = graph.settings.value.edgeInputToWeight(str)
-      if (
-        newWeight === undefined ||
-        isNaN(newWeight) ||
-        edge.weight === newWeight
-      ) return
-      edge.weight = newWeight
-      graph.emit('onEdgeWeightChange', edge)
+      const newLabel = graph.settings.value.edgeInputToLabel(str)
+      if (newLabel === undefined || edge.label === newLabel) return
+      edge.label = newLabel
+      graph.emit('onEdgeLabelChange', edge)
     })
   }
 

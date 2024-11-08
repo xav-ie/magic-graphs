@@ -32,7 +32,7 @@ export type FocusOption = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * whether to focus the newly added item via useFocusGraph
+   * whether to focus the newly added item
 // @ts-ignore
    * @default true
 // @ts-ignore
@@ -46,9 +46,9 @@ export type BroadcastOption = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * whether to broadcast the newly added node to
+   * whether to broadcast the newly added item to
 // @ts-ignore
-   * connected collaborators via useCollaborativeGraph (socket.io)
+   * connected collaborators
 // @ts-ignore
    * @default true
 // @ts-ignore
@@ -71,6 +71,37 @@ export type RemoveEdgeOptions = BroadcastOption
 
 // @ts-ignore
 export type MoveNodeOptions = BroadcastOption
+
+// @ts-ignore
+export type UseAggregatorOptions = {
+// @ts-ignore
+  canvas: Ref<HTMLCanvasElement | null | undefined>
+// @ts-ignore
+  emit: GraphEventEmitter
+}
+
+// @ts-ignore
+type GraphCRUDOptions = {
+// @ts-ignore
+  emit: Emitter,
+// @ts-ignore
+  repaint: (key: string) => () => void,
+// @ts-ignore
+  nodes: Ref<GNode[]>,
+// @ts-ignore
+  edges: Ref<GEdge[]>,
+// @ts-ignore
+  nodeMap: NodeMap,
+// @ts-ignore
+  edgeMap: EdgeMap,
+}
+
+// @ts-ignore
+export type UseNodeEdgeMap = typeof useNodeEdgeMap
+// @ts-ignore
+export type NodeMap = ReturnType<UseNodeEdgeMap>['nodeIdToNodeMap']
+// @ts-ignore
+export type EdgeMap = ReturnType<UseNodeEdgeMap>['edgeIdToEdgeMap']
 
 // @ts-ignore
 export type Collaborator = {
@@ -128,7 +159,7 @@ export interface GraphEvents {
 // @ts-ignore
   edgeRemoved: (edgeId: GEdge['id']) => void
 // @ts-ignore
-  edgeWeightEdited: (edgeId: GEdge['id'], weight: number) => void
+  edgeLabelEdited: (edgeId: GEdge['id'], label: string) => void
 // @ts-ignore
 
 // @ts-ignore
@@ -157,6 +188,14 @@ export interface GraphEvents {
 
 // @ts-ignore
   leaveRoom: (confirmationCallback: () => void) => void
+}
+
+// @ts-ignore
+export type ActiveDragNode = {
+// @ts-ignore
+  node: GNode,
+// @ts-ignore
+  startingCoordinates: { x: number, y: number }
 }
 
 // @ts-ignore
@@ -279,7 +318,7 @@ export type Emitter<
 // @ts-ignore
 export const getInitialEventBus = () => {
 // @ts-ignore
-  const eventBus: GraphEventBus = {
+  const eventBus = {
 // @ts-ignore
     /**
 // @ts-ignore
@@ -303,7 +342,7 @@ export const getInitialEventBus = () => {
 // @ts-ignore
     onEdgeRemoved: new Set(),
 // @ts-ignore
-    onEdgeWeightChange: new Set(),
+    onEdgeLabelChange: new Set(),
 // @ts-ignore
 
 // @ts-ignore
@@ -371,7 +410,7 @@ export const getInitialEventBus = () => {
 // @ts-ignore
     onNodeAnchorDrop: new Set(),
 // @ts-ignore
-  }
+  } as const satisfies GraphEventBus
 // @ts-ignore
 
 // @ts-ignore
@@ -431,11 +470,11 @@ export type BaseGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * when an edge's weight is changed
+   * when an edge's text label is changed
 // @ts-ignore
    */
 // @ts-ignore
-  onEdgeWeightChange: (edge: GEdge) => void;
+  onEdgeLabelChange: (edge: GEdge) => void;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -651,15 +690,15 @@ export type BaseGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * a setter for edge weights, takes the inputted string and returns a number that will
+   * a setter for edge labels - takes the user inputted string and returns a string that will
 // @ts-ignore
-   * be set as the edge weight or undefined if the edge weight should not be set
+   * be set as the edge label or returns undefined if the edge label should not be set
 // @ts-ignore
-   * @default function that attempts to parse the input as a number and if successful returns the number
+   * @default function tries converting the user input to a number
 // @ts-ignore
    */
 // @ts-ignore
-  edgeInputToWeight: (input: string) => number | undefined;
+  edgeInputToLabel: (input: string) => string | undefined;
 }
 
 // @ts-ignore
@@ -721,13 +760,13 @@ export type UserEditableGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * the default weight to assign to edges when created using the UI
+   * the default label assigned to edges when created using the UI
 // @ts-ignore
    * @default 1
 // @ts-ignore
    */
 // @ts-ignore
-  userEditableAddedEdgeWeight: number,
+  userEditableAddedEdgeLabel: string,
 }
 
 // @ts-ignore
@@ -939,15 +978,9 @@ export const resolveThemeForNode = (getTheme: ThemeGetter, node: GNode): BaseGra
 // @ts-ignore
   nodeBorderColor: getTheme('nodeBorderColor', node),
 // @ts-ignore
-  nodeFocusColor: getTheme('nodeFocusColor', node),
-// @ts-ignore
-  nodeFocusBorderColor: getTheme('nodeFocusBorderColor', node),
-// @ts-ignore
   nodeTextSize: getTheme('nodeTextSize', node),
 // @ts-ignore
   nodeTextColor: getTheme('nodeTextColor', node),
-// @ts-ignore
-  nodeFocusTextColor: getTheme('nodeFocusTextColor', node),
 // @ts-ignore
   nodeText: getTheme('nodeText', node),
 // @ts-ignore
@@ -980,10 +1013,6 @@ export const resolveThemeForEdge = (getTheme: ThemeGetter, edge: GEdge): BaseGra
   edgeTextSize: getTheme('edgeTextSize', edge),
 // @ts-ignore
   edgeTextColor: getTheme('edgeTextColor', edge),
-// @ts-ignore
-  edgeFocusColor: getTheme('edgeFocusColor', edge),
-// @ts-ignore
-  edgeFocusTextColor: getTheme('edgeFocusTextColor', edge),
 // @ts-ignore
   edgeTextFontWeight: getTheme('edgeTextFontWeight', edge),
 // @ts-ignore
@@ -1060,13 +1089,7 @@ export type BaseGraphNodeTheme = {
 // @ts-ignore
   nodeBorderColor: string,
 // @ts-ignore
-  nodeFocusColor: string,
-// @ts-ignore
-  nodeFocusBorderColor: string,
-// @ts-ignore
   nodeText: string,
-// @ts-ignore
-  nodeFocusTextColor: string,
 // @ts-ignore
   nodeTextSize: number,
 // @ts-ignore
@@ -1086,11 +1109,7 @@ export type BaseGraphEdgeTheme = {
 // @ts-ignore
   edgeTextColor: string,
 // @ts-ignore
-  edgeFocusTextColor: string,
-// @ts-ignore
   edgeTextFontWeight: TextFontWeight,
-// @ts-ignore
-  edgeFocusColor: string,
 }
 
 // @ts-ignore
@@ -1102,21 +1121,21 @@ export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEd
 }
 
 // @ts-ignore
-export type FocusGraphTheme = {}
+export type FocusGraphTheme = {
+// @ts-ignore
+  nodeFocusColor: NodeGetterOrValue<string>;
+// @ts-ignore
+  nodeFocusBorderColor: NodeGetterOrValue<string>;
+// @ts-ignore
+  nodeFocusTextColor: NodeGetterOrValue<string>;
+// @ts-ignore
+  edgeFocusColor: EdgeGetterOrValue<string>;
+// @ts-ignore
+  edgeFocusTextColor: EdgeGetterOrValue<string>;
+}
 
 // @ts-ignore
-export type NodeAnchorGraphTheme = {
-// @ts-ignore
-  nodeAnchorRadius: NodeGetterOrValue<number>;
-// @ts-ignore
-  nodeAnchorColor: NodeGetterOrValue<string>;
-// @ts-ignore
-  nodeAnchorColorWhenParentFocused: NodeGetterOrValue<string>;
-// @ts-ignore
-  linkPreviewColor: MaybeGetter<string, [GNode, NodeAnchor]>;
-// @ts-ignore
-  linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
-}
+export type DraggableGraphTheme = {}
 
 // @ts-ignore
 export type MarqueeGraphTheme = {}
@@ -1489,9 +1508,11 @@ export type GEdge = {
 // @ts-ignore
   label: string,
 // @ts-ignore
-
+  /**
 // @ts-ignore
-  weight: number,
+   * does this edge travel in one direction or both?
+// @ts-ignore
+   */
 // @ts-ignore
   type: 'directed' | 'undirected',
 }
@@ -1622,14 +1643,6 @@ export type SchemaItem = {
    */
 // @ts-ignore
   shape: Shape,
-}
-
-// @ts-ignore
-export type UseAggregatorOptions = {
-// @ts-ignore
-  canvas: Ref<HTMLCanvasElement | null | undefined>
-// @ts-ignore
-  emit: GraphEventEmitter
 }
 
 // @ts-ignore

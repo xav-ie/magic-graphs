@@ -52,7 +52,7 @@ export interface GraphEvents {
 
   edgeAdded: (edge: GEdge) => void
   edgeRemoved: (edgeId: GEdge['id']) => void
-  edgeWeightEdited: (edgeId: GEdge['id'], weight: number) => void
+  edgeLabelEdited: (edgeId: GEdge['id'], label: string) => void
 
   collaboratorJoined: (collaborator: Collaborator) => void
   collaboratorLeft: (collaboratorId: Collaborator['id']) => void

@@ -45,7 +45,6 @@ export const ADD_EDGE_OPTIONS_DEFAULTS: AddEdgeOptions = {
 
 export const ADD_EDGE_DEFAULTS = {
   type: 'directed',
-  weight: 1,
   label: '',
 } as const
 

@@ -78,11 +78,11 @@ export const useGraphBtns = (graph: Graph) => {
   const changeEdgeWeight: GButton = {
     cond: () => !!graph.settings.value.userEditable,
     label: () => {
-      const { userEditableAddedEdgeWeight } = graph.settings.value;
-      return `Change Added Edge Weight (${userEditableAddedEdgeWeight})`;
+      const { userEditableAddedEdgeLabel } = graph.settings.value;
+      return `Change Added Edge Weight (${userEditableAddedEdgeLabel})`;
     },
     action: () => {
-      graph.settings.value.userEditableAddedEdgeWeight = getRandomInRange(1, 10);
+      graph.settings.value.userEditableAddedEdgeLabel = getRandomInRange(1, 10).toString();
     },
     color: () => 'green',
     id: GRAPH_BUTTON_ID.edgeWeight,

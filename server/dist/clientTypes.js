@@ -33,7 +33,7 @@ const getInitialEventBus = () => {
         // @ts-ignore
         onEdgeRemoved: new Set(),
         // @ts-ignore
-        onEdgeWeightChange: new Set(),
+        onEdgeLabelChange: new Set(),
         // @ts-ignore
         // @ts-ignore
         onRepaint: new Set(),
@@ -202,15 +202,9 @@ const resolveThemeForNode = (getTheme, node) => ({
     // @ts-ignore
     nodeBorderColor: getTheme('nodeBorderColor', node),
     // @ts-ignore
-    nodeFocusColor: getTheme('nodeFocusColor', node),
-    // @ts-ignore
-    nodeFocusBorderColor: getTheme('nodeFocusBorderColor', node),
-    // @ts-ignore
     nodeTextSize: getTheme('nodeTextSize', node),
     // @ts-ignore
     nodeTextColor: getTheme('nodeTextColor', node),
-    // @ts-ignore
-    nodeFocusTextColor: getTheme('nodeFocusTextColor', node),
     // @ts-ignore
     nodeText: getTheme('nodeText', node),
     // @ts-ignore
@@ -243,10 +237,6 @@ const resolveThemeForEdge = (getTheme, edge) => ({
     edgeTextSize: getTheme('edgeTextSize', edge),
     // @ts-ignore
     edgeTextColor: getTheme('edgeTextColor', edge),
-    // @ts-ignore
-    edgeFocusColor: getTheme('edgeFocusColor', edge),
-    // @ts-ignore
-    edgeFocusTextColor: getTheme('edgeFocusTextColor', edge),
     // @ts-ignore
     edgeTextFontWeight: getTheme('edgeTextFontWeight', edge),
     // @ts-ignore

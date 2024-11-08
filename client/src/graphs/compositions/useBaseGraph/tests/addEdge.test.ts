@@ -25,7 +25,6 @@ describe("base graph - addEdge", () => {
       to: graph.nodes.value[1].id,
       id: generateId(),
       label: "a",
-      weight: 1,
     }
     graph.addEdge(basicDirectedEdge);
     expect(graph.edges.value).toEqual([basicDirectedEdge]);
@@ -36,7 +35,6 @@ describe("base graph - addEdge", () => {
       to: graph.nodes.value[3].id,
       id: generateId(),
       label: "b",
-      weight: 1,
     }
     graph.addEdge(basicUndirectedEdge);
     expect(graph.edges.value).toEqual([basicDirectedEdge, basicUndirectedEdge]);
@@ -51,7 +49,6 @@ describe("base graph - addEdge", () => {
     graph.addEdge(edge1);
     const [addedEdge1] = graph.edges.value;
     expect(addedEdge1.label).toEqual(ADD_EDGE_DEFAULTS.label);
-    expect(addedEdge1.weight).toEqual(ADD_EDGE_DEFAULTS.weight);
     expect(addedEdge1.type).toEqual(ADD_EDGE_DEFAULTS.type);
     expect(addedEdge1.id).toBeDefined();
   })
