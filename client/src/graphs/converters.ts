@@ -1,16 +1,21 @@
-import type {
-  GNode,
-  GEdge,
-  Graph
-} from '@graph/types';
+import type { Graph } from '@graph/types';
 import { onUnmounted, ref } from 'vue';
 import { doesEdgeFlowOutOfToNode } from './helpers';
 
+/**
+ * an adjacency list representation of a graph where the keys are the ids or labels of the nodes
+ * depending on the function used to generate it
+ */
 export type AdjacencyList = Record<string, string[]>;
 
-export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes
-  .reduce<AdjacencyList>((acc, node) => {
-    acc[node.id] = edges
+/**
+ * converts a list of nodes and edges to an adjacency list
+ *
+ * @returns an adjacency list using ids of nodes as keys
+ */
+export const getAdjacencyList = ({ nodes, edges }: Pick<Graph, 'nodes' | 'edges'>) => {
+  return nodes.value.reduce<AdjacencyList>((acc, node) => {
+    acc[node.id] = edges.value
       .filter(edge => doesEdgeFlowOutOfToNode(edge, node))
       .map(edge => {
         if (edge.type === 'undirected') {
@@ -21,14 +26,23 @@ export const nodesEdgesToAdjList = (nodes: GNode[], edges: GEdge[]) => nodes
       });
     return acc;
   }, {});
+}
 
-export const humanReadableAdjList = (adjList: AdjacencyList, graph: Graph) => {
+/**
+ * @returns an adjacency list using labels of nodes as keys as opposed to ids
+ */
+export const getLabelAdjacencyList = ({
+  nodes,
+  edges,
+  getNode
+}: Pick<Graph, 'nodes' | 'edges' | 'getNode'>) => {
+  const adjList = getAdjacencyList({ nodes, edges });
   const entries = Object.entries(adjList);
   return entries.reduce<AdjacencyList>((acc, [from, tos]) => {
-    const keyNode = graph.getNode(from);
+    const keyNode = getNode(from);
     if (!keyNode) return acc;
     const toNodeLabels = tos
-      .map(to => graph.getNode(to))
+      .map(to => getNode(to))
       .filter(Boolean)
       .map(node => node!.label)
     acc[keyNode.label] = toNodeLabels;
@@ -40,16 +54,15 @@ export const humanReadableAdjList = (adjList: AdjacencyList, graph: Graph) => {
  * a reactively updated adjacency list based on the graph's nodes and edges
  *
  * @param graph - the graph instance
- * @returns a ref to the adjacency list
+ * @returns an object containing the adjacency list and a human readable version of it using labels
  */
 export const useAdjacencyList = (graph: Graph) => {
   const adjList = ref<AdjacencyList>({});
   const labelAdjList = ref<AdjacencyList>({});
 
   const makeAdjLists = () => {
-    const { nodes, edges } = graph;
-    adjList.value = nodesEdgesToAdjList(nodes.value, edges.value);
-    labelAdjList.value = humanReadableAdjList(adjList.value, graph);
+    adjList.value = getAdjacencyList(graph);
+    labelAdjList.value = getLabelAdjacencyList(graph);
   }
 
   makeAdjLists();
@@ -62,13 +75,3 @@ export const useAdjacencyList = (graph: Graph) => {
     humanReadableAdjList: labelAdjList
   };
 };
-
-export const adjListToNodesEdges = (adjList: AdjacencyList) => {
-  const nodes = Object.keys(adjList).map(() => ({} as GNode));
-
-  const edges = Object.entries(adjList).flatMap(([from, tos]) =>
-    tos.map(to => ({ from: from.toString(), to: to.toString() }))
-  );
-
-  return { nodes, edges };
-}
