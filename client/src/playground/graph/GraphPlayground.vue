@@ -15,8 +15,12 @@
 
   const graphElement = ref<HTMLCanvasElement>();
 
-  const graph = useGraph(graphElement);
-  // graph.repaint();
+  const graph = useGraph(graphElement, {
+    settings: {
+      focusable: true,
+      focusBlacklist: ["gzm3npd"],
+    },
+  });
 
   const tutorialControls = useBasicsTutorial(graph);
 

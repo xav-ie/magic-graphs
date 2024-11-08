@@ -31,6 +31,7 @@ export const useFocusGraph = (
 
   const setFocus = (newId: MaybeId) => {
     if (focusedItemId.value === newId) return
+    if (newId && graph.settings.value.focusBlacklist.includes(newId)) return
     graph.emit('onFocusChange', newId, focusedItemId.value)
     focusedItemId.value = newId
   }
