@@ -1,8 +1,5 @@
 import type { SchemaItem } from "@graph/types";
-import type { Rect } from "@shape/rect";
 import colors from "@utils/colors";
-
-export type SelectionBox = Pick<Rect, 'at' | 'width' | 'height'>
 
 const SELECTABLE_GRAPH_TYPES: SchemaItem['graphType'][] = ['node', 'edge']
 const SAMPLING_RATE = 5;

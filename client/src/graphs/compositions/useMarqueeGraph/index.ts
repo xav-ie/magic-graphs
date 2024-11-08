@@ -4,17 +4,16 @@ import { onClickOutside } from '@vueuse/core'
 import type {
   GEdge,
   GNode,
-  SchemaItem,
   Aggregator,
   GraphOptions,
 } from '@graph/types'
 import { useTheme } from '@graph/themes/useTheme'
 import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
 import { MARQUEE_CONSTANTS } from '@graph/compositions/useMarqueeGraph/types'
-import type { SelectionBox } from '@graph/compositions/useMarqueeGraph/types'
 import { getValue } from '@graph/helpers'
 import colors from '@colors'
 import { rect } from '@shapes'
+import type { BoundingBox } from "@shape/types";
 
 export const useMarqueeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -24,12 +23,11 @@ export const useMarqueeGraph = (
   const {
     THEME_ID,
     SELECTABLE_GRAPH_TYPES,
-    SAMPLING_RATE,
     SELECTION_BORDER_COLOR,
     SELECTION_BG_COLOR,
   } = MARQUEE_CONSTANTS
 
-  const selectionBox = ref<SelectionBox | undefined>()
+  const selectionBox = ref<BoundingBox | undefined>()
   const graph = useNodeAnchorGraph(canvas, options)
 
   const marqueedItemIDs = new Set<string>()
@@ -39,7 +37,7 @@ export const useMarqueeGraph = (
   const hideNodeAnchors = () => setTheme('nodeAnchorColor', colors.TRANSPARENT)
   const showNodeAnchors = () => removeTheme('nodeAnchorColor')
 
-  const getSelectionBoxProps = (box: SelectionBox) => {
+  const getSelectionBoxProps = (box: BoundingBox) => {
     const { at, width, height } = box
     const x1 = Math.min(at.x, at.x + width)
     const x2 = Math.max(at.x, at.x + width)
@@ -87,40 +85,17 @@ export const useMarqueeGraph = (
     const { surfaceArea } = getSelectionBoxProps(selectionBox.value)
     if (surfaceArea > 200) disableNodeCreationNextTick()
     selectionBox.value = undefined
-    coordinateCache.clear()
     showNodeAnchors()
     graph.repaint('marquee-graph/disengage-selection-box')()
   }
 
-  const coordinateCache = new Map<string, SchemaItem | null>()
-
-  const getFromCache = (xInp: number, yInp: number) => {
-    const CACHE_BUCKET_SIZE = SAMPLING_RATE / 2
-    const x = Math.round(xInp / CACHE_BUCKET_SIZE) * CACHE_BUCKET_SIZE
-    const y = Math.round(yInp / CACHE_BUCKET_SIZE) * CACHE_BUCKET_SIZE
-    const key = `${x}:${y}`
-    const res = coordinateCache.get(key);
-    if (res === undefined) {
-      const topItem = graph.getSchemaItemsByCoordinates(xInp, yInp).pop()
-      coordinateCache.set(key, topItem ?? null)
-      return topItem
-    }
-    return res
-  }
-
-  const updateSelectedItems = (box: SelectionBox) => {
+  const updateSelectedItems = (box: BoundingBox) => {
     marqueedItemIDs.clear()
 
-    const { x1, x2, y1, y2 } = getSelectionBoxProps(box)
-
-    for (let x = x1; x < x2; x += SAMPLING_RATE) {
-      for (let y = y1; y < y2; y += SAMPLING_RATE) {
-        const topItem = getFromCache(x, y)
-        if (!topItem) continue
-
-        const isMarqueeable = SELECTABLE_GRAPH_TYPES.some(type => topItem.graphType === type)
-        if (isMarqueeable) marqueedItemIDs.add(topItem.id)
-      }
+    for (const { id, shape, graphType } of graph.aggregator.value) {
+      if (!SELECTABLE_GRAPH_TYPES.includes(graphType)) continue
+      const inSelectionBox = shape.efficientHitbox(box)
+      if (inSelectionBox) marqueedItemIDs.add(id)
     }
   }
 
@@ -133,7 +108,7 @@ export const useMarqueeGraph = (
     graph.repaint('marquee-graph/update-selection-box')()
   }
 
-  const getSelectionBoxSchema = (box: SelectionBox) => {
+  const getSelectionBoxSchema = (box: BoundingBox) => {
     const shape = rect({
       ...box,
       color: SELECTION_BG_COLOR,
