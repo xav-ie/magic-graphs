@@ -205,7 +205,7 @@ export const useBaseGraph = (
   subscribe('onThemeChange', () => repaint('base-graph/on-theme-change')())
   subscribe('onSettingsChange', () => repaint('base-graph/on-settings-change')())
   subscribe('onGraphReset', () => repaint('base-graph/on-graph-reset')())
-  subscribe('onEdgeWeightChange', () => repaint('base-graph/on-edge-weight-change')())
+  subscribe('onEdgeLabelChange', () => repaint('base-graph/on-edge-label-change')())
 
   return {
     /**

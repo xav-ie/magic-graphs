@@ -37,9 +37,9 @@ export type BaseGraphEventMap = {
    */
   onEdgeRemoved: (edge: GEdge, options: RemoveEdgeOptions) => void;
   /**
-   * when an edge's weight is changed
+   * when an edge's text label is changed
    */
-  onEdgeWeightChange: (edge: GEdge) => void;
+  onEdgeLabelChange: (edge: GEdge) => void;
   /**
    * when the canvas is repainted
    *

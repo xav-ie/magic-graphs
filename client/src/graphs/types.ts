@@ -58,8 +58,9 @@ export type GEdge = {
    * the text label that appears on the edge - NOT IMPLEMENTED
    */
   label: string,
-
-  weight: number,
+  /**
+   * does this edge travel in one direction or both?
+   */
   type: 'directed' | 'undirected',
 }
 

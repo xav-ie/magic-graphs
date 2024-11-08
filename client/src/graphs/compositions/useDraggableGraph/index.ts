@@ -35,11 +35,11 @@ export const useDraggableGraph = (
     if (!activeDragNode.value) return
     const { offsetX, offsetY } = ev;
     const { node, startingCoordinates } = activeDragNode.value;
-    const dx = offsetX - node.x;
-    const dy = offsetY - node.y;
+    const dx = offsetX - startingCoordinates.x;
+    const dy = offsetY - startingCoordinates.y;
     graph.moveNode(node.id, {
-      x: startingCoordinates.x + dx,
-      y: startingCoordinates.y + dy
+      x: node.x + dx,
+      y: node.y + dy
     });
     activeDragNode.value.startingCoordinates = { x: offsetX, y: offsetY }
   }
@@ -54,7 +54,7 @@ export const useDraggableGraph = (
     graph.unsubscribe('onMouseDown', beginDrag)
     graph.unsubscribe('onMouseUp', drop)
     graph.unsubscribe('onMouseMove', drag)
-    activeDragNode.value = undefined
+    if (activeDragNode.value) drop()
   }
 
   graph.subscribe('onSettingsChange', (diff) => {

@@ -15,10 +15,7 @@ export type BaseGraphNodeTheme = {
   nodeBorderWidth: number,
   nodeColor: string,
   nodeBorderColor: string,
-  nodeFocusColor: string,
-  nodeFocusBorderColor: string,
   nodeText: string,
-  nodeFocusTextColor: string,
   nodeTextSize: number,
   nodeTextColor: string,
   nodeShape: SupportedNodeShapes,
@@ -29,9 +26,7 @@ export type BaseGraphEdgeTheme = {
   edgeWidth: number,
   edgeTextSize: number,
   edgeTextColor: string,
-  edgeFocusTextColor: string,
   edgeTextFontWeight: TextFontWeight,
-  edgeFocusColor: string,
 }
 
 export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEdgeGetter<BaseGraphEdgeTheme> & {
@@ -39,7 +34,13 @@ export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEd
   graphBgPatternColor: string,
 }
 
-export type FocusGraphTheme = {}
+export type FocusGraphTheme = {
+  nodeFocusColor: NodeGetterOrValue<string>;
+  nodeFocusBorderColor: NodeGetterOrValue<string>;
+  nodeFocusTextColor: NodeGetterOrValue<string>;
+  edgeFocusColor: EdgeGetterOrValue<string>;
+  edgeFocusTextColor: EdgeGetterOrValue<string>;
+}
 
 export type DraggableGraphTheme = {}
 

@@ -15,30 +15,47 @@ export type BaseGraphSettings = {
    */
   edgeLabelsEditable: boolean;
   /**
-   * a setter for edge weights, takes the inputted string and returns a number that will
-   * be set as the edge weight or undefined if the edge weight should not be set
-   * @default function that attempts to parse the input as a number and if successful returns the number
+   * a setter for edge labels - takes the user inputted string and returns a string that will
+   * be set as the edge label or returns undefined if the edge label should not be set
+   * @default function tries converting the user input to a number
    */
-  edgeInputToWeight: (input: string) => number | undefined;
+  edgeInputToLabel: (input: string) => string | undefined;
 }
 
 export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
   displayEdgeLabels: true,
   edgeLabelsEditable: true,
-  edgeInputToWeight: (input: string) => {
+  edgeInputToLabel: (input: string) => {
     const trimmed = input.trim()
     if (!trimmed) return
     const decimalNum = fractionToDecimal(trimmed)?.toFixed(2)
-    return Number(decimalNum ?? trimmed)
+    if (decimalNum === "Infinity") return '∞'
+    else if (decimalNum === "-Infinity") return '-∞'
+    else if (decimalNum === undefined && isNaN(Number(trimmed))) return
+    return decimalNum ?? trimmed
   }
 }
 
 /**
  * FOCUS GRAPH SETTINGS
  */
-export type FocusGraphSettings = {}
+export type FocusGraphSettings = {
+  /**
+   * if false, no items on the graph can be focused
+   * @default true
+   */
+  focusable: boolean;
+  /**
+   * a list of item ids that cannot be focused
+   * @default []
+   */
+  focusBlacklist: string[];
+}
 
-export const DEFAULT_FOCUS_SETTINGS: FocusGraphSettings = {}
+export const DEFAULT_FOCUS_SETTINGS: FocusGraphSettings = {
+  focusable: true,
+  focusBlacklist: [],
+}
 
 /**
  * DRAGGABLE GRAPH SETTINGS
@@ -73,9 +90,17 @@ export const DEFAULT_NODE_ANCHOR_SETTINGS: NodeAnchorGraphSettings = {
 /**
  * MARQUEE GRAPH SETTINGS
  */
-export type MarqueeGraphSettings = {}
+export type MarqueeGraphSettings = {
+  /**
+   * whether marquee selection is enabled
+   * @default true
+   */
+  marquee: boolean;
+}
 
-export const DEFAULT_MARQUEE_SETTINGS: MarqueeGraphSettings = {}
+export const DEFAULT_MARQUEE_SETTINGS: MarqueeGraphSettings = {
+  marquee: true,
+}
 
 /**
  * USER EDITABLE GRAPH SETTINGS
@@ -92,16 +117,16 @@ export type UserEditableGraphSettings = {
    */
   userEditableAddedEdgeType: 'directed' | 'undirected',
   /**
-   * the default weight to assign to edges when created using the UI
+   * the default label assigned to edges when created using the UI
    * @default 1
    */
-  userEditableAddedEdgeWeight: number,
+  userEditableAddedEdgeLabel: string,
 }
 
 export const DEFAULT_USER_EDITABLE_SETTINGS: UserEditableGraphSettings = {
   userEditable: true,
   userEditableAddedEdgeType: 'directed',
-  userEditableAddedEdgeWeight: 1,
+  userEditableAddedEdgeLabel: "1",
 }
 
 /**

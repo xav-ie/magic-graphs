@@ -133,11 +133,6 @@ export const useMarqueeGraph = (
     graph.repaint('marquee-graph/update-selection-box')()
   }
 
-  graph.subscribe('onMouseDown', engageSelectionBox)
-  graph.subscribe('onMouseUp', disengageSelectionBox)
-  graph.subscribe('onContextMenu', disengageSelectionBox)
-  graph.subscribe('onMouseMove', updateSelectionBoxDimensions)
-
   const getSelectionBoxSchema = (box: SelectionBox) => {
     const shape = rect({
       ...box,
@@ -186,6 +181,28 @@ export const useMarqueeGraph = (
   setTheme('edgeColor', colorMarqueedEdges)
 
   onClickOutside(canvas, () => marqueedItemIDs.clear())
+
+  const activate = () => {
+    graph.subscribe('onMouseDown', engageSelectionBox)
+    graph.subscribe('onMouseUp', disengageSelectionBox)
+    graph.subscribe('onContextMenu', disengageSelectionBox)
+    graph.subscribe('onMouseMove', updateSelectionBoxDimensions)
+  }
+
+  const deactivate = () => {
+    graph.unsubscribe('onMouseDown', engageSelectionBox)
+    graph.unsubscribe('onMouseUp', disengageSelectionBox)
+    graph.unsubscribe('onContextMenu', disengageSelectionBox)
+    graph.unsubscribe('onMouseMove', updateSelectionBoxDimensions)
+    if (selectionBox.value) disengageSelectionBox()
+  }
+
+  graph.subscribe('onSettingsChange', (diff) => {
+    if (diff.marquee === true) activate()
+    else if (diff.marquee === false) deactivate()
+  })
+
+  if (graph.settings.value.marquee) activate()
 
   return {
     ...graph,

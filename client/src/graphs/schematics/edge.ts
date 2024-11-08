@@ -85,7 +85,7 @@ export const getEdgeSchematic = (
     color: graphBgColor,
     activeColor: graphBgColor,
     text: {
-      content: edge.weight.toString(),
+      content: edge.label,
       color: edgeTextColor,
       fontSize: edgeTextSize,
       fontWeight: edgeTextFontWeight,

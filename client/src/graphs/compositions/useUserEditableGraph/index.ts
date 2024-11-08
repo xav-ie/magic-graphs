@@ -39,7 +39,7 @@ export const useUserEditableGraph = (
       from: parentNode.id,
       to: node.id,
       type: graph.settings.value.userEditableAddedEdgeType,
-      weight: graph.settings.value.userEditableAddedEdgeWeight,
+      label: graph.settings.value.userEditableAddedEdgeLabel,
     })
   }
 
