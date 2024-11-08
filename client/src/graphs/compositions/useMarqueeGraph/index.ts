@@ -22,7 +22,6 @@ export const useMarqueeGraph = (
 
   const {
     THEME_ID,
-    SELECTABLE_GRAPH_TYPES,
     SELECTION_BORDER_COLOR,
     SELECTION_BG_COLOR,
   } = MARQUEE_CONSTANTS
@@ -62,8 +61,9 @@ export const useMarqueeGraph = (
     setTimeout(() => graph.subscribe('onDblClick', nodeCreationFn), 10)
   }
 
+  const clearSelection = () => marqueedItemIDs.clear()
+
   const engageSelectionBox = (event: MouseEvent) => {
-    marqueedItemIDs.clear()
     const { offsetX: x, offsetY: y } = event
     const items = graph.getSchemaItemsByCoordinates(x, y)
     if (items.length > 0) return
@@ -90,7 +90,8 @@ export const useMarqueeGraph = (
     marqueedItemIDs.clear()
 
     for (const { id, shape, graphType } of graph.aggregator.value) {
-      if (!SELECTABLE_GRAPH_TYPES.includes(graphType)) continue
+      const { marqueeSelectableGraphTypes } = graph.settings.value
+      if (!marqueeSelectableGraphTypes.includes(graphType)) continue
       const inSelectionBox = shape.efficientHitbox(box)
       if (inSelectionBox) marqueedItemIDs.add(id)
     }
@@ -155,6 +156,7 @@ export const useMarqueeGraph = (
   onClickOutside(canvas, () => marqueedItemIDs.clear())
 
   const activate = () => {
+    graph.subscribe('onMouseDown', clearSelection)
     graph.subscribe('onMouseDown', engageSelectionBox)
     graph.subscribe('onMouseUp', disengageSelectionBox)
     graph.subscribe('onContextMenu', disengageSelectionBox)
@@ -162,6 +164,7 @@ export const useMarqueeGraph = (
   }
 
   const deactivate = () => {
+    graph.unsubscribe('onMouseDown', clearSelection)
     graph.unsubscribe('onMouseDown', engageSelectionBox)
     graph.unsubscribe('onMouseUp', disengageSelectionBox)
     graph.unsubscribe('onContextMenu', disengageSelectionBox)
@@ -186,5 +189,9 @@ export const useMarqueeGraph = (
      * @returns true if the item is marquee-selected or focused
      */
     isHighlighted: (itemId: string) => marqueedItemIDs.has(itemId) || graph.focusedItemId.value === itemId,
+    /**
+     * clears the marquee selection
+     */
+    clearSelection,
   }
 }
