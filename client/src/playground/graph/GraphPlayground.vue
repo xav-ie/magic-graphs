@@ -12,10 +12,19 @@
   import type { GraphPlaygroundControls as Controls } from "./types";
   import GraphPlaygroundControls from "./GraphPlaygroundControls.vue";
   import { useLocalStorage } from "@vueuse/core";
+import { isFraction } from "@utils/fracDecConverter/fracDec";
 
   const graphElement = ref<HTMLCanvasElement>();
 
-  const graph = useGraph(graphElement);
+  const graph = useGraph(graphElement, {
+    settings: {
+      edgeInputToLabel: (str) => {
+        if (isFraction(str)) return str;
+        else if (!isNaN(Number(str))) return str;
+        else return "";
+      },
+    }
+  });
 
   const tutorialControls = useBasicsTutorial(graph);
 

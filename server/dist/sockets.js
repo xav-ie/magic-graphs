@@ -90,7 +90,6 @@ const sockets = (httpServer) => {
             try {
                 const roomId = tracker.getRoomId();
                 const room = io.sockets.adapter.rooms.get(roomId);
-                console.log('room size:', room?.size);
                 if (!room || room.size === 0) {
                     console.log('room is empty, deleting graph state');
                     tracker.deleteGraphState();

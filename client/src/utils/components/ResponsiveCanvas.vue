@@ -16,18 +16,17 @@
     color: Color;
     patternColor: Color;
     /**
-     * how many multiples larger the graph is relative to the size of the parents
-     * height and width.
-     *
-     * IE if the width and height of the parent is the full viewport and OPEN_WORLD_FACTOR = 3,
-     * the canvas will take up 3*3=9 viewports in surface area
-     *
-     * @default 2
+     * @default 2500
      */
-    openWorldFactor?: number;
+    width?: number;
+    /**
+     * @default 2500
+     */
+    height?: number;
   }>();
 
-  const openWorldFactor = computed(() => props?.openWorldFactor ?? 2);
+  const widthProp = computed(() => props?.width ?? 2500);
+  const heightProp = computed(() => props?.height ?? 2500);
 
   const emit = defineEmits<{
     (e: "canvasRef", value: HTMLCanvasElement | undefined): void;
@@ -55,10 +54,8 @@
   const { height: parentWidth, width: parentHeight } = useElementSize(parentEl);
 
   const setCanvasSize = async () => {
-    const parentEl = await getParentEl();
-    const { width, height } = parentEl.getBoundingClientRect();
-    canvasWidth.value = width * openWorldFactor.value;
-    canvasHeight.value = height * openWorldFactor.value;
+    canvasWidth.value = widthProp.value;
+    canvasHeight.value = heightProp.value;
   };
 
   const getParentEl = async () => {
@@ -102,7 +99,7 @@
         const start = { x, y };
         const end = {
           x,
-          y: y + len
+          y: y + len,
         };
 
         line({
@@ -114,12 +111,12 @@
 
         const start2 = {
           x: x - len / 2,
-          y: y + len / 2
+          y: y + len / 2,
         };
 
         const end2 = {
           x: x + len / 2,
-          y: y + len / 2
+          y: y + len / 2,
         };
 
         line({
@@ -184,12 +181,15 @@
     emit("heightChange", canvasHeight.value);
   });
 
-  watch(() => props.openWorldFactor, () => {
-    setCanvasSize();
-    drawBackgroundPattern();
-    emit("widthChange", canvasWidth.value);
-    emit("heightChange", canvasHeight.value);
-  })
+  watch(
+    () => widthProp.value + heightProp.value,
+    () => {
+      setCanvasSize();
+      drawBackgroundPattern();
+      emit("widthChange", canvasWidth.value);
+      emit("heightChange", canvasHeight.value);
+    }
+  );
 
   watch(() => props.patternColor, drawBackgroundPattern);
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { ref, computed } from "vue";
-  import { useDark } from "@vueuse/core";
+  import { useDark, useWindowSize } from "@vueuse/core";
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
   import colors, { AMBER_400 } from "@colors";
   import { shapes } from "@shapes";
@@ -124,6 +124,8 @@
   });
 
   setTimeout(draw, 100);
+
+  const { width, height } = useWindowSize();
 </script>
 
 <template>
@@ -140,7 +142,8 @@
       @canvas-ref="(el) => (canvas = el)"
       :color="color"
       :pattern-color="patternColor"
-      :open-world-factor="1"
+      :width="width"
+      :height="height"
     ></ResponsiveCanvas>
   </div>
 </template>
