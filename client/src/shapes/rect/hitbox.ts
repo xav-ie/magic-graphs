@@ -107,5 +107,4 @@ export const rectEfficientHitbox = (rectangle: Rect) => (boxToCheck: BoundingBox
   }
 
   return true;
-
 }

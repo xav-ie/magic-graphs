@@ -1,5 +1,5 @@
 import { computed } from "vue";
-import { nodesEdgesToAdjList } from '@graph/converters';
+import { getAdjacencyList } from '@graph/useAdjacencyList';
 import {
   TAILWIND_500_COLORS as color,
   GRAY_800,
@@ -24,7 +24,7 @@ export const markovSccColorizer = (
   colors: Color[] = defaultColors
 ) => {
 
-  const adjList = computed(() => nodesEdgesToAdjList(graph.nodes.value, graph.edges.value));
+  const adjList = computed(() => getAdjacencyList(graph));
 
   const { markovClasses, nodeToConnectedComponentMap } = useMarkovChainSCC(adjList);
   const transientStates = computed(() => markovClasses.value.transientClasses.flat());

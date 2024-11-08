@@ -1,4 +1,4 @@
-import type { AdjacencyList } from "@graph/converters";
+import type { AdjacencyList } from "@graph/useAdjacencyList";
 // import type { GNode } from "@graph/types";
 
 export function getStronglyConnectedComponents(adjList: AdjacencyList) {

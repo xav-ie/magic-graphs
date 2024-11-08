@@ -1,4 +1,4 @@
-import type { AdjacencyList } from '@graph/converters';
+import type { AdjacencyList } from '@graph/useAdjacencyList';
 
 export type AdjacencyMap = Map<number, number[]>;
 

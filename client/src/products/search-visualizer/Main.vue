@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref, computed, watch } from "vue";
   import { useLocalStorage } from "@vueuse/core";
-  import { useAdjacencyList } from "@graph/converters";
+  import { useAdjacencyList } from "@graph/useAdjacencyList";
   import { useGraph } from "@graph/useGraph";
   import type { Trace } from "./types";
   import { algos } from "./algos";

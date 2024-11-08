@@ -5,7 +5,7 @@ import {
   readonly,
 } from 'vue';
 import type { GNode, Graph } from '@graph/types';
-import { nodesEdgesToAdjList } from '@graph/converters';
+import { useAdjacencyList } from '@graph/useAdjacencyList';
 
 // node id -> bfs level
 export type BFSLevelRecord = Record<GNode['id'], number>;
@@ -22,11 +22,12 @@ export const useBFSLevels = (graph: Graph, startNodeInput?: GNode['id']) => {
   const bfsLevelRecord = ref<BFSLevelRecord>({});
   const startNode = ref<GNode['id'] | undefined>(startNodeInput);
 
+  const { adjacencyList } = useAdjacencyList(graph);
+
   const computeBfsLevels = () => {
     bfsLevelRecord.value = {};
     if (!startNode.value) return;
-    const adjList = nodesEdgesToAdjList(graph.nodes.value, graph.edges.value)
-    if (!adjList[startNode.value]) return;
+    if (!adjacencyList.value[startNode.value]) return;
 
     let queue = [startNode.value];
     const visited = new Set(queue);
@@ -39,7 +40,7 @@ export const useBFSLevels = (graph: Graph, startNodeInput?: GNode['id']) => {
       for (const node of queue) {
         bfsLevelRecord.value[node] = currentLevel;
 
-        for (const neighbor of adjList[node]) {
+        for (const neighbor of adjacencyList.value[node]) {
           if (!visited.has(neighbor)) {
             visited.add(neighbor);
             nextQueue.push(neighbor);
