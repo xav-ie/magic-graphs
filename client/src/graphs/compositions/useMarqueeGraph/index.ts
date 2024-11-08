@@ -71,8 +71,8 @@ export const useMarqueeGraph = (
     lastMove.y = event.offsetY
     const { offsetX: x, offsetY: y } = event
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    if (!topItem) engageSelectionBox({ x, y })
-    else if (topItem.graphType !== 'marquee-selection-area') clearSelection()
+    clearSelection()
+    if (!topItem) return engageSelectionBox({ x, y })
   }
 
   const lastMove = { x: 0, y: 0 }
