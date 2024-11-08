@@ -1,6 +1,10 @@
 import { ref } from 'vue';
 import { expect, test, describe } from 'vitest';
-import { getAdjacencyList, getLabelAdjacencyList, useAdjacencyList } from './useAdjacencyList';
+import {
+  getAdjacencyList,
+  getLabelAdjacencyList,
+  useAdjacencyList
+} from './useAdjacencyList';
 import { useBaseGraph } from './compositions/useBaseGraph';
 
 describe('useAdjacencyList', () => {
