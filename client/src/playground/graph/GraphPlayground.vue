@@ -15,13 +15,7 @@
 
   const graphElement = ref<HTMLCanvasElement>();
 
-  const graph = useGraph(graphElement, {
-    settings: {
-      focusable: true,
-      focusBlacklist: ["gzm3npd"],
-      marquee: false,
-    },
-  });
+  const graph = useGraph(graphElement);
 
   const tutorialControls = useBasicsTutorial(graph);
 
