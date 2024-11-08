@@ -108,13 +108,11 @@ export const rectEfficientHitbox = (rectangle: Rect) => (boxToCheck: BoundingBox
   const boxTop = Math.min(boxAt.y, boxAt.y + boxHeight);
   const boxBottom = Math.max(boxAt.y, boxAt.y + boxHeight);
 
-  if (rectRight <= boxLeft || boxRight <= rectLeft) {
-    return false;
-  }
+  const isFullyInside =
+    rectLeft >= boxLeft &&
+    rectRight <= boxRight &&
+    rectTop >= boxTop &&
+    rectBottom <= boxBottom
 
-  if (rectBottom <= boxTop || boxBottom <= rectTop) {
-    return false;
-  }
-
-  return true;
-};
+  return isFullyInside;
+}
