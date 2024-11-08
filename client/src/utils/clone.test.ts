@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest'
 import { clone } from './clone'
-import { delta } from './deepDelta/delta'
+import { delta } from './deepDelta'
 
 test('works on basic objects', () => {
   const obj = { a: 1, b: 2 }

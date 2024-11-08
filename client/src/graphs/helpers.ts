@@ -91,7 +91,52 @@ export const getConnectedNodes = (edge: GEdge, graph: Pick<Graph, 'getNode'>) =>
 }
 
 /**
- * asks if any given edge flows out to any given node
+ * get all edges connected to a node regardless of direction
+ *
+ * @param node - the node to get the connected edges for
+ * @param edges - the edges of the graph
+ * @returns an array of edges connected to the node
+ */
+export const getConnectedEdges = (node: GNode, edges: GEdge[]) => edges.filter(edge => {
+  return edge.from === node.id || edge.to === node.id
+})
+
+/**
+ * gets the edges that flow out of a node
+ *
+ * @param nodeId - the id of the node
+ * @param graph - the graph instance
+ * @returns an array of edges that flow out of the node
+ */
+export const getInboundEdges = (nodeId: string, { nodes, edges }: Pick<Graph, 'nodes' | 'edges'>) => {
+  return edges.value.filter(edge => {
+    if (edge.type === 'undirected') {
+      return edge.from === nodeId || edge.to === nodeId
+    } else {
+      return edge.to === nodeId
+    }
+  })
+}
+
+/**
+ * gets the edges that flow out of a node
+ *
+ * @param nodeId - the id of the node
+ * @param graph - the graph instance
+ * @returns an array of edges that flow out of the node
+ */
+export const getOutboundEdges = (nodeId: string, { nodes, edges }: Pick<Graph, 'nodes' | 'edges'>) => {
+  return edges.value.filter(edge => {
+    if (edge.type === 'undirected') {
+      return edge.from === nodeId || edge.to === nodeId
+    } else {
+      return edge.from === nodeId
+    }
+  })
+}
+
+/**
+ * asks if a given edge flows out to a given node
  *
  * @param edge - the edge to check
  * @param node - the node to check
@@ -104,14 +149,3 @@ export const doesEdgeFlowOutOfToNode = (edge: GEdge, node: GNode) => {
     return edge.from === node.id
   }
 }
-
-/**
- * get all edges connected to a node regardless of direction
- *
- * @param node - the node to get the connected edges for
- * @param edges - the edges of the graph
- * @returns an array of edges connected to the node
- */
-export const getConnectedEdges = (node: GNode, edges: GEdge[]) => edges.filter(edge => {
-  return edge.from === node.id || edge.to === node.id
-})
