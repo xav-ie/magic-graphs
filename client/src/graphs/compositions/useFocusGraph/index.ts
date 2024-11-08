@@ -52,7 +52,7 @@ export const useFocusGraph = (
   const handleFocusChange = (ev: MouseEvent) => {
 
     const { offsetX: x, offsetY: y } = ev
-    setFocus(undefined)
+    resetFocus()
 
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
     if (!topItem) return
@@ -82,17 +82,20 @@ export const useFocusGraph = (
 
   const focusedItem = computed<FocusedItem | undefined>(() => {
     if (!focusedItemId.value) return
+
     const node = graph.getNode(focusedItemId.value)
     if (node) return {
       type: 'node',
       item: node,
     } as const
+
     const edge = graph.getEdge(focusedItemId.value)
     if (edge) return {
       type: 'edge',
       item: edge,
     } as const
-    throw new Error('focused item not found, is FOCUSABLE_GRAPH_TYPES is exhaustive?')
+
+    throw new Error('focused item not found, is FOCUSABLE_GRAPH_TYPES exhaustive?')
   })
 
   setTheme('nodeColor', (node) => {
@@ -120,7 +123,7 @@ export const useFocusGraph = (
     if (focus) setFocus(edge.id)
   })
 
-  const stopClickOutsideListener = onClickOutside(canvas, () => setFocus(undefined))
+  const stopClickOutsideListener = onClickOutside(canvas, resetFocus)
   onUnmounted(stopClickOutsideListener)
 
   return {
@@ -138,5 +141,9 @@ export const useFocusGraph = (
      * Sets the focus to the item with the given id
      */
     setFocus,
+    /**
+     * Resets the focus back to none
+     */
+    resetFocus,
   }
 }
