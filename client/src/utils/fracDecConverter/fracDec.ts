@@ -7,7 +7,7 @@ export const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
 export const isNullOrUnd = (input: any) => input === null || input === undefined
 
 export const isFraction = (input: string) => {
-  const fraction = input.split('/')
+  const fraction = input.trim().split('/').filter(Boolean)
   if (fraction.length !== 2) return false
   const [numerator, denominator] = fraction.map(Number)
   if (isNullOrUnd(numerator) || isNullOrUnd(denominator)) return false

@@ -18,15 +18,15 @@
     /**
      * @default 2500
      */
-    width?: number;
+    canvasWidth?: number;
     /**
      * @default 2500
      */
-    height?: number;
+    canvasHeight?: number;
   }>();
 
-  const widthProp = computed(() => props?.width ?? 2500);
-  const heightProp = computed(() => props?.height ?? 2500);
+  const widthProp = computed(() => props?.canvasWidth ?? 2500);
+  const heightProp = computed(() => props?.canvasHeight ?? 2500);
 
   const emit = defineEmits<{
     (e: "canvasRef", value: HTMLCanvasElement | undefined): void;

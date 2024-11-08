@@ -142,8 +142,8 @@
       @canvas-ref="(el) => (canvas = el)"
       :color="color"
       :pattern-color="patternColor"
-      :width="width"
-      :height="height"
+      :canvas-width="width"
+      :canvas-height="height"
     ></ResponsiveCanvas>
   </div>
 </template>
