@@ -28,11 +28,8 @@ export const resolveThemeForNode = (getTheme: ThemeGetter, node: GNode): BaseGra
   nodeBorderWidth: getTheme('nodeBorderWidth', node),
   nodeColor: getTheme('nodeColor', node),
   nodeBorderColor: getTheme('nodeBorderColor', node),
-  nodeFocusColor: getTheme('nodeFocusColor', node),
-  nodeFocusBorderColor: getTheme('nodeFocusBorderColor', node),
   nodeTextSize: getTheme('nodeTextSize', node),
   nodeTextColor: getTheme('nodeTextColor', node),
-  nodeFocusTextColor: getTheme('nodeFocusTextColor', node),
   nodeText: getTheme('nodeText', node),
   nodeShape: getTheme('nodeShape', node),
 })
@@ -49,7 +46,5 @@ export const resolveThemeForEdge = (getTheme: ThemeGetter, edge: GEdge): BaseGra
   edgeColor: getTheme('edgeColor', edge),
   edgeTextSize: getTheme('edgeTextSize', edge),
   edgeTextColor: getTheme('edgeTextColor', edge),
-  edgeFocusColor: getTheme('edgeFocusColor', edge),
-  edgeFocusTextColor: getTheme('edgeFocusTextColor', edge),
   edgeTextFontWeight: getTheme('edgeTextFontWeight', edge),
 })
