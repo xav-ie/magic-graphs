@@ -9,6 +9,7 @@ import type { GraphTheme } from "./types"
  * uses the user's system preference to toggle between dark and light mode on the graph
  *
  * @param graph the graph instance
+ * @param overrideThemes the themes to override the default light/dark themes with
  */
 export const useUserPreferredTheme = (
   graph: Graph,

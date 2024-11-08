@@ -1,3 +1,4 @@
+import type { SchemaItem } from "@graph/types";
 import { fractionToDecimal } from "@utils/fracDecConverter/fracDec";
 
 /**
@@ -96,10 +97,16 @@ export type MarqueeGraphSettings = {
    * @default true
    */
   marquee: boolean;
+  /**
+   * the types of graph items that can be marquee-selected
+   * @default ['node', 'edge']
+   */
+  marqueeSelectableGraphTypes: SchemaItem['graphType'][];
 }
 
 export const DEFAULT_MARQUEE_SETTINGS: MarqueeGraphSettings = {
   marquee: true,
+  marqueeSelectableGraphTypes: ['node', 'edge'],
 }
 
 /**

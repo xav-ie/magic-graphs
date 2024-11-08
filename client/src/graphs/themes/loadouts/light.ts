@@ -20,5 +20,8 @@ export const LIGHT_THEME: GraphTheme = {
   nodeAnchorColorWhenParentFocused: colors.BLUE_900,
   linkPreviewColor: colors.BLACK,
 
+  marqueeSelectionBoxColor: colors.BLUE_300 + '15',
+  marqueeSelectionBoxBorderColor: colors.BLUE_500,
+
   ...NON_COLOR_THEMES,
 }
