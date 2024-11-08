@@ -42,10 +42,12 @@ export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
 export type FocusGraphSettings = {
   /**
    * if false, no items on the graph can be focused
+   * @default true
    */
   focusable: boolean;
   /**
    * a list of item ids that cannot be focused
+   * @default []
    */
   focusBlacklist: string[];
 }
@@ -88,9 +90,17 @@ export const DEFAULT_NODE_ANCHOR_SETTINGS: NodeAnchorGraphSettings = {
 /**
  * MARQUEE GRAPH SETTINGS
  */
-export type MarqueeGraphSettings = {}
+export type MarqueeGraphSettings = {
+  /**
+   * whether marquee selection is enabled
+   * @default true
+   */
+  marquee: boolean;
+}
 
-export const DEFAULT_MARQUEE_SETTINGS: MarqueeGraphSettings = {}
+export const DEFAULT_MARQUEE_SETTINGS: MarqueeGraphSettings = {
+  marquee: true,
+}
 
 /**
  * USER EDITABLE GRAPH SETTINGS

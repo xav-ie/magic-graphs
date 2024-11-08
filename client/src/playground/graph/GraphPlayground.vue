@@ -19,6 +19,7 @@
     settings: {
       focusable: true,
       focusBlacklist: ["gzm3npd"],
+      marquee: false,
     },
   });
 
