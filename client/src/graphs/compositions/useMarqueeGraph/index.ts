@@ -37,14 +37,9 @@ export const useMarqueeGraph = (
   const hideNodeAnchors = () => setTheme('nodeAnchorColor', colors.TRANSPARENT)
   const showNodeAnchors = () => removeTheme('nodeAnchorColor')
 
-  const getSelectionBoxProps = (box: BoundingBox) => {
-    const { at, width, height } = box
-    const x1 = Math.min(at.x, at.x + width)
-    const x2 = Math.max(at.x, at.x + width)
-    const y1 = Math.min(at.y, at.y + height)
-    const y2 = Math.max(at.y, at.y + height)
-    const surfaceArea = Math.abs(width * height)
-    return { x1, x2, y1, y2, surfaceArea }
+  const getSelectionBoxSurfaceArea = (box: BoundingBox) => {
+    const { width, height } = box
+    return Math.abs(width * height)
   }
 
   const disableNodeCreationNextTick = () => {
@@ -82,7 +77,7 @@ export const useMarqueeGraph = (
 
   const disengageSelectionBox = () => {
     if (!selectionBox.value) return
-    const { surfaceArea } = getSelectionBoxProps(selectionBox.value)
+    const surfaceArea = getSelectionBoxSurfaceArea(selectionBox.value)
     if (surfaceArea > 200) disableNodeCreationNextTick()
     selectionBox.value = undefined
     showNodeAnchors()
@@ -90,6 +85,8 @@ export const useMarqueeGraph = (
   }
 
   const updateSelectedItems = (box: BoundingBox) => {
+    const surfaceArea = getSelectionBoxSurfaceArea(box)
+    if (surfaceArea < 100) return
     marqueedItemIDs.clear()
 
     for (const { id, shape, graphType } of graph.aggregator.value) {
