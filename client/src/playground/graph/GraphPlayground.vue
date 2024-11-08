@@ -13,6 +13,7 @@
   import GraphPlaygroundControls from "./GraphPlaygroundControls.vue";
   import { useLocalStorage } from "@vueuse/core";
   import { isFraction } from "@utils/fracDecConverter/fracDec";
+  import SettingsControls from "./SettingsControls.vue";
 
   const graphElement = ref<HTMLCanvasElement>();
 
@@ -32,8 +33,9 @@
   const controls = useLocalStorage<Controls>("graph-playground-controls", {
     tutorial: true,
     theme: true,
-    collab: true,
     settings: true,
+    collab: true,
+    buttons: true,
   });
 </script>
 
@@ -47,7 +49,7 @@
     </div>
 
     <div
-      v-if="controls.settings"
+      v-if="controls.buttons"
       class="absolute flex gap-2 m-2 flex flex-wrap w-[85%]"
     >
       <GraphBtns :btns="btnArr" />
@@ -74,11 +76,20 @@
       <TutorialHint :tutorial="tutorialControls" />
     </div>
 
-    <div
-      v-if="controls.theme"
-      class="absolute h-1/2 w-[325px] top-1/4 right-0 overflow-auto bg-gray-800 bg-opacity-80 rounded-l-xl"
-    >
-      <ThemeControls :graph="graph" />
+    <div class="absolute h-3/4 top-[100px] right-0">
+      <div
+        v-if="controls.theme"
+        class="w-[325px] h-1/2 overflow-auto bg-gray-800 bg-opacity-80 rounded-l-xl mb-3"
+      >
+        <ThemeControls :graph="graph" />
+      </div>
+
+      <div
+        v-if="controls.settings"
+        class="w-[325px] h-1/2 overflow-auto bg-gray-800 bg-opacity-80 rounded-l-xl"
+      >
+        <SettingsControls :graph="graph" />
+      </div>
     </div>
 
     <div

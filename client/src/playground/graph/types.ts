@@ -3,4 +3,5 @@ export type GraphPlaygroundControls = {
   tutorial: boolean,
   collab: boolean,
   settings: boolean,
+  buttons: boolean,
 }
