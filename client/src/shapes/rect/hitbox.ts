@@ -90,21 +90,31 @@ export const rectEfficientHitbox = (rectangle: Rect) => (boxToCheck: BoundingBox
     at: rectAt,
     width: rectWidth,
     height: rectHeight,
-  } = rectangle
+  } = rectangle;
 
   const {
     at: boxAt,
     width: boxWidth,
     height: boxHeight,
-  } = boxToCheck
+  } = boxToCheck;
 
-  if (rectAt.x + rectWidth <= boxAt.x || boxAt.x + boxWidth <= rectAt.x) {
+  const rectLeft = Math.min(rectAt.x, rectAt.x + rectWidth);
+  const rectRight = Math.max(rectAt.x, rectAt.x + rectWidth);
+  const rectTop = Math.min(rectAt.y, rectAt.y + rectHeight);
+  const rectBottom = Math.max(rectAt.y, rectAt.y + rectHeight);
+
+  const boxLeft = Math.min(boxAt.x, boxAt.x + boxWidth);
+  const boxRight = Math.max(boxAt.x, boxAt.x + boxWidth);
+  const boxTop = Math.min(boxAt.y, boxAt.y + boxHeight);
+  const boxBottom = Math.max(boxAt.y, boxAt.y + boxHeight);
+
+  if (rectRight <= boxLeft || boxRight <= rectLeft) {
     return false;
   }
 
-  if (rectAt.y + rectHeight <= boxAt.y || boxAt.y + boxHeight <= rectAt.y) {
+  if (rectBottom <= boxTop || boxBottom <= rectTop) {
     return false;
   }
 
   return true;
-}
+};
