@@ -4,7 +4,7 @@
   import Graph from "@graph/Graph.vue";
   import { useSimulator } from "./useSimulator";
   import SimulatorControls from "./SimulatorControls.vue";
-  import Button from "@playground/ui/Button.vue";
+  import Button from "@ui/Button.vue";
   import colors from "@colors";
   import CostDisplay from "./CostDisplay.vue";
   import CollabControls from "@playground/graph/CollabControls.vue";

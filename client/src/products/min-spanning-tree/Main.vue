@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useGraph } from "@graph/useGraph";
 import Graph from "@graph/Graph.vue";
 import { useSetupGraph, edgeLabelIsPositiveNumber } from "./useSetupGraph";
-import Button from "@playground/ui/Button.vue";
+import Button from "@ui/Button.vue";
 import colors from "@utils/colors";
 import { useState } from "./useState";
 import CollabControls from "@playground/graph/CollabControls.vue";

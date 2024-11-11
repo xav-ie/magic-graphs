@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import type { NetworkFlowControls } from "./useFlowControls";
   import colors from "@utils/colors";
-  import Button from "@playground/ui/Button.vue";
+  import Button from "@ui/Button.vue";
   import type { FlowSimulationControls } from "./useFlowSimulation";
 
   const props = defineProps<{

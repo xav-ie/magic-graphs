@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import type { Graph } from "@graph/types";
-import InputCheckbox from "@playground/ui/InputCheckbox.vue";
-  import InputColor from "@playground/ui/InputColor.vue";
-  import InputRange from "@playground/ui/InputRange.vue";
-  import InputText from "@playground/ui/InputText.vue";
+import InputCheckbox from "@ui/InputCheckbox.vue";
+  import InputColor from "@ui/InputColor.vue";
+  import InputRange from "@ui/InputRange.vue";
+  import InputText from "@ui/InputText.vue";
   import { camelCaseToTitleCase } from "@utils/string";
 
   defineProps<{

@@ -2,9 +2,9 @@
 import { ref } from "vue";
 import type { Graph } from "@graph/types";
 import colors from "@colors";
-import TextInput from "@playground/ui/InputText.vue";
-import ColorInput from "@playground/ui/InputColor.vue";
-import Button from "@playground/ui/Button.vue";
+import TextInput from "@ui/InputText.vue";
+import ColorInput from "@ui/InputColor.vue";
+import Button from "@ui/Button.vue";
 
 defineProps<{
   graph: Graph;

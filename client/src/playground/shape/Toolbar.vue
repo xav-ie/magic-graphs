@@ -2,8 +2,8 @@
   import { computed, toRefs } from "vue";
   import type { Shape } from "@shape/types";
   import { useHeatmap } from "@playground/shape/useHeatmap";
-  import Button from "@playground/ui/Button.vue";
-  import InputRange from "@playground/ui/InputRange.vue";
+  import Button from "@ui/Button.vue";
+  import InputRange from "@ui/InputRange.vue";
 
   const props = defineProps<{
     canvas: HTMLCanvasElement | undefined;

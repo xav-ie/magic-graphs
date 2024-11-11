@@ -8,6 +8,7 @@
 
     "baseUrl": ".",
     "paths": {
+      "@ui/*": ["./src/ui/*"],
       "@utils/*": ["./src/utils/*"],
       "@colors": ["./src/utils/colors.ts"],
       "@shapes": ["./src/shapes/index.ts"],

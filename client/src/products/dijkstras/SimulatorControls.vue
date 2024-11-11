@@ -8,7 +8,7 @@ import type { DijkstraSimulatorControls } from "./useSimulator";
     mdiChevronLeft,
     mdiChevronRight,
   } from "@mdi/js";
-  import Button from "@playground/ui/Button.vue";
+  import Button from "@ui/Button.vue";
 
 
   const props = defineProps<{

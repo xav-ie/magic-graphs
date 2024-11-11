@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import type { Graph } from "@graph/types";
-  import InputColor from "@playground/ui/InputColor.vue";
-  import InputRange from "@playground/ui/InputRange.vue";
-  import InputText from "@playground/ui/InputText.vue";
+  import InputColor from "@ui/InputColor.vue";
+  import InputRange from "@ui/InputRange.vue";
+  import InputText from "@ui/InputText.vue";
   import { camelCaseToTitleCase } from "@utils/string";
 
   defineProps<{

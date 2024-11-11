@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import type { FlowSimulationControls } from "./useFlowSimulation";
-  import Button from "@playground/ui/Button.vue";
+  import Button from "@ui/Button.vue";
   import {
     mdiPlay,
     mdiPause,
