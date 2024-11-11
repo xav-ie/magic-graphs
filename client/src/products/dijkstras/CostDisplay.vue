@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import type { GNode, Graph } from "@graph/types";
   import colors from "@colors";
-  import { SIM_COLORS } from "./useSimulator";
+  import { SIM_COLORS } from "./useSimulation";
 
   const props = defineProps<{
     graph: Graph;

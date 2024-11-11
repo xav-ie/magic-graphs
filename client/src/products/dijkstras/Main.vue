@@ -2,7 +2,7 @@
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
-  import { useSimulator } from "./useSimulator";
+  import { useDijkstraSimulation } from "./useSimulation";
   import Button from "@ui/Button.vue";
   import colors from "@colors";
   import CostDisplay from "./CostDisplay.vue";
@@ -28,7 +28,7 @@
     node.label = getNewLabel();
   });
 
-  const simControls = useSimulator(graph);
+  const simControls = useDijkstraSimulation(graph);
 </script>
 
 <template>

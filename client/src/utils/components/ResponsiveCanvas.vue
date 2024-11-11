@@ -2,7 +2,7 @@
   import { ref, useAttrs, watch, computed, onUnmounted } from "vue";
   import { useElementSize } from "@vueuse/core";
   import { debounce } from "@utils/debounce";
-  import { line } from "@shapes";
+  import { cross } from "@shapes";
   import type { Color } from "@colors";
 
   const canvasWidth = ref(0);
@@ -86,44 +86,14 @@
 
     ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
 
-    const SAMPLING_RATE = 75;
+    const RATE = 75;
 
-    for (let x = SAMPLING_RATE / 2; x < canvasWidth.value; x += SAMPLING_RATE) {
-      for (
-        let y = SAMPLING_RATE / 2;
-        y < canvasHeight.value;
-        y += SAMPLING_RATE
-      ) {
-        const len = 10;
-        const width = 2;
-        const start = { x, y };
-        const end = {
-          x,
-          y: y + len,
-        };
-
-        line({
-          start,
-          end,
-          width,
+    for (let x = RATE / 2; x < canvasWidth.value; x += RATE) {
+      for (let y = RATE / 2; y < canvasHeight.value; y += RATE) {
+        cross({
+          at: { x, y },
+          size: 2,
           color: props.patternColor,
-        }).draw(ctx);
-
-        const start2 = {
-          x: x - len / 2,
-          y: y + len / 2,
-        };
-
-        const end2 = {
-          x: x + len / 2,
-          y: y + len / 2,
-        };
-
-        line({
-          start: start2,
-          end: end2,
-          color: props.patternColor,
-          width,
         }).draw(ctx);
       }
     }
@@ -202,13 +172,13 @@
 
 <template>
   <!-- coordinates for debugging -->
-  <p
+  <!-- <p
     class="dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none text-right pointer-events-none"
   >
     ({{ canvasCoords.x }}, {{ canvasCoords.y }})
-    <!-- <br />
-    ({{ humanCoords.x }}, {{ humanCoords.y }}) -->
-  </p>
+    <br />
+    ({{ humanCoords.x }}, {{ humanCoords.y }})
+  </p> -->
 
   <div
     ref="parentEl"

@@ -38,7 +38,7 @@ export type SimulationControls<T extends any[] = any[]> = {
    */
   start: () => void
   /**
-   * stop the simulation. this will end the simulation and set the step to trace.length
+   * stop the simulation. this will end the simulation and reset all state
    */
   stop: () => void
   /**

@@ -1,4 +1,4 @@
-import { computed, readonly, ref } from "vue"
+import { computed, ref } from "vue"
 import type { GNode, Graph } from "@graph/types";
 import { useDijkstraTrace } from "./useDijkstraTrace";
 import { useTheme } from "@graph/themes/useTheme";
@@ -14,7 +14,7 @@ export const SIM_COLORS = {
 
 export type DijkstraSimulatorControls = SimulationControls<DijkstrasTrace>
 
-export const useSimulator = (graph: Graph): DijkstraSimulatorControls => {
+export const useDijkstraSimulation = (graph: Graph): DijkstraSimulatorControls => {
 
   const { trace } = useDijkstraTrace(graph)
 
