@@ -14,6 +14,7 @@
   import { useLocalStorage } from "@vueuse/core";
   import { isFraction } from "@utils/fracDecConverter/fracDec";
   import SettingsControls from "./SettingsControls.vue";
+  import { graphLabelGetter } from "@graph/labels";
 
   const graphElement = ref<HTMLCanvasElement>();
 
@@ -25,6 +26,9 @@
       },
     },
   });
+
+  const getNewLabel = graphLabelGetter(graph.nodes, "abc".split(""));
+  graph.settings.value.newNodeLabelGetter = getNewLabel;
 
   const tutorialControls = useBasicsTutorial(graph);
 

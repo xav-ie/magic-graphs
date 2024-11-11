@@ -7,6 +7,7 @@ import type {
 } from "@graph/themes/types"
 import { DARK_THEME } from "@graph/themes/loadouts/dark"
 import { LIGHT_THEME } from "@graph/themes/loadouts/light"
+import { GIRL_THEME } from "./loadouts/girl"
 
 export type GraphTheme = GraphThemeImport
 export type GraphThemeKey = keyof GraphTheme
@@ -14,6 +15,7 @@ export type GraphThemeKey = keyof GraphTheme
 export const THEMES = {
   light: LIGHT_THEME,
   dark: DARK_THEME,
+  girl: GIRL_THEME,
 } as const satisfies Record<string, GraphTheme>
 
 /**

@@ -1,13 +1,16 @@
-import type { GNode, Graph } from "@graph/types";
+import type { GEdge, GNode, Graph } from "@graph/types";
 import { getAdjacencyList } from "@graph/useAdjacencyList";
 
+export type FlowTrace = Record<GEdge['id'], number>[]
+
 export const fordFulkerson = (graph: Graph, srcId: GNode['id'], sinkId: GNode['id']) => {
+
   const edgeIdToWeight = graph.edges.value.reduce<Record<string, number>>((acc, curr) => {
     acc[curr.id] = Number(curr.label)
     return acc
   }, {})
 
-  const tracker: Record<string, number>[] = []
+  const trace: FlowTrace = []
 
   const adjList = getAdjacencyList(graph)
 
@@ -65,7 +68,7 @@ export const fordFulkerson = (graph: Graph, srcId: GNode['id'], sinkId: GNode['i
         if (!connectingUV || !connectingVU) throw 'the adj list must be wrong! 3'
         edgeIdToWeight[connectingUV.id] -= pathFlow
         edgeIdToWeight[connectingVU.id] += pathFlow
-        tracker.push({
+        trace.push({
           [connectingUV.id]: edgeIdToWeight[connectingUV.id],
           [connectingVU.id]: edgeIdToWeight[connectingVU.id]
         })
@@ -80,6 +83,6 @@ export const fordFulkerson = (graph: Graph, srcId: GNode['id'], sinkId: GNode['i
 
   return {
     maxFlow: run(),
-    tracker
+    trace
   }
 }

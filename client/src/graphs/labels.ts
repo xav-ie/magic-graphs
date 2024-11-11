@@ -1,33 +1,49 @@
 import type { Ref } from "vue";
 import type { Graph } from "./types";
 
-const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const ONE_THROUGH_99 = Array.from({ length: 99 }, (_, i) => (i + 1).toString());
+export const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+export const NUMBERS = Array.from({ length: 999 }, (_, i) => (i + 1).toString());
 
 export type LabelledItem = { label: string };
 
+/**
+ * takes a list of labelled items and a sequence of labels and returns a function that will
+ * return the next available label in the sequence that is not already in the list of labelled items
+ *
+ * @param labelledItems - a list of labelled items used to check for existing labels
+ * @param sequence - a sequence of labels to use when generating new labels
+ * @returns a function that will return the next available label
+ */
 export const graphLabelGetter = (
   labelledItems: Ref<LabelledItem[]>,
   sequence: string[]
 ) => () => {
   let labels = labelledItems.value.map(({ label }) => label);
 
+  let timesAround = 0;
   let index = 0;
   let newLabel;
+
+  const getPrefix = (timesAround: number) => {
+    if (timesAround === 0) return "";
+    return sequence[(timesAround - 1) % sequence.length];
+  }
 
   while (!newLabel) {
     const indexOutOfBounds = index >= sequence.length;
     if (indexOutOfBounds) {
       labels = labels.slice(sequence.length);
       index = 0;
+      timesAround++;
     }
-    const potentialLabel = sequence[index];
+    const prefix = getPrefix(timesAround);
+    const potentialLabel = prefix + sequence[index];
     const labelExists = labels.includes(potentialLabel);
     if (!labelExists) newLabel = potentialLabel;
     index++;
   }
 
-  return newLabel
+  return newLabel;
 };
 
 /**
@@ -38,7 +54,7 @@ export const graphLabelGetter = (
  * @returns a function that will return the next available letter label
  */
 export const nodeLetterLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
-  return graphLabelGetter(graph.nodes, ALPHABET);
+  return graphLabelGetter(graph.nodes, LETTERS);
 };
 
 /**
@@ -49,13 +65,13 @@ export const nodeLetterLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
  * @returns a function that will return the next available number label
  */
 export const nodeNumberLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
-  return graphLabelGetter(graph.nodes, ONE_THROUGH_99);
+  return graphLabelGetter(graph.nodes, NUMBERS);
 };
 
 export const edgeLetterLabelGetter = (graph: Pick<Graph, 'edges'>) => {
-  return graphLabelGetter(graph.edges, ALPHABET);
+  return graphLabelGetter(graph.edges, LETTERS);
 }
 
 export const edgeNumberLabelGetter = (graph: Pick<Graph, 'edges'>) => {
-  return graphLabelGetter(graph.edges, ONE_THROUGH_99);
+  return graphLabelGetter(graph.edges, NUMBERS);
 };

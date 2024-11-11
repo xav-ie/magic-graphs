@@ -67,13 +67,15 @@ export const usePersistentGraph = (
     }
   }
 
-  const trackGraphState = () => {
+  const trackGraphState = async () => {
+    // lets all callbacks run before saving to storage
+    await new Promise(resolve => setTimeout(resolve, 10))
     nodeStorage.set(graph.nodes.value)
     edgeStorage.set(graph.edges.value)
   }
 
   let previousKey = graph.settings.value.persistentStorageKey
-  const trackOptions = () => {
+  const trackOptions = async () => {
     const currentKey = graph.settings.value.persistentStorageKey
 
     // trackOptions was triggered by a change in the storage key, so we cannot update storage
@@ -81,6 +83,9 @@ export const usePersistentGraph = (
       previousKey = currentKey
       return
     }
+
+    // lets all callbacks run before saving to storage
+    await new Promise(resolve => setTimeout(resolve, 10))
 
     if (graph.settings.value.persistentTrackTheme) {
       themeStorage.set(graph.theme.value)
@@ -185,5 +190,16 @@ export const usePersistentGraph = (
     }
   }
 
-  return graph
+  return {
+    ...graph,
+
+    /**
+     * track the graph state on local storage
+     */
+    trackGraphState,
+    /**
+     * track the graph options on local storage
+     */
+    trackOptions,
+  }
 }

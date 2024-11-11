@@ -39,7 +39,7 @@
 </script>
 
 <template>
-  <div class="flex gap-[60px] text-white">
+  <div class="flex gap-[60px] fill-white dark:fill-black">
     <Button
       @click="prevStep"
       style="border-radius: 100px; transform: scale(2)"
@@ -49,7 +49,7 @@
         :height="btnSize"
         :viewBox="`0 0 ${btnSize} ${btnSize}`"
       >
-        <path :d="mdiChevronLeft" />
+        <path :d="mdiChevronLeft"  />
       </svg>
     </Button>
 

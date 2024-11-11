@@ -20,11 +20,13 @@ describe('graphLabelGetter', () => {
     const node3 = graph.addNode({ label: getNewLabel() })
     expect(node3.label).toBe('C')
     const node4 = graph.addNode({ label: getNewLabel() })
-    expect(node4.label).toBe('A')
+    expect(node4.label).toBe('AA')
+    const node5 = graph.addNode({ label: getNewLabel() })
+    expect(node5.label).toBe('AB')
 
     graph.removeNode(node2.id)
-    const node5 = graph.addNode({ label: getNewLabel() })
-    expect(node5.label).toBe('B')
+    const node6 = graph.addNode({ label: getNewLabel() })
+    expect(node6.label).toBe('B')
   })
 
   test('nodeLetterLabelGetter', () => {
@@ -45,7 +47,5 @@ describe('graphLabelGetter', () => {
       graph.addNode({ label: getNewLabel() })
       expect(graph.nodes.value[i].label).toBe((i + 1).toString())
     }
-    graph.addNode({ label: getNewLabel() })
-    expect(graph.nodes.value[99].label).toBe('1')
   })
 })

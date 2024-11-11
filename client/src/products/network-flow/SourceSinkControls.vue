@@ -3,39 +3,42 @@
   import colors from "@utils/colors";
   import Button from "@ui/Button.vue";
   import type { FlowSimulationControls } from "./useFlowSimulation";
+  import { computed } from "vue";
 
   const props = defineProps<{
     simControls: FlowSimulationControls;
     controls: NetworkFlowControls;
   }>();
+
+  const simActive = computed(() => props.simControls.isActive.value);
 </script>
 
 <template>
   <div class="flex gap-3">
     <Button
-      v-if="!simControls.simulationActive.value"
+      v-if="!simActive"
       :style="{
         backgroundColor: colors.BLUE_500,
         color: colors.WHITE,
       }"
-      @click="simControls.startSimulation"
+      @click="simControls.start"
     >
       Run Flow Simulation
     </Button>
 
     <Button
-      v-else="!simControls.simulationActive.value"
+      v-else
       :style="{
         backgroundColor: colors.RED_600,
         color: colors.WHITE,
       }"
-      @click="simControls.stopSimulation"
+      @click="simControls.stop"
     >
       Stop Simulation
     </Button>
 
     <div
-      v-if="!props.simControls.simulationActive.value"
+      v-if="!simActive"
       class="flex gap-3"
     >
       <Button

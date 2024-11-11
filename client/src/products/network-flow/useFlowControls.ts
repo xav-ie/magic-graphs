@@ -1,26 +1,25 @@
+import { ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
-import { ref } from "vue";
 import colors from "@utils/colors";
+import { LETTERS, graphLabelGetter } from "@graph/labels";
 
 export const SOURCE_LABEL = "S";
 export const SINK_LABEL = "T";
 
+const ALPHABET_WITHOUT_SOURCE_SINK = LETTERS.filter(l => l !== SOURCE_LABEL && l !== SINK_LABEL);
+
+/**
+ * labeller for flow network nodes
+ */
+export const flowNodeLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
+  return graphLabelGetter(graph.nodes, ALPHABET_WITHOUT_SOURCE_SINK);
+}
+
 export const useFlowControls = (graph: Graph) => {
 
   const { setTheme } = useTheme(graph, 'flow');
-
-  const getNewLabel = () => {
-    const alphabetWithoutST = "ABCDEFGHIJKLMNOPQRUVWXYZ";
-    const labels = graph.nodes.value.map(node => node.label);
-    let label = 0;
-    while (labels.includes(alphabetWithoutST[label])) label++;
-    return alphabetWithoutST[label];
-  }
-
-  graph.subscribe('onNodeAdded', (node) => {
-    node.label = getNewLabel();
-  })
+  const newNodeLabel = flowNodeLabelGetter(graph);
 
   graph.subscribe('onEdgeAdded', (edge) => {
     if (edge.to === edge.from) return graph.removeEdge(edge.id);
@@ -53,7 +52,7 @@ export const useFlowControls = (graph: Graph) => {
     makingSource.value = true;
     const node = await captureNode();
     graph.nodes.value.forEach(node => {
-      if (node.label === SOURCE_LABEL) node.label = getNewLabel();
+      if (node.label === SOURCE_LABEL) node.label = newNodeLabel();
     });
     node.label = SOURCE_LABEL;
     graph.trackGraphState();
@@ -65,7 +64,7 @@ export const useFlowControls = (graph: Graph) => {
     makingSink.value = true;
     const node = await captureNode();
     graph.nodes.value.forEach(node => {
-      if (node.label === SINK_LABEL) node.label = getNewLabel();
+      if (node.label === SINK_LABEL) node.label = newNodeLabel();
     });
     node.label = SINK_LABEL;
     graph.trackGraphState();
