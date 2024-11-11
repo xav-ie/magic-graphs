@@ -1,8 +1,10 @@
-import { computed, ref } from "vue"
+import { computed, readonly, ref } from "vue"
 import type { GNode, Graph } from "@graph/types";
-import { useDijkstraTrace } from "./dijkstras";
+import { useDijkstraTrace } from "./useDijkstraTrace";
 import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
+import type { SimulationControls } from "@ui/sim/types";
+import type { DijkstrasTrace } from "./useDijkstraTrace";
 
 export const SIM_COLORS = {
   SOURCE: colors.AMBER_600,
@@ -10,7 +12,9 @@ export const SIM_COLORS = {
   EXPLORING: colors.CYAN_500,
 } as const
 
-export const useSimulator = (graph: Graph) => {
+export type DijkstraSimulatorControls = SimulationControls<DijkstrasTrace>
+
+export const useSimulator = (graph: Graph): DijkstraSimulatorControls => {
 
   const { trace } = useDijkstraTrace(graph)
 
@@ -20,10 +24,10 @@ export const useSimulator = (graph: Graph) => {
   const paused = ref(true);
   const active = ref(false);
   const interval = ref<NodeJS.Timeout | undefined>()
-  const isOver = computed(() => trace.value && step.value === trace.value.length - 1)
+  const isOver = computed(() => step.value === trace.value.length - 1)
   const hasBegun = computed(() => step.value > 0)
 
-  const traceAtStep = computed(() => trace.value && trace.value[step.value])
+  const traceAtStep = computed(() => trace.value[step.value])
 
   const exploredNodeAtStep = computed(() => {
     const seenNodeIds = new Set<string>()
@@ -106,7 +110,8 @@ export const useSimulator = (graph: Graph) => {
   return {
     nextStep,
     prevStep,
-    traceAtStep,
+
+    trace,
 
     start,
     stop,
@@ -114,8 +119,6 @@ export const useSimulator = (graph: Graph) => {
 
     isOver,
     hasBegun,
-    active,
+    isActive: readonly(active),
   }
 }
-
-export type DijkstraSimulatorControls = ReturnType<typeof useSimulator>

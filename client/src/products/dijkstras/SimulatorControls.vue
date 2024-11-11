@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import colors from "@utils/colors";
-import type { DijkstraSimulatorControls } from "./useSimulator";
+  import type { DijkstraSimulatorControls } from "./useSimulator";
   import {
     mdiPlay,
     mdiPause,
@@ -9,7 +9,6 @@ import type { DijkstraSimulatorControls } from "./useSimulator";
     mdiChevronRight,
   } from "@mdi/js";
   import Button from "@ui/Button.vue";
-
 
   const props = defineProps<{
     controls: DijkstraSimulatorControls;
@@ -65,9 +64,7 @@ import type { DijkstraSimulatorControls } from "./useSimulator";
         :height="btnSize"
         :viewBox="`0 0 ${btnSize} ${btnSize}`"
       >
-        <path
-          :d="props.controls.paused.value ? mdiPlay : mdiPause"
-        />
+        <path :d="props.controls.paused.value ? mdiPlay : mdiPause" />
       </svg>
     </Button>
 
