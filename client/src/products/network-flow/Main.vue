@@ -2,7 +2,7 @@
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
-  import { useFlowControls } from "./useFlowControls";
+  import { flowNodeLabelGetter, useFlowControls } from "./useFlowControls";
   import SourceSinkControls from "./SourceSinkControls.vue";
   import { useEdgeThickener } from "./useEdgeThickener";
   import { FLOW_GRAPH_SETTINGS } from "./settings";
@@ -15,6 +15,8 @@
   const graph = useGraph(graphEl, {
     settings: FLOW_GRAPH_SETTINGS,
   });
+
+  graph.settings.value.newNodeLabelGetter = flowNodeLabelGetter(graph);
 
   useEdgeThickener(graph);
   const controls = useFlowControls(graph);

@@ -21,6 +21,12 @@ export type BaseGraphSettings = {
    * @default function tries converting the user input to a number
    */
   edgeInputToLabel: (input: string) => string | undefined;
+  /**
+   * a function that returns a new label for a node when a new node is created.
+   * if null, new nodes will be generated alphabetically: A, B, C, ... Z, AA, AB, ...
+   * @default null
+   */
+  newNodeLabelGetter: null | (() => string);
 }
 
 export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
@@ -34,7 +40,8 @@ export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
     else if (decimalNum === "-Infinity") return '-∞'
     else if (decimalNum === undefined && isNaN(Number(trimmed))) return
     return decimalNum ?? trimmed
-  }
+  },
+  newNodeLabelGetter: null,
 }
 
 /**

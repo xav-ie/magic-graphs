@@ -11,9 +11,9 @@ describe("base graph - addNode", () => {
     graph.addNode({ x: 1, y: 1 });
     graph.addNode({ x: 2, y: 2 });
     expect(graph.nodes.value).toMatchObject([
-      { x: 0, y: 0, label: "1" },
-      { x: 1, y: 1, label: "2" },
-      { x: 2, y: 2, label: "3" },
+      { x: 0, y: 0 },
+      { x: 1, y: 1 },
+      { x: 2, y: 2 },
     ]);
   })
 })

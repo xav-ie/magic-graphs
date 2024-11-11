@@ -20,6 +20,7 @@ import { generateId, getConnectedEdges } from "@graph/helpers";
 import type { Ref } from "vue";
 import type { Emitter } from "@graph/events";
 import { nodeLetterLabelGetter } from "@graph/labels";
+import type { GraphSettings } from "@graph/settings";
 
 type GraphCRUDOptions = {
   emit: Emitter,
@@ -28,6 +29,7 @@ type GraphCRUDOptions = {
   edges: Ref<GEdge[]>,
   nodeMap: NodeMap,
   edgeMap: EdgeMap,
+  settings: Ref<GraphSettings>,
 }
 
 
@@ -38,10 +40,8 @@ export const useGraphCRUD = ({
   edgeMap,
   repaint,
   emit,
+  settings,
 }: GraphCRUDOptions) => {
-
-  const getNewNodeLabel = nodeLetterLabelGetter({ nodes })
-
 
   // READ OPERATIONS
 
@@ -80,9 +80,11 @@ export const useGraphCRUD = ({
       ...options
     }
 
+    const labelGetter = settings.value.newNodeLabelGetter ?? nodeLetterLabelGetter({ nodes })
+
     const newNode = {
       id: node.id ?? generateId(),
-      label: node.label ?? getNewNodeLabel(),
+      label: node.label ?? labelGetter(),
       x: node.x ?? 0,
       y: node.y ?? 0,
     }

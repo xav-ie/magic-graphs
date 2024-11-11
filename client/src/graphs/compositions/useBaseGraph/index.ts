@@ -152,6 +152,7 @@ export const useBaseGraph = (
     edgeMap: edgeIdToEdgeMap,
     repaint,
     emit,
+    settings,
   })
 
   const getNodeByCoordinates = (x: number, y: number) => {

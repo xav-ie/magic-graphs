@@ -6,6 +6,14 @@ export const NUMBERS = Array.from({ length: 999 }, (_, i) => (i + 1).toString())
 
 export type LabelledItem = { label: string };
 
+/**
+ * takes a list of labelled items and a sequence of labels and returns a function that will
+ * return the next available label in the sequence that is not already in the list of labelled items
+ *
+ * @param labelledItems - a list of labelled items used to check for existing labels
+ * @param sequence - a sequence of labels to use when generating new labels
+ * @returns a function that will return the next available label
+ */
 export const graphLabelGetter = (
   labelledItems: Ref<LabelledItem[]>,
   sequence: string[]
@@ -35,7 +43,7 @@ export const graphLabelGetter = (
     index++;
   }
 
-  return getPrefix(timesAround) + newLabel;
+  return newLabel;
 };
 
 /**
