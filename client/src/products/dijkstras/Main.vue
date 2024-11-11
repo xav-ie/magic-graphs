@@ -8,6 +8,7 @@
   import CostDisplay from "./CostDisplay.vue";
   import CollabControls from "@playground/graph/CollabControls.vue";
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
+  import { nodeLetterLabelGetter } from "@graph/labels";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -16,13 +17,7 @@
     },
   });
 
-  const getNewLabel = () => {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const labels = graph.nodes.value.map((node) => node.label);
-    let label = 0;
-    while (labels.includes(alphabet[label])) label++;
-    return alphabet[label];
-  };
+  const getNewLabel = nodeLetterLabelGetter(graph);
 
   graph.subscribe("onNodeAdded", (node) => {
     node.label = getNewLabel();

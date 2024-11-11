@@ -74,7 +74,7 @@ export const useGraphCRUD = ({
    * @returns the added node or undefined if not added
    */
   const addNode = (
-    node: PartiallyPartial<GNode, 'id' | 'label'>,
+    node: Partial<GNode>,
     options: Partial<AddNodeOptions> = {}
   ) => {
     const fullOptions = {
@@ -85,9 +85,10 @@ export const useGraphCRUD = ({
     const newNode = {
       id: node.id ?? generateId(),
       label: node.label ?? getNewNodeLabel(nodes),
-      x: node.x,
-      y: node.y,
+      x: node.x ?? 0,
+      y: node.y ?? 0,
     }
+
     nodes.value.push(newNode)
     emit('onStructureChange', nodes.value, edges.value)
     emit('onNodeAdded', newNode, fullOptions)
