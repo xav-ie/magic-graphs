@@ -1,77 +1,71 @@
-import type { GEdge, Graph } from "@graph/types"
-import { fordFulkerson } from "./fordFulkerson"
-import { SINK_LABEL, SOURCE_LABEL } from "./useFlowControls"
 import { computed, ref } from "vue"
+import type { GEdge, Graph } from "@graph/types"
 import { useTheme } from "@graph/themes/useTheme"
 import colors from "@utils/colors"
 import { getValue } from "@graph/helpers"
+import type { SimulationControls } from "@ui/sim/types"
 import { RESIDUAL_ID, useResidualEdges } from "./useResidualEdges"
+import { useFordFulkerson } from "./useFordFulkerson"
+import type { FlowTrace } from "./fordFulkerson"
 
-export const useFlowSimulation = (graph: Graph) => {
+export type FlowSimulationControls = SimulationControls<FlowTrace>
+
+export const useFlowSimulation = (graph: Graph): FlowSimulationControls => {
 
   const { setTheme } = useTheme(graph, 'flow')
-
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
+  const { trace } = useFordFulkerson(graph)
 
-  const simulationActive = ref(false)
+  const active = ref(false)
   const activeEdgeIds = ref<string[]>([])
   const step = ref(0)
-  const tracker = ref<Record<string, number>[]>([])
+
   const simulationInterval = ref<NodeJS.Timeout | null>(null)
-  const simulationPaused = ref(false)
+  const paused = ref(false)
+  const playbackSpeed = ref(1_500)
 
-  const isSimulationOver = computed(() => step.value === tracker.value.length)
-  const hasSimulationBegun = computed(() => step.value > -1)
-
-  const refreshTrace = async () => {
-    createResidualEdges()
-
-    const src = graph.nodes.value.find(n => n.label === SOURCE_LABEL)
-    const sink = graph.nodes.value.find(n => n.label === SINK_LABEL)
-    if (!src || !sink) return cleanupResidualEdges()
-    tracker.value = fordFulkerson(graph, src.id, sink.id).tracker
-    cleanupResidualEdges()
-  }
+  const isOver = computed(() => step.value === trace.value.length)
+  const hasBegun = computed(() => step.value > -1)
 
   const onSimulationInterval = () => {
-    if (simulationPaused.value || isSimulationOver.value) return
+    if (paused.value || isOver.value) return
     nextStep()
   }
 
-  const startSimulation = () => {
+  const start = () => {
     step.value = -1
     graph.settings.value.userEditable = false
     graph.settings.value.focusable = false
-    simulationActive.value = true
-    simulationPaused.value = false
+    active.value = true
+    paused.value = false
     createResidualEdges()
 
-    simulationInterval.value = setInterval(onSimulationInterval, 1_500)
+    simulationInterval.value = setInterval(onSimulationInterval, playbackSpeed.value)
     graph.repaint('flow-simulation/start-simulation')()
   }
 
-  const stopSimulation = () => {
+  const stop = () => {
     cleanupResidualEdges()
     graph.settings.value.userEditable = true
     graph.settings.value.focusable = true
     activeEdgeIds.value = []
-    simulationActive.value = false
+    active.value = false
 
     if (simulationInterval.value) clearInterval(simulationInterval.value)
     graph.repaint('flow-simulation/stop-simulation')()
   }
 
   const nextStep = () => {
-    if (step.value === tracker.value.length) return
+    if (step.value === trace.value.length) return
     step.value++
 
-    if (step.value === tracker.value.length) {
+    if (step.value === trace.value.length) {
       activeEdgeIds.value = []
       graph.repaint('flow-simulation/next-step')()
       return
     }
 
-    const trackerAtStep = tracker.value[step.value]
+    const trackerAtStep = trace.value[step.value]
     activeEdgeIds.value = Object.keys(trackerAtStep)
     const [edge1Id, edge2Id] = activeEdgeIds.value
     const edge1 = graph.getEdge(edge1Id)
@@ -95,8 +89,8 @@ export const useFlowSimulation = (graph: Graph) => {
     }
 
     const goToStep = step.value
-    stopSimulation()
-    startSimulation()
+    stop()
+    start()
     for (let i = 0; i < goToStep + 1; i++) nextStep()
   }
 
@@ -108,23 +102,21 @@ export const useFlowSimulation = (graph: Graph) => {
 
   setTheme('edgeColor', colorActiveEdges)
 
-  graph.subscribe('onStructureChange', refreshTrace)
-  graph.subscribe('onEdgeLabelChange', refreshTrace)
-
   return {
     nextStep,
     prevStep,
-    startSimulation,
-    stopSimulation,
-    simulationActive,
-    activeEdgeIds,
-    step,
+    setStep: () => { throw 'setStep not implemented' },
 
-    isSimulationOver,
-    hasSimulationBegun,
+    trace: computed(() => trace.value),
+    step: computed(() => step.value),
 
-    simulationPaused,
+    start,
+    stop,
+    paused,
+    playbackSpeed,
+
+    isOver,
+    hasBegun,
+    isActive: computed(() => active.value),
   }
 }
-
-export type FlowSimulationControls = ReturnType<typeof useFlowSimulation>

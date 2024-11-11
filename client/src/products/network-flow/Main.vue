@@ -7,7 +7,7 @@
   import { useEdgeThickener } from "./useEdgeThickener";
   import { FLOW_GRAPH_SETTINGS } from "./settings";
   import NetworkFlowStats from "./NetworkFlowStats.vue";
-  import NetworkFlowSim from "./NetworkFlowSim.vue";
+  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
   import { useFlowSimulation } from "./useFlowSimulation";
   import CollabControls from "@playground/graph/CollabControls.vue";
 
@@ -18,7 +18,7 @@
 
   useEdgeThickener(graph);
   const controls = useFlowControls(graph);
-  const simulationControls = useFlowSimulation(graph);
+  const simControls = useFlowSimulation(graph);
 </script>
 
 <template>
@@ -33,7 +33,7 @@
     <div class="absolute top-0 p-3">
       <SourceSinkControls
         :controls="controls"
-        :sim-controls="simulationControls"
+        :sim-controls="simControls"
       />
     </div>
 
@@ -41,12 +41,15 @@
       <NetworkFlowStats :graph="graph" />
     </div>
 
-    <div class="absolute bottom-8 w-full flex justify-center items-center p-3">
-      <NetworkFlowSim :sim-controls="simulationControls" />
+    <div
+      v-if="simControls.isActive.value"
+      class="absolute bottom-8 w-full flex justify-center items-center p-3"
+    >
+      <SimulationPlaybackControls :controls="simControls" />
     </div>
 
     <div
-      v-if="!simulationControls.simulationActive.value"
+      v-if="!simControls.isActive.value"
       class="absolute right-0 p-3 h-14 flex gap-3 bottom-0"
     >
       <CollabControls :graph="graph" />
