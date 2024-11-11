@@ -8,7 +8,7 @@
 
 <template>
   <div
-    class="group hover:scale-110 transition-all duration-500 ease-out relative flex items-center justify-center"
+    class="group hover:scale-110 transition-all duration-500 ease-out relative flex items-center justify-center max-w-44"
   >
     <div>
       <div class="relative w-60 h-60 flex items-center justify-center">
@@ -17,14 +17,14 @@
           :alt="product.menu.name"
           class="w-full h-full object-cover rounded-2xl"
         />
-        <div class="absolute top-0 w-full h-full opacity-0 group-hover:opacity-100 transition duration-500 bg-gray-900 bg-opacity-90 rounded-2xl p-4 ">
+        <div class="absolute top-0 w-full h-full opacity-0 group-hover:opacity-100 transition duration-500 bg-gray-900 bg-opacity-90 rounded-2xl p-4">
           <p class="text-white font-bold">
             {{ product.menu.description }}
           </p>
         </div>
       </div>
       <h2
-        class="text-center font-bold text-2xl mt-4 transition duration-500"
+        class="text-center font-bold text-2xl mt-4 transition duration-500 h-8"
       >
         {{ product.menu.name }}
       </h2>
@@ -32,7 +32,7 @@
 
     <!-- shadow -->
     <div
-      class="absolute top-[-20%] -z-10 w-[150%] h-[150%] pointer-events-none"
+      class="absolute -z-10 w-[150%] h-[150%] pointer-events-none"
     >
       <div
         class="absolute inset-0 group-hover:bg-purple-500 blur-2xl opacity-30 rounded-full transition duration-500"
