@@ -1,10 +1,10 @@
 import { computed, ref } from "vue"
 import type { GNode, Graph } from "@graph/types";
-import { useDijkstraTrace } from "./useDijkstraTrace";
 import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
 import type { SimulationControls } from "@ui/sim/types";
-import type { DijkstrasTrace } from "./useDijkstraTrace";
+import { useDijkstra, INF } from "./useDijkstra";
+import type { DijkstrasTrace } from "./useDijkstra";
 
 export const SIM_COLORS = {
   SOURCE: colors.AMBER_600,
@@ -16,13 +16,12 @@ export type DijkstraSimulatorControls = SimulationControls<DijkstrasTrace>
 
 export const useDijkstraSimulation = (graph: Graph): DijkstraSimulatorControls => {
 
-  const { trace } = useDijkstraTrace(graph)
-
+  const { trace } = useDijkstra(graph)
   const { setTheme } = useTheme(graph, 'dijkstra');
 
   const step = ref(0);
   const paused = ref(true);
-  const playbackSpeed = ref(1500);
+  const playbackSpeed = ref(1_500);
   const active = ref(false);
   const interval = ref<NodeJS.Timeout | undefined>()
   const isOver = computed(() => step.value === trace.value.length - 1)
@@ -108,11 +107,12 @@ export const useDijkstraSimulation = (graph: Graph): DijkstraSimulatorControls =
     const { distances } = traceAtStep.value
     const nodeDist = distances.find((dist) => dist.id === node.id)
     if (!nodeDist) return '?'
-    if (nodeDist.distance === 1000) return 'Inf'
+    if (nodeDist.distance === INF) return 'Inf'
     return nodeDist.distance.toString()
   }
 
   setTheme('nodeBorderColor', colorBorders)
+  setTheme('nodeAnchorColor', colorBorders)
   setTheme('nodeText', nodeDistanceText)
 
   return {

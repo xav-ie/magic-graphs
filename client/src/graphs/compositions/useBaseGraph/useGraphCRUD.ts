@@ -19,6 +19,7 @@ import type {
 import { generateId, getConnectedEdges } from "@graph/helpers";
 import type { Ref } from "vue";
 import type { Emitter } from "@graph/events";
+import { nodeLetterLabelGetter } from "@graph/labels";
 
 type GraphCRUDOptions = {
   emit: Emitter,
@@ -29,12 +30,6 @@ type GraphCRUDOptions = {
   edgeMap: EdgeMap,
 }
 
-const getNewNodeLabel = (nodes: Ref<GNode[]>) => {
-  const labels = nodes.value.map(node => node.label)
-  let label = 1
-  while (labels.includes(label.toString())) label++
-  return label.toString()
-}
 
 export const useGraphCRUD = ({
   nodes,
@@ -44,6 +39,9 @@ export const useGraphCRUD = ({
   repaint,
   emit,
 }: GraphCRUDOptions) => {
+
+  const getNewNodeLabel = nodeLetterLabelGetter({ nodes })
+
 
   // READ OPERATIONS
 
@@ -84,7 +82,7 @@ export const useGraphCRUD = ({
 
     const newNode = {
       id: node.id ?? generateId(),
-      label: node.label ?? getNewNodeLabel(nodes),
+      label: node.label ?? getNewNodeLabel(),
       x: node.x ?? 0,
       y: node.y ?? 0,
     }

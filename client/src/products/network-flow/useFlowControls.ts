@@ -2,11 +2,11 @@ import { ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
-import { ALPHABET, graphLabelGetter } from "@graph/labels";
+import { LETTERS, graphLabelGetter } from "@graph/labels";
 
 export const SOURCE_LABEL = "S";
 export const SINK_LABEL = "T";
-const ALPHABET_WITHOUT_SOURCE_SINK = ALPHABET.filter(l => l !== SOURCE_LABEL && l !== SINK_LABEL);
+const ALPHABET_WITHOUT_SOURCE_SINK = LETTERS.filter(l => l !== SOURCE_LABEL && l !== SINK_LABEL);
 
 export const useFlowControls = (graph: Graph) => {
 

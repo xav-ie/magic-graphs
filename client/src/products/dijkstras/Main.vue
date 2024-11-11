@@ -8,19 +8,12 @@
   import CostDisplay from "./CostDisplay.vue";
   import CollabControls from "@playground/graph/CollabControls.vue";
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
-  import { nodeLetterLabelGetter } from "@graph/labels";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: {
       persistentStorageKey: "dijkstras",
     },
-  });
-
-  const getNewLabel = nodeLetterLabelGetter(graph);
-
-  graph.subscribe("onNodeAdded", (node) => {
-    node.label = getNewLabel();
   });
 
   const simControls = useDijkstraSimulation(graph);
@@ -54,7 +47,7 @@
 
   <div
     v-if="simControls.isActive.value"
-    class="absolute p-3 my-3 top-0 right-0 overflow-auto bg-gray-800 bg-opacity-80 rounded-l-xl h-[calc(100%-1.5rem)] overflow-auto"
+    class="absolute p-3 my-3 top-0 right-0 overflow-auto bg-gray-800 bg-opacity-80 rounded-l-xl max-h-[calc(100%-1.5rem)] overflow-auto"
   >
     <CostDisplay :graph="graph" />
   </div>
