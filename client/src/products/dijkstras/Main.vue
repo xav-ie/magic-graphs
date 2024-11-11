@@ -3,11 +3,11 @@
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
   import { useSimulator } from "./useSimulator";
-  import SimulatorControls from "./SimulatorControls.vue";
   import Button from "@ui/Button.vue";
   import colors from "@colors";
   import CostDisplay from "./CostDisplay.vue";
   import CollabControls from "@playground/graph/CollabControls.vue";
+  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -41,7 +41,7 @@
 
   <div class="absolute top-0 p-3 flex gap-3">
     <Button
-      v-if="!simControls.active.value"
+      v-if="!simControls.isActive.value"
       @click="simControls.start"
     >
       Start Simulation
@@ -58,18 +58,21 @@
   </div>
 
   <div
-    v-if="simControls.active.value"
+    v-if="simControls.isActive.value"
     class="absolute p-3 my-3 top-0 right-0 overflow-auto bg-gray-800 bg-opacity-80 rounded-l-xl h-[calc(100%-1.5rem)] overflow-auto"
   >
     <CostDisplay :graph="graph" />
   </div>
 
-  <div class="absolute bottom-8 w-full flex justify-center items-center p-3">
-    <SimulatorControls :controls="simControls" />
+  <div
+    v-if="simControls.isActive.value"
+    class="absolute bottom-8 w-full flex justify-center items-center p-3"
+  >
+    <SimulationPlaybackControls :controls="simControls" />
   </div>
 
   <div
-    v-if="!simControls.active.value"
+    v-if="!simControls.isActive.value"
     class="absolute right-0 p-3 h-14 flex gap-3 bottom-0"
   >
     <CollabControls :graph="graph" />

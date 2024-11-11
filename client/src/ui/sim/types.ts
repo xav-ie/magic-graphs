@@ -1,10 +1,10 @@
-import type { ComputedRef, DeepReadonly, Ref, UnwrapNestedRefs } from "vue";
+import type { ComputedRef, Ref } from "vue";
 
 /**
  * used as a standard for all simulation experiences across all products
  * @template T the type of the trace that the simulation is running on
  */
-export type SimulationControls<T extends any[]> = {
+export type SimulationControls<T extends any[] = any[]> = {
   /**
    * skip forward to the next step.
    * wont do anything if the current step is trace.length
@@ -18,15 +18,14 @@ export type SimulationControls<T extends any[]> = {
 
   /**
    * the current trace of the algorithm for which the simulation is being run.
-   * do not write
    */
-  trace: Ref<T>
+  trace: ComputedRef<T>
   /**
    * the current step of the simulation.
    * ranges from -1 to trace.length where -1 is the state before the algorithm has begun
-   * and trace.length is the state after the algorithm has completed
+   * and trace.length is the state after the algorithm has completed.
    */
-  step: DeepReadonly<UnwrapNestedRefs<number>>
+  step: ComputedRef<number>
   /**
    * set the current step of the simulation
    * @param step the step to set the simulation to
@@ -55,15 +54,15 @@ export type SimulationControls<T extends any[]> = {
    * whether the simulation is currently active.
    * changes to true when start is called and false when stop is called
    */
-  isActive: DeepReadonly<UnwrapNestedRefs<boolean>>
+  isActive: ComputedRef<boolean>
   /**
    * whether the simulation is over.
    * true when the step is trace.length
    */
-  isOver: Readonly<ComputedRef<boolean>>
+  isOver: ComputedRef<boolean>
   /**
    * whether the simulation has begun.
    * true when the step is greater than -1
    */
-  hasBegun: Readonly<ComputedRef<boolean>>
+  hasBegun: ComputedRef<boolean>
 }

@@ -22,6 +22,7 @@ export const useSimulator = (graph: Graph): DijkstraSimulatorControls => {
 
   const step = ref(0);
   const paused = ref(true);
+  const playbackSpeed = ref(1500);
   const active = ref(false);
   const interval = ref<NodeJS.Timeout | undefined>()
   const isOver = computed(() => step.value === trace.value.length - 1)
@@ -51,7 +52,7 @@ export const useSimulator = (graph: Graph): DijkstraSimulatorControls => {
     interval.value = setInterval(() => {
       if (isOver.value || paused.value) return
       nextStep()
-    }, 1500)
+    }, playbackSpeed.value)
 
     graph.repaint('dijkstras/start')()
   }
@@ -76,6 +77,13 @@ export const useSimulator = (graph: Graph): DijkstraSimulatorControls => {
     step.value--
 
     graph.repaint('dijkstras/prev-step')()
+  }
+
+  const setStep = (newStep: number) => {
+    if (newStep < -1 || newStep > trace.value.length) return
+    step.value = newStep
+
+    graph.repaint('dijkstras/set-step')()
   }
 
   const colorBorders = (node: GNode) => {
@@ -110,15 +118,18 @@ export const useSimulator = (graph: Graph): DijkstraSimulatorControls => {
   return {
     nextStep,
     prevStep,
+    setStep,
 
-    trace,
+    trace: computed(() => trace.value),
+    step: computed(() => step.value),
 
     start,
     stop,
     paused,
+    playbackSpeed,
 
     isOver,
     hasBegun,
-    isActive: readonly(active),
+    isActive: computed(() => active.value),
   }
 }

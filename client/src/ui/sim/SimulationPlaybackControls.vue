@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import type { DijkstraSimulatorControls } from "./useSimulator";
   import {
     mdiPlay,
     mdiPause,
@@ -8,10 +7,14 @@
     mdiChevronRight,
   } from "@mdi/js";
   import Button from "@ui/Button.vue";
+  import type { SimulationControls } from "./types";
+  import { toRefs } from "vue";
 
   const props = defineProps<{
-    controls: DijkstraSimulatorControls;
+    controls: SimulationControls;
   }>();
+
+  const { isOver } = toRefs(props.controls);
 
   const prevStep = () => {
     props.controls.prevStep();
@@ -36,10 +39,7 @@
 </script>
 
 <template>
-  <div
-    v-if="props.controls.active.value"
-    class="flex gap-[60px] text-white"
-  >
+  <div class="flex gap-[60px] text-white">
     <Button
       @click="prevStep"
       style="border-radius: 100px; transform: scale(2)"
@@ -54,21 +54,7 @@
     </Button>
 
     <Button
-      style="border-radius: 100px; transform: scale(2)"
-      v-if="!props.controls.isOver.value"
-      @click="togglePause"
-    >
-      <svg
-        :width="btnSize"
-        :height="btnSize"
-        :viewBox="`0 0 ${btnSize} ${btnSize}`"
-      >
-        <path :d="props.controls.paused.value ? mdiPlay : mdiPause" />
-      </svg>
-    </Button>
-
-    <Button
-      v-else
+      v-if="isOver"
       style="border-radius: 100px; transform: scale(2)"
       @click="restart"
     >
@@ -78,6 +64,20 @@
         :viewBox="`0 0 ${btnSize} ${btnSize}`"
       >
         <path :d="mdiRestart" />
+      </svg>
+    </Button>
+
+    <Button
+      style="border-radius: 100px; transform: scale(2)"
+      v-else
+      @click="togglePause"
+    >
+      <svg
+        :width="btnSize"
+        :height="btnSize"
+        :viewBox="`0 0 ${btnSize} ${btnSize}`"
+      >
+        <path :d="props.controls.paused.value ? mdiPlay : mdiPause" />
       </svg>
     </Button>
 
