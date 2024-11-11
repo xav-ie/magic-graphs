@@ -10,7 +10,7 @@ type ThemeableGraph = Pick<Graph, 'themeMap' | 'repaint'>
  *
  * @param graph - the graph instance you want to set themes for
  * @param themeId - identifier for this useTheme instance
- * @returns - functions to set and remove themes
+ * @returns functions to set and remove themes
  */
 export const useTheme = <G extends ThemeableGraph>(graph: G, themeId: string) => {
 

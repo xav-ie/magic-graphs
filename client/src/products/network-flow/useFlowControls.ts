@@ -1,7 +1,8 @@
+import { ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
-import { ref } from "vue";
 import colors from "@utils/colors";
+import { ALPHABET, graphLabelGetter } from "@graph/labels";
 
 export const SOURCE_LABEL = "S";
 export const SINK_LABEL = "T";
@@ -10,13 +11,8 @@ export const useFlowControls = (graph: Graph) => {
 
   const { setTheme } = useTheme(graph, 'flow');
 
-  const getNewLabel = () => {
-    const alphabetWithoutST = "ABCDEFGHIJKLMNOPQRUVWXYZ";
-    const labels = graph.nodes.value.map(node => node.label);
-    let label = 0;
-    while (labels.includes(alphabetWithoutST[label])) label++;
-    return alphabetWithoutST[label];
-  }
+  const nonSourceSinkAlphabet = ALPHABET.filter(l => l !== SOURCE_LABEL && l !== SINK_LABEL);
+  const getNewLabel = graphLabelGetter(graph.nodes, nonSourceSinkAlphabet);
 
   graph.subscribe('onNodeAdded', (node) => {
     node.label = getNewLabel();

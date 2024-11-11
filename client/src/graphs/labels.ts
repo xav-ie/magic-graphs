@@ -1,8 +1,8 @@
 import type { Ref } from "vue";
 import type { Graph } from "./types";
 
-const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const ONE_THROUGH_99 = Array.from({ length: 99 }, (_, i) => (i + 1).toString());
+export const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+export const ONE_THROUGH_99 = Array.from({ length: 99 }, (_, i) => (i + 1).toString());
 
 export type LabelledItem = { label: string };
 

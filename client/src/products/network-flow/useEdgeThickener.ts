@@ -7,13 +7,18 @@ export const EDGE_THICKENER_USETHEME_ID = 'edge-thickener';
 const MIN_THICKNESS = 5;
 const MAX_THICKNESS = 25;
 
+/**
+ * when the edge weight is 0, the edge thickness is set to this value
+ */
+const ZERO_THICKNESS = 3;
+
 export const useEdgeThickener = (graph: Graph) => {
   const { setTheme, removeAllThemes } = useTheme(graph, EDGE_THICKENER_USETHEME_ID);
 
   const thickener = (edge: GEdge) => {
     const edgeWeight = Number(edge.label);
     if (isNaN(edgeWeight)) return;
-    if (edgeWeight === 0) return 3;
+    if (edgeWeight === 0) return ZERO_THICKNESS;
     const adjustedWeight = edgeWeight * 2
     const rawPercentage = (adjustedWeight - MIN_THICKNESS) / (MAX_THICKNESS - MIN_THICKNESS);
     const percentage = Math.min(1, Math.max(0, rawPercentage));
