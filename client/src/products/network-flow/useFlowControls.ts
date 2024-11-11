@@ -6,13 +6,13 @@ import { ALPHABET, graphLabelGetter } from "@graph/labels";
 
 export const SOURCE_LABEL = "S";
 export const SINK_LABEL = "T";
+const ALPHABET_WITHOUT_SOURCE_SINK = ALPHABET.filter(l => l !== SOURCE_LABEL && l !== SINK_LABEL);
 
 export const useFlowControls = (graph: Graph) => {
 
   const { setTheme } = useTheme(graph, 'flow');
 
-  const nonSourceSinkAlphabet = ALPHABET.filter(l => l !== SOURCE_LABEL && l !== SINK_LABEL);
-  const getNewLabel = graphLabelGetter(graph.nodes, nonSourceSinkAlphabet);
+  const getNewLabel = graphLabelGetter(graph.nodes, ALPHABET_WITHOUT_SOURCE_SINK);
 
   graph.subscribe('onNodeAdded', (node) => {
     node.label = getNewLabel();
