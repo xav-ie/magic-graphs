@@ -13,9 +13,11 @@ export type GNodeRecord = {
  */
 export type GNodeMoveRecord = {
   graphType: 'node',
-  id: string,
-  from: { x: number, y: number },
-  to: { x: number, y: number }
+  data: {
+    id: string,
+    from: { x: number, y: number },
+    to: { x: number, y: number }
+  }
 }
 
 /**

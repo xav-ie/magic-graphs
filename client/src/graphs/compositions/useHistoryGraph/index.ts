@@ -57,11 +57,10 @@ export const useHistoryGraph = (
     })
   });
 
-  const movingNode = ref<GNodeMoveRecord>();
+  const movingNode = ref<GNodeMoveRecord['data']>();
 
   graph.subscribe('onNodeDragStart', (node) => {
     movingNode.value = {
-      graphType: 'node',
       id: node.id,
       from: { x: node.x, y: node.y },
       to: { x: node.x, y: node.y },
@@ -74,7 +73,10 @@ export const useHistoryGraph = (
     movingNode.value.to = { x: node.x, y: node.y };
     undoStack.value.push({
       action: 'move',
-      affectedItems: [movingNode.value]
+      affectedItems: [{
+        graphType: 'node',
+        data: movingNode.value,
+      }]
     })
   })
 
@@ -85,6 +87,7 @@ export const useHistoryGraph = (
     graph.emit('onUndo', record);
     redoStack.value.push(record);
     undoHistoryRecord(record);
+    return record;
   }
 
   const redo = () => {
@@ -94,6 +97,7 @@ export const useHistoryGraph = (
     graph.emit('onRedo', record);
     undoStack.value.push(record);
     redoHistoryRecord(record);
+    return record;
   }
 
   const undoHistoryRecord = (record: HistoryRecord) => {
@@ -116,9 +120,10 @@ export const useHistoryGraph = (
     } else if (record.action === 'move') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
-          graph.moveNode(item.id, {
-            x: item.from.x,
-            y: item.from.y,
+          const { from, id } = item.data;
+          graph.moveNode(id, {
+            x: from.x,
+            y: from.y,
           });
         }
       }
@@ -145,9 +150,10 @@ export const useHistoryGraph = (
     } else if (record.action === 'move') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
-          graph.moveNode(item.id, {
-            x: item.to.x,
-            y: item.to.y,
+          const { to, id } = item.data;
+          graph.moveNode(id, {
+            x: to.x,
+            y: to.y,
           });
         }
       }
