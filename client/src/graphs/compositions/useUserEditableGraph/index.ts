@@ -62,9 +62,19 @@ export const useUserEditableGraph = (
     }
   }
 
-  const active = () => {
+  const handleUndo = (ev: KeyboardEvent) => {
+    if (ev.key !== 'z') return
+    graph.undo()
+  }
+
+  const handleKeyboardEvents = (ev: KeyboardEvent) => {
+    handleDeletion(ev)
+    handleUndo(ev)
+  }
+
+  const activate = () => {
     graph.subscribe('onDblClick', handleNodeCreation)
-    graph.subscribe('onKeydown', handleDeletion)
+    graph.subscribe('onKeydown', handleKeyboardEvents)
     graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
     graph.settings.value.nodeAnchors = true
     graph.settings.value.draggable = true
@@ -73,17 +83,17 @@ export const useUserEditableGraph = (
 
   const deactivate = () => {
     graph.unsubscribe('onDblClick', handleNodeCreation)
-    graph.unsubscribe('onKeydown', handleDeletion)
+    graph.unsubscribe('onKeydown', handleKeyboardEvents)
     graph.unsubscribe('onNodeAnchorDrop', handleEdgeCreation)
     graph.settings.value.nodeAnchors = false
     graph.settings.value.draggable = false
     graph.settings.value.edgeLabelsEditable = false
   }
 
-  if (graph.settings.value.userEditable) active()
+  if (graph.settings.value.userEditable) activate()
 
   graph.subscribe('onSettingsChange', (diff) => {
-    if (diff.userEditable === true) active()
+    if (diff.userEditable === true) activate()
     else if (diff.userEditable === false) deactivate()
   })
 

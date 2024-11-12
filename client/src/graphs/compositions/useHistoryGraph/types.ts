@@ -16,6 +16,10 @@ export type GEdgeRecord = {
   data: GEdge
 }
 
+/**
+ * a record of an event stored in the history stack of a graph.
+ * provides for undo/redo functionality
+ */
 export type HistoryRecord = {
   /**
    * the action that was taken in order to create this record.
