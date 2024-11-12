@@ -23,7 +23,6 @@ export const useMarqueeGraph = (
   const { THEME_ID } = MARQUEE_CONSTANTS
 
   const selectionBox = ref<BoundingBox | undefined>()
-  const allowSelectionBoxDrag = ref(false)
 
   const selectedArea = ref<BoundingBox | undefined>()
   const graph = useNodeAnchorGraph(canvas, options)
@@ -66,7 +65,6 @@ export const useMarqueeGraph = (
   }
 
   const marqueeMouseDown = (event: MouseEvent) => {
-    allowSelectionBoxDrag.value = true
     lastMove.x = event.offsetX
     lastMove.y = event.offsetY
     const { offsetX: x, offsetY: y } = event
@@ -77,7 +75,7 @@ export const useMarqueeGraph = (
 
   const lastMove = { x: 0, y: 0 }
   const marqueeMouseMove = (event: MouseEvent) => {
-    if (!allowSelectionBoxDrag.value) return
+    if (selectedArea.value) return;
     const { offsetX: x, offsetY: y } = event
     const dx = x - lastMove.x
     const dy = y - lastMove.y
@@ -108,21 +106,20 @@ export const useMarqueeGraph = (
       width: 0,
       height: 0,
     }
-    // selectedArea.value = {
-    //   at: { x: Infinity, y: Infinity },
-    //   width: 0,
-    //   height: 0,
-    // }
+    selectedArea.value = {
+      at: { x: Infinity, y: Infinity },
+      width: 0,
+      height: 0,
+    }
   }
 
   const disengageSelectionBox = () => {
-    allowSelectionBoxDrag.value = false
     if (!selectionBox.value) return
     const surfaceArea = getSelectionBoxSurfaceArea(selectionBox.value)
     if (surfaceArea > 200) disableNodeCreationNextTick()
     selectionBox.value = undefined
-    showNodeAnchors()
     graph.repaint('marquee-graph/disengage-selection-box')()
+    setTimeout(showNodeAnchors, 100)
   }
 
   const updateSelectedItems = (box: BoundingBox) => {
@@ -144,19 +141,28 @@ export const useMarqueeGraph = (
     if (!selectedArea.value) return
     selectedArea.value.width = 0
     selectedArea.value.height = 0
+
     for (const id of marqueedItemIDs) {
       const node = graph.getNode(id)
       if (!node) continue
+      const nodeRadius = graph.getTheme('nodeSize', node)
+      const nodeBorderWidth = graph.getTheme('nodeBorderWidth', node)
+      const nodeArea = nodeRadius + (nodeBorderWidth / 2)
       const { x, y } = node
-      if (x < selectedArea.value.at.x) selectedArea.value.at.x = x
-      if (y < selectedArea.value.at.y) selectedArea.value.at.y = y
-      if (x > selectedArea.value.at.x + selectedArea.value.width) {
-        selectedArea.value.width = x - selectedArea.value.at.x
-      }
-      if (y > selectedArea.value.at.y + selectedArea.value.height) {
-        selectedArea.value.height = y - selectedArea.value.at.y
-      }
+
+      const expandAreaX = (x - nodeArea) < selectedArea.value.at.x
+      const expandAreaY = (y - nodeArea) < selectedArea.value.at.y
+      if (expandAreaX) selectedArea.value.at.x = x - nodeArea
+      if (expandAreaY) selectedArea.value.at.y = y - nodeArea
+
+      const expandAreaWidth = (x + nodeArea) > selectedArea.value.at.x + selectedArea.value.width
+      if (expandAreaWidth) selectedArea.value.width = x - selectedArea.value.at.x + nodeArea
+
+      const expandAreaHeight = (y + nodeArea) > selectedArea.value.at.y + selectedArea.value.height
+      if (expandAreaHeight) selectedArea.value.height = y - selectedArea.value.at.y + nodeArea
     }
+
+    console.log(selectedArea.value.at, selectedArea.value.width, selectedArea.value.height)
   }
 
   const updateSelectionBoxDimensions = (event: MouseEvent) => {

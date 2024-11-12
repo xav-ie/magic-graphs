@@ -20,13 +20,21 @@ export const circleHitbox = (circle: Circle) => (point: Coordinate) => {
 export const circleEfficientHitbox = (circle: Circle) => {
   const {
     at,
-    radius
+    radius,
   } = circle
 
+  const { width: borderWidth } = {
+    ...STROKE_DEFAULTS,
+    ...circle.stroke
+  }
+
   const isInRectEfficientHitbox = rectEfficientHitbox({
-    at: { x: at.x - radius, y: at.y - radius},
-    width: 2 * radius,
-    height: 2 * radius
+    at: {
+      x: at.x - (radius + (borderWidth / 2)),
+      y: at.y - (radius + (borderWidth / 2))
+    },
+    width: 2 * radius + borderWidth,
+    height: 2 * radius + borderWidth
   })
 
   return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
