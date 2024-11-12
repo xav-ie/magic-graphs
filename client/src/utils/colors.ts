@@ -4,6 +4,46 @@
  */
 export type Color = string;
 
+export const isHexStandard = (color: Color) => {
+  return /^#[0-9A-F]{6}$/i.test(color);
+}
+
+export const isHexAlpha = (color: Color) => {
+  return /^#[0-9A-F]{8}$/i.test(color);
+}
+
+export const isHex = (color: Color) => {
+  return isHexStandard(color) || isHexAlpha(color);
+}
+
+export const isRgbStandard = (color: Color) => {
+  return /^rgb\(\d{1,3},\d{1,3},\d{1,3}\)$/i.test(color);
+}
+
+export const isRgbAlpha = (color: Color) => {
+  return /^rgba\(\d{1,3},\d{1,3},\d{1,3},\d{1,3}\)$/i.test(color);
+}
+
+export const isRgb = (color: Color) => {
+  return isRgbStandard(color) || isRgbAlpha(color);
+}
+
+export const isHslStandard = (color: Color) => {
+  return /^hsl\(\d{1,3},\d{1,3}%,\d{1,3}%\)$/i.test(color);
+}
+
+export const isHslAlpha = (color: Color) => {
+  return /^hsla\(\d{1,3},\d{1,3}%,\d{1,3}%,\d{1,3}\)$/i.test(color);
+}
+
+export const isHsl = (color: Color) => {
+  return isHslStandard(color) || isHslAlpha(color);
+}
+
+export const isColor = (color: Color) => {
+  return isHex(color) || isRgb(color) || isHsl(color);
+}
+
 /**
  * adjust a color by a certain amount - the hex color hex format
  *

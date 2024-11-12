@@ -25,12 +25,20 @@ export const useHistoryGraph = (
   const undoStack = ref<HistoryRecord[]>([]);
   const redoStack = ref<HistoryRecord[]>([]);
 
+  /**
+   * for keeping track of history records that belong together.
+   * ie bulk add/remove/move operations
+   */
   const gatheredRecords = {
     'add': [] as AddRemoveRecord['affectedItems'],
     'remove': [] as AddRemoveRecord['affectedItems'],
     'move': [] as MoveRecord['affectedItems'],
   };
 
+  /**
+   * writes a record to the gathered records
+   * @param record the record to write to the gathered records
+   */
   const writeToGatheredRecords = (record: HistoryRecord) => {
     if (record.action === 'add') {
       gatheredRecords['add'].push(...record.affectedItems);
@@ -41,34 +49,29 @@ export const useHistoryGraph = (
     }
   }
 
+  /**
+   * attempts to write the gathered records to the stack
+   *
+   * @param stack the stack to write the gathered records to (undo or redo)
+   * @throws history record mismatch if there are multiple record action types in the gathered records.
+   * one action cannot contain both add and remove records for example.
+   */
   const writeToStack = (stack: HistoryRecord[]) => {
-    const uniqueRecordTypes = Object
+    const uniqueRecordActions = Object
       .values(gatheredRecords)
       .filter((items) => items.length)
 
-    if (uniqueRecordTypes.length === 0) return;
-    if (uniqueRecordTypes.length > 1) throw new Error('history record mismatch');
-
-    if (gatheredRecords['add'].length) {
-      stack.push({
-        action: 'add',
-        affectedItems: [...gatheredRecords['add']],
-      });
-    }
-    if (gatheredRecords['remove'].length) {
-      stack.push({
-        action: 'remove',
-        affectedItems: [...gatheredRecords['remove']],
-      });
-    }
-    if (gatheredRecords['move'].length) {
-      stack.push({
-        action: 'move',
-        affectedItems: [...gatheredRecords['move']],
-      });
-    }
+    if (uniqueRecordActions.length === 0) return;
+    if (uniqueRecordActions.length > 1) throw new Error('history record mismatch');
 
     for (const key of Object.keys(gatheredRecords) as (keyof typeof gatheredRecords)[]) {
+      if (gatheredRecords[key].length) {
+        stack.push({
+          action: key,
+          // @ts-expect-error Object.keys typescript limitation
+          affectedItems: [...gatheredRecords[key]],
+        });
+      }
       gatheredRecords[key] = [];
     }
 
