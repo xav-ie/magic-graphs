@@ -2,7 +2,7 @@ import { ref } from "vue";
 import type { Ref } from "vue";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
 import type { GraphOptions } from "@graph/types";
-import type { AddRemoveRecord, GNodeMoveRecord, HistoryRecord, MoveRecord } from "./types";
+import type { AddRemoveRecord, GEdgeRecord, GNodeMoveRecord, GNodeRecord, HistoryRecord, MoveRecord } from "./types";
 import { debounce } from "@utils/debounce";
 
 /**
@@ -104,14 +104,50 @@ export const useHistoryGraph = (
     })
   });
 
-  graph.subscribe('onNodeRemoved', (node, { history }) => {
+  graph.subscribe('onBulkNodeAdded', (nodes, { history }) => {
     if (!history) return;
+    addToUndoStack({
+      action: 'add',
+      affectedItems: nodes.map((node) => ({
+        graphType: 'node',
+        data: node,
+      }))
+    })
+  });
+
+  graph.subscribe('onNodeRemoved', (removedNode, removedEdges, { history }) => {
+    if (!history) return;
+
+    const edgeRecords = removedEdges.map((edge) => ({
+      graphType: 'edge',
+      data: edge,
+    } as const));
+
     addToUndoStack({
       action: 'remove',
       affectedItems: [{
         graphType: 'node',
-        data: node,
-      }]
+        data: removedNode,
+      }, ...edgeRecords],
+    })
+  });
+
+  graph.subscribe('onBulkNodeRemoved', (removedNodes, removedEdges, { history }) => {
+    if (!history) return;
+
+    const nodeRecords = removedNodes.map((node) => ({
+      graphType: 'node',
+      data: node,
+    } as const));
+
+    const edgeRecords = removedEdges.map((edge) => ({
+      graphType: 'edge',
+      data: edge,
+    } as const));
+
+    addToUndoStack({
+      action: 'remove',
+      affectedItems: [...nodeRecords, ...edgeRecords],
     })
   });
 
