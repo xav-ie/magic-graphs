@@ -7,14 +7,18 @@ describe('useHistoryGraph', () => {
   const graph = useHistoryGraph(ref())
 
   test('undoes and redoes', () => {
-    graph.addNode({})
-    graph.addNode({})
+    const node1 = graph.addNode({})
+    const node2 = graph.addNode({})
+    graph.addEdge({ from: node1.id, to: node2.id })
     const record = graph.undo()
-    expect(graph.undoStack.value.length).toBe(1)
-    expect(graph.redoStack.value.length).toBe(1)
-    expect(record?.action).toBe('add')
-    expect(record?.affectedItems[0].graphType).toBe('node')
-    expect(graph.redoStack.value).toContain(record)
+    if (!record) throw new Error('Record is undefined')
+    const { action, affectedItems } = record
+    const { redoStack, undoStack } = graph
+    expect(undoStack.value.length).toBe(2)
+    expect(redoStack.value.length).toBe(1)
+    expect(action).toBe('add')
+    expect(affectedItems[0].graphType).toBe('edge')
+    expect(redoStack.value).toContain(record)
   })
 
   test('clears history', () => {
@@ -27,7 +31,7 @@ describe('useHistoryGraph', () => {
     expect(graph.redoStack.value.length).toBe(0)
   })
 
-  test('moves items correctly', () => {
+  test('moves nodes correctly', () => {
     const node = graph.addNode({})
 
     // simulates a node being picked up and dropped in a new location
