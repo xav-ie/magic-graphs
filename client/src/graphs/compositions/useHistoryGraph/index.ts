@@ -2,8 +2,7 @@ import { ref } from "vue";
 import type { Ref } from "vue";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
 import type { GraphOptions } from "@graph/types";
-import type { AddRemoveRecord, GNodeMoveRecord, HistoryRecord, MoveRecord } from "./types";
-import { debounce } from "@utils/debounce";
+import type { GNodeMoveRecord, HistoryRecord } from "./types";
 
 /**
  * the max number of history records to keep in the undo and redo stacks
@@ -25,72 +24,18 @@ export const useHistoryGraph = (
   const undoStack = ref<HistoryRecord[]>([]);
   const redoStack = ref<HistoryRecord[]>([]);
 
-  /**
-   * for keeping track of history records that belong together.
-   * ie bulk add/remove/move operations
-   */
-  const gatheredRecords = {
-    'add': [] as AddRemoveRecord['affectedItems'],
-    'remove': [] as AddRemoveRecord['affectedItems'],
-    'move': [] as MoveRecord['affectedItems'],
-  };
-
-  /**
-   * writes a record to the gathered records
-   * @param record the record to write to the gathered records
-   */
-  const writeToGatheredRecords = (record: HistoryRecord) => {
-    if (record.action === 'add') {
-      gatheredRecords['add'].push(...record.affectedItems);
-    } else if (record.action === 'remove') {
-      gatheredRecords['remove'].push(...record.affectedItems);
-    } else if (record.action === 'move') {
-      gatheredRecords['move'].push(...record.affectedItems);
-    }
-  }
-
-  /**
-   * attempts to write the gathered records to the stack
-   *
-   * @param stack the stack to write the gathered records to (undo or redo)
-   * @throws history record mismatch if there are multiple record action types in the gathered records.
-   * one action cannot contain both add and remove records for example.
-   */
-  const writeToStack = (stack: HistoryRecord[]) => {
-    const uniqueRecordActions = Object
-      .values(gatheredRecords)
-      .filter((items) => items.length)
-
-    if (uniqueRecordActions.length === 0) return;
-    if (uniqueRecordActions.length > 1) throw new Error('history record mismatch');
-
-    for (const key of Object.keys(gatheredRecords) as (keyof typeof gatheredRecords)[]) {
-      if (gatheredRecords[key].length) {
-        stack.push({
-          action: key,
-          // @ts-expect-error Object.keys typescript limitation
-          affectedItems: [...gatheredRecords[key]],
-        });
-      }
-      gatheredRecords[key] = [];
-    }
-
-    if (stack.length > MAX_HISTORY) {
-      stack.shift();
-    }
-  }
-
-  const writeToUndoStack = debounce(() => writeToStack(undoStack.value), 10);
-  const writeToRedoStack = debounce(() => writeToStack(redoStack.value), 10);
-
   const addToUndoStack = (record: HistoryRecord) => {
-    writeToGatheredRecords(record);
-    writeToUndoStack();
+    undoStack.value.push(record);
+    if (undoStack.value.length > MAX_HISTORY) {
+      undoStack.value.shift();
+    }
   }
 
   const addToRedoStack = (record: HistoryRecord) => {
-    writeToGatheredRecords(record);
-    writeToRedoStack();
+    redoStack.value.push(record);
+    if (redoStack.value.length > MAX_HISTORY) {
+      redoStack.value.shift();
+    }
   }
 
   graph.subscribe('onNodeAdded', (node, { history }) => {
@@ -104,14 +49,50 @@ export const useHistoryGraph = (
     })
   });
 
-  graph.subscribe('onNodeRemoved', (node, { history }) => {
+  graph.subscribe('onBulkNodeAdded', (nodes, { history }) => {
     if (!history) return;
+    addToUndoStack({
+      action: 'add',
+      affectedItems: nodes.map((node) => ({
+        graphType: 'node',
+        data: node,
+      }))
+    })
+  });
+
+  graph.subscribe('onNodeRemoved', (removedNode, removedEdges, { history }) => {
+    if (!history) return;
+
+    const edgeRecords = removedEdges.map((edge) => ({
+      graphType: 'edge',
+      data: edge,
+    } as const));
+
     addToUndoStack({
       action: 'remove',
       affectedItems: [{
         graphType: 'node',
-        data: node,
-      }]
+        data: removedNode,
+      }, ...edgeRecords],
+    })
+  });
+
+  graph.subscribe('onBulkNodeRemoved', (removedNodes, removedEdges, { history }) => {
+    if (!history) return;
+
+    const nodeRecords = removedNodes.map((node) => ({
+      graphType: 'node',
+      data: node,
+    } as const));
+
+    const edgeRecords = removedEdges.map((edge) => ({
+      graphType: 'edge',
+      data: edge,
+    } as const));
+
+    addToUndoStack({
+      action: 'remove',
+      affectedItems: [...nodeRecords, ...edgeRecords],
     })
   });
 
@@ -126,6 +107,17 @@ export const useHistoryGraph = (
     })
   });
 
+  graph.subscribe('onBulkEdgeAdded', (edges, { history }) => {
+    if (!history) return;
+    addToUndoStack({
+      action: 'add',
+      affectedItems: edges.map((edge) => ({
+        graphType: 'edge',
+        data: edge,
+      }))
+    })
+  })
+
   graph.subscribe('onEdgeRemoved', (edge, { history }) => {
     if (!history) return;
     addToUndoStack({
@@ -134,6 +126,17 @@ export const useHistoryGraph = (
         graphType: 'edge',
         data: edge,
       }]
+    })
+  });
+
+  graph.subscribe('onBulkEdgeRemoved', (edges, { history }) => {
+    if (!history) return;
+    addToUndoStack({
+      action: 'remove',
+      affectedItems: edges.map((edge) => ({
+        graphType: 'edge',
+        data: edge,
+      }))
     })
   });
 

@@ -280,6 +280,6 @@ export const useMarqueeGraph = (
     /**
      * clears the marquee selection
      */
-    clearSelection,
+    clearMarqueeSelection: clearSelection,
   }
 }

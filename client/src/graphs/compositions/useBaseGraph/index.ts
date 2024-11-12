@@ -145,6 +145,10 @@ export const useBaseGraph = (
     moveNode,
     removeNode,
     removeEdge,
+    bulkAddNode,
+    bulkRemoveNode,
+    bulkAddEdge,
+    bulkRemoveEdge,
   } = useGraphCRUD({
     nodes,
     edges,
@@ -221,7 +225,6 @@ export const useBaseGraph = (
     getNode,
     getEdge,
 
-
     addNode,
     addEdge,
 
@@ -229,6 +232,12 @@ export const useBaseGraph = (
 
     removeNode,
     removeEdge,
+
+    bulkAddNode,
+    bulkRemoveNode,
+
+    bulkAddEdge,
+    bulkRemoveEdge,
 
     /**
      * get a node by its coordinates

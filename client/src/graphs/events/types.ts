@@ -22,21 +22,41 @@ export type BaseGraphEventMap = {
    */
   onNodeAdded: (node: GNode, options: AddNodeOptions) => void;
   /**
+   * when multiple nodes are added to the graph as a group
+   */
+  onBulkNodeAdded: (nodes: GNode[], options: AddNodeOptions) => void;
+  /**
    * when a node is removed from the graph
    */
-  onNodeRemoved: (node: GNode, options: RemoveNodeOptions) => void;
+  onNodeRemoved: (removedNode: GNode, removedEdges: GEdge[], options: RemoveNodeOptions) => void;
+  /**
+   * when multiple nodes are removed from the graph as a group
+   */
+  onBulkNodeRemoved: (removedNodes: GNode[], removedEdges: GEdge[], options: RemoveNodeOptions) => void;
   /**
    * when a node is moved to a new position on the canvas
    */
   onNodeMoved: (node: GNode, options: MoveNodeOptions) => void;
   /**
+   * when multiple nodes are moved to new positions on the canvas in as a group
+   */
+  onBulkNodeMoved: (nodes: GNode[], options: MoveNodeOptions) => void;
+  /**
    * when an edge is added to the graph
    */
   onEdgeAdded: (edge: GEdge, options: AddEdgeOptions) => void;
   /**
+   * when multiple edges are added to the graph as a group
+   */
+  onBulkEdgeAdded: (edges: GEdge[], options: AddEdgeOptions) => void;
+  /**
    * when an edge is removed from the graph
    */
   onEdgeRemoved: (edge: GEdge, options: RemoveEdgeOptions) => void;
+  /**
+   * when multiple edges are removed from the graph as a group
+   */
+  onBulkEdgeRemoved: (edges: GEdge[], options: RemoveEdgeOptions) => void;
   /**
    * when an edge's text label is changed
    */
