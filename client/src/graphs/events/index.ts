@@ -109,6 +109,12 @@ export const getInitialEventBus = () => {
     onSettingsChange: new Set(),
 
     /**
+     * HistoryGraphEvents
+     */
+    onUndo: new Set(),
+    onRedo: new Set(),
+
+    /**
      * FocusGraphEvents
      */
     onFocusChange: new Set(),

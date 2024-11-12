@@ -114,11 +114,11 @@ export const useCollaborativeGraph = (
   }
 
   socket.on('nodeAdded', (node) => {
-    graph.addNode(node, { broadcast: false, focus: false })
+    graph.addNode(node, { broadcast: false, focus: false, history: false })
   })
 
   socket.on('nodeRemoved', (nodeId) => {
-    graph.removeNode(nodeId, { broadcast: false })
+    graph.removeNode(nodeId, { broadcast: false, history: false })
   })
 
   socket.on('nodeMoved', (node) => {
@@ -126,11 +126,11 @@ export const useCollaborativeGraph = (
   })
 
   socket.on('edgeAdded', (node) => {
-    graph.addEdge(node, { broadcast: false, focus: false })
+    graph.addEdge(node, { broadcast: false, focus: false, history: false })
   })
 
   socket.on('edgeRemoved', (edgeId) => {
-    graph.removeEdge(edgeId, { broadcast: false })
+    graph.removeEdge(edgeId, { broadcast: false, history: false })
   })
 
   socket.on('edgeLabelEdited', (edgeId, newLabel) => {

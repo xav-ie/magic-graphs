@@ -10,6 +10,7 @@ import type {
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types";
 import type { GraphTheme } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
+import type { HistoryRecord } from "@graph/compositions/useHistoryGraph/types";
 
 export type BaseGraphEventMap = {
   /**
@@ -94,6 +95,17 @@ export type BaseGraphEventMap = {
   onSettingsChange: (diff: DeepPartial<GraphSettings>) => void;
 }
 
+export type HistoryGraphEventMap = {
+  /**
+   * when the undo action is triggered
+   */
+  onUndo: (historyRecord: HistoryRecord) => void;
+  /**
+   * when the redo action is triggered
+   */
+  onRedo: (historyRecord: HistoryRecord) => void;
+}
+
 export type FocusGraphEventMap = {
   /**
    * when the focus item (ie nodes or edges) changes.
@@ -134,6 +146,7 @@ export type CollaborativeGraphEventMap = {}
 
 export type GraphEventMap = (
   BaseGraphEventMap &
+  HistoryGraphEventMap &
   FocusGraphEventMap &
   DraggableGraphEventMap &
   NodeAnchorGraphEventMap &

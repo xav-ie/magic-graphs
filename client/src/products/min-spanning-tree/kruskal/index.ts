@@ -17,7 +17,7 @@ export const useKruskal = (graph: Graph) => {
   const maxSteps = graph.nodes.value.length - 1
 
   const currentStep = ref(maxSteps);
-  
+
   graph.subscribe('onStructureChange', () => currentStep.value = maxSteps)
 
   const find = (parent: Parent, nodeId: string): string => {

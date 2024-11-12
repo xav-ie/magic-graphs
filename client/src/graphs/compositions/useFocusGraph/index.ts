@@ -14,7 +14,7 @@ import type {
 import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
-import { useBaseGraph } from "@graph/compositions/useBaseGraph";
+import { useHistoryGraph } from "@graph/compositions/useHistoryGraph";
 import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "@graph/compositions/useFocusGraph/types";
 import type { FocusedItem, MaybeId } from "@graph/compositions/useFocusGraph/types";
 import type { AddNodeOptions, FocusOption } from "../useBaseGraph/types";
@@ -24,7 +24,7 @@ export const useFocusGraph = (
   options: Partial<GraphOptions> = {},
 ) => {
 
-  const graph = useBaseGraph(canvas, options);
+  const graph = useHistoryGraph(canvas, options);
 
   const { setTheme } = useTheme(graph, FOCUS_THEME_ID)
   const focusedItemId = ref<MaybeId>()
