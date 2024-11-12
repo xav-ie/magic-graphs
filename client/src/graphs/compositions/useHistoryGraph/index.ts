@@ -63,14 +63,15 @@ export const useHistoryGraph = (
     movingNode.value = {
       graphType: 'node',
       id: node.id,
-      x: node.x,
-      y: node.y,
+      from: { x: node.x, y: node.y },
+      to: { x: node.x, y: node.y },
     }
   })
 
   graph.subscribe('onNodeDrop', (node) => {
     if (!movingNode.value) throw new Error('dropped a node we didn\'t know was being dragged');
     if (movingNode.value.id !== node.id) throw new Error('node ID mismatch');
+    movingNode.value.to = { x: node.x, y: node.y };
     undoStack.value.push({
       action: 'move',
       affectedItems: [movingNode.value]
@@ -83,7 +84,7 @@ export const useHistoryGraph = (
 
     graph.emit('onUndo', record);
     redoStack.value.push(record);
-    processHistoryRecord(record);
+    undoHistoryRecord(record);
   }
 
   const redo = () => {
@@ -92,10 +93,39 @@ export const useHistoryGraph = (
 
     graph.emit('onRedo', record);
     undoStack.value.push(record);
-    processHistoryRecord(record);
+    redoHistoryRecord(record);
   }
 
-  const processHistoryRecord = (record: HistoryRecord) => {
+  const undoHistoryRecord = (record: HistoryRecord) => {
+    if (record.action === 'add') {
+      for (const item of record.affectedItems) {
+        if (item.graphType === 'node') {
+          graph.removeNode(item.data.id, { history: false });
+        } else if (item.graphType === 'edge') {
+          graph.removeEdge(item.data.id, { history: false });
+        }
+      }
+    } else if (record.action === 'remove') {
+      for (const item of record.affectedItems) {
+        if (item.graphType === 'node') {
+          graph.addNode(item.data, { history: false });
+        } else if (item.graphType === 'edge') {
+          graph.addEdge(item.data, { history: false });
+        }
+      }
+    } else if (record.action === 'move') {
+      for (const item of record.affectedItems) {
+        if (item.graphType === 'node') {
+          graph.moveNode(item.id, {
+            x: item.from.x,
+            y: item.from.y,
+          });
+        }
+      }
+    }
+  }
+
+  const redoHistoryRecord = (record: HistoryRecord) => {
     if (record.action === 'add') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
@@ -116,8 +146,8 @@ export const useHistoryGraph = (
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
           graph.moveNode(item.id, {
-            x: item.x,
-            y: item.y,
+            x: item.to.x,
+            y: item.to.y,
           });
         }
       }

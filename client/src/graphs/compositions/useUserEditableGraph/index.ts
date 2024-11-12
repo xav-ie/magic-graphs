@@ -67,9 +67,15 @@ export const useUserEditableGraph = (
     graph.undo()
   }
 
+  const handleRedo = (ev: KeyboardEvent) => {
+    if (ev.key !== 'y') return
+    graph.redo()
+  }
+
   const handleKeyboardEvents = (ev: KeyboardEvent) => {
     handleDeletion(ev)
     handleUndo(ev)
+    handleRedo(ev)
   }
 
   const activate = () => {
