@@ -14,7 +14,7 @@ const colorValue = computed({
  */
 const colorAlpha = computed(() => {
   if (!colorValue.value) return ''
-  if (isHexAlpha(colorValue.value)) return colorValue.value.slice(7)
+  else if (isHexAlpha(colorValue.value)) return colorValue.value.slice(7)
   return ''
 })
 
