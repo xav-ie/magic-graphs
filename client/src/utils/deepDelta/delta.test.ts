@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest';
-import { delta } from '.';
+import { delta } from '.'
 
 test('deepDelta standard', () => {
 
@@ -24,7 +24,7 @@ test('deepDelta standard', () => {
       },
       test2: {
         test3:
-        'secret'
+          'secret'
       }
     },
   };
@@ -77,29 +77,56 @@ test('deepDelta standard', () => {
 
 test('deepDelta works if new object has more keys', () => {
 
-    const yona = {
-      name: 'yona',
-    };
+  const yona = {
+    name: 'yona',
+  };
 
-    const dila = {
-      name: 'dila',
-      favoriteColor: 'blue',
-      anime: {
-        naruto: 'meh',
-        bleach: 'good',
-      }
-    };
+  const dila = {
+    name: 'dila',
+    favoriteColor: 'blue',
+    anime: {
+      naruto: 'meh',
+      bleach: 'good',
+    }
+  };
 
-    const expected = {
-      name: 'dila',
-      favoriteColor: 'blue',
-      anime: {
-        naruto: 'meh',
-        bleach: 'good',
-      }
-    };
+  const expected = {
+    name: 'dila',
+    favoriteColor: 'blue',
+    anime: {
+      naruto: 'meh',
+      bleach: 'good',
+    }
+  };
 
-    const result = delta(yona, dila);
+  const result = delta(yona, dila);
 
-    expect(result).toEqual(expected);
+  expect(result).toEqual(expected);
 });
+
+test('deepDelta works on fields that are null or undefined', () => {
+
+  const colorGetter = () => 'blue';
+
+  const yona = {
+    name: 'yona',
+    favoriteColor: {
+      color: colorGetter,
+    },
+    sbahn: 's1',
+  };
+
+  const dila = {
+    name: 'dila',
+    favoriteColor: null,
+    sbahn: undefined,
+  };
+
+  const expected = {
+    name: 'dila',
+    sbahn: undefined,
+  };
+
+  const result = delta(yona, dila);
+  expect(result).toEqual(expected);
+})
