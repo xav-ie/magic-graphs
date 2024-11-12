@@ -2,7 +2,19 @@ import { ref } from "vue";
 import type { Ref } from "vue";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
 import type { GraphOptions } from "@graph/types";
-import type { GNodeMoveRecord, HistoryRecord } from "./types";
+import type { AddRemoveRecord, GNodeMoveRecord, HistoryRecord, MoveRecord } from "./types";
+import { debounce } from "@utils/debounce";
+
+/**
+ * the max number of history records to keep in the undo and redo stacks
+ */
+const MAX_HISTORY = 100;
+
+/**
+ * the minimum distance a node must be moved to be considered a move action
+ */
+const MIN_DISTANCE = 3;
+
 
 export const useHistoryGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -13,12 +25,69 @@ export const useHistoryGraph = (
   const undoStack = ref<HistoryRecord[]>([]);
   const redoStack = ref<HistoryRecord[]>([]);
 
+  const gatheredRecords = {
+    'add': [] as AddRemoveRecord['affectedItems'],
+    'remove': [] as AddRemoveRecord['affectedItems'],
+    'move': [] as MoveRecord['affectedItems'],
+  };
+
+  const writeToGatheredRecords = (record: HistoryRecord) => {
+    if (record.action === 'add') {
+      gatheredRecords['add'].push(...record.affectedItems);
+    } else if (record.action === 'remove') {
+      gatheredRecords['remove'].push(...record.affectedItems);
+    } else if (record.action === 'move') {
+      gatheredRecords['move'].push(...record.affectedItems);
+    }
+  }
+
+  const writeToStack = (stack: HistoryRecord[]) => {
+    const uniqueRecordTypes = Object
+      .values(gatheredRecords)
+      .filter((items) => items.length)
+
+    if (uniqueRecordTypes.length === 0) return;
+    if (uniqueRecordTypes.length > 1) throw new Error('history record mismatch');
+
+    if (gatheredRecords['add'].length) {
+      stack.push({
+        action: 'add',
+        affectedItems: [...gatheredRecords['add']],
+      });
+    }
+    if (gatheredRecords['remove'].length) {
+      stack.push({
+        action: 'remove',
+        affectedItems: [...gatheredRecords['remove']],
+      });
+    }
+    if (gatheredRecords['move'].length) {
+      stack.push({
+        action: 'move',
+        affectedItems: [...gatheredRecords['move']],
+      });
+    }
+
+    for (const key of Object.keys(gatheredRecords) as (keyof typeof gatheredRecords)[]) {
+      gatheredRecords[key] = [];
+    }
+
+    if (stack.length > MAX_HISTORY) {
+      stack.shift();
+    }
+  }
+
+  const writeToUndoStack = debounce(() => writeToStack(undoStack.value), 10);
+  const writeToRedoStack = debounce(() => writeToStack(redoStack.value), 10);
+
   const addToUndoStack = (record: HistoryRecord) => {
-    undoStack.value.push(record);
+    writeToGatheredRecords(record);
+    writeToUndoStack();
   }
 
   const addToRedoStack = (record: HistoryRecord) => {
-    redoStack.value.push(record);
+    writeToGatheredRecords(record);
+    writeToRedoStack();
   }
 
   graph.subscribe('onNodeAdded', (node, { history }) => {
@@ -84,8 +153,6 @@ export const useHistoryGraph = (
     const b = movingNode.value.from.x - movingNode.value.to.x
     const c = Math.sqrt(a ** 2 + b ** 2);
 
-    const MIN_DISTANCE = 3;
-
     if (c < MIN_DISTANCE) return;
 
     addToUndoStack({
@@ -129,9 +196,9 @@ export const useHistoryGraph = (
     } else if (record.action === 'remove') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
-          graph.addNode(item.data, { history: false });
+          graph.addNode(item.data, { history: false, focus: false });
         } else if (item.graphType === 'edge') {
-          graph.addEdge(item.data, { history: false });
+          graph.addEdge(item.data, { history: false, focus: false });
         }
       }
     } else if (record.action === 'move') {
@@ -151,9 +218,9 @@ export const useHistoryGraph = (
     if (record.action === 'add') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
-          graph.addNode(item.data, { history: false });
+          graph.addNode(item.data, { history: false, focus: false });
         } else if (item.graphType === 'edge') {
-          graph.addEdge(item.data, { history: false });
+          graph.addEdge(item.data, { history: false, focus: false });
         }
       }
     } else if (record.action === 'remove') {
