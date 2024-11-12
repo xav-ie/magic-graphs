@@ -69,13 +69,18 @@ export const useMarqueeGraph = (
     lastMove.y = event.offsetY
     const { offsetX: x, offsetY: y } = event
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    clearSelection()
     if (!topItem) return engageSelectionBox({ x, y })
   }
 
   const lastMove = { x: 0, y: 0 }
+  const mouseHeldDown = ref(false)
+
+  graph.subscribe('onMouseDown', () => mouseHeldDown.value = true)
+  graph.subscribe('onMouseUp', () => mouseHeldDown.value = false)
+
   const marqueeMouseMove = (event: MouseEvent) => {
-    if (selectedArea.value) return;
+    if (selectionBox.value) return;
+    if (!mouseHeldDown.value) return
     const { offsetX: x, offsetY: y } = event
     const dx = x - lastMove.x
     const dy = y - lastMove.y
@@ -138,32 +143,37 @@ export const useMarqueeGraph = (
   }
 
   const workOutSelectedArea = () => {
-    if (!selectedArea.value) return
-    selectedArea.value.width = 0
-    selectedArea.value.height = 0
+    if (!selectedArea.value) return;
+
+    let minX = Infinity, minY = Infinity;
+    let maxX = -Infinity, maxY = -Infinity;
 
     for (const id of marqueedItemIDs) {
-      const node = graph.getNode(id)
-      if (!node) continue
-      const nodeRadius = graph.getTheme('nodeSize', node)
-      const nodeBorderWidth = graph.getTheme('nodeBorderWidth', node)
-      const nodeArea = nodeRadius + (nodeBorderWidth / 2)
-      const { x, y } = node
+      const node = graph.getNode(id);
+      if (!node) continue;
 
-      const expandAreaX = (x - nodeArea) < selectedArea.value.at.x
-      const expandAreaY = (y - nodeArea) < selectedArea.value.at.y
-      if (expandAreaX) selectedArea.value.at.x = x - nodeArea
-      if (expandAreaY) selectedArea.value.at.y = y - nodeArea
+      const nodeRadius = graph.getTheme('nodeSize', node);
+      const nodeBorderWidth = graph.getTheme('nodeBorderWidth', node);
+      const nodeArea = nodeRadius + (nodeBorderWidth / 2);
+      const { x, y } = node;
 
-      const expandAreaWidth = (x + nodeArea) > selectedArea.value.at.x + selectedArea.value.width
-      if (expandAreaWidth) selectedArea.value.width = x - selectedArea.value.at.x + nodeArea
-
-      const expandAreaHeight = (y + nodeArea) > selectedArea.value.at.y + selectedArea.value.height
-      if (expandAreaHeight) selectedArea.value.height = y - selectedArea.value.at.y + nodeArea
+      minX = Math.min(minX, x - nodeArea);
+      minY = Math.min(minY, y - nodeArea);
+      maxX = Math.max(maxX, x + nodeArea);
+      maxY = Math.max(maxY, y + nodeArea);
     }
 
-    console.log(selectedArea.value.at, selectedArea.value.width, selectedArea.value.height)
-  }
+    if (minX < Infinity && minY < Infinity && maxX > -Infinity && maxY > -Infinity) {
+      selectedArea.value.at.x = minX;
+      selectedArea.value.at.y = minY;
+      selectedArea.value.width = maxX - minX;
+      selectedArea.value.height = maxY - minY;
+    } else {
+      selectedArea.value.width = 0;
+      selectedArea.value.height = 0;
+    }
+  };
+
 
   const updateSelectionBoxDimensions = (event: MouseEvent) => {
     if (!selectionBox.value) return
@@ -248,6 +258,15 @@ export const useMarqueeGraph = (
   setTheme('edgeColor', colorMarqueedEdges)
 
   onClickOutside(canvas, () => marqueedItemIDs.clear())
+
+  graph.subscribe('onMouseDown', (ev) => {
+    if (selectionBox.value) return
+    const { offsetX: x, offsetY: y } = ev
+    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
+    if (!topItem || topItem.graphType !== 'marquee-selection-area') {
+      clearSelection()
+    }
+  })
 
   const activate = () => {
     graph.subscribe('onMouseDown', marqueeMouseDown)
