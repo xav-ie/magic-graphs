@@ -24,7 +24,7 @@ export const graphLabelGetter = (
   let index = 0;
   let newLabel;
 
-  const getPrefix = (timesAround: number) => {
+  const getPrefix = () => {
     if (timesAround === 0) return "";
     return sequence[(timesAround - 1) % sequence.length];
   }
@@ -36,8 +36,7 @@ export const graphLabelGetter = (
       index = 0;
       timesAround++;
     }
-    const prefix = getPrefix(timesAround);
-    const potentialLabel = prefix + sequence[index];
+    const potentialLabel = getPrefix() + sequence[index];
     const labelExists = labels.includes(potentialLabel);
     if (!labelExists) newLabel = potentialLabel;
     index++;

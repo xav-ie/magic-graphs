@@ -13,9 +13,17 @@ export const useHistoryGraph = (
   const undoStack = ref<HistoryRecord[]>([]);
   const redoStack = ref<HistoryRecord[]>([]);
 
+  const addToUndoStack = (record: HistoryRecord) => {
+    undoStack.value.push(record);
+  }
+
+  const addToRedoStack = (record: HistoryRecord) => {
+    redoStack.value.push(record);
+  }
+
   graph.subscribe('onNodeAdded', (node, { history }) => {
     if (!history) return;
-    undoStack.value.push({
+    addToUndoStack({
       action: 'add',
       affectedItems: [{
         graphType: 'node',
@@ -26,7 +34,7 @@ export const useHistoryGraph = (
 
   graph.subscribe('onNodeRemoved', (node, { history }) => {
     if (!history) return;
-    undoStack.value.push({
+    addToUndoStack({
       action: 'remove',
       affectedItems: [{
         graphType: 'node',
@@ -37,7 +45,7 @@ export const useHistoryGraph = (
 
   graph.subscribe('onEdgeAdded', (edge, { history }) => {
     if (!history) return;
-    undoStack.value.push({
+    addToUndoStack({
       action: 'add',
       affectedItems: [{
         graphType: 'edge',
@@ -48,7 +56,7 @@ export const useHistoryGraph = (
 
   graph.subscribe('onEdgeRemoved', (edge, { history }) => {
     if (!history) return;
-    undoStack.value.push({
+    addToUndoStack({
       action: 'remove',
       affectedItems: [{
         graphType: 'edge',
@@ -71,7 +79,16 @@ export const useHistoryGraph = (
     if (!movingNode.value) throw new Error('dropped a node we didn\'t know was being dragged');
     if (movingNode.value.id !== node.id) throw new Error('node ID mismatch');
     movingNode.value.to = { x: node.x, y: node.y };
-    undoStack.value.push({
+
+    const a = movingNode.value.from.y - movingNode.value.to.y
+    const b = movingNode.value.from.x - movingNode.value.to.x
+    const c = Math.sqrt(a ** 2 + b ** 2);
+
+    const MIN_DISTANCE = 3;
+
+    if (c < MIN_DISTANCE) return;
+
+    addToUndoStack({
       action: 'move',
       affectedItems: [{
         graphType: 'node',
@@ -85,7 +102,7 @@ export const useHistoryGraph = (
     if (!record) return;
 
     graph.emit('onUndo', record);
-    redoStack.value.push(record);
+    addToRedoStack(record);
     undoHistoryRecord(record);
     return record;
   }
@@ -95,7 +112,7 @@ export const useHistoryGraph = (
     if (!record) return;
 
     graph.emit('onRedo', record);
-    undoStack.value.push(record);
+    addToUndoStack(record);
     redoHistoryRecord(record);
     return record;
   }
@@ -185,6 +202,14 @@ export const useHistoryGraph = (
      * stores undone actions to reapply
      */
     redoStack,
+    /**
+     * adds a record to the undo stack
+     */
+    addToUndoStack,
+    /**
+     * adds a record to the redo stack
+     */
+    addToRedoStack,
 
     /**
      * clears the undo and redo stacks
