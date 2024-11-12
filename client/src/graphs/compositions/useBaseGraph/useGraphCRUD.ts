@@ -96,7 +96,23 @@ export const useGraphCRUD = ({
     return newNode
   }
 
-  // const
+  const addNodes = (
+    nodes: Partial<GNode>[],
+    options: Partial<AddNodeOptions> = {}
+  ) => {
+    const fullOptions = {
+      ...ADD_NODE_OPTIONS_DEFAULTS,
+      ...options
+    }
+
+    for (const node of nodes) {
+      addNode(node, {
+        focus: false,
+        broadcast: false,
+        history: false,
+      })
+    }
+  }
 
   /**
    * add an edge to the graph

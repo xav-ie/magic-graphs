@@ -198,7 +198,6 @@ export const useBaseGraph = (
   const activeSettings = ref(clone(settings.value))
   watch(settings, (newSettings) => {
     const settingsDiff = delta(activeSettings.value, newSettings)
-    console.log('settings diff', settingsDiff)
     if (!settingsDiff) return
     activeSettings.value = clone(settings.value)
     emit('onSettingsChange', settingsDiff)

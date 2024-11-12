@@ -29,7 +29,6 @@ export const delta = (oldObject: Record<any, any>, newObject: Record<any, any>) 
 
   for (const key of oldObjectKeys) {
 
-    console.log('running on ', key, oldObject[key], newObject[key]);
     if (isObj(oldObject[key])) {
       const diffObj = delta(oldObject[key], newObject[key]);
       if (diffObj) output[key] = diffObj;
