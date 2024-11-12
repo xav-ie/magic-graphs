@@ -81,20 +81,35 @@ export const useHistoryGraph = (
     const record = undoStack.value.pop();
     if (!record) return;
 
+    graph.emit('onUndo', record);
+    redoStack.value.push(record);
+    processHistoryRecord(record);
+  }
+
+  const redo = () => {
+    const record = redoStack.value.pop();
+    if (!record) return;
+
+    graph.emit('onRedo', record);
+    undoStack.value.push(record);
+    processHistoryRecord(record);
+  }
+
+  const processHistoryRecord = (record: HistoryRecord) => {
     if (record.action === 'add') {
-      for (const item of record.affectedItems) {
-        if (item.graphType === 'node') {
-          graph.removeNode(item.data.id, { history: false });
-        } else if (item.graphType === 'edge') {
-          graph.removeEdge(item.data.id, { history: false });
-        }
-      }
-    } else if (record.action === 'remove') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
           graph.addNode(item.data, { history: false });
         } else if (item.graphType === 'edge') {
           graph.addEdge(item.data, { history: false });
+        }
+      }
+    } else if (record.action === 'remove') {
+      for (const item of record.affectedItems) {
+        if (item.graphType === 'node') {
+          graph.removeNode(item.data.id, { history: false });
+        } else if (item.graphType === 'edge') {
+          graph.removeEdge(item.data.id, { history: false });
         }
       }
     } else if (record.action === 'move') {
@@ -109,7 +124,10 @@ export const useHistoryGraph = (
     }
   }
 
-  const redo = () => {}
+  const clearHistory = () => {
+    undoStack.value = [];
+    redoStack.value = [];
+  }
 
   return {
     ...graph,
@@ -131,5 +149,10 @@ export const useHistoryGraph = (
      * stores undone actions to reapply
      */
     redoStack,
+
+    /**
+     * clears the undo and redo stacks
+     */
+    clearHistory,
   }
 };

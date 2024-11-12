@@ -97,15 +97,13 @@ export type BaseGraphEventMap = {
 
 export type HistoryGraphEventMap = {
   /**
-   * when the undo action is triggered.
-   * calls back with undefined if the undo stack is empty
+   * when the undo action is triggered
    */
-  onUndo: (historyRecord: HistoryRecord | undefined) => void;
+  onUndo: (historyRecord: HistoryRecord) => void;
   /**
-   * when the redo action is triggered.
-   * calls back with undefined if the redo stack is empty
+   * when the redo action is triggered
    */
-  onRedo: (historyRecord: HistoryRecord | undefined) => void;
+  onRedo: (historyRecord: HistoryRecord) => void;
 }
 
 export type FocusGraphEventMap = {
