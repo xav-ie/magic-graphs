@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { isHexAlpha } from '@utils/colors';
 
 const model = defineModel<string>()
 
@@ -9,7 +10,9 @@ const colorValue = computed({
 })
 
 const colorAlpha = computed(() => {
-
+  if (!colorValue.value) return ''
+  if (isHexAlpha(colorValue.value)) return colorValue.value.slice(6)
+  return ''
 })
 
 const handleUpdate = (e: Event) => {

@@ -4,42 +4,72 @@
  */
 export type Color = string;
 
+/**
+ * check if a color is a standard hex color - #xxxxxx
+ */
 export const isHexStandard = (color: Color) => {
   return /^#[0-9A-F]{6}$/i.test(color);
 }
 
+/**
+ * check if a color is a hex color with an alpha channel - #xxxxxxxx
+ */
 export const isHexAlpha = (color: Color) => {
   return /^#[0-9A-F]{8}$/i.test(color);
 }
 
+/**
+ * check if a color is a hex color - #xxxxxx or #xxxxxxxx
+ */
 export const isHex = (color: Color) => {
   return isHexStandard(color) || isHexAlpha(color);
 }
 
+/**
+ * check if a color is a standard rgb color - rgb(xxx, xxx, xxx)
+ */
 export const isRgbStandard = (color: Color) => {
   return /^rgb\(\d{1,3},\d{1,3},\d{1,3}\)$/i.test(color);
 }
 
+/**
+ * check if a color is an rgb color - rgba(xxx, xxx, xxx, xxx)
+ */
 export const isRgbAlpha = (color: Color) => {
   return /^rgba\(\d{1,3},\d{1,3},\d{1,3},\d{1,3}\)$/i.test(color);
 }
 
+/**
+ * check if a color is an rgb color - rgb(xxx, xxx, xxx) or rgba(xxx, xxx, xxx, xxx)
+ */
 export const isRgb = (color: Color) => {
   return isRgbStandard(color) || isRgbAlpha(color);
 }
 
+/**
+ * check if a color is an hsl color - hsl(xxx, xxx%, xxx%)
+ */
 export const isHslStandard = (color: Color) => {
   return /^hsl\(\d{1,3},\d{1,3}%,\d{1,3}%\)$/i.test(color);
 }
 
+/**
+ * check if a color is an hsl color - hsla(xxx, xxx%, xxx%, xxx)
+ */
 export const isHslAlpha = (color: Color) => {
   return /^hsla\(\d{1,3},\d{1,3}%,\d{1,3}%,\d{1,3}\)$/i.test(color);
 }
 
+/**
+ * check if a color is an hsl color - hsl(xxx, xxx%, xxx%) or hsla(xxx, xxx%, xxx%, xxx)
+ */
 export const isHsl = (color: Color) => {
   return isHslStandard(color) || isHslAlpha(color);
 }
 
+/**
+ * check if a color is a valid color - hex, rgb, or hsl including their alpha channel variants
+ */
 export const isColor = (color: Color) => {
   return isHex(color) || isRgb(color) || isHsl(color);
 }
@@ -50,8 +80,8 @@ export const isColor = (color: Color) => {
  * @param color the hexadecimal color to darken
  * @param amount the amount to darken the color by
  * @returns the darkened color
- * @example darkenHex('#ff0000', 20) // lightens the color by 20 (out of 255)
- * @example darkenHex('#ff0000', -20) // darkens the color by 20 (out of 255)
+ * @example adjustHex('#ff0000', 20) // lightens the color by 20 (out of 255)
+ * @example adjustHex('#ff0000', -20) // darkens the color by 20 (out of 255)
  */
 export const adjustHex = (color: Color, amount: number): Color => {
   const colorInt = parseInt(color.slice(1), 16);
