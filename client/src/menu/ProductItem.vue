@@ -8,10 +8,10 @@
 
 <template>
   <div
-    class="group hover:scale-110 transition-all duration-500 ease-out relative flex items-center justify-center max-w-44"
+    class="group relative flex items-center justify-center max-w-44"
   >
     <div>
-      <div class="relative w-60 h-60 flex items-center justify-center">
+      <div class="relative w-60 h-60 group-hover:scale-105 transition-all duration-500 ease-out flex items-center justify-center">
         <img
           :src="product.menu.thumbnail"
           :alt="product.menu.name"

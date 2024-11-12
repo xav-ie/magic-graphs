@@ -83,6 +83,7 @@ const btnHeight = 24;
         {{ algorithm.label }}
       </Button>
     </div>
+
     <div
       v-if="currentAlgorithm && showSimulation"
       class="absolute m-3 flex z-50 bottom-2 w-full justify-center items-end"
@@ -146,6 +147,7 @@ const btnHeight = 24;
         </div>
       </div>
     </div>
+
     <div
       v-else-if="currentAlgorithm"
       class="absolute m-3 flex z-50 bottom-16 flex justify-center w-full"
@@ -158,6 +160,7 @@ const btnHeight = 24;
         Run Simulation
       </Button>
     </div>
+
     <Graph @graph-ref="(el) => (graphEl = el)" :graph="graph" />
 
     <div
