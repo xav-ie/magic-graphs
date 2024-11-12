@@ -54,10 +54,8 @@ export const useUserEditableGraph = (
 
     if (graph.marqueedItemIDs.size > 0) {
       graph.bulkRemoveNode([...graph.marqueedItemIDs])
-      // for (const id of graph.marqueedItemIDs) {
-      //   const edge = graph.getEdge(id)
-      //   if (edge) graph.removeEdge(id)
-      // }
+      graph.bulkRemoveEdge([...graph.marqueedItemIDs])
+      graph.clearMarqueeSelection()
     }
   }
 

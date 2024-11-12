@@ -76,6 +76,11 @@ export const useGraphCRUD = ({
     node: Partial<GNode>,
     options: Partial<AddNodeOptions> = {}
   ) => {
+    if (node?.id && getNode(node.id)) {
+      console.warn('prevented adding a node with an existing id, this shouldn\'t happen')
+      return
+    }
+
     const fullOptions = {
       ...ADD_NODE_OPTIONS_DEFAULTS,
       ...options
@@ -101,6 +106,8 @@ export const useGraphCRUD = ({
     nodes: Partial<GNode>[],
     options: Partial<AddNodeOptions> = {}
   ) => {
+    if (nodes.length === 0) return
+
     const fullOptions = {
       ...BULK_ADD_NODE_OPTIONS_DEFAULTS,
       ...options
@@ -114,10 +121,11 @@ export const useGraphCRUD = ({
         broadcast: false,
         history: false,
       })
-
+      if (!newNode) continue
       createdNodes.push(newNode)
     }
 
+    if (createdNodes.length === 0) return
     emit('onBulkNodeAdded', createdNodes, fullOptions)
   }
 
@@ -176,6 +184,32 @@ export const useGraphCRUD = ({
 
     repaint('base-graph/add-edge')()
     return newEdge
+  }
+
+  const bulkAddEdge = (
+    edges: PartiallyPartial<GEdge, keyof typeof ADD_EDGE_DEFAULTS | 'id'>[],
+    options: Partial<AddEdgeOptions> = {}
+  ) => {
+    if (edges.length === 0) return
+
+    const fullOptions = {
+      ...ADD_EDGE_OPTIONS_DEFAULTS,
+      ...options
+    }
+
+    const createdEdges: GEdge[] = []
+
+    for (const edge of edges) {
+      const newEdge = addEdge(edge, {
+        broadcast: false,
+        history: false,
+      })
+      if (!newEdge) continue
+      createdEdges.push(newEdge)
+    }
+
+    if (createdEdges.length === 0) return
+    emit('onBulkEdgeAdded', createdEdges, fullOptions)
   }
 
 
@@ -246,6 +280,8 @@ export const useGraphCRUD = ({
     nodeIds: GNode['id'][],
     options: Partial<RemoveNodeOptions> = {}
   ) => {
+    if (nodeIds.length === 0) return
+
     const fullOptions = {
       ...REMOVE_NODE_OPTIONS_DEFAULTS,
       ...options
@@ -265,6 +301,7 @@ export const useGraphCRUD = ({
       removedEdges.push(...removedNodeEdges)
     }
 
+    if (removedNodes.length === 0) return
     emit('onBulkNodeRemoved', removedNodes, removedEdges, fullOptions)
   }
 
@@ -295,6 +332,33 @@ export const useGraphCRUD = ({
     return edge
   }
 
+  const bulkRemoveEdge = (
+    edgeIds: GEdge['id'][],
+    options: Partial<RemoveEdgeOptions> = {}
+  ) => {
+    if (edgeIds.length === 0) return
+
+    const fullOptions = {
+      ...REMOVE_EDGE_OPTIONS_DEFAULTS,
+      ...options
+    }
+
+    const removedEdges: GEdge[] = []
+
+    for (const edgeId of edgeIds) {
+      const removed = removeEdge(edgeId, {
+        broadcast: false,
+        history: false,
+      })
+      if (!removed) continue
+      removedEdges.push(removed)
+    }
+
+    if (removedEdges.length === 0) return
+    emit('onBulkEdgeRemoved', removedEdges, fullOptions)
+    return removedEdges
+  }
+
   return {
     getNode,
     getEdge,
@@ -309,5 +373,8 @@ export const useGraphCRUD = ({
 
     bulkAddNode,
     bulkRemoveNode,
+
+    bulkAddEdge,
+    bulkRemoveEdge,
   }
 }
