@@ -8,6 +8,9 @@ export type GNodeRecord = {
   data: GNode
 }
 
+/**
+ * affected items that are nodes and have been moved
+ */
 export type GNodeMoveRecord = {
   graphType: 'node',
   id: string,

@@ -10,11 +10,12 @@ export const useHistoryGraph = (
 ) => {
   const graph = useBaseGraph(canvas, options);
 
-  const stack = ref<HistoryRecord[]>([]);
+  const undoStack = ref<HistoryRecord[]>([]);
+  const redoStack = ref<HistoryRecord[]>([]);
 
   graph.subscribe('onNodeAdded', (node, { history }) => {
     if (!history) return;
-    stack.value.push({
+    undoStack.value.push({
       action: 'add',
       affectedItems: [{
         graphType: 'node',
@@ -25,7 +26,7 @@ export const useHistoryGraph = (
 
   graph.subscribe('onNodeRemoved', (node, { history }) => {
     if (!history) return;
-    stack.value.push({
+    undoStack.value.push({
       action: 'remove',
       affectedItems: [{
         graphType: 'node',
@@ -36,7 +37,7 @@ export const useHistoryGraph = (
 
   graph.subscribe('onEdgeAdded', (edge, { history }) => {
     if (!history) return;
-    stack.value.push({
+    undoStack.value.push({
       action: 'add',
       affectedItems: [{
         graphType: 'edge',
@@ -47,7 +48,7 @@ export const useHistoryGraph = (
 
   graph.subscribe('onEdgeRemoved', (edge, { history }) => {
     if (!history) return;
-    stack.value.push({
+    undoStack.value.push({
       action: 'remove',
       affectedItems: [{
         graphType: 'edge',
@@ -70,14 +71,14 @@ export const useHistoryGraph = (
   graph.subscribe('onNodeDrop', (node) => {
     if (!movingNode.value) throw new Error('dropped a node we didn\'t know was being dragged');
     if (movingNode.value.id !== node.id) throw new Error('node ID mismatch');
-    stack.value.push({
+    undoStack.value.push({
       action: 'move',
       affectedItems: [movingNode.value]
     })
   })
 
   const undo = () => {
-    const record = stack.value.pop();
+    const record = undoStack.value.pop();
     if (!record) return;
 
     if (record.action === 'add') {
@@ -114,17 +115,21 @@ export const useHistoryGraph = (
     ...graph,
 
     /**
-     * Undo the last action
+     * undoes the last action and moves it to the redo stack
      */
     undo,
     /**
-     * Redo the last action
+     * redoes the last undone action and moves it to the undo stack
      */
     redo,
+
     /**
-     * where the history is stored. like a history book, but in reverse order.
-     * just like in real life, we recommend not re-writing history.
+     * stores past actions to revert
      */
-    historyStack: stack,
+    undoStack,
+    /**
+     * stores undone actions to reapply
+     */
+    redoStack,
   }
 };

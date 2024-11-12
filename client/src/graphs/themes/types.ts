@@ -34,6 +34,8 @@ export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEd
   graphBgPatternColor: string,
 }
 
+export type HistoryGraphTheme = {}
+
 export type FocusGraphTheme = {
   nodeFocusColor: NodeGetterOrValue<string>;
   nodeFocusBorderColor: NodeGetterOrValue<string>;
@@ -65,6 +67,7 @@ export type CollaborativeGraphTheme = {}
 
 export type GraphTheme = (
   BaseGraphTheme &
+  HistoryGraphTheme &
   FocusGraphTheme &
   DraggableGraphTheme &
   NodeAnchorGraphTheme &
