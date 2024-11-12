@@ -189,7 +189,6 @@ export const useNodeAnchorGraph = (
   }
 
   graph.subscribe('onMouseMove', updateParentNode)
-
   graph.subscribe('onMouseDown', setActiveAnchor)
 
   /**
@@ -258,6 +257,7 @@ export const useNodeAnchorGraph = (
     activeAnchor.value = undefined
   }
 
+
   graph.subscribe('onNodeRemoved', (node) => {
     if (parentNode.value?.id !== node.id) return
     deactivateAnchors()
@@ -265,14 +265,15 @@ export const useNodeAnchorGraph = (
 
   graph.subscribe('onSettingsChange', (diff) => {
     if (diff.nodeAnchors === false) deactivateAnchors()
-  })
+    })
 
   watch(parentNode, () => {
     if (parentNode.value) updateNodeAnchors(parentNode.value)
-    graph.repaint('node-anchor-graph/parent-node-watch')()
+      graph.repaint('node-anchor-graph/parent-node-watch')()
   })
 
-  graph.subscribe('onNodeDrop', (node) => updateNodeAnchors(node))
+  graph.subscribe('onNodeMoved', deactivateAnchors)
+  graph.subscribe('onNodeDrop', updateNodeAnchors)
 
   return {
     ...graph,
