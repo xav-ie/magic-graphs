@@ -94,6 +94,17 @@ export type BaseGraphEventMap = {
   onSettingsChange: (diff: DeepPartial<GraphSettings>) => void;
 }
 
+export type HistoryGraphEventMap = {
+  /**
+   * when the undo action is triggered
+   */
+  onUndo: () => void;
+  /**
+   * when the redo action is triggered
+   */
+  onRedo: () => void;
+}
+
 export type FocusGraphEventMap = {
   /**
    * when the focus item (ie nodes or edges) changes.
@@ -134,6 +145,7 @@ export type CollaborativeGraphEventMap = {}
 
 export type GraphEventMap = (
   BaseGraphEventMap &
+  HistoryGraphEventMap &
   FocusGraphEventMap &
   DraggableGraphEventMap &
   NodeAnchorGraphEventMap &

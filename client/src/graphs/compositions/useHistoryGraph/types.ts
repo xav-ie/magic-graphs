@@ -8,6 +8,13 @@ export type GNodeRecord = {
   data: GNode
 }
 
+export type GNodeMoveRecord = {
+  graphType: 'node',
+  id: string,
+  x: number,
+  y: number
+}
+
 /**
  * affected items that are edges
  */
@@ -17,10 +24,9 @@ export type GEdgeRecord = {
 }
 
 /**
- * a record of an event stored in the history stack of a graph.
- * provides for undo/redo functionality
+ * a record indicating an item in the graph was added or removed
  */
-export type HistoryRecord = {
+export type AddRemoveRecord = {
   /**
    * the action that was taken in order to create this record.
    */
@@ -30,3 +36,23 @@ export type HistoryRecord = {
    */
   affectedItems: (GNodeRecord | GEdgeRecord)[];
 }
+
+/**
+ * a record indicating an item in the graph was moved
+ */
+export type MoveRecord = {
+  /**
+   * the action that was taken in order to create this record.
+   */
+  action: 'move',
+  /**
+   * the items that were affected by the action.
+   */
+  affectedItems: GNodeMoveRecord[];
+}
+
+/**
+ * a record of an event stored in the history stack of a graph.
+ * provides for undo/redo functionality
+ */
+export type HistoryRecord = AddRemoveRecord | MoveRecord;

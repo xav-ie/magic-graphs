@@ -2,7 +2,7 @@ import { ref } from "vue";
 import type { Ref } from "vue";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
 import type { GraphOptions } from "@graph/types";
-import type { HistoryRecord } from "./types";
+import type { GNodeMoveRecord, HistoryRecord } from "./types";
 
 export const useHistoryGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -12,7 +12,8 @@ export const useHistoryGraph = (
 
   const stack = ref<HistoryRecord[]>([]);
 
-  graph.subscribe('onNodeAdded', (node) => {
+  graph.subscribe('onNodeAdded', (node, { history }) => {
+    if (!history) return;
     stack.value.push({
       action: 'add',
       affectedItems: [{
@@ -22,7 +23,8 @@ export const useHistoryGraph = (
     })
   });
 
-  graph.subscribe('onNodeRemoved', (node) => {
+  graph.subscribe('onNodeRemoved', (node, { history }) => {
+    if (!history) return;
     stack.value.push({
       action: 'remove',
       affectedItems: [{
@@ -32,6 +34,48 @@ export const useHistoryGraph = (
     })
   });
 
+  graph.subscribe('onEdgeAdded', (edge, { history }) => {
+    if (!history) return;
+    stack.value.push({
+      action: 'add',
+      affectedItems: [{
+        graphType: 'edge',
+        data: edge,
+      }]
+    })
+  });
+
+  graph.subscribe('onEdgeRemoved', (edge, { history }) => {
+    if (!history) return;
+    stack.value.push({
+      action: 'remove',
+      affectedItems: [{
+        graphType: 'edge',
+        data: edge,
+      }]
+    })
+  });
+
+  const movingNode = ref<GNodeMoveRecord>();
+
+  graph.subscribe('onNodeDragStart', (node) => {
+    movingNode.value = {
+      graphType: 'node',
+      id: node.id,
+      x: node.x,
+      y: node.y,
+    }
+  })
+
+  graph.subscribe('onNodeDrop', (node) => {
+    if (!movingNode.value) throw new Error('dropped a node we didn\'t know was being dragged');
+    if (movingNode.value.id !== node.id) throw new Error('node ID mismatch');
+    stack.value.push({
+      action: 'move',
+      affectedItems: [movingNode.value]
+    })
+  })
+
   const undo = () => {
     const record = stack.value.pop();
     if (!record) return;
@@ -39,17 +83,26 @@ export const useHistoryGraph = (
     if (record.action === 'add') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
-          graph.removeNode(item.data.id);
+          graph.removeNode(item.data.id, { history: false });
         } else if (item.graphType === 'edge') {
-          graph.removeEdge(item.data.id);
+          graph.removeEdge(item.data.id, { history: false });
         }
       }
     } else if (record.action === 'remove') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
-          graph.addNode(item.data);
+          graph.addNode(item.data, { history: false });
         } else if (item.graphType === 'edge') {
-          graph.addEdge(item.data);
+          graph.addEdge(item.data, { history: false });
+        }
+      }
+    } else if (record.action === 'move') {
+      for (const item of record.affectedItems) {
+        if (item.graphType === 'node') {
+          graph.moveNode(item.id, {
+            x: item.x,
+            y: item.y,
+          });
         }
       }
     }
