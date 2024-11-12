@@ -265,11 +265,11 @@ export const useNodeAnchorGraph = (
 
   graph.subscribe('onSettingsChange', (diff) => {
     if (diff.nodeAnchors === false) deactivateAnchors()
-    })
+  })
 
   watch(parentNode, () => {
     if (parentNode.value) updateNodeAnchors(parentNode.value)
-      graph.repaint('node-anchor-graph/parent-node-watch')()
+    graph.repaint('node-anchor-graph/parent-node-watch')()
   })
 
   graph.subscribe('onNodeMoved', deactivateAnchors)
