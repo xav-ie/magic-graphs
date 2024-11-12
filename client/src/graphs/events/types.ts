@@ -28,11 +28,11 @@ export type BaseGraphEventMap = {
   /**
    * when a node is removed from the graph
    */
-  onNodeRemoved: (node: GNode, options: RemoveNodeOptions) => void;
+  onNodeRemoved: (removedNode: GNode, removedEdges: GEdge[], options: RemoveNodeOptions) => void;
   /**
    * when multiple nodes are removed from the graph as a group
    */
-  onBulkNodeRemoved: (nodes: GNode[], options: RemoveNodeOptions) => void;
+  onBulkNodeRemoved: (removedNodes: GNode[], removedEdges: GEdge[], options: RemoveNodeOptions) => void;
   /**
    * when a node is moved to a new position on the canvas
    */

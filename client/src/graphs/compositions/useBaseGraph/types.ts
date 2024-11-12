@@ -19,8 +19,7 @@ export type HistoryOption = {
 
 export type BroadcastOption = {
   /**
-   * whether to broadcast the newly added item to
-   * connected collaborators
+   * whether to broadcast this action to connected collaborators
    */
   broadcast: boolean
 }
@@ -30,6 +29,12 @@ export type AddNodeOptions = FocusOption & BroadcastOption & HistoryOption
 export const ADD_NODE_OPTIONS_DEFAULTS: AddNodeOptions = {
   broadcast: true,
   focus: true,
+  history: true,
+}
+
+export const BULK_ADD_NODE_OPTIONS_DEFAULTS: AddNodeOptions = {
+  broadcast: true,
+  focus: false,
   history: true,
 }
 

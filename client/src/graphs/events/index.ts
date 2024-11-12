@@ -85,11 +85,20 @@ export const getInitialEventBus = () => {
     onStructureChange: new Set(),
 
     onNodeAdded: new Set(),
+    onBulkNodeAdded: new Set(),
+
     onNodeRemoved: new Set(),
+    onBulkNodeRemoved: new Set(),
+
     onNodeMoved: new Set(),
+    onBulkNodeMoved: new Set(),
 
     onEdgeAdded: new Set(),
+    onBulkEdgeAdded: new Set(),
+
     onEdgeRemoved: new Set(),
+    onBulkEdgeRemoved: new Set(),
+
     onEdgeLabelChange: new Set(),
 
     onRepaint: new Set(),
