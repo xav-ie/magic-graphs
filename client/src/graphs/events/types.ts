@@ -10,7 +10,7 @@ import type {
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types";
 import type { GraphTheme } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
-import type { HistoryRecord } from "@graph/compositions/useHistoryGraph/types";
+import type { HistoryRecord, RedoHistoryOptions, UndoHistoryOptions } from "@graph/compositions/useHistoryGraph/types";
 import type { Coordinate } from "@shape/types";
 
 export type BaseGraphEventMap = {
@@ -120,11 +120,11 @@ export type HistoryGraphEventMap = {
   /**
    * when the undo action is triggered
    */
-  onUndo: (historyRecord: HistoryRecord) => void;
+  onUndo: (historyRecord: HistoryRecord, options: UndoHistoryOptions) => void;
   /**
    * when the redo action is triggered
    */
-  onRedo: (historyRecord: HistoryRecord) => void;
+  onRedo: (historyRecord: HistoryRecord, options: RedoHistoryOptions) => void;
 }
 
 export type FocusGraphEventMap = {

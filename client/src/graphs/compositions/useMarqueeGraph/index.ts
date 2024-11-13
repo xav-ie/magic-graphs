@@ -15,7 +15,7 @@ import { getConnectedEdges, getValue } from '@graph/helpers'
 import colors from '@colors'
 import { rect } from '@shapes'
 import type { BoundingBox } from "@shape/types";
-import type { HistoryRecord } from '../useHistoryGraph/types'
+import type { HistoryRecord, RedoHistoryOptions, UndoHistoryOptions } from '../useHistoryGraph/types'
 
 export const useMarqueeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -308,7 +308,11 @@ export const useMarqueeGraph = (
   /**
    * takes a history record and creates a marquee selection around the affected items
    */
-  const marqueeSelectHistoryRecord = (record: HistoryRecord) => {
+  const marqueeSelectHistoryRecord = (
+    record: HistoryRecord,
+    { select }: UndoHistoryOptions | RedoHistoryOptions
+  ) => {
+    if (!select) return
     const { affectedItems } = record
     const ids = affectedItems.map((i) => i.data.id)
     const marqueeSelection = ids

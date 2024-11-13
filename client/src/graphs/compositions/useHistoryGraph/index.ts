@@ -2,7 +2,7 @@ import { ref } from "vue";
 import type { Ref } from "vue";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
 import type { GNode, GraphOptions } from "@graph/types";
-import type { GNodeMoveRecord, HistoryRecord } from "./types";
+import { DEFAULT_REDO_HISTORY_OPTIONS, DEFAULT_UNDO_HISTORY_OPTIONS, type GNodeMoveRecord, type HistoryRecord, type RedoHistoryOptions, type UndoHistoryOptions } from "./types";
 import type { Coordinate } from "@shape/types";
 
 /**
@@ -206,23 +206,29 @@ export const useHistoryGraph = (
     })
   })
 
-  const undo = () => {
+  const undo = (options: Partial<UndoHistoryOptions> = {}) => {
     const record = undoStack.value.pop();
     if (!record) return;
 
     addToRedoStack(record);
     undoHistoryRecord(record);
-    graph.emit('onUndo', record);
+    graph.emit('onUndo', record, {
+      ...DEFAULT_UNDO_HISTORY_OPTIONS,
+      ...options,
+    });
     return record;
   }
 
-  const redo = () => {
+  const redo = (options: Partial<RedoHistoryOptions> = {}) => {
     const record = redoStack.value.pop();
     if (!record) return;
 
     addToUndoStack(record);
     redoHistoryRecord(record);
-    graph.emit('onRedo', record);
+    graph.emit('onRedo', record, {
+      ...DEFAULT_REDO_HISTORY_OPTIONS,
+      ...options,
+    });
     return record;
   }
 
