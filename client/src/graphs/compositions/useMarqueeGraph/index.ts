@@ -6,6 +6,7 @@ import type {
   GNode,
   Aggregator,
   GraphOptions,
+  SchemaItem,
 } from '@graph/types'
 import { useTheme } from '@graph/themes/useTheme'
 import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
@@ -62,6 +63,7 @@ export const useMarqueeGraph = (
    * and dismissing the encapsulated node box
    */
   const clearMarqueeSelection = () => {
+    console.log('clear')
     marqueeSelectedItems.value.clear()
     updateEncapsulatedNodeBox()
     encapsulatedNodeBox.value = undefined
@@ -76,8 +78,8 @@ export const useMarqueeGraph = (
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
     mouseState.x = x;
     mouseState.y = y;
-    if (!topItem) return engageMarqueeBox({ x, y })
-    else if (topItem.graphType !== 'encapsulated-node-box') clearMarqueeSelection()
+    if (topItem?.graphType !== 'encapsulated-node-box') clearMarqueeSelection()
+    if (!topItem) engageMarqueeBox({ x, y })
   }
 
   graph.subscribe('onMouseDown', () => mouseState.heldDown = true)
