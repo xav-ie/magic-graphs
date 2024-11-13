@@ -7,7 +7,7 @@ import type {
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types"
 import { useMarqueeGraph } from '@graph/compositions/useMarqueeGraph'
 import type { HistoryRecord } from '../useHistoryGraph/types'
-import { useKeydownMap } from './useKeydownMap'
+import { useShortcutPressed } from './useShortcutPressed'
 
 /**
  * The user editable graph implements handlers for node creation,
@@ -73,7 +73,7 @@ export const useUserEditableGraph = (
 
   const USER_PLATFORM = window.navigator.userAgent.includes('Mac') ? 'Mac' : 'Windows'
 
-  const { isPressed } = useKeydownMap()
+  const { isPressed } = useShortcutPressed()
 
   const handleKeyboardEvents = () => {
     const userKeyBindings = KEY_BINDINGS[USER_PLATFORM]
