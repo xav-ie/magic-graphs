@@ -210,9 +210,9 @@ export const useHistoryGraph = (
     const record = undoStack.value.pop();
     if (!record) return;
 
-    graph.emit('onUndo', record);
     addToRedoStack(record);
     undoHistoryRecord(record);
+    graph.emit('onUndo', record);
     return record;
   }
 
@@ -220,9 +220,9 @@ export const useHistoryGraph = (
     const record = redoStack.value.pop();
     if (!record) return;
 
-    graph.emit('onRedo', record);
     addToUndoStack(record);
     redoHistoryRecord(record);
+    graph.emit('onRedo', record);
     return record;
   }
 

@@ -11,10 +11,11 @@ import type {
 import { useTheme } from '@graph/themes/useTheme'
 import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
 import { MARQUEE_CONSTANTS } from '@graph/compositions/useMarqueeGraph/types'
-import { getValue } from '@graph/helpers'
+import { getConnectedEdges, getValue } from '@graph/helpers'
 import colors from '@colors'
 import { rect } from '@shapes'
 import type { BoundingBox } from "@shape/types";
+import type { HistoryRecord } from '../useHistoryGraph/types'
 
 export const useMarqueeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -304,6 +305,22 @@ export const useMarqueeGraph = (
     updateEncapsulatedNodeBox()
   }
 
+  /**
+   * takes a history record and creates a marquee selection around the affected items
+   */
+  const marqueeSelectHistoryRecord = (record: HistoryRecord) => {
+    const { affectedItems } = record
+    const ids = affectedItems.map((i) => i.data.id)
+    const marqueeSelection = ids
+    for (const id of ids) {
+      const node = graph.getNode(id)
+      if (!node) continue
+      const edgeIds = getConnectedEdges(node, graph.edges.value).map(edge => edge.id)
+      marqueeSelection.push(...edgeIds)
+    }
+    setMarqueeSelectedItems(marqueeSelection)
+  }
+
   const activate = () => {
     graph.subscribe('onMouseDown', handleMarqueeEngagement)
     graph.subscribe('onMouseUp', disengageMarqueeBox)
@@ -314,6 +331,9 @@ export const useMarqueeGraph = (
     graph.subscribe('onMouseDown', beginGroupDrag)
     graph.subscribe('onMouseUp', groupDrop)
     graph.subscribe('onMouseMove', groupDrag)
+
+    graph.subscribe('onUndo', marqueeSelectHistoryRecord)
+    graph.subscribe('onRedo', marqueeSelectHistoryRecord)
   }
 
   const deactivate = () => {
@@ -326,6 +346,9 @@ export const useMarqueeGraph = (
     graph.unsubscribe('onMouseDown', beginGroupDrag)
     graph.unsubscribe('onMouseUp', groupDrop)
     graph.unsubscribe('onMouseMove', groupDrag)
+
+    graph.unsubscribe('onUndo', marqueeSelectHistoryRecord)
+    graph.unsubscribe('onRedo', marqueeSelectHistoryRecord)
 
     if (marqueeBox.value) disengageMarqueeBox()
   }
