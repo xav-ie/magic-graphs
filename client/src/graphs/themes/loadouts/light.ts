@@ -3,6 +3,13 @@ import type { GraphTheme } from '@graph/themes'
 import { NON_COLOR_THEMES } from './universal'
 
 export const LIGHT_THEME: GraphTheme = {
+  primaryColor: colors.BLUE_500,
+  secondaryColor: colors.BLUE_700,
+  tertiaryColor: colors.BLUE_900,
+  primaryTextColor: colors.WHITE,
+  secondaryTextColor: colors.WHITE,
+  tertiaryTextColor: colors.WHITE,
+
   nodeColor: colors.GRAY_50,
   nodeBorderColor: colors.GRAY_800,
   nodeFocusBorderColor: colors.BLUE_600,

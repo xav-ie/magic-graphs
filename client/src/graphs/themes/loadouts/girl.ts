@@ -3,6 +3,13 @@ import type { GraphTheme } from '@graph/themes'
 import { NON_COLOR_THEMES } from './universal'
 
 export const GIRL_THEME: GraphTheme = {
+  primaryColor: colors.PINK_500,
+  secondaryColor: colors.PINK_700,
+  tertiaryColor: colors.PINK_900,
+  primaryTextColor: colors.WHITE,
+  secondaryTextColor: colors.WHITE,
+  tertiaryTextColor: colors.WHITE,
+
   nodeColor: colors.PINK_100,
   nodeBorderColor: colors.PINK_400,
   nodeFocusBorderColor: colors.PURPLE_600,

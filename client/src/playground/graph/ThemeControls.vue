@@ -19,14 +19,18 @@
     </div>
     <div class="my-2">
       <div>
-        <h1 class="text-xl font-bold text-white">Theme Presets</h1>
+        <h1 class="text-xl font-bold text-white">Presets</h1>
       </div>
       <div
         v-for="(value, key) in THEMES"
         @click="graph.theme.value = value"
         class="my-2"
       >
-        <Button style="width: 100%">
+        <Button
+          :color="value['secondaryColor']"
+          :text-color="value['secondaryTextColor']"
+          style="width: 100%;"
+        >
           {{ camelCaseToTitleCase(key) }}
         </Button>
       </div>
