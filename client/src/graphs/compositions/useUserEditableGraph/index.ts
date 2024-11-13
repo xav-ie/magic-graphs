@@ -82,16 +82,16 @@ export const useUserEditableGraph = (
     }
   }
 
-  const eventBindings = {
+  const EVENT_BINDINGS = {
     ['onDblClick']: handleNodeCreation,
     ['onKeydown']: handleKeyboardEvents,
     ['onNodeAnchorDrop']: handleEdgeCreation,
   } as const
 
   const activate = () => {
-    for (const event in eventBindings) {
+    for (const event in EVENT_BINDINGS) {
       // @ts-ignore
-      graph.subscribe(event, eventBindings[event])
+      graph.subscribe(event, EVENT_BINDINGS[event])
     }
     graph.settings.value.nodeAnchors = true
     graph.settings.value.draggable = true
@@ -99,9 +99,9 @@ export const useUserEditableGraph = (
   }
 
   const deactivate = () => {
-    for (const event in eventBindings) {
+    for (const event in EVENT_BINDINGS) {
       // @ts-ignore
-      graph.unsubscribe(event, eventBindings[event])
+      graph.unsubscribe(event, EVENT_BINDINGS[event])
     }
     graph.settings.value.nodeAnchors = false
     graph.settings.value.draggable = false

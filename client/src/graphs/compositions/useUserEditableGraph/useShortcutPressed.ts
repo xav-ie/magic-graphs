@@ -1,6 +1,6 @@
-import { onUnmounted, ref } from "vue"
+import { computed, onUnmounted, ref } from "vue"
 
-export const useKeydownMap = (caseSensitive = false) => {
+export const useShortcutPressed = (caseSensitive = false) => {
 
   const getKeyMapping = (e: KeyboardEvent) => {
     if (e.key === ' ') return 'Space'
@@ -10,6 +10,19 @@ export const useKeydownMap = (caseSensitive = false) => {
   }
 
   const currentKeyString = ref('')
+
+  const compareString = computed(() => {
+    let filter: string;
+    return currentKeyString.value
+      .split('+')
+      .filter((k) => {
+        const shouldRemove = k === filter
+        filter = k
+        return !shouldRemove
+      })
+      .join('+')
+  })
+
 
   const trackKeyDown = (e: KeyboardEvent) => {
     if (currentKeyString.value.length > 0) currentKeyString.value += '+'
@@ -28,15 +41,7 @@ export const useKeydownMap = (caseSensitive = false) => {
    * @example isPressed('a') // true if 'a' is pressed down
    * @example isPressed('a+b') // true if 'a' and 'b' are pressed down
    */
-  const isPressed = (keyStr: string) => {
-    let filter: string;
-    const comparKey = currentKeyString.value.split('+').filter((k) => {
-      const shouldRemove = k === filter
-      filter = k
-      return !shouldRemove
-    }).join('+')
-    return comparKey === keyStr
-  }
+  const isPressed = (keyStr: string) => compareString.value === keyStr
 
   document.addEventListener('keydown', trackKeyDown)
   document.addEventListener('keyup', trackKeyUp)
