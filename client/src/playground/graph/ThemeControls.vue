@@ -18,21 +18,22 @@
       <h2 class="text-2xl font-bold text-white">Theme Controls</h2>
     </div>
     <div class="my-2">
-      <div>
+      <div class="mb-2">
         <h1 class="text-xl font-bold text-white">Presets</h1>
       </div>
-      <div
-        v-for="(value, key) in THEMES"
-        @click="graph.theme.value = value"
-        class="my-2"
-      >
-        <Button
-          :color="value['secondaryColor']"
-          :text-color="value['secondaryTextColor']"
-          style="width: 100%;"
+      <div class="flex flex-wrap gap-3">
+        <div
+          v-for="(value, key) in THEMES"
+          @click="graph.theme.value = value"
         >
-          {{ camelCaseToTitleCase(key) }}
-        </Button>
+          <Button
+            :color="value['secondaryColor']"
+            :text-color="value['secondaryTextColor']"
+            style="width: 120px; text-align: center;"
+          >
+            {{ camelCaseToTitleCase(key) }}
+          </Button>
+        </div>
       </div>
     </div>
     <div
