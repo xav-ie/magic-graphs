@@ -6,6 +6,8 @@ import type {
 } from "@graph/types"
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types"
 import { useMarqueeGraph } from '@graph/compositions/useMarqueeGraph'
+import { getConnectedEdges } from '@graph/helpers'
+import type { HistoryRecord } from '../useHistoryGraph/types'
 
 /**
  * The user editable graph implements handlers for node creation,
@@ -63,16 +65,27 @@ export const useUserEditableGraph = (
     if (ev.key !== 'z') return
     const record = graph.undo()
     if (!record) return
-    const { affectedItems } = record
-    graph.setMarqueeSelectedItems(affectedItems.map((i) => i.data.id))
+    marqueeSelectHistoryRecord(record)
   }
 
   const handleRedo = (ev: KeyboardEvent) => {
     if (ev.key !== 'y') return
     const record = graph.redo()
     if (!record) return
+    marqueeSelectHistoryRecord(record)
+  }
+
+  const marqueeSelectHistoryRecord = (record: HistoryRecord) => {
     const { affectedItems } = record
-    graph.setMarqueeSelectedItems(affectedItems.map((i) => i.data.id))
+    const ids = affectedItems.map((i) => i.data.id)
+    const marqueeSelection = ids
+    for (const id of ids) {
+      const node = graph.getNode(id)
+      if (!node) continue
+      const edgeIds = getConnectedEdges(node, graph.edges.value).map(edge => edge.id)
+      marqueeSelection.push(...edgeIds)
+    }
+    graph.setMarqueeSelectedItems(marqueeSelection)
   }
 
   const handleKeyboardEvents = (ev: KeyboardEvent) => {
