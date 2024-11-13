@@ -63,7 +63,6 @@ export const useMarqueeGraph = (
    * and dismissing the encapsulated node box
    */
   const clearMarqueeSelection = () => {
-    console.log('clear')
     marqueeSelectedItems.value.clear()
     updateEncapsulatedNodeBox()
     encapsulatedNodeBox.value = undefined
