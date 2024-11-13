@@ -32,6 +32,8 @@ const handleButtonClick = (newAlgorithm: Algorithm) => {
   if (newAlgorithm === 'none') useColorizeGraph(graph, graph.edges.value);
   else useColorizeGraph(graph, simControls.trace.value);
 }
+
+setTimeout(() => handleButtonClick('none'), 1); // I dont know why this is needed
 </script>
 
 <template>
@@ -45,9 +47,9 @@ const handleButtonClick = (newAlgorithm: Algorithm) => {
   <div class="absolute top-0 p-3 flex gap-3">
 
     <div v-if="!simControls.isActive.value" class="gap-3 flex">
-      <Button @click="handleButtonClick('kruskal')">Kruskal</Button>
-      <Button @click="handleButtonClick('prim')">Prim</Button>
-      <Button @click="handleButtonClick('none')">None</Button>
+      <Button @click="handleButtonClick('kruskal')" :color="currentAlgorithm === 'kruskal' ? colors.GREEN_400 : undefined">Kruskal</Button>
+      <Button @click="handleButtonClick('prim')" :color="currentAlgorithm === 'prim' ? colors.GREEN_400 : undefined">Prim</Button>
+      <Button @click="handleButtonClick('none')" :color="currentAlgorithm === 'none' ? colors.GREEN_400 : undefined">None</Button>
     </div>
     <div v-if="currentAlgorithm !== 'none'">
       <Button

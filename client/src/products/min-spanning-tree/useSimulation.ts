@@ -21,14 +21,13 @@ export const useMSTSimulation = (graph: Graph, currentAlgorithm: Ref<Algorithm>)
     else return kTrace.value
   })
 
-  const { removeAllThemes } = useTheme(graph, 'mst')
 
   const step = ref(0);
   const paused = ref(true);
   const playbackSpeed = ref(1_500);
   const active = ref(false);
   const interval = ref<NodeJS.Timeout | undefined>()
-  const isOver = computed(() => step.value === trace.value.length)
+  const isOver = computed(() => step.value === trace.value.length + 1)
   const hasBegun = computed(() => step.value > 0)
 
   const traceAtStep = computed(() => trace.value.slice(0, step.value))
@@ -47,7 +46,8 @@ export const useMSTSimulation = (graph: Graph, currentAlgorithm: Ref<Algorithm>)
   const stop = () => {
     if (interval.value) clearInterval(interval.value)
     active.value = false
-    removeAllThemes()
+    setStep(trace.value.length)
+    useColorizeGraph(graph, traceAtStep.value)
   }
 
   const nextStep = () => {
