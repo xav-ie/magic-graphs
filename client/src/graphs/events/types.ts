@@ -11,6 +11,7 @@ import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types";
 import type { GraphTheme } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
 import type { HistoryRecord } from "@graph/compositions/useHistoryGraph/types";
+import type { Coordinate } from "@shape/types";
 
 export type BaseGraphEventMap = {
   /**
@@ -156,7 +157,16 @@ export type NodeAnchorGraphEventMap = {
   onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
 }
 
-export type MarqueeGraphEventMap = {}
+export type MarqueeGraphEventMap = {
+  /**
+   * when the user starts a marquee drag
+   */
+  onGroupDragStart: (nodes: GNode[], startingCoordinates: Coordinate) => void;
+  /**
+   * when the user drops a marquee drag
+   */
+  onGroupDrop: (nodes: GNode[], endCoordinates: Coordinate) => void;
+}
 
 export type UserEditableGraphEventMap = {}
 

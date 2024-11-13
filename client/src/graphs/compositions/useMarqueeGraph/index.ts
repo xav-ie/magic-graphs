@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import type {
@@ -26,7 +26,20 @@ export const useMarqueeGraph = (
   const encapsulatedNodeBox = ref<BoundingBox | undefined>()
 
   const marqueeSelectedItems = ref(new Set<string>())
-  const mouseState = { x: 0, y: 0, heldDown: false }
+
+  const marqueeSelectedNodes = computed(() => {
+    return Array.from(marqueeSelectedItems.value)
+      .map((id) => graph.getNode(id))
+      .filter((node): node is GNode => !!node)
+  })
+
+  const marqueeSelectedEdges = computed(() => {
+    return Array.from(marqueeSelectedItems.value)
+      .map((id) => graph.getEdge(id))
+      .filter((edge): edge is GEdge => !!edge)
+  })
+
+  const groupDragCoordinates = ref<{ x: number, y: number } | undefined>()
 
   const { setTheme, removeTheme } = useTheme(graph, MARQUEE_CONSTANTS.THEME_ID)
 
@@ -75,24 +88,18 @@ export const useMarqueeGraph = (
   const handleMarqueeEngagement = (event: MouseEvent) => {
     const { offsetX: x, offsetY: y } = event
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    mouseState.x = x;
-    mouseState.y = y;
     if (topItem?.graphType !== 'encapsulated-node-box') clearMarqueeSelection()
     if (!topItem) engageMarqueeBox({ x, y })
   }
 
-  graph.subscribe('onMouseDown', () => mouseState.heldDown = true)
-  graph.subscribe('onMouseUp', () => mouseState.heldDown = false)
-
-  const dragEncapsulatedNodes = (event: MouseEvent) => {
-    if (marqueeBox.value || !mouseState.heldDown) return;
+  const groupDrag = (event: MouseEvent) => {
+    if (!groupDragCoordinates.value) return;
     const { offsetX: x, offsetY: y } = event
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
     if (topItem?.graphType !== 'encapsulated-node-box') return
-    const dx = x - mouseState.x
-    const dy = y - mouseState.y
-    mouseState.x = x
-    mouseState.y = y
+    const dx = x - groupDragCoordinates.value.x
+    const dy = y - groupDragCoordinates.value.y
+    groupDragCoordinates.value = { x, y }
     for (const id of marqueeSelectedItems.value) {
       const node = graph.getNode(id)
       if (!node) continue
@@ -102,6 +109,21 @@ export const useMarqueeGraph = (
       })
     }
     updateEncapsulatedNodeBox()
+  }
+
+  const beginGroupDrag = (event: MouseEvent) => {
+    if (marqueeBox.value) return
+    const { offsetX: x, offsetY: y } = event
+    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
+    if (topItem?.graphType !== 'encapsulated-node-box') return
+    groupDragCoordinates.value = { x, y }
+    graph.emit('onGroupDragStart', marqueeSelectedNodes.value, { x, y })
+  }
+
+  const groupDrop = () => {
+    if (!groupDragCoordinates.value) return
+    graph.emit('onGroupDrop', marqueeSelectedNodes.value, groupDragCoordinates.value)
+    groupDragCoordinates.value = undefined
   }
 
   const initializeEncapsulatedNodeBox = () => encapsulatedNodeBox.value = {
@@ -176,7 +198,6 @@ export const useMarqueeGraph = (
 
     graph.repaint('marquee-graph/update-encapsulated-node-box')()
   };
-
 
   const setMarqueeBoxDimensions = (event: MouseEvent) => {
     if (!marqueeBox.value) return
@@ -285,20 +306,27 @@ export const useMarqueeGraph = (
 
   const activate = () => {
     graph.subscribe('onMouseDown', handleMarqueeEngagement)
-    graph.subscribe('onMouseMove', dragEncapsulatedNodes)
     graph.subscribe('onMouseUp', disengageMarqueeBox)
     graph.subscribe('onNodeMoved', updateEncapsulatedNodeBox)
     graph.subscribe('onContextMenu', disengageMarqueeBox)
     graph.subscribe('onMouseMove', setMarqueeBoxDimensions)
+
+    graph.subscribe('onMouseDown', beginGroupDrag)
+    graph.subscribe('onMouseUp', groupDrop)
+    graph.subscribe('onMouseMove', groupDrag)
   }
 
   const deactivate = () => {
     graph.unsubscribe('onMouseDown', handleMarqueeEngagement)
-    graph.unsubscribe('onMouseMove', dragEncapsulatedNodes)
     graph.unsubscribe('onMouseUp', disengageMarqueeBox)
     graph.unsubscribe('onNodeMoved', updateEncapsulatedNodeBox)
     graph.unsubscribe('onContextMenu', disengageMarqueeBox)
     graph.unsubscribe('onMouseMove', setMarqueeBoxDimensions)
+
+    graph.unsubscribe('onMouseDown', beginGroupDrag)
+    graph.unsubscribe('onMouseUp', groupDrop)
+    graph.unsubscribe('onMouseMove', groupDrag)
+
     if (marqueeBox.value) disengageMarqueeBox()
   }
 
@@ -328,5 +356,14 @@ export const useMarqueeGraph = (
 
     setMarqueeSelectedItems,
     clearMarqueeSelection,
+
+    /**
+     * a computed array of all nodes in the current marquee selection
+     */
+    marqueeSelectedNodes,
+    /**
+     * a computed array of all edges in the current marquee selection
+     */
+    marqueeSelectedEdges,
   }
 }
