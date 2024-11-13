@@ -12,7 +12,10 @@ export const collabTagShapes = (collaborator: Collaborator) => {
 
   const { x, y } = mousePosition
 
-  const width = collaboratorName.length * 11
+  const MIN_TAG_WIDTH = 35
+  const MAX_TAG_WIDTH = 150
+
+  const width = Math.min(Math.max(collaboratorName.length * 11, MIN_TAG_WIDTH), MAX_TAG_WIDTH)
   const height = 20
   const topLeftOffset = 10
 
