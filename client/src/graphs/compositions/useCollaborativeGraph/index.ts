@@ -79,9 +79,21 @@ export const useCollaborativeGraph = (
       if (!broadcast) return
       socket.emit('nodeAdded', node)
     },
-    onNodeRemoved: (node: GNode, { broadcast }: RemoveNodeOptions) => {
+    onBulkEdgeAdded: (edges: GEdge[], { broadcast }: AddEdgeOptions) => {
+      if (!broadcast) return
+      for (const edge of edges) {
+        socket.emit('edgeAdded', edge)
+      }
+    },
+    onNodeRemoved: (node: GNode, _: GEdge[], { broadcast }: RemoveNodeOptions) => {
       if (!broadcast) return
       socket.emit('nodeRemoved', node.id)
+    },
+    onBulkNodeRemoved: (nodes: GNode[], _: GEdge[], { broadcast }: RemoveNodeOptions) => {
+      if (!broadcast) return
+      for (const node of nodes) {
+        socket.emit('nodeRemoved', node.id)
+      }
     },
     onNodeMoved: (node: GNode, { broadcast }: MoveNodeOptions) => {
       if (!broadcast) return

@@ -287,6 +287,7 @@ export const useMarqueeGraph = (
     graph.subscribe('onMouseDown', handleMarqueeEngagement)
     graph.subscribe('onMouseMove', dragEncapsulatedNodes)
     graph.subscribe('onMouseUp', disengageMarqueeBox)
+    graph.subscribe('onNodeMoved', updateEncapsulatedNodeBox)
     graph.subscribe('onContextMenu', disengageMarqueeBox)
     graph.subscribe('onMouseMove', setMarqueeBoxDimensions)
   }
@@ -295,6 +296,7 @@ export const useMarqueeGraph = (
     graph.unsubscribe('onMouseDown', handleMarqueeEngagement)
     graph.unsubscribe('onMouseMove', dragEncapsulatedNodes)
     graph.unsubscribe('onMouseUp', disengageMarqueeBox)
+    graph.unsubscribe('onNodeMoved', updateEncapsulatedNodeBox)
     graph.unsubscribe('onContextMenu', disengageMarqueeBox)
     graph.unsubscribe('onMouseMove', setMarqueeBoxDimensions)
     if (marqueeBox.value) disengageMarqueeBox()
