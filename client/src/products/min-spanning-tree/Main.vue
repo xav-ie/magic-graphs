@@ -75,15 +75,19 @@ setTimeout(() => handleButtonClick("none"), 1); // I dont know why this is neede
 
   <div
     v-if="simControls.isActive.value"
-    class="absolute p-3 my-3 top-0 right-0 overflow-auto bg-gray-800 bg-opacity-80 rounded-l-xl max-h-[calc(100%-1.5rem)] overflow-auto"
+    class="absolute bottom-8 w-full flex flex-col justify-center items-center p-3"
   >
-    <CostDisplay :graph="graph" />
-  </div>
-
-  <div
-    v-if="simControls.isActive.value"
-    class="absolute bottom-8 w-full flex justify-center items-center p-3"
-  >
+    <Progressbar
+      class="w-[300px] border-gray-200 border-2 mb-8"
+      :theme="{
+        progressColor: colors.GRAY_200,
+        backgroundColor: colors.SLATE_500,
+        borderRadius: 20,
+      }"
+      :start-progress="0"
+      :current-progress="simControls.step.value"
+      :end-progress="simControls.trace.value.length"
+    />
     <SimulationPlaybackControls :controls="simControls" />
   </div>
 

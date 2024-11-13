@@ -87,5 +87,6 @@ export const useMSTSimulation = (
     isOver,
     hasBegun,
     isActive: computed(() => active.value),
+    // progress: computed(() => `${step.value} / ${trace.value.length}`),
   };
 };
