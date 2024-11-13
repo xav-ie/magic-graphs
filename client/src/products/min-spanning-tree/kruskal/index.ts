@@ -6,7 +6,7 @@ import { useColorizeGraph } from "../useColorizeGraph";
 
 export const useKruskal = (graph: Graph) => {
   // Trace is just mst array, to get steps render intervals starting at index 0
-  const trace = ref<GEdge[]>([])
+  const trace = ref<GEdge[]>([]);
 
   const find = (parent: Parent, nodeId: string): string => {
     if (parent.get(nodeId) !== nodeId) {
@@ -39,7 +39,6 @@ export const useKruskal = (graph: Graph) => {
       (a, b) => Number(a.label) - Number(b.label)
     );
 
-
     const parent = new Map<string, string>();
     const rank = new Map<string, number>();
 
@@ -64,15 +63,15 @@ export const useKruskal = (graph: Graph) => {
   };
 
   const update = () => {
-    trace.value = kruskal()
-    useColorizeGraph(graph, trace.value)
-  }
+    trace.value = kruskal();
+    useColorizeGraph(graph, trace.value);
+  };
 
   graph.subscribe("onStructureChange", update);
   graph.subscribe("onEdgeLabelChange", update);
   graph.subscribe("onGraphReset", update);
 
   return {
-    trace
+    trace,
   };
 };

@@ -4,9 +4,8 @@ import { ref } from "vue";
 import { useColorizeGraph } from "../useColorizeGraph";
 
 export const usePrims = (graph: Graph) => {
-
-    // Trace is just mst array, to get steps render intervals starting at index 0
-    const trace = ref<GEdge[]>([])
+  // Trace is just mst array, to get steps render intervals starting at index 0
+  const trace = ref<GEdge[]>([]);
 
   const getMinEdge = (edges: GEdge[], inMST: Set<string>): GEdge | null => {
     let minEdge: GEdge | null = null;
@@ -52,15 +51,15 @@ export const usePrims = (graph: Graph) => {
   };
 
   const update = () => {
-    trace.value = prims()
-    useColorizeGraph(graph, trace.value)
-  }
+    trace.value = prims();
+    useColorizeGraph(graph, trace.value);
+  };
 
   graph.subscribe("onStructureChange", update);
   graph.subscribe("onEdgeLabelChange", update);
   graph.subscribe("onGraphReset", update);
 
   return {
-    trace
+    trace,
   };
 };

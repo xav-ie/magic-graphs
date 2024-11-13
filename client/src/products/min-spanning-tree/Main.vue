@@ -10,6 +10,7 @@ import Progressbar from "./progressbar/Progressbar.vue";
 import colors from "@utils/colors";
 import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
 import { useMSTSimulation } from "./useSimulation";
+import type { Algorithm } from "./useSimulation";
 
 const graphEl = ref<HTMLCanvasElement>();
 const graph = useGraph(graphEl, {
@@ -20,45 +21,47 @@ const graph = useGraph(graphEl, {
   },
 });
 
-
-type Algorithm = "kruskal" | "prim" | 'none';
-
-const currentAlgorithm = ref<Algorithm>('none');
+const currentAlgorithm = ref<Algorithm>("none");
 
 const simControls = useMSTSimulation(graph, currentAlgorithm);
 
 const handleButtonClick = (newAlgorithm: Algorithm) => {
   currentAlgorithm.value = newAlgorithm;
-  if (newAlgorithm === 'none') useColorizeGraph(graph, graph.edges.value);
+  if (newAlgorithm === "none") useColorizeGraph(graph, graph.edges.value);
   else useColorizeGraph(graph, simControls.trace.value);
-}
+};
 
-setTimeout(() => handleButtonClick('none'), 1); // I dont know why this is needed
+setTimeout(() => handleButtonClick("none"), 1); // I dont know why this is needed
 </script>
 
 <template>
   <div class="w-full h-full relative">
-    <Graph
-      @graph-ref="(el) => (graphEl = el)"
-      :graph="graph"
-    />
+    <Graph @graph-ref="(el) => (graphEl = el)" :graph="graph" />
   </div>
 
   <div class="absolute top-0 p-3 flex gap-3">
-
     <div v-if="!simControls.isActive.value" class="gap-3 flex">
-      <Button @click="handleButtonClick('kruskal')" :color="currentAlgorithm === 'kruskal' ? colors.GREEN_400 : undefined">Kruskal</Button>
-      <Button @click="handleButtonClick('prim')" :color="currentAlgorithm === 'prim' ? colors.GREEN_400 : undefined">Prim</Button>
-      <Button @click="handleButtonClick('none')" :color="currentAlgorithm === 'none' ? colors.GREEN_400 : undefined">None</Button>
+      <Button
+        @click="handleButtonClick('kruskal')"
+        :color="currentAlgorithm === 'kruskal' ? colors.GREEN_400 : undefined"
+        >Kruskal</Button
+      >
+      <Button
+        @click="handleButtonClick('prim')"
+        :color="currentAlgorithm === 'prim' ? colors.GREEN_400 : undefined"
+        >Prim</Button
+      >
+      <Button
+        @click="handleButtonClick('none')"
+        :color="currentAlgorithm === 'none' ? colors.GREEN_400 : undefined"
+        >None</Button
+      >
     </div>
     <div v-if="currentAlgorithm !== 'none'">
-      <Button
-        v-if="!simControls.isActive.value"
-        @click="simControls.start"
-      >
+      <Button v-if="!simControls.isActive.value" @click="simControls.start">
         Start Simulation
       </Button>
-      
+
       <Button
         v-else
         @click="simControls.stop"
