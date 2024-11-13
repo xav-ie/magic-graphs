@@ -8,6 +8,7 @@ import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types"
 import { useMarqueeGraph } from '@graph/compositions/useMarqueeGraph'
 import { getConnectedEdges } from '@graph/helpers'
 import type { HistoryRecord } from '../useHistoryGraph/types'
+import { useKeydownMap } from './useKeydownMap'
 
 /**
  * The user editable graph implements handlers for node creation,
@@ -59,13 +60,22 @@ export const useUserEditableGraph = (
     }
   }
 
-
-
   const keyBindings = {
     ['CTRL+Z']: () => graph.undo(),
     ['CTRL+Y']: () => graph.redo(),
     ['BACKSPACE']: handleDeletion,
+  } as const
+
+  const { isPressed } = useKeydownMap()
+
+  const handleKeyboardEvents = () => {
+    for (const key in keyBindings) {
+      if (!isPressed(key)) continue
+      keyBindings[key as keyof typeof keyBindings]()
+    }
   }
+
+
 
   const eventBindings = {
     ['onDblClick']: handleNodeCreation,
