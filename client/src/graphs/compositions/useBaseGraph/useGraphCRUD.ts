@@ -96,8 +96,8 @@ export const useGraphCRUD = ({
     }
 
     nodes.value.push(newNode)
-    emit('onStructureChange', nodes.value, edges.value)
     emit('onNodeAdded', newNode, fullOptions)
+    emit('onStructureChange', nodes.value, edges.value)
     repaint('base-graph/add-node')()
     return newNode
   }
@@ -269,10 +269,10 @@ export const useGraphCRUD = ({
 
     nodes.value = nodes.value.filter(n => n.id !== removedNode.id)
 
-    emit('onStructureChange', nodes.value, edges.value)
     emit('onNodeRemoved', removedNode, removedEdges, fullOptions)
+    emit('onStructureChange', nodes.value, edges.value)
 
-    setTimeout(repaint('base-graph/remove-node'), 5)
+    repaint('base-graph/remove-node')()
     return [removedNode, removedEdges] as const
   }
 

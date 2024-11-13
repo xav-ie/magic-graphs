@@ -9,6 +9,7 @@ export default defineConfig({
   ],
   test: {
     silent: true,
+    environment: 'jsdom',
   },
   build: {
     outDir: '../server/dist/public'

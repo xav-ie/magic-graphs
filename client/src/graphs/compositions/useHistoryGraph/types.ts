@@ -61,3 +61,25 @@ export type MoveRecord = {
  * provides for undo/redo functionality
  */
 export type HistoryRecord = AddRemoveRecord | MoveRecord;
+
+
+export type MarqueeHistorySelectOption = {
+  /**
+   * if true, a marquee selection will be made out of all
+   * the affected items in the history record
+   * @default true
+   */
+  select: boolean
+}
+
+export type UndoHistoryOptions = MarqueeHistorySelectOption;
+
+export const DEFAULT_UNDO_HISTORY_OPTIONS: UndoHistoryOptions = {
+  select: true
+}
+
+export type RedoHistoryOptions = MarqueeHistorySelectOption;
+
+export const DEFAULT_REDO_HISTORY_OPTIONS: RedoHistoryOptions = {
+  select: true
+}
