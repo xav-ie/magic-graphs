@@ -192,7 +192,7 @@ export const useMarqueeGraph = (
       color: graph.getTheme('marqueeSelectionBoxColor'),
       stroke: {
         color: graph.getTheme('marqueeSelectionBoxBorderColor'),
-        width: 1,
+        width: 2,
       }
     })
 

@@ -7,11 +7,11 @@ export const GIRL_THEME: GraphTheme = {
   nodeBorderColor: colors.PINK_400,
   nodeFocusBorderColor: colors.PURPLE_600,
   nodeFocusColor: colors.PURPLE_200,
-  nodeTextColor: colors.PINK_900,
+  nodeTextColor: colors.PINK_600,
   nodeFocusTextColor: colors.PURPLE_900,
 
-  edgeColor: colors.PINK_800,
-  edgeTextColor: colors.PINK_900,
+  edgeColor: colors.PINK_600,
+  edgeTextColor: colors.PINK_600,
   edgeFocusColor: colors.PURPLE_600,
   edgeFocusTextColor: colors.PURPLE_600,
 
