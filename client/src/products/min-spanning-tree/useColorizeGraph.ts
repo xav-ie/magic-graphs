@@ -3,9 +3,7 @@ import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
 
 export const useColorizeGraph = (graph: Graph, mst: GEdge[]) => {
-  const { setTheme, removeAllThemes } = useTheme(graph, "mst");
-
-  if (mst.length === 0) return removeAllThemes();
+  const { setTheme } = useTheme(graph, "mst");
 
   setTheme("edgeColor", (edge) => {
     if (graph.isHighlighted(edge.id)) return;

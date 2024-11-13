@@ -1,24 +1,12 @@
 import type { Graph, GEdge } from "@graph/types";
 import { clone } from "@utils/clone";
-import { ref, computed } from "vue";
 import type { Parent, Rank } from "./types";
-import type { TutorialStep } from "@graph/tutorials/types";
+import { ref } from "vue";
+import { useColorizeGraph } from "../useColorizeGraph";
 
 export const useKruskal = (graph: Graph) => {
-
-  const tutorialSteps: TutorialStep[] = []
-  const addTutorialStep = (edgeWeight: string) => {
-    tutorialSteps.push({
-      hint: `Edge ${edgeWeight} was chosen next because it has the lowest edge weight not connecting connected nodes.`,
-      dismiss: 'onInterval'
-    })
-  }
-
-  const maxSteps = graph.nodes.value.length - 1
-
-  const currentStep = ref(maxSteps);
-
-  graph.subscribe('onStructureChange', () => currentStep.value = maxSteps)
+  // Trace is just mst array, to get steps render intervals starting at index 0
+  const trace = ref<GEdge[]>([])
 
   const find = (parent: Parent, nodeId: string): string => {
     if (parent.get(nodeId) !== nodeId) {
@@ -51,6 +39,7 @@ export const useKruskal = (graph: Graph) => {
       (a, b) => Number(a.label) - Number(b.label)
     );
 
+
     const parent = new Map<string, string>();
     const rank = new Map<string, number>();
 
@@ -61,51 +50,29 @@ export const useKruskal = (graph: Graph) => {
 
     const mst: GEdge[] = [];
     for (const edge of sortedEdges) {
-      if (mst.length >= currentStep.value) break;
       const sourceRoot = find(parent, edge.from);
       const targetRoot = find(parent, edge.to);
 
       if (sourceRoot !== targetRoot) {
-        addTutorialStep(edge.label)
         mst.push(edge);
         union(parent, rank, sourceRoot, targetRoot);
 
-        if (mst.length === maxSteps) break;
+        if (mst.length === graph.nodes.value.length - 1) break;
       }
     }
-
     return mst;
   };
 
-  const canBackwardStep = computed(() => {
-    return currentStep.value > 1;
-  });
-
-  const canForwardStep = computed(() => {
-    return currentStep.value < maxSteps;
-  });
-
-  const forwardStep = () => {
-    if (canForwardStep.value) currentStep.value++;
-  };
-
-  const backwardStep = () => {
-    if (canBackwardStep.value) currentStep.value--;
-  };
-
-  const setStep = (newStep: number) => {
-    if (newStep > maxSteps || newStep < 1) throw new Error('step out of range')
-    currentStep.value = newStep
+  const update = () => {
+    trace.value = kruskal()
+    useColorizeGraph(graph, trace.value)
   }
 
+  graph.subscribe("onStructureChange", update);
+  graph.subscribe("onEdgeLabelChange", update);
+  graph.subscribe("onGraphReset", update);
+
   return {
-    kruskal,
-    backwardStep,
-    forwardStep,
-    setStep,
-    canBackwardStep,
-    canForwardStep,
-    currentStep,
-    maxSteps,
+    trace
   };
 };

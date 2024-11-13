@@ -1,23 +1,12 @@
-import type { TutorialStep } from "@graph/tutorials/types";
 import type { Graph, GEdge } from "@graph/types";
 import { clone } from "@utils/clone";
-import { ref, computed } from "vue";
+import { ref } from "vue";
+import { useColorizeGraph } from "../useColorizeGraph";
+
 export const usePrims = (graph: Graph) => {
 
-  const tutorialSteps: TutorialStep[] = []
-  const addTutorialStep = (edgeWeight: string) => {
-    tutorialSteps.push({
-      hint: `Edge ${edgeWeight} was chosen next because it has the lowest connected edge weight.`,
-      dismiss: 'onInterval'
-    })
-  }
-
-  const maxSteps = graph.nodes.value.length - 1
-
-  const currentStep = ref(maxSteps);
-
-  graph.subscribe('onStructureChange', () => currentStep.value = maxSteps)
-
+    // Trace is just mst array, to get steps render intervals starting at index 0
+    const trace = ref<GEdge[]>([])
 
   const getMinEdge = (edges: GEdge[], inMST: Set<string>): GEdge | null => {
     let minEdge: GEdge | null = null;
@@ -33,7 +22,6 @@ export const usePrims = (graph: Graph) => {
       }
     }
 
-    if (minEdge) addTutorialStep(minEdge.label)
     return minEdge;
   };
 
@@ -48,10 +36,7 @@ export const usePrims = (graph: Graph) => {
 
     const allEdges: GEdge[] = Object.values(clone(graph.edges.value));
 
-    while (
-      mst.length < maxSteps &&
-      mst.length < currentStep.value
-    ) {
+    while (mst.length < graph.nodes.value.length - 1) {
       const minEdge = getMinEdge(allEdges, inMST);
 
       if (!minEdge) {
@@ -66,35 +51,16 @@ export const usePrims = (graph: Graph) => {
     return mst;
   };
 
-  const canBackwardStep = computed(() => {
-    return currentStep.value > 1;
-  });
-
-  const canForwardStep = computed(() => {
-    return currentStep.value < maxSteps;
-  });
-
-  const forwardStep = () => {
-    if (canForwardStep.value) currentStep.value++;
-  };
-
-  const backwardStep = () => {
-    if (canBackwardStep.value) currentStep.value--;
-  };
-
-  const setStep = (newStep: number) => {
-    if (newStep > maxSteps || newStep < 1) throw new Error('step out of range')
-    currentStep.value = newStep
+  const update = () => {
+    trace.value = prims()
+    useColorizeGraph(graph, trace.value)
   }
 
+  graph.subscribe("onStructureChange", update);
+  graph.subscribe("onEdgeLabelChange", update);
+  graph.subscribe("onGraphReset", update);
+
   return {
-    prims,
-    backwardStep,
-    forwardStep,
-    setStep,
-    canBackwardStep,
-    canForwardStep,
-    currentStep,
-    maxSteps
+    trace
   };
 };
