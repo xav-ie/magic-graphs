@@ -1,8 +1,9 @@
 import { ref } from "vue";
 import type { Ref } from "vue";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
-import type { GraphOptions } from "@graph/types";
+import type { GNode, GraphOptions } from "@graph/types";
 import type { GNodeMoveRecord, HistoryRecord } from "./types";
+import type { Coordinate } from "@shape/types";
 
 /**
  * the max number of history records to keep in the undo and redo stacks
@@ -140,6 +141,41 @@ export const useHistoryGraph = (
     })
   });
 
+  const groupDrag = ref<{
+    startingCoordinates: Coordinate,
+    nodes: GNode[],
+  }>();
+
+  graph.subscribe('onGroupDragStart', (nodes, startingCoordinates) => {
+    groupDrag.value = {
+      startingCoordinates,
+      nodes,
+    }
+  })
+
+  graph.subscribe('onGroupDrop', (nodes, endingCoordinates) => {
+    if (!groupDrag.value) throw new Error('dropped a group we didn\'t know was being dragged');
+    if (groupDrag.value.nodes.length !== nodes.length) throw new Error('group size mismatch');
+
+    const dy = groupDrag.value.startingCoordinates.y - endingCoordinates.y
+    const dx = groupDrag.value.startingCoordinates.x - endingCoordinates.x
+    const c = Math.sqrt(dy ** 2 + dx ** 2);
+
+    if (c < MIN_DISTANCE) return;
+
+    addToUndoStack({
+      action: 'move',
+      affectedItems: groupDrag.value.nodes.map((node) => ({
+        graphType: 'node',
+        data: {
+          id: node.id,
+          from: { x: node.x + dx, y: node.y + dy },
+          to: { x: node.x, y: node.y },
+        }
+      }))
+    })
+  });
+
   const movingNode = ref<GNodeMoveRecord['data']>();
 
   graph.subscribe('onNodeDragStart', (node) => {
@@ -155,9 +191,9 @@ export const useHistoryGraph = (
     if (movingNode.value.id !== node.id) throw new Error('node ID mismatch');
     movingNode.value.to = { x: node.x, y: node.y };
 
-    const a = movingNode.value.from.y - movingNode.value.to.y
-    const b = movingNode.value.from.x - movingNode.value.to.x
-    const c = Math.sqrt(a ** 2 + b ** 2);
+    const dy = movingNode.value.from.y - movingNode.value.to.y
+    const dx = movingNode.value.from.x - movingNode.value.to.x
+    const c = Math.sqrt(dy ** 2 + dx ** 2);
 
     if (c < MIN_DISTANCE) return;
 
