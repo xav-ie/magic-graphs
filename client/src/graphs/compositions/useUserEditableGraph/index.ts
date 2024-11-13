@@ -52,21 +52,27 @@ export const useUserEditableGraph = (
       else if (type === 'edge') graph.removeEdge(item.id)
     }
 
-    if (graph.marqueedItemIDs.size > 0) {
-      graph.bulkRemoveNode([...graph.marqueedItemIDs])
-      graph.bulkRemoveEdge([...graph.marqueedItemIDs])
+    if (graph.marqueeSelectedItems.value.size > 0) {
+      graph.bulkRemoveNode([...graph.marqueeSelectedItems.value])
+      graph.bulkRemoveEdge([...graph.marqueeSelectedItems.value])
       graph.clearMarqueeSelection()
     }
   }
 
   const handleUndo = (ev: KeyboardEvent) => {
     if (ev.key !== 'z') return
-    graph.undo()
+    const record = graph.undo()
+    if (!record) return
+    const { affectedItems } = record
+    graph.setMarqueeSelectedItems(affectedItems.map((i) => i.data.id))
   }
 
   const handleRedo = (ev: KeyboardEvent) => {
     if (ev.key !== 'y') return
-    graph.redo()
+    const record = graph.redo()
+    if (!record) return
+    const { affectedItems } = record
+    graph.setMarqueeSelectedItems(affectedItems.map((i) => i.data.id))
   }
 
   const handleKeyboardEvents = (ev: KeyboardEvent) => {

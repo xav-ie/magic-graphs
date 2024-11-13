@@ -19,22 +19,20 @@ export const useMarqueeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
 ) => {
-
-  const { THEME_ID } = MARQUEE_CONSTANTS
-
-  const selectionBox = ref<BoundingBox | undefined>()
-
-  const selectedArea = ref<BoundingBox | undefined>()
   const graph = useNodeAnchorGraph(canvas, options)
 
-  const marqueedItemIDs = new Set<string>()
+  const marqueeBox = ref<BoundingBox | undefined>()
+  const encapsulatedNodeBox = ref<BoundingBox | undefined>()
 
-  const { setTheme, removeTheme } = useTheme(graph, THEME_ID)
+  const marqueeSelectedItems = ref(new Set<string>())
+  const mouseState = { x: 0, y: 0, heldDown: false }
+
+  const { setTheme, removeTheme } = useTheme(graph, MARQUEE_CONSTANTS.THEME_ID)
 
   const hideNodeAnchors = () => setTheme('nodeAnchorColor', colors.TRANSPARENT)
   const showNodeAnchors = () => removeTheme('nodeAnchorColor')
 
-  const getSelectionBoxSurfaceArea = (box: BoundingBox) => {
+  const getSurfaceArea = (box: BoundingBox) => {
     const { width, height } = box
     return Math.abs(width * height)
   }
@@ -59,96 +57,99 @@ export const useMarqueeGraph = (
     setTimeout(() => graph.subscribe('onDblClick', nodeCreationFn), 10)
   }
 
-  const clearSelection = () => {
-    marqueedItemIDs.clear()
-    selectedArea.value = undefined
+  /**
+   * resets the state of the marquee which includes clearing marquee selected items
+   * and dismissing the encapsulated node box
+   */
+  const clearMarqueeSelection = () => {
+    marqueeSelectedItems.value.clear()
+    encapsulatedNodeBox.value = undefined
+    showNodeAnchors()
   }
 
-  const marqueeMouseDown = (event: MouseEvent) => {
-    lastMove.x = event.offsetX
-    lastMove.y = event.offsetY
+  /**
+   * given a mouse event, engages or disengages the marquee box
+   */
+  const handleMarqueeEngagement = (event: MouseEvent) => {
     const { offsetX: x, offsetY: y } = event
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    if (!topItem) return engageSelectionBox({ x, y })
+    mouseState.x = x;
+    mouseState.y = y;
+    if (!topItem) return engageMarqueeBox({ x, y })
+    else if (topItem.graphType !== 'marquee-selection-area') clearMarqueeSelection()
   }
 
-  const lastMove = { x: 0, y: 0 }
-  const mouseHeldDown = ref(false)
+  graph.subscribe('onMouseDown', () => mouseState.heldDown = true)
+  graph.subscribe('onMouseUp', () => mouseState.heldDown = false)
 
-  graph.subscribe('onMouseDown', () => mouseHeldDown.value = true)
-  graph.subscribe('onMouseUp', () => mouseHeldDown.value = false)
-
-  const marqueeMouseMove = (event: MouseEvent) => {
-    if (selectionBox.value) return;
-    if (!mouseHeldDown.value) return
+  const dragEncapsulatedNodes = (event: MouseEvent) => {
+    if (marqueeBox.value || !mouseState.heldDown) return;
     const { offsetX: x, offsetY: y } = event
-    const dx = x - lastMove.x
-    const dy = y - lastMove.y
-    lastMove.x = x
-    lastMove.y = y
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    if (topItem?.graphType === 'marquee-selection-area') {
-      // take all nodes inside of the marquee and move them
-      for (const id of marqueedItemIDs) {
-        const node = graph.getNode(id)
-        if (!node) continue
-        graph.moveNode(node.id, {
-          x: node.x + dx,
-          y: node.y + dy
-        })
-      }
+    if (topItem?.graphType !== 'marquee-selection-area') return
+    const dx = x - mouseState.x
+    const dy = y - mouseState.y
+    mouseState.x = x
+    mouseState.y = y
+    for (const id of marqueeSelectedItems.value) {
+      const node = graph.getNode(id)
+      if (!node) continue
+      graph.moveNode(node.id, {
+        x: node.x + dx,
+        y: node.y + dy
+      })
     }
-    workOutSelectedArea()
+    updateEncapsulatedNodeBox()
   }
 
-  const engageSelectionBox = (coords: { x: number, y: number }) => {
-    const { x, y } = coords
-    const items = graph.getSchemaItemsByCoordinates(x, y)
-    if (items.length > 0) return
-    hideNodeAnchors()
-    selectionBox.value = {
-      at: coords,
-      width: 0,
-      height: 0,
-    }
-    selectedArea.value = {
+  const initializeEncapsulatedNodeBox = () => {
+    encapsulatedNodeBox.value = {
       at: { x: Infinity, y: Infinity },
       width: 0,
       height: 0,
     }
   }
 
-  const disengageSelectionBox = () => {
-    if (!selectionBox.value) return
-    const surfaceArea = getSelectionBoxSurfaceArea(selectionBox.value)
+  const engageMarqueeBox = (startingCoords: { x: number, y: number }) => {
+    hideNodeAnchors()
+    marqueeBox.value = {
+      at: startingCoords,
+      width: 0,
+      height: 0,
+    }
+    initializeEncapsulatedNodeBox()
+  }
+
+  const disengageMarqueeBox = () => {
+    if (!marqueeBox.value) return
+    const surfaceArea = getSurfaceArea(marqueeBox.value)
     if (surfaceArea > 200) disableNodeCreationNextTick()
-    selectionBox.value = undefined
-    graph.repaint('marquee-graph/disengage-selection-box')()
-    setTimeout(showNodeAnchors, 100)
+    marqueeBox.value = undefined
+    graph.repaint('marquee-graph/disengage-marquee-box')()
   }
 
   const updateSelectedItems = (box: BoundingBox) => {
-    const surfaceArea = getSelectionBoxSurfaceArea(box)
+    const surfaceArea = getSurfaceArea(box)
     if (surfaceArea < 100) return
-    marqueedItemIDs.clear()
+    marqueeSelectedItems.value.clear()
 
     for (const { id, shape, graphType } of graph.aggregator.value) {
       const { marqueeSelectableGraphTypes } = graph.settings.value
       if (!marqueeSelectableGraphTypes.includes(graphType)) continue
       const inSelectionBox = shape.efficientHitbox(box)
-      if (inSelectionBox) marqueedItemIDs.add(id)
+      if (inSelectionBox) marqueeSelectedItems.value.add(id)
     }
 
-    workOutSelectedArea()
+    updateEncapsulatedNodeBox()
   }
 
-  const workOutSelectedArea = () => {
-    if (!selectedArea.value) return;
+  const updateEncapsulatedNodeBox = () => {
+    if (!encapsulatedNodeBox.value) return
 
     let minX = Infinity, minY = Infinity;
     let maxX = -Infinity, maxY = -Infinity;
 
-    for (const id of marqueedItemIDs) {
+    for (const id of marqueeSelectedItems.value) {
       const node = graph.getNode(id);
       if (!node) continue;
 
@@ -164,23 +165,25 @@ export const useMarqueeGraph = (
     }
 
     if (minX < Infinity && minY < Infinity && maxX > -Infinity && maxY > -Infinity) {
-      selectedArea.value.at.x = minX;
-      selectedArea.value.at.y = minY;
-      selectedArea.value.width = maxX - minX;
-      selectedArea.value.height = maxY - minY;
+      encapsulatedNodeBox.value.at.x = minX;
+      encapsulatedNodeBox.value.at.y = minY;
+      encapsulatedNodeBox.value.width = maxX - minX;
+      encapsulatedNodeBox.value.height = maxY - minY;
     } else {
-      selectedArea.value.width = 0;
-      selectedArea.value.height = 0;
+      encapsulatedNodeBox.value.width = 0;
+      encapsulatedNodeBox.value.height = 0;
     }
+
+    graph.repaint('marquee-graph/update-encapsulated-node-box')()
   };
 
 
   const updateSelectionBoxDimensions = (event: MouseEvent) => {
-    if (!selectionBox.value) return
+    if (!marqueeBox.value) return
     const { offsetX: x, offsetY: y } = event
-    selectionBox.value.width = x - selectionBox.value.at.x
-    selectionBox.value.height = y - selectionBox.value.at.y
-    updateSelectedItems(selectionBox.value)
+    marqueeBox.value.width = x - marqueeBox.value.at.x
+    marqueeBox.value.height = y - marqueeBox.value.at.y
+    updateSelectedItems(marqueeBox.value)
     graph.repaint('marquee-graph/update-selection-box')()
   }
 
@@ -203,8 +206,8 @@ export const useMarqueeGraph = (
   }
 
   const addSelectionBoxToAggregator = (aggregator: Aggregator) => {
-    if (!selectionBox.value) return aggregator
-    const selectionBoxSchemaItem = getSelectionBoxSchema(selectionBox.value)
+    if (!marqueeBox.value) return aggregator
+    const selectionBoxSchemaItem = getSelectionBoxSchema(marqueeBox.value)
     aggregator.push(selectionBoxSchemaItem)
     return aggregator
   }
@@ -228,8 +231,8 @@ export const useMarqueeGraph = (
   }
 
   const addSelectionAreaToAggregator = (aggregator: Aggregator) => {
-    if (!selectedArea.value) return aggregator
-    const selectionAreaSchemaItem = getSelectionAreaSchema(selectedArea.value)
+    if (!encapsulatedNodeBox.value) return aggregator
+    const selectionAreaSchemaItem = getSelectionAreaSchema(encapsulatedNodeBox.value)
     aggregator.push(selectionAreaSchemaItem)
     return aggregator
   }
@@ -238,17 +241,17 @@ export const useMarqueeGraph = (
   graph.updateAggregator.push(addSelectionAreaToAggregator)
 
   const colorMarqueedNodes = (node: GNode) => {
-    const isMarqueed = marqueedItemIDs.has(node.id)
+    const isMarqueed = marqueeSelectedItems.value.has(node.id)
     if (isMarqueed) return getValue(graph.theme.value.nodeFocusColor, node)
   }
 
   const colorMarqueedNodeBorders = (node: GNode) => {
-    const isMarqueed = marqueedItemIDs.has(node.id)
+    const isMarqueed = marqueeSelectedItems.value.has(node.id)
     if (isMarqueed) return getValue(graph.theme.value.nodeFocusBorderColor, node)
   }
 
   const colorMarqueedEdges = (edge: GEdge) => {
-    const isMarqueed = marqueedItemIDs.has(edge.id)
+    const isMarqueed = marqueeSelectedItems.value.has(edge.id)
     if (isMarqueed) return getValue(graph.theme.value.edgeFocusColor, edge)
   }
 
@@ -257,32 +260,41 @@ export const useMarqueeGraph = (
 
   setTheme('edgeColor', colorMarqueedEdges)
 
-  onClickOutside(canvas, () => marqueedItemIDs.clear())
+  onClickOutside(canvas, () => marqueeSelectedItems.value.clear())
 
   graph.subscribe('onMouseDown', (ev) => {
-    if (selectionBox.value) return
+    if (marqueeBox.value) return
     const { offsetX: x, offsetY: y } = ev
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
     if (!topItem || topItem.graphType !== 'marquee-selection-area') {
-      clearSelection()
+      clearMarqueeSelection()
     }
   })
 
+  /**
+   * takes a list of item ids and creates a marquee selection around them
+   */
+  const setMarqueeSelectedItems = (itemIds: string[]) => {
+    marqueeSelectedItems.value = new Set(itemIds)
+    initializeEncapsulatedNodeBox()
+    updateEncapsulatedNodeBox()
+  }
+
   const activate = () => {
-    graph.subscribe('onMouseDown', marqueeMouseDown)
-    graph.subscribe('onMouseMove', marqueeMouseMove)
-    graph.subscribe('onMouseUp', disengageSelectionBox)
-    graph.subscribe('onContextMenu', disengageSelectionBox)
+    graph.subscribe('onMouseDown', handleMarqueeEngagement)
+    graph.subscribe('onMouseMove', dragEncapsulatedNodes)
+    graph.subscribe('onMouseUp', disengageMarqueeBox)
+    graph.subscribe('onContextMenu', disengageMarqueeBox)
     graph.subscribe('onMouseMove', updateSelectionBoxDimensions)
   }
 
   const deactivate = () => {
-    graph.unsubscribe('onMouseDown', marqueeMouseDown)
-    graph.unsubscribe('onMouseMove', marqueeMouseMove)
-    graph.unsubscribe('onMouseUp', disengageSelectionBox)
-    graph.unsubscribe('onContextMenu', disengageSelectionBox)
+    graph.unsubscribe('onMouseDown', handleMarqueeEngagement)
+    graph.unsubscribe('onMouseMove', dragEncapsulatedNodes)
+    graph.unsubscribe('onMouseUp', disengageMarqueeBox)
+    graph.unsubscribe('onContextMenu', disengageMarqueeBox)
     graph.unsubscribe('onMouseMove', updateSelectionBoxDimensions)
-    if (selectionBox.value) disengageSelectionBox()
+    if (marqueeBox.value) disengageMarqueeBox()
   }
 
   graph.subscribe('onSettingsChange', (diff) => {
@@ -294,17 +306,22 @@ export const useMarqueeGraph = (
 
   return {
     ...graph,
-    selectionBox,
-    marqueedItemIDs,
+
+    /**
+     * a set containing the ids of all items in the current marquee selection
+     */
+    marqueeSelectedItems,
 
     /**
      * @param itemId a node or edge id
      * @returns true if the item is marquee-selected or focused
      */
-    isHighlighted: (itemId: string) => marqueedItemIDs.has(itemId) || graph.focusedItemId.value === itemId,
-    /**
-     * clears the marquee selection
-     */
-    clearMarqueeSelection: clearSelection,
+    isHighlighted: (itemId: string) => (
+      marqueeSelectedItems.value.has(itemId) ||
+      graph.focusedItemId.value === itemId
+    ),
+
+    setMarqueeSelectedItems,
+    clearMarqueeSelection,
   }
 }

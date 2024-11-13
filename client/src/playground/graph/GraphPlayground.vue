@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import { ref } from "vue";
+  import { ref, watch } from "vue";
+  import { useLocalStorage } from "@vueuse/core";
   import { useGraph } from "@graph/useGraph";
   import { useBasicsTutorial } from "@graph/tutorials/useTutorial";
   import TutorialControls from "@graph/tutorials/TutorialControls.vue";
@@ -11,7 +12,6 @@
   import ThemeControls from "./ThemeControls.vue";
   import type { GraphPlaygroundControls as Controls } from "./types";
   import GraphPlaygroundControls from "./GraphPlaygroundControls.vue";
-  import { useLocalStorage } from "@vueuse/core";
   import { isFraction } from "@utils/fracDecConverter/fracDec";
   import SettingsControls from "./SettingsControls.vue";
 
@@ -37,6 +37,14 @@
     collab: true,
     buttons: true,
   });
+
+  watch(controls, () => {
+    if (controls.value.tutorial) {
+      tutorialControls.restartTutorial();
+    } else {
+      tutorialControls.endTutorial();
+    }
+  }, { immediate: true, deep: true });
 </script>
 
 <template>
