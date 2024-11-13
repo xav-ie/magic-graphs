@@ -3,7 +3,7 @@ import { onUnmounted, readonly } from "vue"
 export const useKeydownMap = (caseSensitive = false) => {
 
   const SPECIAL_MAPPING: Record<string, string> = {
-    'meta': 'ctrl',
+    'Meta': 'CTRL',
   }
 
   const getKeyMapping = (e: KeyboardEvent) => {
@@ -36,11 +36,10 @@ export const useKeydownMap = (caseSensitive = false) => {
    */
   const isPressed = (keyStr: string) => {
     const keysInKeyStr = keyStr.split('+')
-    const keys = keysInKeyStr.map(k => keydownMap.get(k))
-    const filteredKeys = keys.filter(k => k) as number[]
-    if (keys.length !== filteredKeys.length) return false
-    const keysSortedByTime = filteredKeys.sort((a, b) => a - b)
-    return keysInKeyStr.every((_, i) => keysSortedByTime[i])
+    const filteredKeys = keysInKeyStr.filter(k => keydownMap.get(k))
+    if (keysInKeyStr.length !== filteredKeys.length) return false
+    filteredKeys.sort((a, b) => keydownMap.get(a)! - keydownMap.get(b)!)
+    return filteredKeys.join('+') === keyStr
   }
 
   document.addEventListener('keydown', trackKeyDown)
