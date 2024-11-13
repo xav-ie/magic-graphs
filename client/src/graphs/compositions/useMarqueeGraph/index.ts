@@ -63,6 +63,7 @@ export const useMarqueeGraph = (
    */
   const clearMarqueeSelection = () => {
     marqueeSelectedItems.value.clear()
+    updateEncapsulatedNodeBox()
     encapsulatedNodeBox.value = undefined
     showNodeAnchors()
   }
@@ -76,7 +77,7 @@ export const useMarqueeGraph = (
     mouseState.x = x;
     mouseState.y = y;
     if (!topItem) return engageMarqueeBox({ x, y })
-    else if (topItem.graphType !== 'marquee-selection-area') clearMarqueeSelection()
+    else if (topItem.graphType !== 'encapsulated-node-box') clearMarqueeSelection()
   }
 
   graph.subscribe('onMouseDown', () => mouseState.heldDown = true)
@@ -86,7 +87,7 @@ export const useMarqueeGraph = (
     if (marqueeBox.value || !mouseState.heldDown) return;
     const { offsetX: x, offsetY: y } = event
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    if (topItem?.graphType !== 'marquee-selection-area') return
+    if (topItem?.graphType !== 'encapsulated-node-box') return
     const dx = x - mouseState.x
     const dy = y - mouseState.y
     mouseState.x = x
@@ -128,7 +129,7 @@ export const useMarqueeGraph = (
     graph.repaint('marquee-graph/disengage-marquee-box')()
   }
 
-  const updateSelectedItems = (box: BoundingBox) => {
+  const updateMarqueeSelectedItems = (box: BoundingBox) => {
     const surfaceArea = getSurfaceArea(box)
     if (surfaceArea < 100) return
     marqueeSelectedItems.value.clear()
@@ -178,16 +179,16 @@ export const useMarqueeGraph = (
   };
 
 
-  const updateSelectionBoxDimensions = (event: MouseEvent) => {
+  const setMarqueeBoxDimensions = (event: MouseEvent) => {
     if (!marqueeBox.value) return
     const { offsetX: x, offsetY: y } = event
     marqueeBox.value.width = x - marqueeBox.value.at.x
     marqueeBox.value.height = y - marqueeBox.value.at.y
-    updateSelectedItems(marqueeBox.value)
+    updateMarqueeSelectedItems(marqueeBox.value)
     graph.repaint('marquee-graph/update-selection-box')()
   }
 
-  const getSelectionBoxSchema = (box: BoundingBox) => {
+  const getMarqueeBoxSchema = (box: BoundingBox) => {
     const shape = rect({
       ...box,
       color: graph.getTheme('marqueeSelectionBoxColor'),
@@ -198,8 +199,8 @@ export const useMarqueeGraph = (
     })
 
     return {
-      id: 'marquee-selection-box',
-      graphType: 'marquee-selection-box',
+      id: 'marquee-box',
+      graphType: 'marquee-box',
       shape,
       priority: Infinity,
     } as const
@@ -207,7 +208,7 @@ export const useMarqueeGraph = (
 
   const addSelectionBoxToAggregator = (aggregator: Aggregator) => {
     if (!marqueeBox.value) return aggregator
-    const selectionBoxSchemaItem = getSelectionBoxSchema(marqueeBox.value)
+    const selectionBoxSchemaItem = getMarqueeBoxSchema(marqueeBox.value)
     aggregator.push(selectionBoxSchemaItem)
     return aggregator
   }
@@ -223,8 +224,8 @@ export const useMarqueeGraph = (
     })
 
     return {
-      id: 'marquee-selection-area',
-      graphType: 'marquee-selection-area',
+      id: 'encapsulated-node-box',
+      graphType: 'encapsulated-node-box',
       shape,
       priority: Infinity,
     } as const
@@ -262,15 +263,6 @@ export const useMarqueeGraph = (
 
   onClickOutside(canvas, () => marqueeSelectedItems.value.clear())
 
-  graph.subscribe('onMouseDown', (ev) => {
-    if (marqueeBox.value) return
-    const { offsetX: x, offsetY: y } = ev
-    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    if (!topItem || topItem.graphType !== 'marquee-selection-area') {
-      clearMarqueeSelection()
-    }
-  })
-
   /**
    * takes a list of item ids and creates a marquee selection around them
    */
@@ -285,7 +277,7 @@ export const useMarqueeGraph = (
     graph.subscribe('onMouseMove', dragEncapsulatedNodes)
     graph.subscribe('onMouseUp', disengageMarqueeBox)
     graph.subscribe('onContextMenu', disengageMarqueeBox)
-    graph.subscribe('onMouseMove', updateSelectionBoxDimensions)
+    graph.subscribe('onMouseMove', setMarqueeBoxDimensions)
   }
 
   const deactivate = () => {
@@ -293,7 +285,7 @@ export const useMarqueeGraph = (
     graph.unsubscribe('onMouseMove', dragEncapsulatedNodes)
     graph.unsubscribe('onMouseUp', disengageMarqueeBox)
     graph.unsubscribe('onContextMenu', disengageMarqueeBox)
-    graph.unsubscribe('onMouseMove', updateSelectionBoxDimensions)
+    graph.unsubscribe('onMouseMove', setMarqueeBoxDimensions)
     if (marqueeBox.value) disengageMarqueeBox()
   }
 

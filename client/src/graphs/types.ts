@@ -121,7 +121,7 @@ export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][
 export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
 
 type BaseGraphTypes = 'node' | 'edge'
-type MarqueeGraphTypes = 'marquee-selection-box' | 'marquee-selection-area'
+type MarqueeGraphTypes = 'marquee-box' | 'encapsulated-node-box'
 type NodeAnchorGraphTypes = 'node-anchor' | 'link-preview'
 
 /**
