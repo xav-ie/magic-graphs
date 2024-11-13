@@ -45,9 +45,7 @@ export const useUserEditableGraph = (
     })
   }
 
-  const handleDeletion = (ev: KeyboardEvent) => {
-    if (ev.key !== 'Backspace') return
-
+  const handleDeletion = () => {
     if (graph.focusedItem.value) {
       const { item, type } = graph.focusedItem.value
       if (type === 'node') graph.removeNode(item.id)
@@ -61,20 +59,18 @@ export const useUserEditableGraph = (
     }
   }
 
-  const handleUndo = (ev: KeyboardEvent) => {
-    if (ev.key !== 'z') return
-    graph.undo()
+
+
+  const keyBindings = {
+    ['CTRL+Z']: () => graph.undo(),
+    ['CTRL+Y']: () => graph.redo(),
+    ['BACKSPACE']: handleDeletion,
   }
 
-  const handleRedo = (ev: KeyboardEvent) => {
-    if (ev.key !== 'y') return
-    graph.redo()
-  }
-
-  const handleKeyboardEvents = (ev: KeyboardEvent) => {
-    handleDeletion(ev)
-    handleUndo(ev)
-    handleRedo(ev)
+  const eventBindings = {
+    ['onDblClick']: handleNodeCreation,
+    ['onKeydown']: handleKeyboardEvents,
+    ['onNodeAnchorDrop']: handleEdgeCreation,
   }
 
   const activate = () => {
