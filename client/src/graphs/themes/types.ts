@@ -10,6 +10,15 @@ import type {
 } from "@graph/types"
 import type { TextFontWeight } from "@shape/types"
 
+export type UITheme = {
+  primaryColor: string,
+  primaryTextColor: string,
+  secondaryColor: string,
+  secondaryTextColor: string,
+  tertiaryColor: string,
+  tertiaryTextColor: string,
+}
+
 export type BaseGraphNodeTheme = {
   nodeSize: number,
   nodeBorderWidth: number,
@@ -68,6 +77,7 @@ export type PersistentGraphTheme = {}
 export type CollaborativeGraphTheme = {}
 
 export type GraphTheme = (
+  UITheme &
   BaseGraphTheme &
   HistoryGraphTheme &
   FocusGraphTheme &
@@ -104,6 +114,16 @@ export type FullThemeMap = {
 export type PartialThemeMap = Partial<FullThemeMap>
 
 export const getInitialThemeMap = (): FullThemeMap => ({
+  /**
+   * UI themes
+   */
+  primaryColor: [],
+  secondaryColor: [],
+  tertiaryColor: [],
+  primaryTextColor: [],
+  secondaryTextColor: [],
+  tertiaryTextColor: [],
+
   /**
    * base themes
    */

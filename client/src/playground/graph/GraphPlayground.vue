@@ -14,12 +14,10 @@
   import GraphPlaygroundControls from "./GraphPlaygroundControls.vue";
   import { isFraction } from "@utils/fracDecConverter/fracDec";
   import SettingsControls from "./SettingsControls.vue";
-  import { THEMES } from "@graph/themes";
 
   const graphElement = ref<HTMLCanvasElement>();
 
   const graph = useGraph(graphElement, {
-    theme: THEMES.girl,
     settings: {
       edgeInputToLabel: (str) => {
         if (isFraction(str)) return str;
