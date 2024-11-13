@@ -6,7 +6,6 @@ import type {
 } from "@graph/types"
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types"
 import { useMarqueeGraph } from '@graph/compositions/useMarqueeGraph'
-import { getConnectedEdges } from '@graph/helpers'
 import type { HistoryRecord } from '../useHistoryGraph/types'
 import { useKeydownMap } from './useKeydownMap'
 
@@ -31,7 +30,6 @@ export const useUserEditableGraph = (
   }
 
   const handleEdgeCreation = (parentNode: GNode, anchor: NodeAnchor) => {
-    if (!graph.settings.value.userEditable) return
     const { x, y } = anchor
     const itemStack = graph.getSchemaItemsByCoordinates(x, y)
     const nodeSchema = itemStack.findLast((item: SchemaItem) => item.graphType === 'node')
@@ -60,42 +58,51 @@ export const useUserEditableGraph = (
     }
   }
 
-  const keyBindings = {
-    ['CTRL+Z']: () => graph.undo(),
-    ['CTRL+Y']: () => graph.redo(),
-    ['BACKSPACE']: handleDeletion,
+  const KEY_BINDINGS = {
+    Mac: {
+      ['Meta+Z']: () => graph.undo(),
+      ['Shift+Meta+Z']: () => graph.redo(),
+      ['Backspace']: handleDeletion,
+    },
+    Windows: {
+      ['Control+Z']: () => graph.undo(),
+      ['Shift+Control+Z']: () => graph.redo(),
+      ['Backspace']: handleDeletion,
+    },
   } as const
+
+  const USER_PLATFORM = window.navigator.userAgent.includes('Mac') ? 'Mac' : 'Windows'
 
   const { isPressed } = useKeydownMap()
 
   const handleKeyboardEvents = () => {
-    for (const key in keyBindings) {
-      if (!isPressed(key)) continue
-      keyBindings[key as keyof typeof keyBindings]()
+    const userKeyBindings = KEY_BINDINGS[USER_PLATFORM]
+    for (const key in userKeyBindings) {
+      if (isPressed(key)) userKeyBindings[key as keyof typeof userKeyBindings]()
     }
   }
-
-
 
   const eventBindings = {
     ['onDblClick']: handleNodeCreation,
     ['onKeydown']: handleKeyboardEvents,
     ['onNodeAnchorDrop']: handleEdgeCreation,
-  }
+  } as const
 
   const activate = () => {
-    graph.subscribe('onDblClick', handleNodeCreation)
-    graph.subscribe('onKeydown', handleKeyboardEvents)
-    graph.subscribe('onNodeAnchorDrop', handleEdgeCreation)
+    for (const event in eventBindings) {
+      // @ts-ignore
+      graph.subscribe(event, eventBindings[event])
+    }
     graph.settings.value.nodeAnchors = true
     graph.settings.value.draggable = true
     graph.settings.value.edgeLabelsEditable = true
   }
 
   const deactivate = () => {
-    graph.unsubscribe('onDblClick', handleNodeCreation)
-    graph.unsubscribe('onKeydown', handleKeyboardEvents)
-    graph.unsubscribe('onNodeAnchorDrop', handleEdgeCreation)
+    for (const event in eventBindings) {
+      // @ts-ignore
+      graph.unsubscribe(event, eventBindings[event])
+    }
     graph.settings.value.nodeAnchors = false
     graph.settings.value.draggable = false
     graph.settings.value.edgeLabelsEditable = false

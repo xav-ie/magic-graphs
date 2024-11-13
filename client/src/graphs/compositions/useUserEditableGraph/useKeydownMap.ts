@@ -1,29 +1,23 @@
-import { onUnmounted, readonly } from "vue"
+import { onUnmounted, ref } from "vue"
 
 export const useKeydownMap = (caseSensitive = false) => {
 
-  const SPECIAL_MAPPING: Record<string, string> = {
-    'Meta': 'CTRL',
-  }
-
   const getKeyMapping = (e: KeyboardEvent) => {
-    const specialKey = SPECIAL_MAPPING[e.key]
-    return specialKey ?? (caseSensitive ? e.key : e.key.toUpperCase())
+    if (e.key === ' ') return 'Space'
+    const isSpecial = e.key.length > 1
+    if (isSpecial) return e.key
+    return caseSensitive ? e.key : e.key.toUpperCase()
   }
 
-  /**
-   * maps the key to the time it was pressed in milliseconds since the epoch
-   */
-  const keydownMap = new Map<string, number>()
+  const currentKeyString = ref('')
 
   const trackKeyDown = (e: KeyboardEvent) => {
-    const key = getKeyMapping(e)
-    keydownMap.set(key, Date.now())
+    if (currentKeyString.value.length > 0) currentKeyString.value += '+'
+    currentKeyString.value += getKeyMapping(e)
   }
 
-  const trackKeyUp = (e: KeyboardEvent) => {
-    const key = getKeyMapping(e)
-    keydownMap.delete(key)
+  const trackKeyUp = () => {
+    currentKeyString.value = ''
   }
 
   /**
@@ -35,11 +29,13 @@ export const useKeydownMap = (caseSensitive = false) => {
    * @example isPressed('a+b') // true if 'a' and 'b' are pressed down
    */
   const isPressed = (keyStr: string) => {
-    const keysInKeyStr = keyStr.split('+')
-    const filteredKeys = keysInKeyStr.filter(k => keydownMap.get(k))
-    if (keysInKeyStr.length !== filteredKeys.length) return false
-    filteredKeys.sort((a, b) => keydownMap.get(a)! - keydownMap.get(b)!)
-    return filteredKeys.join('+') === keyStr
+    let filter: string;
+    const comparKey = currentKeyString.value.split('+').filter((k) => {
+      const shouldRemove = k === filter
+      filter = k
+      return !shouldRemove
+    }).join('+')
+    return comparKey === keyStr
   }
 
   document.addEventListener('keydown', trackKeyDown)
@@ -52,6 +48,6 @@ export const useKeydownMap = (caseSensitive = false) => {
 
   return {
     isPressed,
-    keydownMap: readonly(keydownMap)
+    currentKeyString,
   }
 }
