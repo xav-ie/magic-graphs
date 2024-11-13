@@ -1,7 +1,5 @@
-import { TEXT_DEFAULTS } from "@shape/types";
 import { RECT_DEFAULTS } from ".";
 import type { Rect } from ".";
-import { rotatePoint } from "@shape/helpers";
 
 export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D) => {
   const {
@@ -10,7 +8,8 @@ export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D
     height,
     color,
     borderRadius,
-    rotation = 0,
+    rotation,
+    stroke,
   } = {
     ...RECT_DEFAULTS,
     ...options
@@ -46,11 +45,13 @@ export const drawRectWithCtx = (options: Rect) => (ctx: CanvasRenderingContext2D
     ctx.fill();
   }
 
-  if (options.stroke) {
-    const { color, width } = options.stroke;
+  if (stroke) {
+    const { color, width, dash } = stroke;
     ctx.strokeStyle = color;
     ctx.lineWidth = width;
+    ctx.setLineDash(dash || []);
     ctx.stroke();
+    ctx.setLineDash([]);
   }
 
   ctx.restore();
