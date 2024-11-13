@@ -1,4 +1,3 @@
-import { TEXT_DEFAULTS } from "@shape/types";
 import { CIRCLE_DEFAULTS } from "@shape/circle";
 import type { Circle } from "@shape/circle";
 

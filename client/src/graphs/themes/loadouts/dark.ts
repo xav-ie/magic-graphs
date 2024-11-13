@@ -25,6 +25,8 @@ export const DARK_THEME: GraphTheme = {
 
   marqueeSelectionBoxColor: colors.WHITE + '15',
   marqueeSelectionBoxBorderColor: colors.WHITE,
+  marqueeEncapsulatedNodeBoxBorderColor: colors.RED_700,
+  marqueeEncapsulatedNodeBoxColor: colors.RED_700 + '20',
 
   ...NON_COLOR_THEMES,
 }

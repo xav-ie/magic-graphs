@@ -103,12 +103,10 @@ export const useMarqueeGraph = (
     updateEncapsulatedNodeBox()
   }
 
-  const initializeEncapsulatedNodeBox = () => {
-    encapsulatedNodeBox.value = {
-      at: { x: Infinity, y: Infinity },
-      width: 0,
-      height: 0,
-    }
+  const initializeEncapsulatedNodeBox = () => encapsulatedNodeBox.value = {
+    at: { x: Infinity, y: Infinity },
+    width: 0,
+    height: 0,
   }
 
   const engageMarqueeBox = (startingCoords: { x: number, y: number }) => {
@@ -206,20 +204,20 @@ export const useMarqueeGraph = (
     } as const
   }
 
-  const addSelectionBoxToAggregator = (aggregator: Aggregator) => {
+  const addMarqueeBoxToAggregator = (aggregator: Aggregator) => {
     if (!marqueeBox.value) return aggregator
     const selectionBoxSchemaItem = getMarqueeBoxSchema(marqueeBox.value)
     aggregator.push(selectionBoxSchemaItem)
     return aggregator
   }
 
-  const getSelectionAreaSchema = (box: BoundingBox) => {
+  const getEncapsulatedNodeBoxSchema = (box: BoundingBox) => {
     const shape = rect({
       ...box,
-      color: colors.AMBER_500 + '33',
+      color: graph.getTheme('marqueeEncapsulatedNodeBoxColor'),
       stroke: {
-        color: colors.AMBER_500,
-        width: 1
+        color: graph.getTheme('marqueeEncapsulatedNodeBoxBorderColor'),
+        width: 2,
       }
     })
 
@@ -231,37 +229,49 @@ export const useMarqueeGraph = (
     } as const
   }
 
-  const addSelectionAreaToAggregator = (aggregator: Aggregator) => {
+  const addEncapsulatedNodeBoxToAggregator = (aggregator: Aggregator) => {
     if (!encapsulatedNodeBox.value) return aggregator
-    const selectionAreaSchemaItem = getSelectionAreaSchema(encapsulatedNodeBox.value)
+    const selectionAreaSchemaItem = getEncapsulatedNodeBoxSchema(encapsulatedNodeBox.value)
     aggregator.push(selectionAreaSchemaItem)
     return aggregator
   }
 
-  graph.updateAggregator.push(addSelectionBoxToAggregator)
-  graph.updateAggregator.push(addSelectionAreaToAggregator)
+  graph.updateAggregator.push(addMarqueeBoxToAggregator)
+  graph.updateAggregator.push(addEncapsulatedNodeBoxToAggregator)
 
-  const colorMarqueedNodes = (node: GNode) => {
+  const colorMarqueeSelectedNodes = (node: GNode) => {
     const isMarqueed = marqueeSelectedItems.value.has(node.id)
     if (isMarqueed) return getValue(graph.theme.value.nodeFocusColor, node)
   }
 
-  const colorMarqueedNodeBorders = (node: GNode) => {
+  const colorMarqueeSelectedNodeBorders = (node: GNode) => {
     const isMarqueed = marqueeSelectedItems.value.has(node.id)
     if (isMarqueed) return getValue(graph.theme.value.nodeFocusBorderColor, node)
   }
 
-  const colorMarqueedEdges = (edge: GEdge) => {
+  const colorMarqueeSelectedNodeText = (node: GNode) => {
+    const isMarqueed = marqueeSelectedItems.value.has(node.id)
+    if (isMarqueed) return getValue(graph.theme.value.nodeFocusTextColor, node)
+  }
+
+  const colorMarqueeSelectedEdges = (edge: GEdge) => {
     const isMarqueed = marqueeSelectedItems.value.has(edge.id)
     if (isMarqueed) return getValue(graph.theme.value.edgeFocusColor, edge)
   }
 
-  setTheme('nodeColor', colorMarqueedNodes)
-  setTheme('nodeBorderColor', colorMarqueedNodeBorders)
+  const colorMarqueeSelectedEdgeText = (edge: GEdge) => {
+    const isMarqueed = marqueeSelectedItems.value.has(edge.id)
+    if (isMarqueed) return getValue(graph.theme.value.edgeFocusTextColor, edge)
+  }
 
-  setTheme('edgeColor', colorMarqueedEdges)
+  setTheme('nodeColor', colorMarqueeSelectedNodes)
+  setTheme('nodeBorderColor', colorMarqueeSelectedNodeBorders)
+  setTheme('nodeTextColor', colorMarqueeSelectedNodeText)
 
-  onClickOutside(canvas, () => marqueeSelectedItems.value.clear())
+  setTheme('edgeColor', colorMarqueeSelectedEdges)
+  setTheme('edgeTextColor', colorMarqueeSelectedEdgeText)
+
+  onClickOutside(canvas, () => clearMarqueeSelection())
 
   /**
    * takes a list of item ids and creates a marquee selection around them

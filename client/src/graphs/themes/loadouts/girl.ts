@@ -8,12 +8,12 @@ export const GIRL_THEME: GraphTheme = {
   nodeFocusBorderColor: colors.PURPLE_600,
   nodeFocusColor: colors.PURPLE_200,
   nodeTextColor: colors.PINK_900,
-  nodeFocusTextColor: colors.WHITE,
+  nodeFocusTextColor: colors.PURPLE_900,
 
   edgeColor: colors.PINK_800,
   edgeTextColor: colors.PINK_900,
   edgeFocusColor: colors.PURPLE_600,
-  edgeFocusTextColor: colors.PINK_900,
+  edgeFocusTextColor: colors.PURPLE_600,
 
   graphBgColor: colors.PINK_200,
   graphBgPatternColor: colors.PINK_900 + '15',
@@ -24,6 +24,8 @@ export const GIRL_THEME: GraphTheme = {
 
   marqueeSelectionBoxColor: colors.PINK_300 + '15',
   marqueeSelectionBoxBorderColor: colors.PINK_500,
+  marqueeEncapsulatedNodeBoxBorderColor: colors.PINK_700,
+  marqueeEncapsulatedNodeBoxColor: colors.PINK_700 + '05',
 
   ...NON_COLOR_THEMES,
 }

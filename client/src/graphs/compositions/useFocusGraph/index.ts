@@ -105,9 +105,19 @@ export const useFocusGraph = (
     return getValue(graph.theme.value.nodeFocusBorderColor, node)
   })
 
+  setTheme('nodeTextColor', (node) => {
+    if (node.id !== focusedItemId.value) return
+    return getValue(graph.theme.value.nodeFocusTextColor, node)
+  })
+
   setTheme('edgeColor', (edge) => {
     if (edge.id !== focusedItemId.value) return
     return getValue(graph.theme.value.edgeFocusColor, edge)
+  })
+
+  setTheme('edgeTextColor', (edge) => {
+    if (edge.id !== focusedItemId.value) return
+    return getValue(graph.theme.value.edgeFocusTextColor, edge)
   })
 
   const repaintOnFocusChange = () => setTimeout(graph.repaint('focus-graph/on-focus-change'), 10)

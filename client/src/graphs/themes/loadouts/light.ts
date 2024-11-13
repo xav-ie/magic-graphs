@@ -22,6 +22,8 @@ export const LIGHT_THEME: GraphTheme = {
 
   marqueeSelectionBoxColor: colors.BLUE_300 + '15',
   marqueeSelectionBoxBorderColor: colors.BLUE_500,
+  marqueeEncapsulatedNodeBoxBorderColor: colors.BLUE_700,
+  marqueeEncapsulatedNodeBoxColor: colors.BLUE_700 + '05',
 
   ...NON_COLOR_THEMES,
 }

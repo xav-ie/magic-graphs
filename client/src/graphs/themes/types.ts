@@ -57,6 +57,8 @@ export type NodeAnchorGraphTheme = {
 export type MarqueeGraphTheme = {
   marqueeSelectionBoxColor: string,
   marqueeSelectionBoxBorderColor: string,
+  marqueeEncapsulatedNodeBoxColor: string,
+  marqueeEncapsulatedNodeBoxBorderColor: string,
 }
 
 export type UserEditableGraphTheme = {}
@@ -101,7 +103,7 @@ export type FullThemeMap = {
 
 export type PartialThemeMap = Partial<FullThemeMap>
 
-export const getInitialThemeMap = () => ({
+export const getInitialThemeMap = (): FullThemeMap => ({
   /**
    * base themes
    */
@@ -141,4 +143,6 @@ export const getInitialThemeMap = () => ({
    */
   marqueeSelectionBoxColor: [],
   marqueeSelectionBoxBorderColor: [],
-} as FullThemeMap)
+  marqueeEncapsulatedNodeBoxColor: [],
+  marqueeEncapsulatedNodeBoxBorderColor: [],
+})
