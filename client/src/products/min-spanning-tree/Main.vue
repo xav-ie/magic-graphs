@@ -6,7 +6,7 @@ import { edgeLabelIsPositiveNumber } from "./useSetupGraph";
 import Button from "@ui/Button.vue";
 import { useColorizeGraph } from "./useColorizeGraph";
 import CollabControls from "@playground/graph/CollabControls.vue";
-import Progressbar from "./progressbar/Progressbar.vue";
+import Progressbar from "@ui/sim/Progressbar.vue";
 import colors from "@utils/colors";
 import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
 import { useMSTSimulation } from "./useSimulation";
