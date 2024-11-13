@@ -7,6 +7,7 @@ export const drawCircleWithCtx = (options: Circle) => (ctx: CanvasRenderingConte
     at,
     radius,
     color,
+    stroke
   } = { ...CIRCLE_DEFAULTS, ...options };
 
   ctx.beginPath();
@@ -14,11 +15,14 @@ export const drawCircleWithCtx = (options: Circle) => (ctx: CanvasRenderingConte
   ctx.fillStyle = color;
   ctx.fill();
 
-  if (options.stroke) {
-    const { color, width } = options.stroke;
+  if (stroke) {
+    const { color, width, dash } = stroke;
     ctx.strokeStyle = color;
     ctx.lineWidth = width;
+    ctx.setLineDash(dash || []);
     ctx.stroke();
+    ctx.setLineDash([]);
   }
+
   ctx.closePath();
 }

@@ -124,6 +124,15 @@ export const TEXT_DEFAULTS = {
 export type Stroke = {
   color: string,
   width: number,
+    /**
+   * For dashed border
+   * 
+   * @params
+   *
+   * dash: [dashLength, gapLength]
+   * 
+  */
+    dash?: [number, number]
 }
 
 export const STROKE_DEFAULTS = {

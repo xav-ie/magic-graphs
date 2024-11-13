@@ -34,6 +34,7 @@
         stroke: {
           color: colors.BLUE_700,
           width: 10,
+          dash: [10, 5]
         },
         textArea: {
           text: {
@@ -103,6 +104,11 @@
         rotation: Math.PI / 0.7,
         color: colors.GREEN_600,
         borderRadius: 25,
+        stroke: {
+          color: colors.YELLOW_200,
+          width: 10,
+          dash: [10, 5]
+        },
         textArea: {
           text: {
             content: '13',
