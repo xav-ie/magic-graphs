@@ -16,6 +16,12 @@
     },
   });
 
+  graph.subscribe('onEdgeAdded', (edge) => {
+    if (edge.to === edge.from) return graph.removeEdge(edge.id);
+    const edgeAlreadyOnPath = graph.edges.value.some(e => e.from === edge.to && e.to === edge.from);
+    if (edgeAlreadyOnPath) return graph.removeEdge(edge.id);
+  })
+
   const simControls = useDijkstraSimulation(graph);
 </script>
 
