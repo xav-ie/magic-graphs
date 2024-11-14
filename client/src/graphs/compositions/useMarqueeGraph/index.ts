@@ -315,6 +315,7 @@ export const useMarqueeGraph = (
     if (!select) return
     const { affectedItems } = record
     const ids = affectedItems.map((i) => i.data.id)
+    if (ids.length === 1) return graph.setFocus(ids[0])
     const marqueeSelection = ids
     for (const id of ids) {
       const node = graph.getNode(id)
