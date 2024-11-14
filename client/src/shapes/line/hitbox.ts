@@ -49,18 +49,52 @@ export const lineEfficientHitbox = (line: Line) => {
   } = {
     ...LINE_DEFAULTS,
     ...line
-  }
+  };
 
-  const minX = Math.min(start.x, end.x)
-  const minY = Math.min(start.y, end.y)
-  const hitboxWidth = Math.abs(start.x - end.x)
-  const hitboxHeight = Math.abs(start.y - end.y)
+  const lineLength = Math.hypot(end.x - start.x, end.y - start.y);
 
-  const isInRectEfficientHitbox = rectEfficientHitbox({
-    at: { x: minX - width / 2, y: minY - width / 2 },
-    width: hitboxWidth + width / 2,
-    height: hitboxHeight + width / 2
-  })
+  const angle = Math.atan2(end.y - start.y, end.x - start.x);
+  const angleFactor = Math.abs(Math.cos(angle)) + Math.abs(Math.sin(angle));
+  const segmentLength = Math.min(50, lineLength * angleFactor); // adjust segment length based on angle
+  const numSegments = Math.ceil(lineLength / segmentLength);
 
-  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
-}
+  const dx = (end.x - start.x) / lineLength;
+  const dy = (end.y - start.y) / lineLength;
+
+  const minX = Math.min(start.x, end.x) - width / 2;
+  const minY = Math.min(start.y, end.y) - width / 2;
+  const boundingBoxWidth = Math.abs(end.x - start.x) + width;
+  const boundingBoxHeight = Math.abs(end.y - start.y) + width;
+
+  const isInBoundingBox = rectEfficientHitbox({
+    at: { x: minX, y: minY },
+    width: boundingBoxWidth,
+    height: boundingBoxHeight,
+  });
+
+  return (boxToCheck: BoundingBox) => {
+    // initial check to see if close to line using original rectangle method
+    if (!isInBoundingBox(boxToCheck)) {
+      return false;
+    }
+
+    const segmentHitboxes = Array.from({ length: numSegments }, (_, i) => {
+      const segmentStartX = start.x + dx * segmentLength * i;
+      const segmentStartY = start.y + dy * segmentLength * i;
+      const segmentEndX = segmentStartX + dx * segmentLength;
+      const segmentEndY = segmentStartY + dy * segmentLength;
+  
+      const segMinX = Math.min(segmentStartX, segmentEndX) - width / 2;
+      const segMinY = Math.min(segmentStartY, segmentEndY) - width / 2;
+      const segWidth = Math.abs(segmentEndX - segmentStartX) + width;
+      const segHeight = Math.abs(segmentEndY - segmentStartY) + width;
+  
+      return rectEfficientHitbox({
+        at: { x: segMinX, y: segMinY },
+        width: segWidth,
+        height: segHeight,
+      });
+    });
+    return segmentHitboxes.some(hitbox => hitbox(boxToCheck));
+  };
+};
