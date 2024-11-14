@@ -52,7 +52,7 @@
   </div>
 
   <div
-    v-if="simControls.isActive.value"
+    v-if="simControls.isActive.value && graph.nodes.value.length > 0"
     class="absolute p-3 my-3 top-0 right-0 overflow-auto bg-gray-800 bg-opacity-80 rounded-l-xl max-h-[calc(100%-1.5rem)] overflow-auto"
   >
     <CostDisplay :graph="graph" />

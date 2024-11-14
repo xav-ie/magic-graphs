@@ -1,4 +1,4 @@
-import { ref } from "vue"
+import { onUnmounted, ref } from "vue"
 import type { Ref } from "vue"
 import type { Aggregator, UpdateAggregator } from "@graph/types"
 import type { Emitter as GraphEventEmitter } from "@graph/events"
@@ -18,7 +18,9 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
    * @param repaintId - the id of the repaint event (for tracking)
    * @returns a function that will repaint the canvas
    */
-  const repaint = (repaintId: string) => () => {
+  const repaint = (repaintId: string) => () => { }
+
+  const repaintLoop = () => {
     if (!canvas.value) return
     const ctx = canvas.value.getContext('2d')
     if (!ctx) return
@@ -47,8 +49,14 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
       item.shape.draw(ctx)
     }
 
-    emit('onRepaint', ctx, repaintId)
+    emit('onRepaint', ctx, 'loop')
   }
+
+  const loop = setInterval(repaintLoop, 1000 / 60)
+
+  onUnmounted(() => {
+    clearInterval(loop)
+  })
 
   /**
    * get all schema items at given coordinates
