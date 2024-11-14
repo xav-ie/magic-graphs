@@ -36,6 +36,23 @@ export const useUserEditableGraph = (
     if (!toNodeSchema) return
     const toNode = graph.getNode(toNodeSchema.id)
     if (!toNode) return
+
+    if (graph.settings.value.userAddedEdgeRuleNoSelfLoops) {
+      const violatesRule = fromNode.id === toNode.id
+      if (violatesRule) return
+    }
+
+    if (graph.settings.value.userAddedEdgeRuleOneEdgePerPath) {
+      const edgeBetweenToAndFrom = graph.edges.value
+        .find((edge) => edge.from === fromNode.id && edge.to === toNode.id)
+
+      const edgeBetweenFromAndTo = graph.edges.value
+        .find((edge) => edge.from === toNode.id && edge.to === fromNode.id)
+
+      const violatesRule = edgeBetweenToAndFrom || edgeBetweenFromAndTo
+      if (violatesRule) return
+    }
+
     graph.addEdge({
       from: fromNode.id,
       to: toNode.id,

@@ -12,15 +12,18 @@
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: {
-      persistentStorageKey: "dijkstras",
+      persistentStorageKey: 'dijkstras',
+      userAddedEdgeRuleNoSelfLoops: true,
+      userAddedEdgeRuleOneEdgePerPath: true,
+      edgeInputToLabel: (input) => {
+        const number = parseInt(input);
+        if (isNaN(number)) return;
+        const isNegative = number < 0;
+        if (isNegative) return;
+        return number.toString();
+      },
     },
   });
-
-  graph.subscribe('onEdgeAdded', (edge) => {
-    if (edge.to === edge.from) return graph.removeEdge(edge.id);
-    const edgeAlreadyOnPath = graph.edges.value.some(e => e.from === edge.to && e.to === edge.from);
-    if (edgeAlreadyOnPath) return graph.removeEdge(edge.id);
-  })
 
   const simControls = useDijkstraSimulation(graph);
 </script>

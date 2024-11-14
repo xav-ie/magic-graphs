@@ -135,12 +135,26 @@ export type UserEditableGraphSettings = {
    * @default 1
    */
   userAddedEdgeLabel: string,
+  /**
+   * whether to allow self loops.
+   * relevant on directed graphs where a node can have an edge to itself
+   * @default false
+   */
+  userAddedEdgeRuleNoSelfLoops: boolean,
+  /**
+   * whether to allow only one edge per path between two nodes.
+   * relevant on directed graphs where multiple edges can exist between two nodes
+   * @default false
+   */
+  userAddedEdgeRuleOneEdgePerPath: boolean,
 }
 
 export const DEFAULT_USER_EDITABLE_SETTINGS: UserEditableGraphSettings = {
   userEditable: true,
   userAddedEdgeType: 'directed',
-  userAddedEdgeLabel: "1",
+  userAddedEdgeLabel: '1',
+  userAddedEdgeRuleNoSelfLoops: false,
+  userAddedEdgeRuleOneEdgePerPath: false,
 }
 
 /**
