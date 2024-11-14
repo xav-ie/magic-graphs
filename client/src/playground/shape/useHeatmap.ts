@@ -65,9 +65,17 @@ export const useHeatmap = (
     canvasContainer.appendChild(canvas)
   }
 
+  const heatmapMode = ref<'efficient' | 'precise'>('precise')
+
+  const toggleHeatmapMode = () => {
+    heatmapMode.value = heatmapMode.value === 'efficient' ? 'precise' : 'efficient'
+    run()
+  }
+
   const processPoint = (coords: Coordinate) => {
-    const shapeHit = drawItems.value
-      .findLast((item) => item.shapeHitbox(coords))
+    const shapeHit = heatmapMode.value === 'precise' ? 
+      drawItems.value.findLast((item) => item.shapeHitbox(coords)) :
+      drawItems.value.findLast((item) => item.efficientHitbox({ at: coords, width: 1, height: 1 }))
 
     const textHit = drawItems.value
       .findLast((item) => item.textHitbox?.(coords))
@@ -118,5 +126,7 @@ export const useHeatmap = (
     runHeatmap: run,
     runHeatmapDebounced: debouncedRunner,
     pointsSampled,
+    toggleHeatmapMode,
+    heatmapMode,
   }
 };

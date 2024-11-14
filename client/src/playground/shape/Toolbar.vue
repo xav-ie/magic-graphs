@@ -13,13 +13,17 @@
 
   const { items, canvas } = toRefs(props);
 
-  const { heatmapActive, heatmapOpacity, heatmapResolution } = useHeatmap(
+  const { heatmapActive, heatmapOpacity, heatmapResolution, toggleHeatmapMode, heatmapMode } = useHeatmap(
     canvas,
     items
   );
 
   const heatmapBtnText = computed(() =>
     heatmapActive.value ? "Hide Heatmap" : "Show Heatmap"
+  );
+
+  const toggleHeatmapModeButtonText = computed(() =>
+    heatmapMode.value === "efficient" ? "Precise Heatmap" : "Efficient Heatmap"
   );
 
   const fn = () => {
@@ -34,6 +38,10 @@
 
   <Button @click="heatmapActive = !heatmapActive">
     {{ heatmapBtnText }}
+  </Button>
+
+  <Button v-if="heatmapActive" @click="toggleHeatmapMode">
+    {{ toggleHeatmapModeButtonText }}
   </Button>
 
   <Button @click="fn">
