@@ -29,18 +29,18 @@ export const useUserEditableGraph = (
     graph.addNode({ x: offsetX, y: offsetY })
   }
 
-  const handleEdgeCreation = (parentNode: GNode, anchor: NodeAnchor) => {
+  const handleEdgeCreation = (fromNode: GNode, anchor: NodeAnchor) => {
     const { x, y } = anchor
     const itemStack = graph.getSchemaItemsByCoordinates(x, y)
-    const nodeSchema = itemStack.findLast((item: SchemaItem) => item.graphType === 'node')
-    if (!nodeSchema) return
-    const node = graph.nodes.value.find(node => node.id === nodeSchema.id)
-    if (!node) return
+    const toNodeSchema = itemStack.findLast((item) => item.graphType === 'node')
+    if (!toNodeSchema) return
+    const toNode = graph.getNode(toNodeSchema.id)
+    if (!toNode) return
     graph.addEdge({
-      from: parentNode.id,
-      to: node.id,
-      type: graph.settings.value.userEditableAddedEdgeType,
-      label: graph.settings.value.userEditableAddedEdgeLabel,
+      from: fromNode.id,
+      to: toNode.id,
+      type: graph.settings.value.userAddedEdgeType,
+      label: graph.settings.value.userAddedEdgeLabel,
     })
   }
 

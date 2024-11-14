@@ -1102,9 +1102,9 @@ exports.DEFAULT_USER_EDITABLE_SETTINGS = {
     // @ts-ignore
     userEditable: true,
     // @ts-ignore
-    userEditableAddedEdgeType: 'directed',
+    userAddedEdgeType: 'directed',
     // @ts-ignore
-    userEditableAddedEdgeLabel: "1",
+    userAddedEdgeLabel: "1",
     // @ts-ignore
 };
 // @ts-ignore

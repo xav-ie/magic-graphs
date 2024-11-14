@@ -16,7 +16,7 @@ const graphEl = ref<HTMLCanvasElement>();
 const graph = useGraph(graphEl, {
   settings: {
     persistentStorageKey: "min-spanning-tree",
-    userEditableAddedEdgeType: "undirected",
+    userAddedEdgeType: "undirected",
     edgeInputToLabel: edgeLabelIsPositiveNumber,
   },
 });

@@ -129,18 +129,18 @@ export type UserEditableGraphSettings = {
    * the type of edge to add when creating an edge between nodes
    * @default "directed"
    */
-  userEditableAddedEdgeType: 'directed' | 'undirected',
+  userAddedEdgeType: 'directed' | 'undirected',
   /**
    * the default label assigned to edges when created using the UI
    * @default 1
    */
-  userEditableAddedEdgeLabel: string,
+  userAddedEdgeLabel: string,
 }
 
 export const DEFAULT_USER_EDITABLE_SETTINGS: UserEditableGraphSettings = {
   userEditable: true,
-  userEditableAddedEdgeType: 'directed',
-  userEditableAddedEdgeLabel: "1",
+  userAddedEdgeType: 'directed',
+  userAddedEdgeLabel: "1",
 }
 
 /**
