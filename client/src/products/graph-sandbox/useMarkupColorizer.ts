@@ -1,6 +1,7 @@
+import { getValue } from "@graph/helpers";
 import { useTheme } from "@graph/themes/useTheme";
 import type { GEdge, GNode, Graph } from "@graph/types";
-import type { Color } from "@utils/colors";
+import colors, { adjustHex, darkenHex, type Color } from "@utils/colors";
 
 const MARKUP_USETHEME_ID = "markup";
 
@@ -9,16 +10,38 @@ export const useMarkupColorizer = (graph: Graph) => {
 
   const colorMap = new Map<GNode['id'] | GEdge['id'], Color>();
 
-  const colorNodeBorder = (node: GNode) => colorMap.get(node.id);
-  const colorEdge = (edge: GEdge) => colorMap.get(edge.id);
+  const colorNode = (node: GNode) => {
+    const color = colorMap.get(node.id);
+    if (!color) return;
+    return getValue(graph.theme.value.nodeColor, node);
+  }
+
+  const colorNodeBorder = (node: GNode) => {
+    const color = colorMap.get(node.id);
+    if (!color) return;
+    if (graph.isHighlighted(node.id)) return adjustHex(color, -30);
+    return color;
+  }
+
+  const colorEdge = (edge: GEdge) => {
+    const color = colorMap.get(edge.id);
+    if (!color) return;
+    if (graph.isHighlighted(edge.id)) return adjustHex(color, -30);
+    return color;
+  };
 
   const colorize = () => {
+    setTheme('nodeColor', colorNode);
+
     setTheme('nodeBorderColor', colorNodeBorder);
     setTheme('nodeFocusBorderColor', colorNodeBorder);
     setTheme('nodeAnchorColor', colorNodeBorder);
     setTheme('nodeAnchorColorWhenParentFocused', colorNodeBorder);
     setTheme('edgeColor', colorEdge);
-    setTheme('edgeFocusColor', colorEdge);
+
+    setTheme('marqueeSelectionBoxColor', colors.TRANSPARENT)
+    setTheme('marqueeEncapsulatedNodeBoxBorderColor', colors.WHITE + '80')
+    setTheme('marqueeEncapsulatedNodeBoxColor', colors.TRANSPARENT)
   }
 
   const decolorize = () => {
