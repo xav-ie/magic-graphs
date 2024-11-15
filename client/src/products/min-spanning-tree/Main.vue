@@ -3,13 +3,12 @@
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
   import Button from "@ui/Button.vue";
-  import { useColorizeGraph } from "./useColorizeGraph";
   import CollabControls from "@playground/graph/CollabControls.vue";
   import Progressbar from "@ui/sim/Progressbar.vue";
   import colors from "@utils/colors";
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
-  import { useMSTSimulation } from "./useSimulation";
-  import type { Algorithm } from "./useSimulation";
+  import { useMSTSimulation, MST_ALGORITHMS } from "./useSimulation";
+  import type { MSTAlgorithm } from "./useSimulation";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -26,18 +25,9 @@
     },
   });
 
-  const algorithms: Algorithm[] = ["kruskal", "prim", "none"];
-  const currentAlgorithm = ref<Algorithm>("none");
+  const currentAlgorithm = ref<MSTAlgorithm>(MST_ALGORITHMS[0]);
 
   const simControls = useMSTSimulation(graph, currentAlgorithm);
-
-  const handleButtonClick = (newAlgorithm: Algorithm) => {
-    currentAlgorithm.value = newAlgorithm;
-    if (newAlgorithm === "none") useColorizeGraph(graph, graph.edges.value);
-    else useColorizeGraph(graph, simControls.trace.value);
-  };
-
-  setTimeout(() => handleButtonClick("none"), 1); // I dont know why this is needed
 </script>
 
 <template>
@@ -54,8 +44,8 @@
       class="gap-3 flex"
     >
       <Button
-        v-for="algorithm in algorithms"
-        @click="handleButtonClick(algorithm)"
+        v-for="algorithm in MST_ALGORITHMS"
+        @click="currentAlgorithm = algorithm"
         :color="currentAlgorithm === algorithm ? colors.GREEN_600 : undefined"
         :text-color="currentAlgorithm === algorithm ? colors.WHITE : undefined"
         class="capitalize"
@@ -63,23 +53,21 @@
         {{ algorithm }}
       </Button>
     </div>
-    <div v-if="currentAlgorithm !== 'none'">
-      <Button
-        v-if="!simControls.isActive.value"
-        @click="simControls.start"
-      >
-        Start Simulation
-      </Button>
+    <Button
+      v-if="!simControls.isActive.value"
+      @click="simControls.start"
+    >
+      Start Simulation
+    </Button>
 
-      <Button
-        v-else
-        @click="simControls.stop"
-        :color="colors.RED_600"
-        :text-color="colors.WHITE"
-      >
-        Stop Simulation
-      </Button>
-    </div>
+    <Button
+      v-else
+      @click="simControls.stop"
+      :color="colors.RED_600"
+      :text-color="colors.WHITE"
+    >
+      Stop Simulation
+    </Button>
   </div>
 
   <div
