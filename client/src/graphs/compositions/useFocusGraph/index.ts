@@ -11,7 +11,6 @@ import type {
   GraphOptions,
   SchemaItem
 } from "@graph/types";
-import { onClickOutside } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
 import { useHistoryGraph } from "@graph/compositions/useHistoryGraph";
@@ -121,9 +120,6 @@ export const useFocusGraph = (
   })
 
   const repaintOnFocusChange = () => setTimeout(graph.repaint('focus-graph/on-focus-change'), 10)
-
-  const stopClickOutsideListener = onClickOutside(canvas, resetFocus)
-  onUnmounted(stopClickOutsideListener)
 
   const activate = () => {
     graph.subscribe('onFocusChange', repaintOnFocusChange)

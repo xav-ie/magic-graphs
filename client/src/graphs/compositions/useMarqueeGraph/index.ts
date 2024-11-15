@@ -1,6 +1,5 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
-import { onClickOutside } from '@vueuse/core'
 import type {
   GEdge,
   GNode,
@@ -78,7 +77,6 @@ export const useMarqueeGraph = (
    */
   const clearMarqueeSelection = () => {
     marqueeSelectedItems.value.clear()
-    updateEncapsulatedNodeBox()
     encapsulatedNodeBox.value = undefined
     showNodeAnchors()
   }
@@ -162,8 +160,6 @@ export const useMarqueeGraph = (
       const inSelectionBox = shape.efficientHitbox(box)
       if (inSelectionBox) marqueeSelectedItems.value.add(id)
     }
-
-    updateEncapsulatedNodeBox()
   }
 
   const updateEncapsulatedNodeBox = () => {
@@ -294,15 +290,12 @@ export const useMarqueeGraph = (
   setTheme('edgeColor', colorMarqueeSelectedEdges)
   setTheme('edgeTextColor', colorMarqueeSelectedEdgeText)
 
-  onClickOutside(canvas, () => clearMarqueeSelection())
-
   /**
    * takes a list of item ids and creates a marquee selection around them
    */
   const setMarqueeSelectedItems = (itemIds: string[]) => {
     marqueeSelectedItems.value = new Set(itemIds)
     initializeEncapsulatedNodeBox()
-    updateEncapsulatedNodeBox()
   }
 
   /**
@@ -326,12 +319,23 @@ export const useMarqueeGraph = (
     setMarqueeSelectedItems(marqueeSelection)
   }
 
+  const filterOutDeletedItems = () => {
+    for (const id of marqueeSelectedItems.value) {
+      const node = graph.getNode(id)
+      const edge = graph.getEdge(id)
+      if (!node && !edge) marqueeSelectedItems.value.delete(id)
+    }
+  }
+
+  watch(marqueeSelectedItems, updateEncapsulatedNodeBox, { deep: true })
+
   const activate = () => {
     graph.subscribe('onMouseDown', handleMarqueeEngagement)
     graph.subscribe('onMouseUp', disengageMarqueeBox)
     graph.subscribe('onNodeMoved', updateEncapsulatedNodeBox)
     graph.subscribe('onContextMenu', disengageMarqueeBox)
     graph.subscribe('onMouseMove', setMarqueeBoxDimensions)
+    graph.subscribe('onStructureChange', filterOutDeletedItems)
 
     graph.subscribe('onMouseDown', beginGroupDrag)
     graph.subscribe('onMouseUp', groupDrop)
@@ -347,6 +351,7 @@ export const useMarqueeGraph = (
     graph.unsubscribe('onNodeMoved', updateEncapsulatedNodeBox)
     graph.unsubscribe('onContextMenu', disengageMarqueeBox)
     graph.unsubscribe('onMouseMove', setMarqueeBoxDimensions)
+    graph.unsubscribe('onStructureChange', filterOutDeletedItems)
 
     graph.unsubscribe('onMouseDown', beginGroupDrag)
     graph.unsubscribe('onMouseUp', groupDrop)
@@ -381,6 +386,14 @@ export const useMarqueeGraph = (
       marqueeSelectedItems.value.has(itemId) ||
       graph.focusedItemId.value === itemId
     ),
+    /**
+     * a computed set of all items currently marquee selected or focused
+     */
+    highlightedItemIds: computed(() => {
+      const highlightedItems = new Set(marqueeSelectedItems.value)
+      if (graph.focusedItemId.value) highlightedItems.add(graph.focusedItemId.value)
+      return highlightedItems
+    }),
 
     setMarqueeSelectedItems,
     clearMarqueeSelection,

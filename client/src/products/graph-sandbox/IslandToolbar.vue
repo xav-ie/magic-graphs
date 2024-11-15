@@ -24,9 +24,11 @@
 
   tutorial.start();
 
-  const tutorialHint = computed(
-    () => tutorial.sequence.value[tutorial.step.value]?.hint
-  );
+  const eraseItems = () => {
+    const ids = Array.from(props.graph.highlightedItemIds.value);
+    props.graph.bulkRemoveNode(ids);
+    props.graph.bulkRemoveEdge(ids);
+  }
 </script>
 
 <template>
@@ -86,12 +88,19 @@
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
-      <ToolbarButton @click="graph.reset()">mdi-eraser</ToolbarButton>
+      <ToolbarButton
+        @click="eraseItems"
+        :disabled="graph.highlightedItemIds.value.size === 0"
+      >
+        mdi-eraser
+      </ToolbarButton>
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
       <ToolbarButton>mdi-account-group</ToolbarButton>
     </ToolbarButtonGroup>
   </div>
+
   <ToolbarHint :tutorial="tutorial" />
+
 </template>
