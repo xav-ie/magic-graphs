@@ -21,12 +21,6 @@ export const useFlowControls = (graph: Graph) => {
   const { setTheme } = useTheme(graph, 'flow');
   const newNodeLabel = flowNodeLabelGetter(graph);
 
-  graph.subscribe('onEdgeAdded', (edge) => {
-    if (edge.to === edge.from) return graph.removeEdge(edge.id);
-    const edgeAlreadyOnPath = graph.edges.value.some(e => e.from === edge.to && e.to === edge.from);
-    if (edgeAlreadyOnPath) return graph.removeEdge(edge.id);
-  })
-
   const captureNodeFn = (res: (value: GNode | PromiseLike<GNode>) => void) => (event: MouseEvent) => {
     const { offsetX, offsetY } = event;
     const node = graph.getNodeByCoordinates(offsetX, offsetY);

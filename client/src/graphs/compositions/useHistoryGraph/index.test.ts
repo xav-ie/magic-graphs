@@ -9,6 +9,7 @@ describe('useHistoryGraph', () => {
   test('undoes and redoes', () => {
     const node1 = graph.addNode({})
     const node2 = graph.addNode({})
+    if (!node1 || !node2) throw new Error('Node is undefined')
     graph.addEdge({ from: node1.id, to: node2.id })
     const record = graph.undo()
     if (!record) throw new Error('Record is undefined')
@@ -31,8 +32,19 @@ describe('useHistoryGraph', () => {
     expect(graph.redoStack.value.length).toBe(0)
   })
 
+  test('can redo and can undo are correct', () => {
+    expect(graph.canUndo.value).toBe(false)
+    expect(graph.canRedo.value).toBe(false)
+    graph.addNode({})
+    expect(graph.canUndo.value).toBe(true)
+    graph.undo()
+    expect(graph.canRedo.value).toBe(true)
+    expect(graph.canUndo.value).toBe(false)
+  })
+
   test('moves nodes correctly', () => {
     const node = graph.addNode({})
+    if (!node) throw new Error('Node is undefined')
 
     // simulates a node being picked up and dropped in a new location
     graph.undoStack.value.push({

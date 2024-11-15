@@ -4,7 +4,7 @@
     ref,
     watch
   } from "vue";
-  import type { TutorialControls } from "./useTutorial";
+  import type { TutorialControls } from "@graph/tutorials/types";
   import { DELAY_UNTIL_NEXT_STEP } from "./types";
 
   const { tutorial } = defineProps<{
@@ -13,7 +13,7 @@
 
   const opacity = ref(0);
 
-  const hint = computed(() => tutorial.currentStep.value?.hint ?? "");
+  const hint = computed(() => tutorial.sequence.value[tutorial.step.value]?.hint ?? "");
   const displayedHint = ref("");
 
   let activeTimeout: NodeJS.Timeout;

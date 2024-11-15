@@ -7,7 +7,9 @@ export type Parent = Map<string, string>
 export type Rank = Map<string, number>
 
 export const useKruskal = (graph: Graph) => {
-  // Trace is just mst array, to get steps render intervals starting at index 0
+  /**
+   * just the mst array, to get the first n steps, slice the array at (0, n)
+   */
   const trace = ref<GEdge[]>([]);
 
   const find = (parent: Parent, nodeId: string): string => {

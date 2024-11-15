@@ -14,6 +14,7 @@
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/theme-one-dark": "^6.1.2",
+    "@mdi/font": "^7.4.47",
     "@mdi/js": "^7.4.47",
     "@vueuse/core": "^11.1.0",
     "codemirror": "^6.0.1",
@@ -21,7 +22,8 @@
     "socket.io-client": "^4.8.1",
     "vue": "^3.4.29",
     "vue-codemirror": "^6.1.1",
-    "vue-router": "^4.0.13"
+    "vue-router": "^4.0.13",
+    "vuetify": "^3.7.4"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",

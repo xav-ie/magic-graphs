@@ -42,9 +42,9 @@
     controls,
     () => {
       if (controls.value.tutorial) {
-        tutorialControls.restartTutorial();
+        tutorialControls.start();
       } else {
-        tutorialControls.endTutorial();
+        tutorialControls.stop();
       }
     },
     { immediate: true, deep: true }
