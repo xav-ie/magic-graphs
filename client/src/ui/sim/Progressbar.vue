@@ -2,6 +2,7 @@
 import { ref, watch, computed } from "vue";
 import type { ProgressOptions } from "./types";
 import { PROGRESS_DEFAULTS } from "./types";
+import { debounce } from "@utils/debounce";
 
 const props = defineProps<ProgressOptions>();
 
@@ -35,7 +36,7 @@ const updateProgressFromClick = (event: MouseEvent) => {
   const range = props.endProgress - props.startProgress;
   const newProgress = props.startProgress + clickPercentage * range;
 
-  props.setProgress(newProgress)
+  props.setProgress(Math.round(newProgress))
 }
 
 watch(
