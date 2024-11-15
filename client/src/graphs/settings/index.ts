@@ -129,18 +129,32 @@ export type UserEditableGraphSettings = {
    * the type of edge to add when creating an edge between nodes
    * @default "directed"
    */
-  userEditableAddedEdgeType: 'directed' | 'undirected',
+  userAddedEdgeType: 'directed' | 'undirected',
   /**
    * the default label assigned to edges when created using the UI
    * @default 1
    */
-  userEditableAddedEdgeLabel: string,
+  userAddedEdgeLabel: string,
+  /**
+   * whether to allow self loops.
+   * relevant on directed graphs where a node can have an edge to itself
+   * @default false
+   */
+  userAddedEdgeRuleNoSelfLoops: boolean,
+  /**
+   * whether to allow only one edge per path between two nodes.
+   * relevant on directed graphs where multiple edges can exist between two nodes
+   * @default false
+   */
+  userAddedEdgeRuleOneEdgePerPath: boolean,
 }
 
 export const DEFAULT_USER_EDITABLE_SETTINGS: UserEditableGraphSettings = {
   userEditable: true,
-  userEditableAddedEdgeType: 'directed',
-  userEditableAddedEdgeLabel: "1",
+  userAddedEdgeType: 'directed',
+  userAddedEdgeLabel: '1',
+  userAddedEdgeRuleNoSelfLoops: false,
+  userAddedEdgeRuleOneEdgePerPath: false,
 }
 
 /**

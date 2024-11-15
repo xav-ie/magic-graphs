@@ -59,18 +59,18 @@ export const useGraphBtns = (graph: Graph) => {
 
   const toggleEdgeType: GButton = {
     cond: () => !!graph.settings.value.userEditable,
-    label: () => capitalize(graph.settings.value.userEditableAddedEdgeType),
+    label: () => capitalize(graph.settings.value.userAddedEdgeType),
     action: () => {
-      const addedEdgeType = graph.settings.value.userEditableAddedEdgeType;
+      const addedEdgeType = graph.settings.value.userAddedEdgeType;
       if (addedEdgeType === 'directed') {
-        graph.settings.value.userEditableAddedEdgeType = 'undirected';
+        graph.settings.value.userAddedEdgeType = 'undirected';
       } else {
-        graph.settings.value.userEditableAddedEdgeType = 'directed';
+        graph.settings.value.userAddedEdgeType = 'directed';
       }
     },
     color: () => {
-      const { userEditableAddedEdgeType } = graph.settings.value;
-      return userEditableAddedEdgeType === 'directed' ? 'blue' : 'purple';
+      const { userAddedEdgeType } = graph.settings.value;
+      return userAddedEdgeType === 'directed' ? 'blue' : 'purple';
     },
     id: GRAPH_BUTTON_ID.edgeType,
   };
@@ -78,11 +78,11 @@ export const useGraphBtns = (graph: Graph) => {
   const changeEdgeWeight: GButton = {
     cond: () => !!graph.settings.value.userEditable,
     label: () => {
-      const { userEditableAddedEdgeLabel } = graph.settings.value;
-      return `Change Added Edge Weight (${userEditableAddedEdgeLabel})`;
+      const { userAddedEdgeLabel } = graph.settings.value;
+      return `Change Added Edge Weight (${userAddedEdgeLabel})`;
     },
     action: () => {
-      graph.settings.value.userEditableAddedEdgeLabel = getRandomInRange(1, 10).toString();
+      graph.settings.value.userAddedEdgeLabel = getRandomInRange(1, 10).toString();
     },
     color: () => 'green',
     id: GRAPH_BUTTON_ID.edgeWeight,

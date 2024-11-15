@@ -1,8 +1,10 @@
+import { ref } from "vue";
 import type { Graph, GEdge } from "@graph/types";
 import { clone } from "@utils/clone";
-import type { Parent, Rank } from "./types";
-import { ref } from "vue";
-import { useColorizeGraph } from "../useColorizeGraph";
+
+export type Parent = Map<string, string>
+
+export type Rank = Map<string, number>
 
 export const useKruskal = (graph: Graph) => {
   // Trace is just mst array, to get steps render intervals starting at index 0
@@ -64,14 +66,11 @@ export const useKruskal = (graph: Graph) => {
 
   const update = () => {
     trace.value = kruskal();
-    useColorizeGraph(graph, trace.value);
   };
 
   graph.subscribe("onStructureChange", update);
   graph.subscribe("onEdgeLabelChange", update);
   graph.subscribe("onGraphReset", update);
 
-  return {
-    trace,
-  };
+  return trace;
 };

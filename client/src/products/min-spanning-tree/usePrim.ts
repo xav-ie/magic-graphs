@@ -1,9 +1,8 @@
+import { ref } from "vue";
 import type { Graph, GEdge } from "@graph/types";
 import { clone } from "@utils/clone";
-import { ref } from "vue";
-import { useColorizeGraph } from "../useColorizeGraph";
 
-export const usePrims = (graph: Graph) => {
+export const usePrim = (graph: Graph) => {
   // Trace is just mst array, to get steps render intervals starting at index 0
   const trace = ref<GEdge[]>([]);
 
@@ -52,14 +51,11 @@ export const usePrims = (graph: Graph) => {
 
   const update = () => {
     trace.value = prims();
-    useColorizeGraph(graph, trace.value);
   };
 
   graph.subscribe("onStructureChange", update);
   graph.subscribe("onEdgeLabelChange", update);
   graph.subscribe("onGraphReset", update);
 
-  return {
-    trace,
-  };
+  return trace;
 };

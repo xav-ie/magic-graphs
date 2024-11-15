@@ -2176,7 +2176,7 @@ export type UserEditableGraphSettings = {
 // @ts-ignore
    */
 // @ts-ignore
-  userEditableAddedEdgeType: 'directed' | 'undirected',
+  userAddedEdgeType: 'directed' | 'undirected',
 // @ts-ignore
   /**
 // @ts-ignore
@@ -2186,7 +2186,7 @@ export type UserEditableGraphSettings = {
 // @ts-ignore
    */
 // @ts-ignore
-  userEditableAddedEdgeLabel: string,
+  userAddedEdgeLabel: string,
 // @ts-ignore
 }
 // @ts-ignore
@@ -2196,9 +2196,9 @@ export const DEFAULT_USER_EDITABLE_SETTINGS: UserEditableGraphSettings = {
 // @ts-ignore
   userEditable: true,
 // @ts-ignore
-  userEditableAddedEdgeType: 'directed',
+  userAddedEdgeType: 'directed',
 // @ts-ignore
-  userEditableAddedEdgeLabel: "1",
+  userAddedEdgeLabel: "1",
 // @ts-ignore
 }
 // @ts-ignore
@@ -3912,7 +3912,7 @@ export const circle = (options: Circle): Shape => {
 // @ts-ignore
   }
 // @ts-ignore
-  
+
 // @ts-ignore
   const drawShape = drawCircleWithCtx(options);
 // @ts-ignore
@@ -4803,7 +4803,7 @@ export type Stroke = {
 // @ts-ignore
    * For dashed border
 // @ts-ignore
-   * 
+   *
 // @ts-ignore
    * @params
 // @ts-ignore
@@ -4811,7 +4811,7 @@ export type Stroke = {
 // @ts-ignore
    * dash: [dashLength, gapLength]
 // @ts-ignore
-   * 
+   *
 // @ts-ignore
   */
 // @ts-ignore
