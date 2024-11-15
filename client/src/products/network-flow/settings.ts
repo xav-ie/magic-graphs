@@ -1,5 +1,8 @@
 import type { GraphSettings } from "@graph/settings";
 
+/**
+ * settings for Network Flow useGraph instance
+ */
 export const FLOW_GRAPH_SETTINGS: Partial<GraphSettings> = {
   persistent: true,
   persistentStorageKey: 'network-flow',

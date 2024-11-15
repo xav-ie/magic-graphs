@@ -68,16 +68,16 @@ export type SimulationControls<T extends any[] = any[]> = {
 }
 
 
-type PartialProgressThemeOptions = Partial<{
+type ProgressThemeOptions = {
   backgroundColor: string;
   progressColor: string;
   easeTime: number;
   borderRadius: number;
   progressEasing: "linear" | "ease-in-out";
-}>;
+}
 
 export type ProgressOptions = {
-  theme?: PartialProgressThemeOptions;
+  theme?: Partial<ProgressThemeOptions>;
   startProgress: number;
   currentProgress: number;
   endProgress: number;

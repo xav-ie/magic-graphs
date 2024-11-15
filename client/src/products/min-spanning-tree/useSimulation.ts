@@ -19,8 +19,7 @@ export const useMSTSimulation = (
 
   const trace = computed(() => {
     if (currentAlgorithm.value === "prim") return primsTrace.value;
-    else if (currentAlgorithm.value === "kruskal") return kruskalTrace.value;
-    return graph.edges.value;
+    else return kruskalTrace.value;
   });
 
   const step = ref(0);
@@ -28,23 +27,19 @@ export const useMSTSimulation = (
   const playbackSpeed = ref(1_500);
   const active = ref(false);
   const interval = ref<NodeJS.Timeout | undefined>();
-  const isOver = computed(() => step.value === trace.value.length + 1);
+
   const hasBegun = computed(() => step.value > 0);
+  const isOver = computed(() => step.value === trace.value.length + 1);
 
-  const traceAtStep = computed(() => {
-    if (!active.value) return trace.value
-    return trace.value.slice(0, step.value);
-  });
+  const traceAtStep = computed(() => trace.value.slice(0, step.value));
 
-  const { colorize } = useMSTColorizer(graph, traceAtStep);
-
-  colorize();
+  const { colorize, decolorize } = useMSTColorizer(graph, traceAtStep);
 
   const start = () => {
     paused.value = false;
     active.value = true;
     step.value = 0;
-
+    colorize();
     interval.value = setInterval(() => {
       if (isOver.value || paused.value) return;
       nextStep();
@@ -54,6 +49,7 @@ export const useMSTSimulation = (
   const stop = () => {
     if (interval.value) clearInterval(interval.value);
     active.value = false;
+    decolorize();
   };
 
   const nextStep = () => {
