@@ -4,6 +4,7 @@
   import Graph from "@graph/Graph.vue";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
+  import MarkupMenu from "./MarkupMenu.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -17,7 +18,15 @@
     :graph="graph"
   />
 
-  <div class="absolute top-6 w-full flex flex-col justify-center items-center gap-2">
+  <div
+    class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
+  >
     <IslandToolbar :graph="graph" />
+  </div>
+
+  <div class="absolute top-0 w-0 h-full flex items-center">
+    <div>
+      <MarkupMenu :graph="graph" />
+    </div>
   </div>
 </template>

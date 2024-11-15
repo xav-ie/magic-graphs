@@ -6,19 +6,20 @@
 </script>
 
 <template>
-  <div>
-    <v-icon
-      :class="[
-        'text-white',
-        disabled ? 'text-opacity-50' : '',
-        disabled ? '' : 'hover:bg-gray-900',
-        'p-5',
-        'rounded-md',
-        disabled ? 'cursor-not-allowed' : 'cursor-pointer',
-        active ? 'bg-gray-900' : 'bg-gray-800',
-      ]"
-    >
+  <button
+    :disabled="disabled"
+    :class="[
+      'text-white',
+      'p-2',
+      'rounded-md',
+      disabled ? 'text-opacity-50' : '',
+      disabled ? '' : 'hover:bg-gray-900',
+      disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+      active ? 'bg-gray-900' : 'bg-gray-800',
+    ]"
+  >
+    <v-icon>
       <slot></slot>
     </v-icon>
-  </div>
+  </button>
 </template>
