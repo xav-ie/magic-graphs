@@ -1,8 +1,8 @@
 import { computed, ref, type Ref } from "vue";
 import type { Graph, GEdge } from "@graph/types";
 import type { SimulationControls } from "@ui/sim/types";
-import { useKruskal } from "./kruskal";
-import { usePrims } from "./prim";
+import { useKruskal } from "./useKruskal";
+import { usePrim } from "./usePrim";
 import { useMSTColorizer } from "./useMSTColorizer";
 
 export type MSTSimulationControls = SimulationControls<GEdge[]>;
@@ -15,7 +15,7 @@ export const useMSTSimulation = (
 ): MSTSimulationControls => {
 
   const kruskalTrace = useKruskal(graph);
-  const primsTrace = usePrims(graph);
+  const primsTrace = usePrim(graph);
 
   const trace = computed(() => {
     if (currentAlgorithm.value === "prim") return primsTrace.value;

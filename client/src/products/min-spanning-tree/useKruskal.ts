@@ -1,7 +1,10 @@
 import { ref } from "vue";
 import type { Graph, GEdge } from "@graph/types";
 import { clone } from "@utils/clone";
-import type { Parent, Rank } from "./types";
+
+export type Parent = Map<string, string>
+
+export type Rank = Map<string, number>
 
 export const useKruskal = (graph: Graph) => {
   // Trace is just mst array, to get steps render intervals starting at index 0
