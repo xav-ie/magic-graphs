@@ -31,7 +31,7 @@ export const useGraphTutorial = (
    * the current step in the tutorial sequence,
    * can be reactively set to skip to a specific step
    */
-  const stepIndex = ref(0);
+  const stepIndex = ref(-1);
   const sequence = toRef(tutorialSequence);
 
   const tutorialActive = ref(false);

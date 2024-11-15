@@ -3,6 +3,7 @@
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
+  import IslandToolbar from "./IslandToolbar.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -16,30 +17,7 @@
     :graph="graph"
   />
 
-  <div class="absolute top-6 w-full flex justify-center">
-    <div class="flex items-center gap-3 bg-gray-800 py-1 px-2 rounded-lg">
-      <div>
-        <v-icon
-          @click="graph.undo()"
-          class="text-white bg-gray-800 hover:bg-gray-900 p-5 rounded-md cursor-pointer"
-          :style="{
-            opacity: graph.canUndo.value ? 1 : 0.5
-          }"
-        >
-          mdi-undo
-        </v-icon>
-      </div>
-      <div>
-        <v-icon
-          @click="graph.redo()"
-          class="text-white bg-gray-800 hover:bg-gray-900 p-5 rounded-md cursor-pointer"
-          :style="{
-            opacity: graph.canRedo.value ? 1 : 0.5
-          }"
-        >
-          mdi-redo
-        </v-icon>
-      </div>
-    </div>
+  <div class="absolute top-6 w-full flex flex-col justify-center items-center gap-2">
+    <IslandToolbar :graph="graph" />
   </div>
 </template>

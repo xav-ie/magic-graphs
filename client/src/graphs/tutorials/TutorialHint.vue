@@ -1,9 +1,5 @@
 <script setup lang="ts">
-  import {
-    computed,
-    ref,
-    watch
-  } from "vue";
+  import { computed, ref, watch } from "vue";
   import type { TutorialControls } from "@graph/tutorials/types";
   import { DELAY_UNTIL_NEXT_STEP } from "./types";
 
@@ -13,7 +9,9 @@
 
   const opacity = ref(0);
 
-  const hint = computed(() => tutorial.sequence.value[tutorial.step.value]?.hint ?? "");
+  const hint = computed(
+    () => tutorial.sequence.value[tutorial.step.value]?.hint ?? ""
+  );
   const displayedHint = ref("");
 
   let activeTimeout: NodeJS.Timeout;
@@ -46,8 +44,10 @@
       opacity,
     }"
   >
-    <h1 class="text-3xl font-bold">
-      {{ displayedHint }}
-    </h1>
+    <slot :hint="displayedHint">
+      <h1 class="text-3xl font-bold">
+        {{ displayedHint }}
+      </h1>
+    </slot>
   </div>
 </template>
