@@ -4,7 +4,7 @@
 </script>
 
 <template>
-  <div class="w-[100vw] h-[100vh] relative">
+  <div class="w-[100vw] h-[100vh]">
     <router-view />
   </div>
 </template>

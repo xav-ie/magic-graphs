@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { Ref } from "vue";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
 import type { GNode, GraphOptions } from "@graph/types";
@@ -308,6 +308,14 @@ export const useHistoryGraph = (
      * redoes the last undone action and moves it to the undo stack
      */
     redo,
+    /**
+     * true if there are actions to undo
+     */
+    canUndo: computed(() => undoStack.value.length > 0),
+    /**
+     * true if there are actions to redo
+     */
+    canRedo: computed(() => redoStack.value.length > 0),
 
     /**
      * stores past actions to revert
