@@ -81,6 +81,7 @@ export type ProgressOptions = {
   startProgress: number;
   currentProgress: number;
   endProgress: number;
+  setProgress: (progress: number) => void
 };
 
 export const PROGRESS_DEFAULTS = {

@@ -2,6 +2,7 @@
 import { ref, watch, computed } from "vue";
 import type { ProgressOptions } from "./types";
 import { PROGRESS_DEFAULTS } from "./types";
+import { debounce } from "@utils/debounce";
 
 const props = defineProps<ProgressOptions>();
 
@@ -26,6 +27,18 @@ const progressPercentage = computed(() => {
   return (clampedProgress / range) * 100;
 });
 
+const updateProgressFromClick = (event: MouseEvent) => {
+  const progressBar = event.currentTarget as HTMLElement;
+  const clickPosition = event.offsetX; 
+  const progressBarWidth = progressBar.offsetWidth;
+  const clickPercentage = clickPosition / progressBarWidth;
+
+  const range = props.endProgress - props.startProgress;
+  const newProgress = props.startProgress + clickPercentage * range;
+
+  props.setProgress(Math.round(newProgress))
+}
+
 watch(
   () => progressPercentage.value,
   (newProgress) => {
@@ -35,8 +48,10 @@ watch(
 );
 </script>
 
+
 <template>
   <div
+    @click="updateProgressFromClick"
     class="relative overflow-hidden h-[25px] w-full"
     :style="{
       backgroundColor,
