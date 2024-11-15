@@ -84,6 +84,7 @@
       :start-progress="0"
       :current-progress="simControls.step.value"
       :end-progress="simControls.trace.value.length"
+      :set-progress="simControls.setStep"
     />
     <SimulationPlaybackControls :controls="simControls" />
   </div>
