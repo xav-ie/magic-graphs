@@ -113,6 +113,7 @@ export const getInitialEventBus = () => {
     onContextMenu: new Set(),
 
     onKeydown: new Set(),
+    onKeyup: new Set(),
 
     onThemeChange: new Set(),
     onSettingsChange: new Set(),

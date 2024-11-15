@@ -1,13 +1,20 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue";
+  import { computed, ref, watch } from "vue";
   import type { Graph } from "@graph/types";
   import InputColor from "@ui/InputColor.vue";
-  import Button from "@ui/Button.vue";
   import { useMarkupColorizer } from "./useMarkupColorizer";
+  import colors, { type Color } from "@utils/colors";
 
   const props = defineProps<{
     graph: Graph;
   }>();
+
+  const COLOR_PALETTE = [
+    colors.BLUE_600,
+    colors.RED_600,
+    colors.GREEN_600,
+    colors.YELLOW_600,
+  ];
 
   const { colorize, colorMap } = useMarkupColorizer(props.graph);
   colorize();
@@ -30,31 +37,60 @@
     return `${ids.length} Nodes & Edges`;
   });
 
-  const color = ref("#000000");
-
-  const applyColor = () => {
-    for (const id of props.graph.highlightedItemIds.value) {
-      colorMap.set(id, color.value);
-    }
+  const getColor = () => {
+    const highlightedIds = Array.from(props.graph.highlightedItemIds.value);
+    const itemColors = new Set(highlightedIds.map((id) => colorMap.value.get(id)));
+    if (itemColors.has(undefined)) return colors.BLACK;
+    if (itemColors.size > 1) return colors.BLACK;
+    return itemColors.values().next().value as Color;
   };
+
+  const color = ref(getColor());
+
+  const setColor = (value: Color) => {
+    for (const id of props.graph.highlightedItemIds.value) {
+      colorMap.value.set(id, value);
+    }
+    color.value = value;
+  };
+
+  watch(
+    () => props.graph.highlightedItemIds.value,
+    () => {
+      color.value = getColor();
+    }
+  );
 </script>
 
 <template>
   <div
     v-if="props.graph.highlightedItemIds.value.size > 0"
-    class="bg-gray-800 p-3 w-60 flex flex-col gap-3"
+    class="bg-gray-800 p-3 w-60 flex flex-col gap-3 rounded-r-xl"
   >
     <h1 class="text-white font-bold text-2xl">
       {{ title }}
     </h1>
-    <InputColor
-      v-model="color"
-      class="w-10 h-10"
-    />
-    <Button
-      @click="applyColor"
-    >
-      Apply Color
-    </Button>
+    <div>
+      <div class="flex gap-1">
+        <div
+          v-for="paletteColor in COLOR_PALETTE"
+          @click="setColor(paletteColor)"
+          :class="[
+            'cursor-pointer',
+            'rounded-xl',
+            'p-1',
+            'border-2',
+            color === paletteColor ? 'border-white' : 'border-transparent',
+            color === paletteColor
+              ? 'hover:border-white'
+              : 'hover:border-gray-400',
+          ]"
+        >
+          <div
+            :class="['w-8', 'h-8', 'rounded-md', `bg-[${paletteColor}]`]"
+          ></div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>

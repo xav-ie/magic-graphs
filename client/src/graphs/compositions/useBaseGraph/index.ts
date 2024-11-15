@@ -70,6 +70,7 @@ export const useBaseGraph = (
 
   const keyboardEvents: Partial<KeyboardEventMap> = {
     keydown: (ev: KeyboardEvent) => emit('onKeydown', ev),
+    keyup: (ev: KeyboardEvent) => emit('onKeyup', ev),
   }
 
   const {
