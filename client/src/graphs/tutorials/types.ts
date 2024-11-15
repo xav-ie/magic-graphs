@@ -1,5 +1,6 @@
 import type { Graph } from '@graph/types';
 import type { GraphEventMap, GraphEvent } from '@graph/events';
+import type { ComputedRef, Ref } from 'vue';
 
 /**
  * css class defined in App.vue, should move later, used as default for ElementHighlightOptions -> highlightElement.className
@@ -132,3 +133,62 @@ export type TutorialSequence = TutorialStep[];
 export const DELAY_UNTIL_NEXT_STEP = 1000;
 
 export const TUTORIAL_THEME_ID = 'tutorial'
+
+export type TutorialControls = {
+  /**
+   * skip forward to the next step of the tutorial.
+   * wont do anything if the current step is the last step
+   */
+  nextStep: () => void
+  /**
+   * skip backward to the previous step of the tutorial.
+   * wont do anything if the current step is -1.
+   */
+  prevStep: () => void
+
+  /**
+   * an array of all the steps in the tutorial
+   */
+  sequence: Ref<TutorialSequence>
+  /**
+   * the current step in the tutorial sequence. ranges from -1 to sequence.value.length.
+   * where -1 is the state before the tutorial has begun and sequence.value.length is the
+   * state after the tutorial has completed.
+   */
+  step: ComputedRef<number>
+  /**
+   * set the current step of the tutorial
+   * @param step the step to set the tutorial to
+   * @throws if step is not within the bounds of the sequence (-1 to sequence.value.length)
+   */
+  setStep: (step: number) => void
+
+  /**
+   * start the tutorial. this will begin the tutorial from step 0
+   */
+  start: () => void
+  /**
+   * stop the tutorial. this will end the tutorial and reset all state
+   */
+  stop: () => void
+  /**
+   * pause the tutorial. no progress can be made while the tutorial is paused
+   */
+  paused: Ref<boolean>
+
+  /**
+   * whether the tutorial is currently active.
+   * changes to true when start is called and false when stop is called
+   */
+  isActive: ComputedRef<boolean>
+  /**
+   * whether the tutorial is over.
+   * true when the step is sequence.value.length
+   */
+  isOver: ComputedRef<boolean>
+  /**
+   * whether the tutorial has begun.
+   * true when the step is -1
+   */
+  hasBegun: ComputedRef<boolean>
+}

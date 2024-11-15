@@ -13,6 +13,7 @@ import type {
   GraphEventStep,
   TutorialStep,
 } from "@graph/tutorials/types";
+import type { TutorialControls } from "./types";
 
 /**
  * creates functionality for an interactive tutorial sequence for a graph
@@ -21,7 +22,10 @@ import type {
  * @param tutorialSequence the sequence of tutorial steps to apply
  * @returns controls for the tutorial sequence
  */
-export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<TutorialSequence>) => {
+export const useGraphTutorial = (
+  graph: Graph,
+  tutorialSequence: MaybeRef<TutorialSequence>
+): TutorialControls => {
 
   /**
    * the current step in the tutorial sequence,
@@ -29,6 +33,9 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
    */
   const stepIndex = ref(0);
   const sequence = toRef(tutorialSequence);
+
+  const tutorialActive = ref(false);
+  const tutorialPaused = ref(false);
 
   let cleanupHighlight: () => void;
   let cleanupStep: () => void;
@@ -95,21 +102,35 @@ export const useGraphTutorial = (graph: Graph, tutorialSequence: MaybeRef<Tutori
     runCurrentStep();
   }
 
-  watch(stepIndex, initiateNewStep);
+  watch(stepIndex, (newStep, oldStep) => {
+    if (tutorialPaused.value) return;
+    initiateNewStep(newStep, oldStep);
+  });
+
   watch(sequence, () => initiateNewStep(stepIndex.value, stepIndex.value));
 
-  runCurrentStep();
+  const start = () => {
+    stepIndex.value = 0;
+    tutorialActive.value = true;
+  };
+
+  const stop = () => {
+    stepIndex.value = sequence.value.length;
+    tutorialActive.value = false;
+  }
 
   return {
-    currentStepIndex: stepIndex,
-    // added undefined because stepIndex is +1 out of bounds when tutorial is over
-    currentStep: computed<TutorialStep | undefined>(() => sequence.value[stepIndex.value]),
     sequence,
+    step: computed(() => stepIndex.value),
+    setStep: (step: number) => stepIndex.value = step,
+    paused: tutorialPaused,
     nextStep: () => stepIndex.value++,
-    previousStep: () => stepIndex.value--,
-    endTutorial: () => stepIndex.value = sequence.value.length,
-    restartTutorial: () => stepIndex.value = 0,
-    isTutorialOver: computed(() => stepIndex.value >= sequence.value.length),
+    prevStep: () => stepIndex.value--,
+    stop,
+    start,
+    isActive: computed(() => tutorialActive.value),
+    hasBegun: computed(() => stepIndex.value > -1),
+    isOver: computed(() => stepIndex.value >= sequence.value.length),
   }
 }
 

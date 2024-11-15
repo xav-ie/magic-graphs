@@ -1,22 +1,14 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import type { TutorialControls } from "./useTutorial";
+  import type { TutorialControls } from "@graph/tutorials/types";
 
   const { tutorial } = defineProps<{
     tutorial: TutorialControls;
   }>();
-
-  const progress = computed(
-    () =>
-      `${tutorial.currentStepIndex.value + 1} / ${
-        tutorial.sequence.value.length
-      }`
-  );
 </script>
 
 <template>
   <button
-    @click="tutorial.previousStep"
+    @click="tutorial.prevStep"
     :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
   >
     <span class="select-none">Previous Step</span>
@@ -28,21 +20,15 @@
     <span class="select-none">Next Step</span>
   </button>
   <button
-    @click="tutorial.endTutorial"
+    @click="tutorial.stop"
     :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
   >
     <span class="select-none">End Tutorial</span>
   </button>
   <button
-    @click="tutorial.restartTutorial"
+    @click="tutorial.start"
     :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
   >
     <span class="select-none">Restart Tutorial</span>
   </button>
-
-  <!-- <div class="flex gap-2 dark:text-white">
-    <span class="select-none">
-      step {{ progress }} -> isTutorialOver: {{ tutorial.isTutorialOver }}
-    </span>
-  </div> -->
 </template>

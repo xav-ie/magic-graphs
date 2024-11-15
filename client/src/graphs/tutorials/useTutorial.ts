@@ -10,8 +10,3 @@ import { SEQUENCES } from "@graph/tutorials/sequences";
  * @returns an object containing controls for the tutorial
  */
 export const useBasicsTutorial = (graph: Graph) => useGraphTutorial(graph, SEQUENCES(graph).basics);
-
-/**
- * describes the control interface for the basics tutorial
- */
-export type TutorialControls = ReturnType<typeof useBasicsTutorial>;
