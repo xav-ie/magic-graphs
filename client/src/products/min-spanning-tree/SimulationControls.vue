@@ -20,6 +20,7 @@ defineProps<{
     :start-progress="0"
     :current-progress="controls.step.value"
     :end-progress="controls.trace.value.length"
+    :set-progress="controls.setStep"
   />
   <SimulationPlaybackControls :controls="controls" />
 </template>
