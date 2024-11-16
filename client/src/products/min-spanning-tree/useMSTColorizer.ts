@@ -14,7 +14,7 @@ export const useMSTColorizer = (graph: Graph, mst: Ref<GEdge[]>) => {
   const { setTheme, removeAllThemes } = useTheme(graph, MST_USETHEME_ID);
 
   const colorEdge = (edge: GEdge) => {
-    if (graph.isHighlighted(edge.id)) return;
+    if (graph.isFocused(edge.id)) return;
     const inMST = mst.value.some((e) => e.id === edge.id);
     const regularColor = getValue(graph.theme.value.edgeColor, edge);
     if (inMST) return regularColor;
@@ -22,7 +22,7 @@ export const useMSTColorizer = (graph: Graph, mst: Ref<GEdge[]>) => {
   }
 
   const colorEdgeText = (edge: GEdge) => {
-    if (graph.isHighlighted(edge.id)) return;
+    if (graph.isFocused(edge.id)) return;
     const inMST = mst.value.some((e) => e.id === edge.id);
     const regularColor = getValue(graph.theme.value.edgeTextColor, edge);
     if (inMST) return regularColor;

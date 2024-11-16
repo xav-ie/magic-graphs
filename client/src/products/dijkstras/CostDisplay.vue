@@ -31,7 +31,7 @@
     if (isExplored(node)) return SIM_COLORS.EXPLORED;
     if (isExploring(node)) return SIM_COLORS.EXPLORING;
     if (isSource(node)) return SIM_COLORS.SOURCE;
-    if (props.graph.isHighlighted(node.id)) return props.graph.getTheme("nodeBorderColor", node);
+    if (props.graph.isFocused(node.id)) return props.graph.getTheme("nodeBorderColor", node);
     return colors.GRAY_600;
   };
 
@@ -39,7 +39,7 @@
     if (isExplored(node)) return "Explored";
     if (isExploring(node)) return "Exploring";
     if (isSource(node)) return "Source";
-    if (props.graph.isHighlighted(node.id)) return "Highlighted";
+    if (props.graph.isFocused(node.id)) return "Highlighted";
     return "Unexplored";
   };
 </script>
@@ -47,7 +47,7 @@
 <template>
   <div
     v-for="node in graph.nodes.value"
-    @click="graph.setFocus(node.id)"
+    @click="graph.setFocus([node.id])"
     class="text-white flex items-center gap-3 p-2 hover:bg-gray-900 cursor-pointer rounded-lg"
   >
     <span class="text-2xl w-6 text-center font-bold">

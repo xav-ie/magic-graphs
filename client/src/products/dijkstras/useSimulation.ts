@@ -87,7 +87,7 @@ export const useDijkstraSimulation = (graph: Graph): DijkstraSimulatorControls =
 
   const colorBorders = (node: GNode) => {
     if (!active.value) return
-    if (graph.isHighlighted(node.id)) return
+    if (graph.isFocused(node.id)) return
 
     if (!traceAtStep.value) return
     if (traceAtStep.value.source.id === node.id) return SIM_COLORS.SOURCE

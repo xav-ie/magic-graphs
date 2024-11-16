@@ -66,7 +66,7 @@ export const useFlowControls = (graph: Graph) => {
   }
 
   const colorSourceAndSink = (node: GNode) => {
-    if (graph.isHighlighted(node.id)) return
+    if (graph.isFocused(node.id)) return
     const isSource = node.label === SOURCE_LABEL;
     const isSink = node.label === SINK_LABEL;
     if (isSource) return colors.BLUE_600;

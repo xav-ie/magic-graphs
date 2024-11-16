@@ -53,12 +53,7 @@ export const useNodeAnchorGraph = (
 
     const { getTheme } = graph
 
-    const defaultColor = getTheme('nodeAnchorColor', node)
-    const focusedColor = getTheme('nodeAnchorColorWhenParentFocused', node)
-
-    const isFocused = node.id === graph.focusedItemId.value
-    const color = isFocused ? focusedColor : defaultColor
-
+    const color = getTheme('nodeAnchorColor', node)
     const radius = getTheme('nodeAnchorRadius', node)
 
     const anchorSchemas: SchemaItem[] = []

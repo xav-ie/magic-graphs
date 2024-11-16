@@ -62,17 +62,8 @@ export const useUserEditableGraph = (
   }
 
   const handleDeletion = () => {
-    if (graph.focusedItem.value) {
-      const { item, type } = graph.focusedItem.value
-      if (type === 'node') graph.removeNode(item.id)
-      else if (type === 'edge') graph.removeEdge(item.id)
-    }
-
-    if (graph.marqueeSelectedItems.value.size > 0) {
-      graph.bulkRemoveNode([...graph.marqueeSelectedItems.value])
-      graph.bulkRemoveEdge([...graph.marqueeSelectedItems.value])
-      graph.clearMarqueeSelection()
-    }
+    graph.bulkRemoveNode([...graph.focusedItemIds.value])
+    graph.bulkRemoveEdge([...graph.focusedItemIds.value])
   }
 
   const KEY_BINDINGS = {

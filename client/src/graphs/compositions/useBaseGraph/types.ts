@@ -5,7 +5,7 @@
 
 export type FocusOption = {
   /**
-   * whether to focus the newly added item
+   * whether to focus the added item/s
    */
   focus: boolean
 }

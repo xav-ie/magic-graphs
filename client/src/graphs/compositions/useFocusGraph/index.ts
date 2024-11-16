@@ -1,7 +1,6 @@
 import {
   ref,
   computed,
-  onUnmounted,
   readonly,
 } from "vue";
 import type { Ref } from "vue";
@@ -12,10 +11,8 @@ import type {
   SchemaItem
 } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
-import { getValue } from "@graph/helpers";
 import { useHistoryGraph } from "@graph/compositions/useHistoryGraph";
 import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "@graph/compositions/useFocusGraph/types";
-import type { FocusedItem, MaybeId } from "@graph/compositions/useFocusGraph/types";
 import type { AddNodeOptions, FocusOption } from "../useBaseGraph/types";
 
 export const useFocusGraph = (
@@ -26,13 +23,24 @@ export const useFocusGraph = (
   const graph = useHistoryGraph(canvas, options);
 
   const { setTheme } = useTheme(graph, FOCUS_THEME_ID)
-  const focusedItemId = ref<MaybeId>()
+  const focusedItemIds = ref(new Set<string>())
 
-  const setFocus = (newId: MaybeId) => {
-    if (focusedItemId.value === newId) return
-    if (newId && graph.settings.value.focusBlacklist.includes(newId)) return
-    graph.emit('onFocusChange', newId, focusedItemId.value)
-    focusedItemId.value = newId
+  const setFocus = (ids: string[]) => {
+    const nonBlacklistedIds = ids.filter(id => !graph.settings.value.focusBlacklist.includes(id))
+    const sameLength = nonBlacklistedIds.length === focusedItemIds.value.size
+    const sameIds = sameLength && nonBlacklistedIds.every(id => focusedItemIds.value.has(id))
+    if (sameIds) return
+    const newIds = new Set(nonBlacklistedIds)
+    graph.emit('onFocusChange', newIds, focusedItemIds.value)
+    focusedItemIds.value = newIds
+  }
+
+  const addToFocus = (ids: string[]) => {
+    const nonBlacklistedIds = ids.filter(id => !graph.settings.value.focusBlacklist.includes(id))
+    if (nonBlacklistedIds.length === 0) return
+    const newIds = new Set([...focusedItemIds.value, ...nonBlacklistedIds])
+    graph.emit('onFocusChange', newIds, focusedItemIds.value)
+    focusedItemIds.value = newIds
   }
 
   const handleTextArea = (schemaItem: SchemaItem) => {
@@ -67,62 +75,48 @@ export const useFocusGraph = (
     const canFocus = FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)
     if (!canFocus) return
 
-    setFocus(topItem.id)
+    setFocus([topItem.id])
   }
 
-  const resetFocus = () => setFocus(undefined)
+  const resetFocus = () => setFocus([])
 
   const setFocusToAddedItem = ({ id }: { id: string }, { focus }: FocusOption) => {
-    if (focus) setFocus(id)
+    if (focus) setFocus([id])
   }
 
-  const focusedItem = computed<FocusedItem | undefined>(() => {
-    if (!focusedItemId.value) return
-
-    const node = graph.getNode(focusedItemId.value)
-    if (node) return {
-      type: 'node',
-      item: node,
-    } as const
-
-    const edge = graph.getEdge(focusedItemId.value)
-    if (edge) return {
-      type: 'edge',
-      item: edge,
-    } as const
-
-    throw new Error('focused item not found, is FOCUSABLE_GRAPH_TYPES exhaustive?')
-  })
+  const isFocused = (id: string) => focusedItemIds.value.has(id)
 
   setTheme('nodeColor', (node) => {
-    if (node.id !== focusedItemId.value) return
-    return getValue(graph.theme.value.nodeFocusColor, node)
+    if (!isFocused(node.id)) return
+    return graph.getTheme('nodeFocusColor', node)
   })
 
   setTheme('nodeBorderColor', (node) => {
-    if (node.id !== focusedItemId.value) return
-    return getValue(graph.theme.value.nodeFocusBorderColor, node)
+    if (!isFocused(node.id)) return
+    return graph.getTheme('nodeFocusBorderColor', node)
   })
 
   setTheme('nodeTextColor', (node) => {
-    if (node.id !== focusedItemId.value) return
-    return getValue(graph.theme.value.nodeFocusTextColor, node)
+    if (!isFocused(node.id)) return
+    return graph.getTheme('nodeFocusTextColor', node)
   })
 
   setTheme('edgeColor', (edge) => {
-    if (edge.id !== focusedItemId.value) return
-    return getValue(graph.theme.value.edgeFocusColor, edge)
+    if (!isFocused(edge.id)) return
+    return graph.getTheme('edgeFocusColor', edge)
   })
 
   setTheme('edgeTextColor', (edge) => {
-    if (edge.id !== focusedItemId.value) return
-    return getValue(graph.theme.value.edgeFocusTextColor, edge)
+    if (!isFocused(edge.id)) return
+    return graph.getTheme('edgeFocusTextColor', edge)
   })
 
-  const repaintOnFocusChange = () => setTimeout(graph.repaint('focus-graph/on-focus-change'), 10)
+  setTheme('nodeAnchorColor', (node) => {
+    if (!isFocused(node.id)) return
+    return graph.getTheme('nodeAnchorColorWhenParentFocused', node)
+  })
 
   const activate = () => {
-    graph.subscribe('onFocusChange', repaintOnFocusChange)
     graph.subscribe('onNodeAdded', setFocusToAddedItem)
     graph.subscribe('onEdgeAdded', setFocusToAddedItem)
     graph.subscribe('onMouseDown', handleFocusChange)
@@ -130,7 +124,6 @@ export const useFocusGraph = (
   }
 
   const deactivate = () => {
-    graph.unsubscribe('onFocusChange', repaintOnFocusChange)
     graph.unsubscribe('onNodeAdded', setFocusToAddedItem)
     graph.unsubscribe('onEdgeAdded', setFocusToAddedItem)
     graph.unsubscribe('onMouseDown', handleFocusChange)
@@ -149,13 +142,9 @@ export const useFocusGraph = (
     ...graph,
 
     /**
-     * The focused item in the graph, if any
-     */
-    focusedItem: readonly(focusedItem),
-    /**
      * The id of the focused item in the graph, if any
      */
-    focusedItemId: readonly(focusedItemId),
+    focusedItemIds: readonly(focusedItemIds),
     /**
      * Sets the focus to the item with the given id
      */
@@ -164,5 +153,22 @@ export const useFocusGraph = (
      * Resets the focus back to none
      */
     resetFocus,
+    /**
+     * Adds items with the given ids to the focus
+     */
+    addToFocus,
+    /**
+     * @param id a node or edge id
+     * @returns true if the item is focused
+     */
+    isFocused,
+    /**
+     * all the nodes that are currently focused
+     */
+    focusedNodes: computed(() => graph.nodes.value.filter(node => isFocused(node.id))),
+    /**
+     * all the edges that are currently focused
+     */
+    focusedEdges: computed(() => graph.edges.value.filter(edge => isFocused(edge.id))),
   }
 }

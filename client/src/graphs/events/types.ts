@@ -133,10 +133,9 @@ export type HistoryGraphEventMap = {
 
 export type FocusGraphEventMap = {
   /**
-   * when the focus item (ie nodes or edges) changes.
-   * undefined if the user is not focusing on an item
+   * when the set of focused items changes
    */
-  onFocusChange: (newItemId: string | undefined, oldItemId: string | undefined) => void;
+  onFocusChange: (newItemIds: Set<string>, oldItemId: Set<string>) => void;
 }
 
 export type DraggableGraphEventMap = {

@@ -25,9 +25,8 @@
   tutorial.start();
 
   const eraseItems = () => {
-    const ids = Array.from(props.graph.highlightedItemIds.value);
-    props.graph.bulkRemoveNode(ids);
-    props.graph.bulkRemoveEdge(ids);
+    props.graph.bulkRemoveNode([...props.graph.focusedItemIds.value]);
+    props.graph.bulkRemoveEdge([...props.graph.focusedItemIds.value]);
   }
 </script>
 
@@ -90,7 +89,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="eraseItems"
-        :disabled="graph.highlightedItemIds.value.size === 0"
+        :disabled="graph.focusedItemIds.value.size === 0"
       >
         mdi-eraser
       </ToolbarButton>

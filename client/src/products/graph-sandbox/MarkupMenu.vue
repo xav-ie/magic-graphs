@@ -20,7 +20,7 @@
   colorize();
 
   const title = computed(() => {
-    const ids = Array.from(props.graph.highlightedItemIds.value);
+    const ids = Array.from(props.graph.focusedItemIds.value);
     if (ids.length === 1) {
       const [id] = ids;
       const node = props.graph.getNode(id);
@@ -38,7 +38,7 @@
   });
 
   const getColor = () => {
-    const highlightedIds = Array.from(props.graph.highlightedItemIds.value);
+    const highlightedIds = Array.from(props.graph.focusedItemIds.value);
     const itemColors = new Set(highlightedIds.map((id) => colorMap.value.get(id)));
     if (itemColors.has(undefined)) return colors.BLACK;
     if (itemColors.size > 1) return colors.BLACK;
@@ -48,23 +48,20 @@
   const color = ref(getColor());
 
   const setColor = (value: Color) => {
-    for (const id of props.graph.highlightedItemIds.value) {
+    for (const id of props.graph.focusedItemIds.value) {
       colorMap.value.set(id, value);
     }
     color.value = value;
   };
 
-  watch(
-    () => props.graph.highlightedItemIds.value,
-    () => {
-      color.value = getColor();
-    }
-  );
+  props.graph.subscribe('onFocusChange', () => {
+    color.value = getColor();
+  });
 </script>
 
 <template>
   <div
-    v-if="props.graph.highlightedItemIds.value.size > 0"
+    v-if="props.graph.focusedItemIds.value.size > 0"
     class="bg-gray-800 p-3 w-60 flex flex-col gap-3 rounded-r-xl"
   >
     <h1 class="text-white font-bold text-2xl">
