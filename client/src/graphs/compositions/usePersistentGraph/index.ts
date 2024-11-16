@@ -113,8 +113,6 @@ export const usePersistentGraph = (
 
     // wait for the next microtask to ensure caller of useGraph has a chance to sub to onStructureChange
     queueMicrotask(() => graph.emit('onStructureChange', graph.nodes.value, graph.edges.value))
-
-    setTimeout(() => graph.repaint('persistent-graph/load')(), 10)
   }
 
   const trackChangeEvents: GraphEvent[] = [

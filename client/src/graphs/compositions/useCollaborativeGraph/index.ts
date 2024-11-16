@@ -65,13 +65,11 @@ export const useCollaborativeGraph = (
   socket.on('collaboratorLeft', (collaboratorId) => {
     console.log('collaborator left', collaboratorId)
     delete collaborators.value[collaboratorId]
-    graph.repaint('collaborative-graph/collaborator-left')()
   })
 
   socket.on('collaboratorJoined', (collaborator) => {
     console.log('collaborator joined', collaborator)
     collaborators.value[collaborator.id] = collaborator
-    graph.repaint('collaborative-graph/collaborator-joined')()
   })
 
   const collaborativeGraphEvents: Partial<GraphEventMap> = {
@@ -149,17 +147,12 @@ export const useCollaborativeGraph = (
     const edge = graph.getEdge(edgeId)
     if (!edge) throw new Error('edge not found')
     edge.label = newLabel
-    graph.repaint('collaborative-graph/edge-label-edit')()
   })
-
-  const COLLAB_MOVE_REPAINT_ID = 'collaborative-graph/collaborator-mouse-move'
-  const collaboratorMoveRepaint = graph.repaint(COLLAB_MOVE_REPAINT_ID)
 
   socket.on('toClientCollaboratorMoved', ({ x, y, id }) => {
     const movedCollaborator = collaborators.value[id]
     if (!movedCollaborator) throw new Error('moving collaborator not found')
     movedCollaborator.mousePosition = { x, y }
-    collaboratorMoveRepaint()
   })
 
   const onCollaborativeRoomJoined = (
@@ -176,7 +169,6 @@ export const useCollaborativeGraph = (
     // TODO - both persistent anf collaborative graph loadout switching
     graph.nodes.value = graphState.nodes
     graph.edges.value = graphState.edges
-    graph.repaint('collaborative-graph/join-room')()
   }
 
   const joinCollaborativeRoom = async (newRoomId: string) => {
@@ -205,7 +197,6 @@ export const useCollaborativeGraph = (
     }
     roomId.value = ''
     collaborators.value = {}
-    graph.repaint('collaborative-graph/leave-room')()
   }
 
   const leaveCollaborativeRoom = async () => {

@@ -194,7 +194,6 @@ export const useNodeAnchorGraph = (
     if (!activeAnchor.value) return
     activeAnchor.value.x = ev.offsetX
     activeAnchor.value.y = ev.offsetY
-    graph.repaint('node-anchor-graph/update-active-anchor-position')()
   }
 
   graph.subscribe('onMouseMove', updateActiveAnchorPosition)
@@ -264,7 +263,6 @@ export const useNodeAnchorGraph = (
 
   watch(parentNode, () => {
     if (parentNode.value) updateNodeAnchors(parentNode.value)
-    graph.repaint('node-anchor-graph/parent-node-watch')()
   })
 
   graph.subscribe('onNodeMoved', deactivateAnchors)

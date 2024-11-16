@@ -976,7 +976,7 @@ const getInitialEventBus = () => {
         onContextMenu: new Set(),
         // @ts-ignore
         // @ts-ignore
-        onKeydown: new Set(),
+        onKeyDown: new Set(),
         // @ts-ignore
         // @ts-ignore
         onThemeChange: new Set(),

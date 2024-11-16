@@ -41,7 +41,6 @@ export const useFlowSimulation = (graph: Graph): FlowSimulationControls => {
     createResidualEdges()
 
     simulationInterval.value = setInterval(onSimulationInterval, playbackSpeed.value)
-    graph.repaint('flow-simulation/start-simulation')()
   }
 
   const stop = () => {
@@ -52,7 +51,6 @@ export const useFlowSimulation = (graph: Graph): FlowSimulationControls => {
     active.value = false
 
     if (simulationInterval.value) clearInterval(simulationInterval.value)
-    graph.repaint('flow-simulation/stop-simulation')()
   }
 
   const nextStep = () => {
@@ -61,7 +59,6 @@ export const useFlowSimulation = (graph: Graph): FlowSimulationControls => {
 
     if (step.value === trace.value.length) {
       activeEdgeIds.value = []
-      graph.repaint('flow-simulation/next-step')()
       return
     }
 
@@ -74,8 +71,6 @@ export const useFlowSimulation = (graph: Graph): FlowSimulationControls => {
     if (!edge1 || !edge2) throw 'this is all wrong!'
     edge1.label = trackerAtStep[edge1Id].toString()
     edge2.label = trackerAtStep[edge2Id].toString()
-
-    graph.repaint('flow-simulation/next-step')()
   }
 
   const prevStep = () => {
@@ -84,7 +79,6 @@ export const useFlowSimulation = (graph: Graph): FlowSimulationControls => {
 
     if (step.value === -1) {
       activeEdgeIds.value = []
-      graph.repaint('flow-simulation/prev-step')()
       return
     }
 

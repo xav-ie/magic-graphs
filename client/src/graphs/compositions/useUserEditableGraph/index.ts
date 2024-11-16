@@ -92,7 +92,7 @@ export const useUserEditableGraph = (
 
   const EVENT_BINDINGS = {
     ['onDblClick']: handleNodeCreation,
-    ['onKeydown']: handleKeyboardEvents,
+    ['onKeyDown']: handleKeyboardEvents,
     ['onNodeAnchorDrop']: handleEdgeCreation,
   } as const
 

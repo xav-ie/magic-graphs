@@ -27,7 +27,7 @@
 
   const SHOW_MST_SHORTCUT = "s";
 
-  props.graph.subscribe("onKeydown", (e: KeyboardEvent) => {
+  props.graph.subscribe("onKeyDown", (e: KeyboardEvent) => {
     if (e.key.toLowerCase() !== SHOW_MST_SHORTCUT) return;
     mstShowing.value ? hideMST() : showMST();
   });

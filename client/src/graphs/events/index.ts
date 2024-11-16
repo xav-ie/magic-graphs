@@ -112,8 +112,8 @@ export const getInitialEventBus = () => {
     onDblClick: new Set(),
     onContextMenu: new Set(),
 
-    onKeydown: new Set(),
-    onKeyup: new Set(),
+    onKeyDown: new Set(),
+    onKeyUp: new Set(),
 
     onThemeChange: new Set(),
     onSettingsChange: new Set(),

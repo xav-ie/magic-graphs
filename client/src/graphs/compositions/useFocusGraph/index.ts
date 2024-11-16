@@ -25,6 +25,8 @@ export const useFocusGraph = (
   const { setTheme } = useTheme(graph, FOCUS_THEME_ID)
   const focusedItemIds = ref(new Set<string>())
 
+  const shiftKeyHeldDown = ref(false)
+
   const setFocus = (ids: string[]) => {
     const nonBlacklistedIds = ids.filter(id => !graph.settings.value.focusBlacklist.includes(id))
     const sameLength = nonBlacklistedIds.length === focusedItemIds.value.size
@@ -82,7 +84,7 @@ export const useFocusGraph = (
     const canFocus = FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)
     if (!canFocus) return
 
-    setFocus([topItem.id])
+    shiftKeyHeldDown.value ? addToFocus(topItem.id) : setFocus([topItem.id])
   }
 
   const resetFocus = () => setFocus([])
@@ -123,11 +125,21 @@ export const useFocusGraph = (
     return graph.getTheme('nodeAnchorColorWhenParentFocused', node)
   })
 
+  const handleKeyDown = (ev: KeyboardEvent) => {
+    if (ev.key === 'Shift') shiftKeyHeldDown.value = true
+  }
+
+  const handleKeyUp = (ev: KeyboardEvent) => {
+    if (ev.key === 'Shift') shiftKeyHeldDown.value = false
+  }
+
   const activate = () => {
     graph.subscribe('onNodeAdded', setFocusToAddedItem)
     graph.subscribe('onEdgeAdded', setFocusToAddedItem)
     graph.subscribe('onMouseDown', handleFocusChange)
     graph.subscribe('onGraphReset', resetFocus)
+    graph.subscribe('onKeyDown', handleKeyDown)
+    graph.subscribe('onKeyUp', handleKeyUp)
     graph.subscribe('onStructureChange', clearOutDeletedItemsFromFocus)
   }
 
@@ -136,6 +148,8 @@ export const useFocusGraph = (
     graph.unsubscribe('onEdgeAdded', setFocusToAddedItem)
     graph.unsubscribe('onMouseDown', handleFocusChange)
     graph.unsubscribe('onGraphReset', resetFocus)
+    graph.unsubscribe('onKeyDown', handleKeyDown)
+    graph.unsubscribe('onKeyUp', handleKeyUp)
     graph.unsubscribe('onStructureChange', clearOutDeletedItemsFromFocus)
     resetFocus()
   }

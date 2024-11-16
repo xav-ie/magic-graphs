@@ -25,7 +25,7 @@ const getInitialEventBus = () => {
         onMouseMove: new Set(),
         onDblClick: new Set(),
         onContextMenu: new Set(),
-        onKeydown: new Set(),
+        onKeyDown: new Set(),
         onThemeChange: new Set(),
         onSettingsChange: new Set(),
         /**

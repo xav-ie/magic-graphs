@@ -105,11 +105,11 @@ export type BaseGraphEventMap = {
   /**
    * when a key is pressed down on the canvas (native dom event)
    */
-  onKeydown: (ev: KeyboardEvent) => void;
+  onKeyDown: (ev: KeyboardEvent) => void;
   /**
    * when a key is released on the canvas (native dom event)
    */
-  onKeyup: (ev: KeyboardEvent) => void;
+  onKeyUp: (ev: KeyboardEvent) => void;
   /**
    * when the graph theme is changed
    */

@@ -1531,7 +1531,7 @@ export const getInitialEventBus = () => {
 // @ts-ignore
 
 // @ts-ignore
-    onKeydown: new Set(),
+    onKeyDown: new Set(),
 // @ts-ignore
 
 // @ts-ignore
@@ -1777,7 +1777,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
    */
 // @ts-ignore
-  onKeydown: (ev: KeyboardEvent) => void;
+  onKeyDown: (ev: KeyboardEvent) => void;
 // @ts-ignore
   /**
 // @ts-ignore

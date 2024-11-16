@@ -28,7 +28,6 @@ export const useDraggableGraph = (
     if (!activeDragNode.value) return
     graph.emit('onNodeDrop', activeDragNode.value.node)
     activeDragNode.value = undefined;
-    setTimeout(graph.repaint('draggable-graph/drop'), 10)
   }
 
   const drag = (ev: MouseEvent) => {

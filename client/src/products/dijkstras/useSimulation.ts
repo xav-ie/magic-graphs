@@ -52,37 +52,27 @@ export const useDijkstraSimulation = (graph: Graph): DijkstraSimulatorControls =
       if (isOver.value || paused.value) return
       nextStep()
     }, playbackSpeed.value)
-
-    graph.repaint('dijkstras/start')()
   }
 
   const stop = () => {
     if (interval.value) clearInterval(interval.value)
     active.value = false
-
-    graph.repaint('dijkstras/stop')()
   }
 
   const nextStep = () => {
     if (!trace.value) return
     if (step.value === trace.value.length - 1) return
     step.value++
-
-    graph.repaint('dijkstras/next-step')()
   }
 
   const prevStep = () => {
     if (step.value === 0) return
     step.value--
-
-    graph.repaint('dijkstras/prev-step')()
   }
 
   const setStep = (newStep: number) => {
     if (newStep < -1 || newStep > trace.value.length) return
     step.value = newStep
-
-    graph.repaint('dijkstras/set-step')()
   }
 
   const colorBorders = (node: GNode) => {

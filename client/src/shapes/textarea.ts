@@ -63,7 +63,7 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
 
   input.onblur = removeInput;
 
-  input.onkeydown = (ev) => {
+  input.onKeyDown = (ev) => {
     if (ev.key === 'Enter') {
       removeInput();
     }
