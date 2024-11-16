@@ -7,11 +7,7 @@
  * - Anchor Node Graph: A graph that supports the creation and event propagation of anchors around nodes.
 */
 
-import {
-  ref,
-  readonly,
-  watch,
-} from 'vue'
+import { ref, readonly } from 'vue'
 import type { Ref } from 'vue'
 import { generateId, prioritizeNode } from "@graph/helpers";
 import { useDraggableGraph } from "@graph/compositions/useDraggableGraph";
@@ -44,6 +40,11 @@ export const useNodeAnchorGraph = (
 
   const parentNode = ref<GNode | undefined>()
   const activeAnchor = ref<NodeAnchor | undefined>()
+
+  const resetParentNode = () => {
+    parentNode.value = undefined
+    activeAnchor.value = undefined
+  }
 
   const getAnchorSchemas = (node: GNode) => {
     if (
@@ -170,14 +171,15 @@ export const useNodeAnchorGraph = (
   const updateParentNode = (ev: MouseEvent) => {
     if (activeAnchor.value || !graph.settings.value.nodeAnchors) return
     const topItem = graph.getSchemaItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
-    if (!topItem) return parentNode.value = undefined
+    if (!topItem) return resetParentNode()
     if (topItem.graphType !== 'node') return
     const perspectiveNode = graph.getNode(topItem.id)
     if (!perspectiveNode) throw new Error('node in aggregator but not in graph')
     const perspectiveNodeFocused = graph.isFocused(perspectiveNode.id)
     const moreThanOneNodeFocused = graph.focusedNodes.value.length > 1
-    if (perspectiveNodeFocused && moreThanOneNodeFocused) return parentNode.value = undefined
-    parentNode.value = graph.getNode(topItem.id)
+    if (perspectiveNodeFocused && moreThanOneNodeFocused) return resetParentNode()
+    parentNode.value = perspectiveNode
+    updateNodeAnchors(perspectiveNode)
   }
 
   const setActiveAnchor = (ev: MouseEvent) => {
@@ -211,7 +213,7 @@ export const useNodeAnchorGraph = (
     if (!activeAnchor.value) return
     else if (!parentNode.value) throw new Error('active anchor without parent node')
     graph.emit('onNodeAnchorDrop', parentNode.value, activeAnchor.value)
-    deactivateAnchors()
+    resetParentNode()
   }
 
   graph.subscribe('onMouseUp', dropAnchor)
@@ -251,34 +253,33 @@ export const useNodeAnchorGraph = (
   graph.updateAggregator.push(insertAnchorsIntoAggregator)
   graph.updateAggregator.push(insertLinkPreviewIntoAggregator)
 
-  const deactivateAnchors = () => {
-    parentNode.value = undefined
-    activeAnchor.value = undefined
+  const resetParentNodeIfRemoved = (node: GNode) => {
+    if (parentNode.value?.id === node.id) resetParentNode()
   }
 
-
-  graph.subscribe('onNodeRemoved', (node) => {
-    if (parentNode.value?.id !== node.id) return
-    deactivateAnchors()
-  })
-
   graph.subscribe('onSettingsChange', (diff) => {
-    if (diff.nodeAnchors === false) deactivateAnchors()
+    if (diff.nodeAnchors === true) activate()
+    else if (diff.nodeAnchors === false) deactivate()
   })
-
-  watch(parentNode, () => {
-    if (parentNode.value) updateNodeAnchors(parentNode.value)
-  })
-
-  graph.subscribe('onNodeMoved', deactivateAnchors)
-  graph.subscribe('onNodeDrop', updateNodeAnchors)
 
   graph.subscribe('onFocusChange', () => {
     if (!parentNode.value) return
     const parentFocused = graph.isFocused(parentNode.value.id)
     const moreThanOneNodeFocused = graph.focusedNodes.value.length > 1
-    if (parentFocused && moreThanOneNodeFocused) deactivateAnchors()
+    if (parentFocused && moreThanOneNodeFocused) resetParentNode()
   })
+
+  const activate = () => {
+    graph.subscribe('onNodeRemoved', resetParentNodeIfRemoved)
+    graph.subscribe('onNodeMoved', resetParentNode)
+    graph.subscribe('onNodeDrop', updateNodeAnchors)
+  }
+
+  const deactivate = () => {
+    graph.unsubscribe('onNodeRemoved', resetParentNodeIfRemoved)
+    graph.unsubscribe('onNodeMoved', resetParentNode)
+    graph.unsubscribe('onNodeDrop', updateNodeAnchors)
+  }
 
   return {
     ...graph,
