@@ -171,8 +171,13 @@ export const useNodeAnchorGraph = (
     if (activeAnchor.value || !graph.settings.value.nodeAnchors) return
     const topItem = graph.getSchemaItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     if (!topItem) return parentNode.value = undefined
-    else if (topItem.graphType === 'node-anchor') return
-    else if (topItem.graphType === 'node') return parentNode.value = graph.getNode(topItem.id)
+    if (topItem.graphType !== 'node') return
+    const perspectiveNode = graph.getNode(topItem.id)
+    if (!perspectiveNode) throw new Error('node in aggregator but not in graph')
+    const perspectiveNodeFocused = graph.isFocused(perspectiveNode.id)
+    const moreThanOneNodeFocused = graph.focusedNodes.value.length > 1
+    if (perspectiveNodeFocused && moreThanOneNodeFocused) return parentNode.value = undefined
+    parentNode.value = graph.getNode(topItem.id)
   }
 
   const setActiveAnchor = (ev: MouseEvent) => {
@@ -267,6 +272,13 @@ export const useNodeAnchorGraph = (
 
   graph.subscribe('onNodeMoved', deactivateAnchors)
   graph.subscribe('onNodeDrop', updateNodeAnchors)
+
+  graph.subscribe('onFocusChange', () => {
+    if (!parentNode.value) return
+    const parentFocused = graph.isFocused(parentNode.value.id)
+    const moreThanOneNodeFocused = graph.focusedNodes.value.length > 1
+    if (parentFocused && moreThanOneNodeFocused) deactivateAnchors()
+  })
 
   return {
     ...graph,
