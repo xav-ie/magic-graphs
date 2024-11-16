@@ -77,7 +77,6 @@ export const useBaseGraph = (
     aggregator,
     updateAggregator,
     getSchemaItemsByCoordinates,
-    repaint,
   } = useAggregator({ canvas, emit })
 
   const addNodesAndEdgesToAggregator = (aggregator: Aggregator) => {
@@ -155,7 +154,6 @@ export const useBaseGraph = (
     edges,
     nodeMap: nodeIdToNodeMap,
     edgeMap: edgeIdToEdgeMap,
-    repaint,
     emit,
     settings,
   })
@@ -207,11 +205,6 @@ export const useBaseGraph = (
     activeSettings.value = clone(settings.value)
     emit('onSettingsChange', settingsDiff)
   }, { deep: true })
-
-  subscribe('onThemeChange', () => repaint('base-graph/on-theme-change')())
-  subscribe('onSettingsChange', () => repaint('base-graph/on-settings-change')())
-  subscribe('onGraphReset', () => repaint('base-graph/on-graph-reset')())
-  subscribe('onEdgeLabelChange', () => repaint('base-graph/on-edge-label-change')())
 
   return {
     /**
@@ -269,7 +262,6 @@ export const useBaseGraph = (
 
     reset,
 
-    repaint,
     canvas,
   }
 }

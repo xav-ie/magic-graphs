@@ -12,14 +12,6 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
   const aggregator = ref<Aggregator>([])
   const updateAggregator: UpdateAggregator[] = []
 
-  /**
-   * refresh the canvas
-   *
-   * @param repaintId - the id of the repaint event (for tracking)
-   * @returns a function that will repaint the canvas
-   */
-  const repaint = (repaintId: string) => () => { }
-
   const repaintLoop = () => {
     if (!canvas.value) return
     const ctx = canvas.value.getContext('2d')
@@ -76,7 +68,6 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
   return {
     aggregator,
     updateAggregator,
-    repaint,
     getSchemaItemsByCoordinates,
   }
 }

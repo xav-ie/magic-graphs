@@ -25,7 +25,6 @@ import type { GraphSettings } from "@graph/settings";
 
 type GraphCRUDOptions = {
   emit: Emitter,
-  repaint: (key: string) => () => void,
   nodes: Ref<GNode[]>,
   edges: Ref<GEdge[]>,
   nodeMap: NodeMap,
@@ -39,7 +38,6 @@ export const useGraphCRUD = ({
   edges,
   nodeMap,
   edgeMap,
-  repaint,
   emit,
   settings,
 }: GraphCRUDOptions) => {
@@ -98,7 +96,6 @@ export const useGraphCRUD = ({
     nodes.value.push(newNode)
     emit('onNodeAdded', newNode, fullOptions)
     emit('onStructureChange', nodes.value, edges.value)
-    repaint('base-graph/add-node')()
     return newNode
   }
 
@@ -182,7 +179,6 @@ export const useGraphCRUD = ({
     emit('onEdgeAdded', newEdge, fullOptions)
     emit('onStructureChange', nodes.value, edges.value)
 
-    repaint('base-graph/add-edge')()
     return newEdge
   }
 
@@ -239,7 +235,6 @@ export const useGraphCRUD = ({
     node.x = coords.x
     node.y = coords.y
     emit('onNodeMoved', node, fullOptions)
-    repaint('base-graph/move-node')()
   }
 
 
@@ -272,7 +267,6 @@ export const useGraphCRUD = ({
     emit('onNodeRemoved', removedNode, removedEdges, fullOptions)
     emit('onStructureChange', nodes.value, edges.value)
 
-    repaint('base-graph/remove-node')()
     return [removedNode, removedEdges] as const
   }
 
@@ -328,7 +322,6 @@ export const useGraphCRUD = ({
 
     emit('onEdgeRemoved', edge, fullOptions)
     emit('onStructureChange', nodes.value, edges.value)
-    repaint('base-graph/remove-edge')()
     return edge
   }
 
