@@ -30,17 +30,19 @@ export const useFocusGraph = (
     const sameLength = nonBlacklistedIds.length === focusedItemIds.value.size
     const sameIds = sameLength && nonBlacklistedIds.every(id => focusedItemIds.value.has(id))
     if (sameIds) return
-    const newIds = new Set(nonBlacklistedIds)
-    graph.emit('onFocusChange', newIds, focusedItemIds.value)
-    focusedItemIds.value = newIds
+    const oldIds = new Set([...focusedItemIds.value])
+    focusedItemIds.value = new Set(nonBlacklistedIds)
+    graph.emit('onFocusChange', focusedItemIds.value, oldIds)
   }
 
-  const addToFocus = (ids: string[]) => {
-    const nonBlacklistedIds = ids.filter(id => !graph.settings.value.focusBlacklist.includes(id))
-    if (nonBlacklistedIds.length === 0) return
-    const newIds = new Set([...focusedItemIds.value, ...nonBlacklistedIds])
-    graph.emit('onFocusChange', newIds, focusedItemIds.value)
-    focusedItemIds.value = newIds
+  const addToFocus = (id: string) => {
+    const isInFocusAlready = focusedItemIds.value.has(id)
+    if (isInFocusAlready) return
+    const isOnBlacklist = graph.settings.value.focusBlacklist.includes(id)
+    if (isOnBlacklist) return
+    const oldIds = new Set([...focusedItemIds.value])
+    focusedItemIds.value.add(id)
+    graph.emit('onFocusChange', focusedItemIds.value, oldIds)
   }
 
   const handleTextArea = (schemaItem: SchemaItem) => {
@@ -62,11 +64,10 @@ export const useFocusGraph = (
   }
 
   const handleFocusChange = (ev: MouseEvent) => {
-
     const { offsetX: x, offsetY: y } = ev
 
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    if (!topItem) return setFocus([])
+    if (!topItem) return resetFocus()
 
     // handle text areas
     const inATextArea = topItem.shape.textHitbox?.({ x, y })
@@ -81,14 +82,10 @@ export const useFocusGraph = (
     const canFocus = FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)
     if (!canFocus) return
 
-    console.log('setting focus to', topItem.id)
     setFocus([topItem.id])
   }
 
-  const resetFocus = () => {
-    console.log('resetting focus')
-    setFocus([])
-  }
+  const resetFocus = () => setFocus([])
 
   const setFocusToAddedItem = ({ id }: { id: string }, { focus }: FocusOption) => {
     if (focus) setFocus([id])
@@ -166,7 +163,7 @@ export const useFocusGraph = (
      */
     resetFocus,
     /**
-     * Adds items with the given ids to the focus
+     * Adds item with the given id to the focus
      */
     addToFocus,
     /**

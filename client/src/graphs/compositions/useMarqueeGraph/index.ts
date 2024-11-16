@@ -58,21 +58,12 @@ export const useMarqueeGraph = (
   }
 
   /**
-   * clears the marquee box and resets the focused nodes
-   */
-  const clearMarqueeBox = () => {
-    // graph.resetFocus()
-    encapsulatedNodeBox.value = undefined
-    showNodeAnchors()
-  }
-
-  /**
    * given a mouse event, engages or disengages the marquee box
    */
   const handleMarqueeEngagement = (event: MouseEvent) => {
     const { offsetX: x, offsetY: y } = event
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    if (topItem?.graphType !== 'encapsulated-node-box') clearMarqueeBox()
+    if (topItem?.graphType !== 'encapsulated-node-box') showNodeAnchors()
     if (!topItem) engageMarqueeBox({ x, y })
   }
 
@@ -134,18 +125,21 @@ export const useMarqueeGraph = (
   const updateMarqueeSelectedItems = (box: BoundingBox) => {
     const surfaceArea = getSurfaceArea(box)
     if (surfaceArea < 100) return
-    graph.resetFocus()
+    const targetedItems: string[] = []
 
     for (const { id, shape, graphType } of graph.aggregator.value) {
       const { marqueeSelectableGraphTypes } = graph.settings.value
       if (!marqueeSelectableGraphTypes.includes(graphType)) continue
       const inSelectionBox = shape.efficientHitbox(box)
-      if (inSelectionBox) graph.addToFocus([id])
+      if (inSelectionBox) targetedItems.push(id)
     }
+
+    graph.setFocus(targetedItems)
   }
 
   const updateEncapsulatedNodeBox = () => {
     if (!encapsulatedNodeBox.value) return
+    if (graph.focusedNodes.value.length < 2) return initializeEncapsulatedNodeBox()
 
     let minX = Infinity, minY = Infinity;
     let maxX = -Infinity, maxY = -Infinity;
@@ -240,7 +234,6 @@ export const useMarqueeGraph = (
 
     graph.subscribe('onMouseDown', handleMarqueeEngagement)
     graph.subscribe('onMouseUp', disengageMarqueeBox)
-    graph.subscribe('onNodeMoved', updateEncapsulatedNodeBox)
     graph.subscribe('onContextMenu', disengageMarqueeBox)
     graph.subscribe('onMouseMove', setMarqueeBoxDimensions)
 
@@ -254,7 +247,6 @@ export const useMarqueeGraph = (
 
     graph.unsubscribe('onMouseDown', handleMarqueeEngagement)
     graph.unsubscribe('onMouseUp', disengageMarqueeBox)
-    graph.unsubscribe('onNodeMoved', updateEncapsulatedNodeBox)
     graph.unsubscribe('onContextMenu', disengageMarqueeBox)
     graph.unsubscribe('onMouseMove', setMarqueeBoxDimensions)
 
