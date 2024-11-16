@@ -72,7 +72,7 @@
     </h1>
     <div>
       <div class="flex gap-1">
-        <div
+        <button
           v-for="paletteColor in COLOR_PALETTE"
           @click="setColor(paletteColor)"
           :class="[
@@ -89,7 +89,7 @@
           <div
             :class="['w-8', 'h-8', 'rounded-md', `bg-[${paletteColor}]`]"
           ></div>
-        </div>
+        </button>
       </div>
     </div>
   </div>
