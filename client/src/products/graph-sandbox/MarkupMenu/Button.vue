@@ -15,7 +15,20 @@
       active ? 'hover:border-white' : 'hover:border-gray-400',
     ]"
   >
-    <div :class="['relative', 'w-8', 'h-8', 'rounded-md']">
+    <div
+      :class="[
+        'relative',
+        'w-8',
+        'h-8',
+        'rounded-md',
+        'flex',
+        'items-center',
+        'justify-center',
+        'text-white',
+        'text-sm',
+        active ? 'bg-gray-800' : 'bg-gray-700',
+      ]"
+    >
       <slot></slot>
     </div>
   </button>

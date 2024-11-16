@@ -3,6 +3,7 @@
   import type { Graph } from "@graph/types";
   import { useMarkupColorizer } from "./useMarkupColorizer";
   import NodeEdgeColorInput from "./MarkupMenu/NodeEdgeColorInput.vue";
+import NodeEdgeSizeInput from "./MarkupMenu/NodeEdgeSizeInput.vue";
 
   const props = defineProps<{
     graph: Graph;
@@ -33,16 +34,22 @@
 <template>
   <div
     v-if="props.graph.focusedItemIds.value.size > 0"
-    class="bg-gray-800 p-3 w-60 flex flex-col gap-3 rounded-r-xl"
+    class="bg-gray-800 p-3 flex flex-col gap-3 rounded-r-xl"
   >
     <h1 class="text-white font-bold text-2xl pl-1">
       {{ title }}
     </h1>
-    <div>
+
+    <div class="flex flex-col gap-3">
       <NodeEdgeColorInput
         :graph="props.graph"
         :colorMap="colorMap"
       />
+
+      <NodeEdgeSizeInput
+        :graph="props.graph"
+      />
     </div>
+
   </div>
 </template>

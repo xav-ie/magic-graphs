@@ -2,7 +2,6 @@
   import type { Graph } from "@graph/types";
   import type { ColorMap } from "../useMarkupColorizer";
   import InputColor from "./InputColor.vue";
-  import colors from "@utils/colors";
   import type { Color } from "@utils/colors";
   import { ref } from "vue";
 
@@ -16,9 +15,9 @@
     const itemColors = new Set(
       highlightedIds.map((id) => props.colorMap.get(id))
     );
-    if (itemColors.has(undefined)) return colors.BLACK;
-    if (itemColors.size > 1) return colors.BLACK;
-    return itemColors.values().next().value as Color;
+    if (itemColors.has(undefined)) return
+    if (itemColors.size > 1) return
+    return itemColors.values().next().value
   };
 
   const activeColor = ref(getColor());
@@ -37,7 +36,7 @@
 
 <template>
   <InputColor
-    :modelValue="activeColor"
-    @update:modelValue="setActiveColor"
+    :model-value="activeColor"
+    @update:model-value="setActiveColor"
   />
 </template>

@@ -4,14 +4,15 @@
   import colors from "@utils/colors";
   import type { Color } from "@utils/colors";
 
-  const activeColor = defineModel<Color>()
-
   const COLOR_PALETTE = [
+    colors.BLACK,
     colors.BLUE_600,
     colors.RED_600,
     colors.GREEN_600,
     colors.YELLOW_600,
   ];
+
+  const activeColor = defineModel<Color>();
 </script>
 
 <template>
