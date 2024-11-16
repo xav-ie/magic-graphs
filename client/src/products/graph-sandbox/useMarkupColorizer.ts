@@ -4,8 +4,7 @@ import type { GEdge, GNode, Graph } from "@graph/types";
 import colors, { adjustHex } from "@utils/colors";
 import type { Color } from "@utils/colors";
 import { useLocalStorage } from "@vueuse/core";
-
-const MARKUP_USETHEME_ID = "markup";
+import { MARKUP_USETHEME_ID } from "./types";
 
 type ColorMapKey = GNode['id'] | GEdge['id'];
 type ColorMapValue = Color;
