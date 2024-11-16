@@ -63,7 +63,7 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
 
   input.onblur = removeInput;
 
-  input.onKeyDown = (ev) => {
+  input.onkeydown = (ev) => {
     if (ev.key === 'Enter') {
       removeInput();
     }
@@ -74,8 +74,6 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
   responsiveCanvas.appendChild(input);
   setTimeout(() => {
     input.focus();
-    // highlight the text
     input.setSelectionRange(0, input.value.length);
-
   }, 10);
 }

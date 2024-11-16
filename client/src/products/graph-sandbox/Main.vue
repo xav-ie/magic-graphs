@@ -4,7 +4,8 @@
   import Graph from "@graph/Graph.vue";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
-  import MarkupMenu from "./MarkupMenu.vue";
+  import IslandMarkup from "./IslandMarkup.vue";
+import SimulationDropdown from "./SimulationDropdown.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -26,7 +27,11 @@
 
   <div class="absolute top-0 w-0 h-full flex items-center">
     <div class="ml-4">
-      <MarkupMenu :graph="graph" />
+      <IslandMarkup :graph="graph" />
     </div>
+  </div>
+
+  <div>
+    <SimulationDropdown :graph="graph" />
   </div>
 </template>
