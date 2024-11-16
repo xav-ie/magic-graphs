@@ -1,4 +1,5 @@
 import type { ProductInfo } from 'src/types'
+import { useDijkstraSimulation } from './useSimulation'
 
 const info: ProductInfo = {
   route: {
@@ -13,6 +14,12 @@ const info: ProductInfo = {
     description: 'Visualize Dijkstras Algorithm',
     thumbnail: '/products/thumbnails/dijkstras.png',
   },
+  simulations: [
+    {
+      name: 'Dijkstras Algorithm',
+      controls: (graph) => useDijkstraSimulation(graph),
+    },
+  ]
 }
 
 export default info

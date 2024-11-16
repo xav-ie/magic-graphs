@@ -25,7 +25,7 @@ export type MainPageInfo = {
  */
 export type SimulationDeclaration = {
   /**
-   * the name of the simulation, displayed to users
+   * the name of the simulation, user facing
    */
   name: string,
   /**
@@ -33,16 +33,16 @@ export type SimulationDeclaration = {
    * returning a string indicates that the simulation cannot run and the string, user facing,
    * is the reason why it cannot. returning true indicates that the simulation can run.
    */
-  canRun: (graph: Graph) => true | string,
+  canRun?: (graph: Graph) => true | string,
   /**
    * the controls for the simulation returned by your products useSimulation instance
    */
-  controls: SimulationControls,
+  controls: (graph: Graph) => SimulationControls,
 }
 
 /**
  * interface for exposing a product to global resources
- * like the main page and router
+ * like the main page, router, and other products
  */
 export type ProductInfo = {
   /**

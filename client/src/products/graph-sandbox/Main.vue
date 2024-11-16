@@ -31,7 +31,7 @@ import SimulationDropdown from "./SimulationDropdown.vue";
     </div>
   </div>
 
-  <div>
+  <div class="absolute top-6 right-6">
     <SimulationDropdown :graph="graph" />
   </div>
 </template>
