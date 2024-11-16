@@ -4,7 +4,6 @@
   import ToolbarButtonDivider from "./ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "./ToolbarButtonGroup.vue";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
-  import { computed } from "vue";
   import ToolbarHint from "./ToolbarHint.vue";
 
   const props = defineProps<{

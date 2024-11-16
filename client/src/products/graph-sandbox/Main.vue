@@ -25,7 +25,7 @@
   </div>
 
   <div class="absolute top-0 w-0 h-full flex items-center">
-    <div>
+    <div class="ml-4">
       <MarkupMenu :graph="graph" />
     </div>
   </div>
