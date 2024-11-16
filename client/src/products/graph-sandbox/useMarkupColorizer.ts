@@ -7,10 +7,14 @@ import { useLocalStorage } from "@vueuse/core";
 
 const MARKUP_USETHEME_ID = "markup";
 
+type ColorMapKey = GNode['id'] | GEdge['id'];
+type ColorMapValue = Color;
+export type ColorMap = Map<ColorMapKey, ColorMapValue>;
+
 export const useMarkupColorizer = (graph: Graph) => {
   const { setTheme, removeAllThemes } = useTheme(graph, MARKUP_USETHEME_ID);
 
-  const colorMap = useLocalStorage('markup-color-map', new Map<GNode['id'] | GEdge['id'], Color>());
+  const colorMap = useLocalStorage('markup-color-map', new Map<ColorMapKey, ColorMapValue>());
 
   // go through all keys in the colorMap and remove inactive nodes/edges
   // for (const key of colorMap.value.keys()) {
@@ -63,3 +67,5 @@ export const useMarkupColorizer = (graph: Graph) => {
     colorMap,
   };
 }
+
+export type MarkupColorizerControls = ReturnType<typeof useMarkupColorizer>;
