@@ -54,13 +54,19 @@ export const useFocusGraph = (
     })
   }
 
+  const clearOutDeletedItemsFromFocus = () => {
+    const focusedIds = Array.from(focusedItemIds.value)
+    const newFocusedIds = focusedIds.filter(id => graph.getNode(id) || graph.getEdge(id))
+    if (newFocusedIds.length === focusedIds.length) return
+    setFocus(newFocusedIds)
+  }
+
   const handleFocusChange = (ev: MouseEvent) => {
 
     const { offsetX: x, offsetY: y } = ev
-    resetFocus()
 
     const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    if (!topItem) return
+    if (!topItem) return setFocus([])
 
     // handle text areas
     const inATextArea = topItem.shape.textHitbox?.({ x, y })
@@ -75,10 +81,14 @@ export const useFocusGraph = (
     const canFocus = FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)
     if (!canFocus) return
 
+    console.log('setting focus to', topItem.id)
     setFocus([topItem.id])
   }
 
-  const resetFocus = () => setFocus([])
+  const resetFocus = () => {
+    console.log('resetting focus')
+    setFocus([])
+  }
 
   const setFocusToAddedItem = ({ id }: { id: string }, { focus }: FocusOption) => {
     if (focus) setFocus([id])
@@ -121,6 +131,7 @@ export const useFocusGraph = (
     graph.subscribe('onEdgeAdded', setFocusToAddedItem)
     graph.subscribe('onMouseDown', handleFocusChange)
     graph.subscribe('onGraphReset', resetFocus)
+    graph.subscribe('onStructureChange', clearOutDeletedItemsFromFocus)
   }
 
   const deactivate = () => {
@@ -128,6 +139,7 @@ export const useFocusGraph = (
     graph.unsubscribe('onEdgeAdded', setFocusToAddedItem)
     graph.unsubscribe('onMouseDown', handleFocusChange)
     graph.unsubscribe('onGraphReset', resetFocus)
+    graph.unsubscribe('onStructureChange', clearOutDeletedItemsFromFocus)
     resetFocus()
   }
 

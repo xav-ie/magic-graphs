@@ -61,7 +61,7 @@ export const useMarqueeGraph = (
    * clears the marquee box and resets the focused nodes
    */
   const clearMarqueeBox = () => {
-    graph.resetFocus()
+    // graph.resetFocus()
     encapsulatedNodeBox.value = undefined
     showNodeAnchors()
   }
@@ -234,9 +234,10 @@ export const useMarqueeGraph = (
   graph.updateAggregator.push(addEncapsulatedNodeBoxToAggregator)
   graph.updateAggregator.push(addMarqueeBoxToAggregator)
 
-  watch(graph.focusedItemIds, updateEncapsulatedNodeBox, { deep: true })
 
   const activate = () => {
+    graph.subscribe('onFocusChange', updateEncapsulatedNodeBox)
+
     graph.subscribe('onMouseDown', handleMarqueeEngagement)
     graph.subscribe('onMouseUp', disengageMarqueeBox)
     graph.subscribe('onNodeMoved', updateEncapsulatedNodeBox)
@@ -249,6 +250,8 @@ export const useMarqueeGraph = (
   }
 
   const deactivate = () => {
+    graph.unsubscribe('onFocusChange', updateEncapsulatedNodeBox)
+
     graph.unsubscribe('onMouseDown', handleMarqueeEngagement)
     graph.unsubscribe('onMouseUp', disengageMarqueeBox)
     graph.unsubscribe('onNodeMoved', updateEncapsulatedNodeBox)
