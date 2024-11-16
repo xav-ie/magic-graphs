@@ -1,6 +1,6 @@
 /**
  * @Helpful terms:
- * - Parent Node: The node that the anchors spawn around.
+ * - Parent Node: The node that the anchors are spawned around.
  * - Node Anchor/Anchor: A draggable handle that spawns around the parent node.
  * - Link Preview: The line that appears between the parent node and the anchor when the anchor is being dragged.
  * - Active Anchor: The anchor that is currently being dragged.
@@ -38,7 +38,13 @@ export const useNodeAnchorGraph = (
 
   const graph = useDraggableGraph(canvas, options)
 
+  /**
+   * The node that the anchors are spawned around.
+   */
   const parentNode = ref<GNode | undefined>()
+  /**
+   * The anchor that is currently being dragged.
+   */
   const activeAnchor = ref<NodeAnchor | undefined>()
 
   const resetParentNode = () => {
@@ -47,10 +53,7 @@ export const useNodeAnchorGraph = (
   }
 
   const getAnchorSchemas = (node: GNode) => {
-    if (
-      graph.activeDragNode.value ||
-      !graph.settings.value.nodeAnchors
-    ) return []
+    if (graph.activeDragNode.value) return []
 
     const { getTheme } = graph
 
@@ -85,6 +88,9 @@ export const useNodeAnchorGraph = (
     return anchorSchemas
   }
 
+  /**
+   * Draggable handles that spawns around the parent node.
+   */
   const nodeAnchors = ref<NodeAnchor[]>([])
 
   /**
@@ -165,11 +171,11 @@ export const useNodeAnchorGraph = (
   }
 
   /**
-   * @description updates which node is the parent node based on the mouse event
+   * updates which node is the parent node based on the mouse event
    * @param {MouseEvent} ev - the mouse event to update the parent node
    */
   const updateParentNode = (ev: MouseEvent) => {
-    if (activeAnchor.value || !graph.settings.value.nodeAnchors) return
+    if (activeAnchor.value) return
     const topItem = graph.getSchemaItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
     if (!topItem) return resetParentNode()
     if (topItem.graphType !== 'node') return
@@ -190,11 +196,8 @@ export const useNodeAnchorGraph = (
     graph.emit('onNodeAnchorDragStart', parentNode.value, anchor)
   }
 
-  graph.subscribe('onMouseMove', updateParentNode)
-  graph.subscribe('onMouseDown', setActiveAnchor)
-
   /**
-   * @description updates the position of the active anchor based on the mouse event
+   * updates the position of the active anchor based on the mouse event
    * @param {MouseEvent} ev - the mouse event to update the active anchor position
    */
   const updateActiveAnchorPosition = (ev: MouseEvent) => {
@@ -203,10 +206,8 @@ export const useNodeAnchorGraph = (
     activeAnchor.value.y = ev.offsetY
   }
 
-  graph.subscribe('onMouseMove', updateActiveAnchorPosition)
-
   /**
-   * @description drops the active anchor and triggers the onNodeAnchorDrop
+   * drops the active anchor and triggers the onNodeAnchorDrop
    * event with the parent node and active anchor
    */
   const dropAnchor = () => {
@@ -215,8 +216,6 @@ export const useNodeAnchorGraph = (
     graph.emit('onNodeAnchorDrop', parentNode.value, activeAnchor.value)
     resetParentNode()
   }
-
-  graph.subscribe('onMouseUp', dropAnchor)
 
   const insertAnchorsIntoAggregator = (aggregator: SchemaItem[]) => {
     if (!parentNode.value) return aggregator
@@ -257,29 +256,41 @@ export const useNodeAnchorGraph = (
     if (parentNode.value?.id === node.id) resetParentNode()
   }
 
-  graph.subscribe('onSettingsChange', (diff) => {
-    if (diff.nodeAnchors === true) activate()
-    else if (diff.nodeAnchors === false) deactivate()
-  })
-
-  graph.subscribe('onFocusChange', () => {
+  const disallowNodesInFocusGroupFromBeingParents = () => {
     if (!parentNode.value) return
     const parentFocused = graph.isFocused(parentNode.value.id)
     const moreThanOneNodeFocused = graph.focusedNodes.value.length > 1
     if (parentFocused && moreThanOneNodeFocused) resetParentNode()
-  })
+  }
 
   const activate = () => {
     graph.subscribe('onNodeRemoved', resetParentNodeIfRemoved)
     graph.subscribe('onNodeMoved', resetParentNode)
     graph.subscribe('onNodeDrop', updateNodeAnchors)
+    graph.subscribe('onMouseMove', updateParentNode)
+    graph.subscribe('onMouseMove', updateActiveAnchorPosition)
+    graph.subscribe('onMouseDown', setActiveAnchor)
+    graph.subscribe('onMouseUp', dropAnchor)
+    graph.subscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
   }
 
   const deactivate = () => {
     graph.unsubscribe('onNodeRemoved', resetParentNodeIfRemoved)
     graph.unsubscribe('onNodeMoved', resetParentNode)
     graph.unsubscribe('onNodeDrop', updateNodeAnchors)
+    graph.unsubscribe('onMouseMove', updateParentNode)
+    graph.unsubscribe('onMouseMove', updateActiveAnchorPosition)
+    graph.unsubscribe('onMouseDown', setActiveAnchor)
+    graph.unsubscribe('onMouseUp', dropAnchor)
+    graph.unsubscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
   }
+
+  graph.subscribe('onSettingsChange', (diff) => {
+    if (diff.nodeAnchors === true) activate()
+    else if (diff.nodeAnchors === false) deactivate()
+  })
+
+  if (graph.settings.value.nodeAnchors) activate()
 
   return {
     ...graph,

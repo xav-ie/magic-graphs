@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { ref } from 'vue'
 import type { Ref } from 'vue'
 import type {
   GEdge,
@@ -10,11 +10,14 @@ import type {
 import { useTheme } from '@graph/themes/useTheme'
 import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
 import { MARQUEE_CONSTANTS } from '@graph/compositions/useMarqueeGraph/types'
-import { getConnectedEdges, getValue } from '@graph/helpers'
 import colors from '@colors'
 import { rect } from '@shapes'
 import type { BoundingBox } from "@shape/types";
-import type { HistoryRecord, RedoHistoryOptions, UndoHistoryOptions } from '../useHistoryGraph/types'
+import type {
+  HistoryRecord,
+  RedoHistoryOptions,
+  UndoHistoryOptions
+} from '../useHistoryGraph/types'
 
 export const useMarqueeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -120,6 +123,7 @@ export const useMarqueeGraph = (
     const surfaceArea = getSurfaceArea(marqueeBox.value)
     if (surfaceArea > 200) disableNodeCreationNextTick()
     marqueeBox.value = undefined
+    showNodeAnchors()
   }
 
   const updateMarqueeSelectedItems = (box: BoundingBox) => {
