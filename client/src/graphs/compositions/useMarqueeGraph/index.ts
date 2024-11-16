@@ -268,5 +268,13 @@ export const useMarqueeGraph = (
 
   if (graph.settings.value.marquee) activate()
 
-  return graph
+  return {
+    ...graph,
+
+    /**
+     * updates the bounding box around the nodes that are currently focused.
+     * use this when you are changing theme or position outside of the standard supported use cases
+     */
+    updateEncapsulatedNodeBox,
+  }
 }

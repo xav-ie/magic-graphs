@@ -1,6 +1,7 @@
 import type { GEdge, GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
-import { MARKUP_USETHEME_ID, SIZE_TO_RADIUS, type MarkupSize } from "./types";
+import { MARKUP_USETHEME_ID, SIZE_TO_RADIUS, SIZE_TO_WIDTH } from "./types";
+import type { MarkupSize } from "./types";
 import { useLocalStorage } from "@vueuse/core";
 
 type SizeMapKey = GNode['id'] | GEdge['id'];
@@ -21,7 +22,7 @@ export const useMarkupSizer = (graph: Graph) => {
   const sizeEdge = (edge: GEdge) => {
     const size = sizeMap.value.get(edge.id);
     if (!size) return;
-    return SIZE_TO_RADIUS[size];
+    return SIZE_TO_WIDTH[size];
   };
 
   const size = () => {

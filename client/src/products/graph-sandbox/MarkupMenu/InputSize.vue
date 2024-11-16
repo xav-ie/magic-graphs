@@ -17,9 +17,7 @@
       :key="size"
       :active="activeSize === size"
     >
-
-        {{ size }}
-
+      {{ size }}
     </Button>
   </ButtonGroup>
 </template>
