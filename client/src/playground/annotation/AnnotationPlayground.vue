@@ -4,11 +4,20 @@ import { useDark, useWindowSize } from "@vueuse/core";
 import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
 import colors from "@colors";
 import { useAnnotation } from "./useAnnotation";
+import AnnotationControls from './AnnotationControls.vue'
 
 const canvas = ref<HTMLCanvasElement>();
 const isDark = useDark();
 
-useAnnotation(canvas)
+const {
+  setBrushWeight,
+  setColor,
+  clear,
+  setEraser,
+} = useAnnotation(canvas)
+
+const colorList = ["red", "blue", "green", "yellow"];
+const brushWeights = [1, 3, 5, 7]
 
 const color = computed(() =>
   isDark.value ? colors.GRAY_800 : colors.GRAY_200
@@ -20,26 +29,12 @@ const patternColor = computed(
 
 const { width, height } = useWindowSize();
 
-
-// THIS ALL NEEDS TO GET MOVED TO ITS OWN FILE WITH NICE EXPORTS
-
 </script>
 
 <template>
   <div class="h-full w-full">
-    <!-- <div class="absolute m-3 flex gap-3 z-50">
-      <button
-        v-for="color in colorsList"
-        :key="color"
-        :style="{
-          backgroundColor: color,
-          border:
-            selectedColor === color ? '2px solid black' : '1px solid gray',
-        }"
-        @click="setColor(color)"
-        class="w-8 h-8"
-      ></button> -->
-    <!-- </div> -->
+
+    <AnnotationControls :set-brush-weight="setBrushWeight" :set-color="setColor" :brush-colors="colorList" :brush-weights="brushWeights" :clear="clear" :set-eraser="setEraser" />
 
     <ResponsiveCanvas
       @canvas-ref="(el) => (canvas = el)"
