@@ -29,7 +29,6 @@ export const useTheme = <G extends ThemeableGraph>(graph: G, themeId: string) =>
     })
   }
 
-
   /**
    * removes a theme value for a specific theme property attached to this useTheme instance
    *

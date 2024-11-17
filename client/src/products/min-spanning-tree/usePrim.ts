@@ -3,8 +3,6 @@ import type { Graph, GEdge } from "@graph/types";
 import { clone } from "@utils/clone";
 
 export const usePrim = (graph: Graph) => {
-  // Trace is just mst array, to get steps render intervals starting at index 0
-  const trace = ref<GEdge[]>([]);
 
   const getMinEdge = (edges: GEdge[], inMST: Set<string>): GEdge | null => {
     let minEdge: GEdge | null = null;
@@ -49,9 +47,12 @@ export const usePrim = (graph: Graph) => {
     return mst;
   };
 
-  const update = () => {
-    trace.value = prims();
-  };
+  /**
+   * just the mst array, to get the first n steps, slice the array at (0, n)
+   */
+  const trace = ref<GEdge[]>(prims());
+
+  const update = () => trace.value = prims();
 
   graph.subscribe("onStructureChange", update);
   graph.subscribe("onEdgeLabelChange", update);

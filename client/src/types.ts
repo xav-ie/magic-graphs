@@ -29,6 +29,14 @@ export type SimulationDeclaration = {
    */
   name: string,
   /**
+   * the description of the simulation, user facing
+   */
+  description: string,
+  /**
+   * an image to display in the simulation selection
+   */
+  thumbnail: string,
+  /**
    * a predicate to determine if the simulation can run on the given graph.
    * returning a string indicates that the simulation cannot run and the string, user facing,
    * is the reason why it cannot. returning true indicates that the simulation can run.

@@ -39,6 +39,9 @@
       'rounded-md',
       'cursor-pointer',
       'font-bold',
+      'flex',
+      'items-center',
+      'justify-center',
     ]"
 
     :style="styling"

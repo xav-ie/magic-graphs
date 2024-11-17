@@ -5,12 +5,16 @@
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
   import IslandMarkup from "./IslandMarkup.vue";
-import SimulationDropdown from "./SimulationDropdown.vue";
+  import SimulationDropdown from "./SimulationDropdown.vue";
+  import type { SimulationControls } from "@ui/sim/types";
+  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: SANDBOX_GRAPH_SETTINGS,
   });
+
+  const simControls = ref<SimulationControls>();
 </script>
 
 <template>
@@ -20,18 +24,32 @@ import SimulationDropdown from "./SimulationDropdown.vue";
   />
 
   <div
+    v-if="!simControls"
     class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
   >
     <IslandToolbar :graph="graph" />
   </div>
 
-  <div class="absolute top-0 w-0 h-full flex items-center">
+  <div
+    v-if="!simControls"
+    class="absolute top-0 w-0 h-full flex items-center"
+  >
     <div class="ml-4">
       <IslandMarkup :graph="graph" />
     </div>
   </div>
 
   <div class="absolute top-6 right-6">
-    <SimulationDropdown :graph="graph" />
+    <SimulationDropdown
+      v-model="simControls"
+      :graph="graph"
+    />
+  </div>
+
+  <div
+    v-if="simControls"
+    class="absolute bottom-8 w-full flex justify-center items-center p-3"
+  >
+    <SimulationPlaybackControls :controls="simControls" />
   </div>
 </template>

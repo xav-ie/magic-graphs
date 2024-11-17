@@ -14,20 +14,20 @@
     controls: SimulationControls;
   }>();
 
-  const { isOver } = toRefs(props.controls);
+  const { isOver, paused } = toRefs(props.controls);
 
   const prevStep = () => {
     props.controls.prevStep();
-    props.controls.paused.value = true;
+    paused.value = true;
   };
 
   const nextStep = () => {
     props.controls.nextStep();
-    props.controls.paused.value = true;
+    paused.value = true;
   };
 
   const togglePause = () => {
-    props.controls.paused.value = !props.controls.paused.value;
+    paused.value = !paused.value;
   };
 
   const restart = () => {
@@ -77,7 +77,7 @@
         :height="btnSize"
         :viewBox="`0 0 ${btnSize} ${btnSize}`"
       >
-        <path :d="props.controls.paused.value ? mdiPlay : mdiPause" />
+        <path :d="paused ? mdiPlay : mdiPause" />
       </svg>
     </Button>
 
