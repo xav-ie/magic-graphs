@@ -2,25 +2,8 @@ import { onMounted, onBeforeUnmount, ref } from "vue";
 import type { Ref } from "vue";
 import type { Coordinate } from "@shape/types";
 import { getCtx } from "@utils/ctx";
-
-type AnnotationOptions = Partial<{
-  color: string;
-  brushWeight: number;
-  eraserBrushWeight: number;
-}>;
-
-type Action = {
-  type: "draw" | "erase";
-  color: string;
-  brushWeight: number;
-  points: Coordinate[];
-};
-
-const ANNOTATION_DEFAULTS = {
-  color: "red",
-  brushWeight: 3,
-  eraserBrushWeight: 50,
-};
+import type { Action, AnnotationOptions } from './types'
+import { ANNOTATION_DEFAULTS } from './types'
 
 export const useAnnotation = (
   canvas: Ref<HTMLCanvasElement | null | undefined>,
