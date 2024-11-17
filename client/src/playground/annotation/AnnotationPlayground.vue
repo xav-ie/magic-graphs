@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import type { Coordinate } from "@shape/types";
 import { useDark, useWindowSize } from "@vueuse/core";
 import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
 import colors from "@colors";
@@ -18,13 +19,17 @@ const patternColor = computed(
 
 const { width, height } = useWindowSize();
 
-const selectedColor = ref("red"); 
+const selectedColor = ref("red");
 const colorsList = ["red", "blue", "green", "yellow"];
-let isDrawing = false;
-let lastPoint: { x: number; y: number } | null = null;
-let batch: { x: number; y: number }[] = [];
-const actions: { color: string; points: { x: number; y: number }[] }[] = [];
-let batchTimeout: NodeJS.Timeout | null = null;
+const isDrawing = ref(false);
+const lastPoint = ref<Coordinate | null>(null);
+const batch = ref<Coordinate[]>([]);
+
+type Actions = {
+  color: string;
+  points: Coordinate[];
+};
+const actions = ref<Actions[]>([]);
 
 const setColor = (color: string) => {
   selectedColor.value = color;
@@ -34,7 +39,7 @@ const draw = () => {
   const ctx = getCtx(canvas);
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  actions.forEach(action => {
+  actions.value.forEach((action) => {
     ctx.strokeStyle = action.color;
     ctx.beginPath();
     action.points.forEach((point, index) => {
@@ -44,7 +49,7 @@ const draw = () => {
         ctx.lineTo(point.x, point.y);
       }
     });
-    ctx.lineWidth = 3
+    ctx.lineWidth = 3;
     ctx.stroke();
   });
 };
@@ -53,48 +58,44 @@ const startDrawing = (event: MouseEvent) => {
   if (!canvas.value) return;
 
   const ctx = getCtx(canvas);
-  isDrawing = true;
+  isDrawing.value = true;
   ctx.strokeStyle = selectedColor.value;
   ctx.lineWidth = 2;
 
   const { x, y } = getCanvasCoordinates(event);
   ctx.beginPath();
   ctx.moveTo(x, y);
-  lastPoint = { x, y };
+  lastPoint.value = { x, y };
 
-  // Initialize a new batch for this drawing session
-  batch = [{ x, y }];
+  batch.value = [{ x, y }];
 };
 
 const drawLine = (event: MouseEvent) => {
-  if (!isDrawing || !canvas.value || !lastPoint) return;
+  if (!isDrawing.value || !canvas.value || !lastPoint.value) return;
 
   const ctx = getCtx(canvas);
   const { x, y } = getCanvasCoordinates(event);
   ctx.lineTo(x, y);
   ctx.stroke();
-  lastPoint = { x, y };
+  lastPoint.value = { x, y };
 
-  // Add points to the batch during the drawing session
-  batch.push({ x, y });
+  batch.value.push({ x, y });
 };
 
 const stopDrawing = () => {
-  if (!isDrawing) return;
-  isDrawing = false;
+  if (!isDrawing.value) return;
+  isDrawing.value = false;
 
-  // Save the current batch when the drawing session ends
-  if (batch.length > 0) {
-    actions.push({
+  if (batch.value.length > 0) {
+    actions.value.push({
       color: selectedColor.value,
-      points: [...batch],
+      points: [...batch.value],
     });
   }
 
-  lastPoint = null;
-  batch = []; // Clear the batch
+  lastPoint.value = null;
+  batch.value = [];
 };
-
 
 const getCanvasCoordinates = (event: MouseEvent) => {
   if (!canvas.value) return { x: 0, y: 0 };
@@ -127,23 +128,25 @@ onBeforeUnmount(() => {
   canvasElement.removeEventListener("mousemove", drawLine);
   document.removeEventListener("resize", draw);
   document.removeEventListener("keyup", draw);
-  
-  if (batchTimeout) {
-    clearTimeout(batchTimeout);
-  }
 });
 </script>
 
 <template>
   <div class="h-full w-full">
-    <!-- Toolbar for color selection -->
     <div class="absolute m-3 flex gap-3 z-50">
-      <button v-for="color in colorsList" :key="color"
-        :style="{ backgroundColor: color, border: selectedColor === color ? '2px solid black' : '1px solid gray' }"
-        @click="setColor(color)" class="w-8 h-8"></button>
+      <button
+        v-for="color in colorsList"
+        :key="color"
+        :style="{
+          backgroundColor: color,
+          border:
+            selectedColor === color ? '2px solid black' : '1px solid gray',
+        }"
+        @click="setColor(color)"
+        class="w-8 h-8"
+      ></button>
     </div>
 
-    <!-- Responsive Canvas -->
     <ResponsiveCanvas
       @canvas-ref="(el) => (canvas = el)"
       :color="color"
