@@ -3,10 +3,10 @@ import Button from "@ui/Button.vue";
 import colors from "@utils/colors";
 
 const props = defineProps<{
-  setColor: (color: string) => void,
-  setBrushWeight: (brushWeight: number) => void,
-  setEraser: () => void,
-  clear: () => void,
+  setColor: (color: string) => void;
+  setBrushWeight: (brushWeight: number) => void;
+  setEraser: () => void;
+  clear: () => void;
   brushColors: string[];
   brushWeights: number[];
 }>();
@@ -45,13 +45,12 @@ const props = defineProps<{
     </Button>
   </div>
 
-  <div
-    class="flex flex-column items-center absolute h-full z-10"
-  >
-    <Button
-      @click="setEraser"
-    >
-    <v-icon>mdi-erasor</v-icon>
-  </Button>
+  <div class="flex flex-col gap-3 justify-center absolute h-full z-10 left-2">
+    <Button @click="setEraser">
+      <v-icon>mdi-eraser </v-icon>
+    </Button>
+    <Button @click="clear">
+      <v-icon>mdi-nuke</v-icon>
+    </Button>
   </div>
 </template>
