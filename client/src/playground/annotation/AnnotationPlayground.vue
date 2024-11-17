@@ -4,20 +4,15 @@ import { useDark, useWindowSize } from "@vueuse/core";
 import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
 import colors from "@colors";
 import { useAnnotation } from "./useAnnotation";
-import AnnotationControls from './AnnotationControls.vue'
+import AnnotationControls from "./AnnotationControls.vue";
 
 const canvas = ref<HTMLCanvasElement>();
 const isDark = useDark();
 
-const {
-  setBrushWeight,
-  setColor,
-  clear,
-  setEraser,
-} = useAnnotation(canvas)
+const { setBrushWeight, setColor, clear, setEraser } = useAnnotation(canvas);
 
 const colorList = ["red", "blue", "green", "yellow"];
-const brushWeights = [1, 3, 5, 7]
+const brushWeights = [1, 3, 5, 7];
 
 const color = computed(() =>
   isDark.value ? colors.GRAY_800 : colors.GRAY_200
@@ -28,13 +23,18 @@ const patternColor = computed(
 );
 
 const { width, height } = useWindowSize();
-
 </script>
 
 <template>
   <div class="h-full w-full">
-
-    <AnnotationControls :set-brush-weight="setBrushWeight" :set-color="setColor" :brush-colors="colorList" :brush-weights="brushWeights" :clear="clear" :set-eraser="setEraser" />
+    <AnnotationControls
+      :set-brush-weight="setBrushWeight"
+      :set-color="setColor"
+      :brush-colors="colorList"
+      :brush-weights="brushWeights"
+      :clear="clear"
+      :set-eraser="setEraser"
+    />
 
     <ResponsiveCanvas
       @canvas-ref="(el) => (canvas = el)"
