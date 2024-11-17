@@ -42,7 +42,7 @@
       class="flex gap-3"
     >
       <Button
-        v-if="!controls.makingSource.value"
+        v-if="!controls.makeSourceRejector.value"
         @click="controls.makeSource"
       >
         Switch Source
@@ -50,6 +50,7 @@
 
       <Button
         v-else
+        @click="controls.makeSourceRejector.value"
         :style="{
           backgroundColor: colors.RED_500,
           color: colors.WHITE,
@@ -59,7 +60,7 @@
       </Button>
 
       <Button
-        v-if="!controls.makingSink.value"
+        v-if="!controls.makeSinkRejector.value"
         @click="controls.makeSink"
       >
         Switch Sink
@@ -67,6 +68,7 @@
 
       <Button
         v-else
+        @click="controls.makeSinkRejector.value"
         :style="{
           backgroundColor: colors.RED_500,
           color: colors.WHITE,

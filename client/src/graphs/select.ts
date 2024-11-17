@@ -6,13 +6,9 @@ export const selectNode = (graph: Graph) => {
 
 export const selectFromGraph = (graph: Graph, predicate: (item: SchemaItem) => boolean) => {
 
-  let resolver: (value: SchemaItem | PromiseLike<SchemaItem>) => void;
-  let rejecter: (reason?: any) => void;
+  let resolver: (value: SchemaItem | PromiseLike<SchemaItem> | undefined) => void;
 
-  const promise = new Promise<SchemaItem>((res, rej) => {
-    resolver = res;
-    rejecter = rej;
-  });
+  const promise = new Promise<SchemaItem | undefined>((res) => resolver = res);
 
   const onClick = (event: MouseEvent) => {
     const { offsetX, offsetY } = event;
@@ -20,32 +16,53 @@ export const selectFromGraph = (graph: Graph, predicate: (item: SchemaItem) => b
     if (item && predicate(item)) resolve(item);
   }
 
-  graph.subscribe('onClick', onClick);
-
   const initialUserEditable = graph.settings.value.userEditable;
   const initialFocusable = graph.settings.value.focusable;
 
-  graph.settings.value.userEditable = false;
-  graph.settings.value.focusable = false;
+  /**
+   * initializes the selection process
+   */
+  const init = () => {
+    graph.subscribe('onClick', onClick);
+    graph.settings.value.userEditable = false;
+    graph.settings.value.focusable = false;
+  }
 
+  /**
+   * cleans up the selection process
+   */
   const cleanup = () => {
     graph.unsubscribe('onClick', onClick);
     graph.settings.value.userEditable = initialUserEditable;
     graph.settings.value.focusable = initialFocusable;
   }
 
+  /**
+   * resolves the selection process and returns the selected item from the promise
+   */
   const resolve = (item: SchemaItem) => {
     cleanup();
     resolver(item);
   }
 
+  /**
+   * cancels the selection process and returns undefined from the promise (public)
+   */
   const cancel = () => {
     cleanup();
-    rejecter('cancelled');
+    resolver(undefined);
   }
 
+  init();
+
   return {
+    /**
+     * resolves to the selected item or undefined if the
+     * selection was cancelled by calling the cancel handler
+     */
     promise,
     cancel
   };
 };
+
+export type SelectControls = ReturnType<typeof selectFromGraph>;

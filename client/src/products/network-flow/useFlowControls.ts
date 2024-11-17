@@ -3,6 +3,8 @@ import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
 import { LETTERS, graphLabelGetter } from "@graph/labels";
+import { selectNode } from "@graph/select";
+import type { SelectControls } from "@graph/select";
 
 export const SOURCE_LABEL = "S";
 export const SINK_LABEL = "T";
@@ -21,48 +23,36 @@ export const useFlowControls = (graph: Graph) => {
   const { setTheme } = useTheme(graph, 'flow');
   const newNodeLabel = flowNodeLabelGetter(graph);
 
-  const captureNodeFn = (res: (value: GNode | PromiseLike<GNode>) => void) => (event: MouseEvent) => {
-    const { offsetX, offsetY } = event;
-    const node = graph.getNodeByCoordinates(offsetX, offsetY);
-    if (node) res(node);
-  }
-
-  const captureNode = async () => {
-    graph.settings.value.userEditable = false;
-    graph.settings.value.focusable = false;
-    let captureFn;
-    const node = await new Promise<GNode>((res) => {
-      captureFn = captureNodeFn(res);
-      graph.subscribe('onClick', captureFn);
-    });
-    if (captureFn) graph.unsubscribe('onClick', captureFn);
-    graph.settings.value.userEditable = true;
-    graph.settings.value.focusable = true;
-    return node;
-  }
-
-  const makingSource = ref(false);
+  const makeSourceRejector = ref<SelectControls['cancel']>();
   const makeSource = async () => {
-    makingSource.value = true;
-    const node = await captureNode();
+    const { promise, cancel } = selectNode(graph);
+    makeSourceRejector.value = cancel;
+    const nodeSchema = await promise;
+    if (!nodeSchema) return makeSourceRejector.value = undefined;
+    const node = graph.getNode(nodeSchema.id);
+    if (!node) throw new Error('illegitimate schema item returned from selectNode');
     graph.nodes.value.forEach(node => {
       if (node.label === SOURCE_LABEL) node.label = newNodeLabel();
     });
     node.label = SOURCE_LABEL;
     graph.trackGraphState();
-    makingSource.value = false;
+    makeSourceRejector.value = undefined;
   }
 
-  const makingSink = ref(false);
+  const makeSinkRejector = ref<SelectControls['cancel']>();
   const makeSink = async () => {
-    makingSink.value = true;
-    const node = await captureNode();
+    const { promise, cancel } = selectNode(graph);
+    makeSinkRejector.value = cancel;
+    const nodeSchema = await promise;
+    if (!nodeSchema) return makeSinkRejector.value = undefined;
+    const node = graph.getNode(nodeSchema.id);
+    if (!node) throw new Error('illegitimate schema item returned from selectNode');
     graph.nodes.value.forEach(node => {
       if (node.label === SINK_LABEL) node.label = newNodeLabel();
     });
     node.label = SINK_LABEL;
     graph.trackGraphState();
-    makingSink.value = false;
+    makeSinkRejector.value = undefined;
   }
 
   const colorSourceAndSink = (node: GNode) => {
@@ -80,8 +70,8 @@ export const useFlowControls = (graph: Graph) => {
     makeSource,
     makeSink,
 
-    makingSource,
-    makingSink,
+    makeSourceRejector,
+    makeSinkRejector,
   }
 };
 
