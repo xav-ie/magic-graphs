@@ -6,18 +6,27 @@ import { getCtx } from "@utils/ctx";
 type AnnotationOptions = Partial<{
   color: string;
   brushWeight: number;
+  eraserBrushWeight: number;
 }>;
+
+type Action = {
+  type: "draw" | "erase";
+  color: string;
+  brushWeight: number;
+  points: Coordinate[];
+};
 
 const ANNOTATION_DEFAULTS = {
   color: "red",
   brushWeight: 3,
+  eraserBrushWeight: 50,
 };
 
 export const useAnnotation = (
   canvas: Ref<HTMLCanvasElement | null | undefined>,
   options?: AnnotationOptions
 ) => {
-  const { color, brushWeight } = {
+  const { color, brushWeight, eraserBrushWeight } = {
     ...ANNOTATION_DEFAULTS,
     ...options,
   };
@@ -27,12 +36,10 @@ export const useAnnotation = (
   const isDrawing = ref(false);
   const lastPoint = ref<Coordinate | null>(null);
   const batch = ref<Coordinate[]>([]);
-  const actions = ref<{ color: string; brushWeight: number; points: Coordinate[] }[]>([]);
-  const isEraserMode = ref(false); 
+  const actions = ref<Action[]>([]);
 
   const setColor = (color: string) => {
     selectedColor.value = color;
-    isEraserMode.value = false; 
   };
 
   const setBrushWeight = (brushWeight: number) => {
@@ -40,7 +47,7 @@ export const useAnnotation = (
   };
 
   const setEraser = () => {
-    isEraserMode.value = true;
+    selectedColor.value = "";
   };
 
   const clear = () => {
@@ -50,7 +57,7 @@ export const useAnnotation = (
       return;
     }
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    actions.value = []; 
+    actions.value = [];
   };
 
   const draw = () => {
@@ -63,17 +70,42 @@ export const useAnnotation = (
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     actions.value.forEach((action) => {
-      ctx.strokeStyle = action.color;
-      ctx.lineWidth = action.brushWeight + 1; // Not sure why this is required, something with smoothing?
-      ctx.beginPath();
-      action.points.forEach((point, index) => {
-        if (index === 0) {
-          ctx.moveTo(point.x, point.y);
-        } else {
-          ctx.lineTo(point.x, point.y);
+      if (action.type === "draw") {
+        ctx.strokeStyle = action.color;
+        ctx.lineWidth = action.brushWeight;
+        ctx.beginPath();
+        action.points.forEach((point, index) => {
+          if (index === 0) {
+            ctx.moveTo(point.x, point.y);
+          } else {
+            ctx.lineTo(point.x, point.y);
+          }
+        });
+        ctx.stroke();
+      } else if (action.type === "erase") {
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.lineWidth = eraserBrushWeight;
+
+        for (let i = 0; i < action.points.length - 1; i++) {
+          const start = action.points[i];
+          const end = action.points[i + 1];
+          const distance = Math.sqrt(
+            Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
+          );
+          const steps = Math.ceil(distance / eraserBrushWeight); 
+
+          for (let j = 0; j <= steps; j++) {
+            const interpolatedX = start.x + (j / steps) * (end.x - start.x);
+            const interpolatedY = start.y + (j / steps) * (end.y - start.y);
+
+            ctx.beginPath();
+            ctx.arc(interpolatedX, interpolatedY, eraserBrushWeight, 0, Math.PI * 2);
+            ctx.fill();
+          }
         }
-      });
-      ctx.stroke();
+
+        ctx.globalCompositeOperation = "source-over";
+      }
     });
   };
 
@@ -100,10 +132,31 @@ export const useAnnotation = (
     if (!ctx) return;
 
     const { x, y } = getCanvasCoordinates(event);
-    ctx.lineTo(x, y);
-    ctx.strokeStyle = selectedColor.value;
-    ctx.lineWidth = selectedBrushWeight.value;
-    ctx.stroke();
+
+    if (selectedColor.value === "") {
+      ctx.globalCompositeOperation = "destination-out";
+      const distance = Math.sqrt(
+        Math.pow(x - lastPoint.value.x, 2) + Math.pow(y - lastPoint.value.y, 2)
+      );
+      const steps = Math.ceil(distance / eraserBrushWeight);
+
+      for (let i = 0; i <= steps; i++) {
+        const interpolatedX =
+          lastPoint.value.x + (i / steps) * (x - lastPoint.value.x);
+        const interpolatedY =
+          lastPoint.value.y + (i / steps) * (y - lastPoint.value.y);
+        ctx.beginPath();
+        ctx.arc(interpolatedX, interpolatedY, eraserBrushWeight, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalCompositeOperation = "source-over";
+    } else {
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = selectedColor.value;
+      ctx.lineWidth = selectedBrushWeight.value;
+      ctx.stroke();
+    }
 
     lastPoint.value = { x, y };
     batch.value.push({ x, y });
@@ -115,11 +168,21 @@ export const useAnnotation = (
     isDrawing.value = false;
 
     if (batch.value.length > 0) {
-      actions.value.push({
-        color: selectedColor.value,
-        brushWeight: selectedBrushWeight.value,
-        points: [...batch.value],
-      });
+      if (selectedColor.value === "") {
+        actions.value.push({
+          type: "erase",
+          color: "",
+          brushWeight: eraserBrushWeight,
+          points: [...batch.value],
+        });
+      } else {
+        actions.value.push({
+          type: "draw",
+          color: selectedColor.value,
+          brushWeight: selectedBrushWeight.value,
+          points: [...batch.value],
+        });
+      }
     }
 
     lastPoint.value = null;
