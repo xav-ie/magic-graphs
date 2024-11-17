@@ -73,8 +73,8 @@ export const useHeatmap = (
   }
 
   const processPoint = (coords: Coordinate) => {
-    const shapeHit = heatmapMode.value === 'precise' ? 
-      drawItems.value.findLast((item) => item.shapeHitbox(coords)) :
+    const shapeHit = heatmapMode.value === 'precise' ?
+      drawItems.value.findLast((item) => item.hitbox(coords)) :
       drawItems.value.findLast((item) => item.efficientHitbox({ at: coords, width: 1, height: 1 }))
 
     const textHit = drawItems.value
