@@ -2,7 +2,7 @@ import type { ProductInfo } from 'src/types'
 
 const route: ProductInfo = {
   route: {
-    path: '/shape-playground',
+    path: '/annotation-playground',
     component: () => import('./AnnotationPlayground.vue'),
   },
   name: 'Drawing stuff',
