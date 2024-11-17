@@ -15,6 +15,10 @@ describe('useAdjacencyList', () => {
   const nodeB = graph.addNode({ id: 'b', label: '2', x: 0, y: 0 })
   const nodeC = graph.addNode({ id: 'c', label: '3', x: 0, y: 0 })
 
+  if (!nodeA || !nodeB || !nodeC) {
+    throw new Error('Failed to create nodes')
+  }
+
   graph.addEdge({ from: nodeA.id, to: nodeB.id })
   graph.addEdge({ from: nodeB.id, to: nodeC.id })
   graph.addEdge({ from: nodeC.id, to: nodeC.id })
