@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import Button from "@ui/Button.vue";
 import colors from "@utils/colors";
+import ToolbarButton from "@product/graph-sandbox/ToolbarButton.vue";
+import ToolbarButtonDivider from "@product/graph-sandbox/ToolbarButtonDivider.vue";
+import ToolbarButtonGroup from "@product/graph-sandbox/ToolbarButtonGroup.vue";
 
 const props = defineProps<{
   setColor: (color: string) => void;
@@ -13,43 +16,43 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div
-    class="absolute bottom-12 flex w-full justify-center z-10"
-  >
+  <div class="absolute bottom-12 flex w-full justify-center z-10">
     <div class="bg-gray-900 px-3 py-2 rounded-xl flex items-center gap-3">
-      <Button
-        v-for="color in brushColors"
-        :key="color"
-        @click="setColor(color)"
-        :color="color"
-        class="w-8 h-8"
-        :style="{ backgroundColor: color, borderRadius: '50%' }"
-      ></Button>
-      <div class="w-[1px] h-8 bg-gray-600"></div>
-      <Button
-        v-for="weight in brushWeights"
-        :key="weight"
-        @click="setBrushWeight(weight)"
-        :color="colors.TRANSPARENT"
-        class="h-[25px]"
-      >
-        <div
-          class="flex justify-center items-center bg-gray-300 rounded-md w-[15px]"
-          :style="{
-            height: `${weight * 2}px`,
-          }"
-        ></div>
-      </Button>
-      <div class="w-[1px] h-8 bg-gray-600"></div>
-
-      <btn @click="setEraser" class="text-white">
+      <ToolbarButtonGroup>
+        <ToolbarButton
+          v-for="color in brushColors"
+          :key="color"
+          @click="setColor(color)"
+          :color="color"
+          class="w-8 h-8"
+          :style="{ backgroundColor: color, borderRadius: '50%' }"
+        ></ToolbarButton>
+      </ToolbarButtonGroup>
+      <ToolbarButtonDivider />
+      <ToolbarButtonGroup>
+        <Button
+          v-for="weight in brushWeights"
+          :key="weight"
+          @click="setBrushWeight(weight)"
+          :color="colors.TRANSPARENT"
+          class="h-[25px]"
+        >
+          <div
+            class="flex justify-center items-center bg-gray-300 rounded-md w-[15px]"
+            :style="{
+              height: `${weight * 2}px`,
+            }"
+          ></div>
+        </Button>
+      </ToolbarButtonGroup>
+      <ToolbarButtonDivider />
+      <ToolbarButton @click="setEraser">
         <v-icon>mdi-eraser </v-icon>
-      </btn>
-      <div class="w-[1px] h-8 bg-gray-600"></div>
-
-      <btn @click="clear" class="text-white">
+      </ToolbarButton>
+      <ToolbarButtonDivider />
+      <ToolbarButton @click="clear">
         <v-icon>mdi-nuke</v-icon>
-      </btn>
+      </ToolbarButton>
     </div>
   </div>
 </template>

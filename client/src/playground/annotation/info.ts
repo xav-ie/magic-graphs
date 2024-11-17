@@ -11,7 +11,7 @@ const route: ProductInfo = {
   menu: {
     name: 'Annotation Playground',
     description: 'A playground for testing annotations',
-    thumbnail: '/products/thumbnails/shape-playground.png',
+    thumbnail: '/products/thumbnails/annotations.png',
   },
 }
 
