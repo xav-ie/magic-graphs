@@ -1,37 +1,51 @@
 import type { Graph, SchemaItem } from "./types";
 
-const selectFromGraph = (graph: Graph, predicate: (item: SchemaItem) => boolean) => {
+export const selectNode = (graph: Graph) => {
+  return selectFromGraph(graph, item => item.graphType === 'node');
+};
 
-  const captureNodeFn = (res: (value: GNode | PromiseLike<GNode>) => void) => (event: MouseEvent) => {
+export const selectFromGraph = (graph: Graph, predicate: (item: SchemaItem) => boolean) => {
+
+  let resolver: (value: SchemaItem | PromiseLike<SchemaItem>) => void;
+  let rejecter: (reason?: any) => void;
+
+  const promise = new Promise<SchemaItem>((res, rej) => {
+    resolver = res;
+    rejecter = rej;
+  });
+
+  const onClick = (event: MouseEvent) => {
     const { offsetX, offsetY } = event;
-    const node = graph.getNodeByCoordinates(offsetX, offsetY);
-    if (node) res(node);
+    const item = graph.getSchemaItemsByCoordinates(offsetX, offsetY).pop();
+    if (item && predicate(item)) resolve(item);
   }
 
-  const captureNode = async () => {
-    graph.settings.value.userEditable = false;
-    graph.settings.value.focusable = false;
-    let captureFn;
-    const node = await new Promise<GNode>((res) => {
-      captureFn = captureNodeFn(res);
-      graph.subscribe('onClick', captureFn);
-    });
-    if (captureFn) graph.unsubscribe('onClick', captureFn);
-    graph.settings.value.userEditable = true;
-    graph.settings.value.focusable = true;
-    return node;
+  graph.subscribe('onClick', onClick);
+
+  const initialUserEditable = graph.settings.value.userEditable;
+  const initialFocusable = graph.settings.value.focusable;
+
+  graph.settings.value.userEditable = false;
+  graph.settings.value.focusable = false;
+
+  const cleanup = () => {
+    graph.unsubscribe('onClick', onClick);
+    graph.settings.value.userEditable = initialUserEditable;
+    graph.settings.value.focusable = initialFocusable;
   }
 
-  const makingSource = ref(false);
-  const makeSource = async () => {
-    makingSource.value = true;
-    const node = await captureNode();
-    graph.nodes.value.forEach(node => {
-      if (node.label === SOURCE_LABEL) node.label = newNodeLabel();
-    });
-    node.label = SOURCE_LABEL;
-    graph.trackGraphState();
-    makingSource.value = false;
+  const resolve = (item: SchemaItem) => {
+    cleanup();
+    resolver(item);
   }
 
+  const cancel = () => {
+    cleanup();
+    rejecter('cancelled');
+  }
+
+  return {
+    promise,
+    cancel
+  };
 };
