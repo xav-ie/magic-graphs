@@ -8,7 +8,7 @@ export const selectFromGraph = (graph: Graph, predicate: (item: SchemaItem) => b
 
   let resolver: (value: SchemaItem | PromiseLike<SchemaItem> | undefined) => void;
 
-  const promise = new Promise<SchemaItem | undefined>((res) => resolver = res);
+  const selectedItemPromise = new Promise<SchemaItem | undefined>((res) => resolver = res);
 
   const onClick = (event: MouseEvent) => {
     const { offsetX, offsetY } = event;
@@ -60,7 +60,7 @@ export const selectFromGraph = (graph: Graph, predicate: (item: SchemaItem) => b
      * resolves to the selected item or undefined if the
      * selection was cancelled by calling the cancel handler
      */
-    promise,
+    selectedItemPromise,
     cancel
   };
 };

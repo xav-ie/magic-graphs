@@ -25,9 +25,9 @@ export const useFlowControls = (graph: Graph) => {
 
   const makeSourceRejector = ref<SelectControls['cancel']>();
   const makeSource = async () => {
-    const { promise, cancel } = selectNode(graph);
+    const { selectedItemPromise, cancel } = selectNode(graph);
     makeSourceRejector.value = cancel;
-    const nodeSchema = await promise;
+    const nodeSchema = await selectedItemPromise;
     if (!nodeSchema) return makeSourceRejector.value = undefined;
     const node = graph.getNode(nodeSchema.id);
     if (!node) throw new Error('illegitimate schema item returned from selectNode');
@@ -41,9 +41,9 @@ export const useFlowControls = (graph: Graph) => {
 
   const makeSinkRejector = ref<SelectControls['cancel']>();
   const makeSink = async () => {
-    const { promise, cancel } = selectNode(graph);
+    const { selectedItemPromise, cancel } = selectNode(graph);
     makeSinkRejector.value = cancel;
-    const nodeSchema = await promise;
+    const nodeSchema = await selectedItemPromise;
     if (!nodeSchema) return makeSinkRejector.value = undefined;
     const node = graph.getNode(nodeSchema.id);
     if (!node) throw new Error('illegitimate schema item returned from selectNode');
