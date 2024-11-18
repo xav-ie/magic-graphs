@@ -1,11 +1,10 @@
-import { ref, type Ref } from "vue";
+import { ref } from "vue";
+import type { Ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
-import { useTheme } from "@graph/themes/useTheme";
-import colors from "@utils/colors";
 import { LETTERS, graphLabelGetter } from "@graph/labels";
 import { selectNode } from "@graph/select";
 import type { SelectControls } from "@graph/select";
-import { FLOW_USETHEME_ID, SINK_LABEL, SOURCE_LABEL } from "./constants";
+import { SINK_LABEL, SOURCE_LABEL } from "./constants";
 
 const ALPHABET_WITHOUT_SOURCE_SINK = LETTERS.filter(l => l !== SOURCE_LABEL && l !== SINK_LABEL);
 
@@ -17,8 +16,6 @@ export const flowNodeLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
 }
 
 export const useSourceSinkControls = (graph: Graph) => {
-
-  const { setTheme } = useTheme(graph, FLOW_USETHEME_ID);
   const newNodeLabel = flowNodeLabelGetter(graph);
 
   const initialSource = graph.nodes.value.find(node => node.label === SOURCE_LABEL);
@@ -51,17 +48,6 @@ export const useSourceSinkControls = (graph: Graph) => {
     cancelRef.value = undefined;
     graph.trackGraphState();
   }
-
-  const colorSourceAndSink = (node: GNode) => {
-    if (graph.isFocused(node.id)) return
-    const isSource = node.label === SOURCE_LABEL;
-    const isSink = node.label === SINK_LABEL;
-    if (isSource) return colors.BLUE_600;
-    else if (isSink) return colors.RED_600;
-  }
-
-  setTheme('nodeBorderColor', colorSourceAndSink);
-  setTheme('nodeAnchorColor', colorSourceAndSink);
 
   return {
     source: sourceNode,
