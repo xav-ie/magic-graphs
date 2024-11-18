@@ -3,7 +3,13 @@ import { getAdjacencyList } from "@graph/useAdjacencyList";
 
 export type FlowTrace = Record<GEdge['id'], number>[]
 
-export const fordFulkerson = (graph: Graph, srcId: GNode['id'], sinkId: GNode['id']) => {
+/**
+ * implementation of the Ford-Fulkerson algorithm
+ */
+export const fordFulkerson = (graph: Graph, { sourceId, sinkId }: {
+  sourceId: GNode['id'],
+  sinkId: GNode['id']
+}) => {
 
   const edgeIdToWeight = graph.edges.value.reduce<Record<string, number>>((acc, curr) => {
     acc[curr.id] = Number(curr.label)
@@ -33,7 +39,7 @@ export const fordFulkerson = (graph: Graph, srcId: GNode['id'], sinkId: GNode['i
 
     for (const nodeId of adjacentNodeIds) {
       const connectingEdge = graph.edges.value.find((e) => e.from === s && e.to === nodeId)
-      if (!connectingEdge) throw 'the adj list must be wrong! 1'
+      if (!connectingEdge) throw 'the adj list must be wrong! (1)'
       const connectingEdgeWeight = edgeIdToWeight[connectingEdge.id]
       if (connectingEdgeWeight > 0 && !visited.has(nodeId)) {
         const resultPath = dfs(nodeId, t, visited, [...path])
@@ -47,7 +53,7 @@ export const fordFulkerson = (graph: Graph, srcId: GNode['id'], sinkId: GNode['i
   const run = () => {
     let maxFlow = 0
 
-    let path = dfs(srcId, sinkId)
+    let path = dfs(sourceId, sinkId)
     while (path) {
       let pathFlow = Infinity
 
@@ -55,7 +61,7 @@ export const fordFulkerson = (graph: Graph, srcId: GNode['id'], sinkId: GNode['i
         const u = path[i]
         const v = path[i + 1]
         const connectingEdge = graph.edges.value.find((e) => e.from === u && e.to === v)
-        if (!connectingEdge) throw 'the adj list must be wrong! 2'
+        if (!connectingEdge) throw 'the adj list must be wrong! (2)'
         const connectingEdgeWeight = edgeIdToWeight[connectingEdge.id]
         pathFlow = Math.min(pathFlow, connectingEdgeWeight)
       }
@@ -65,7 +71,7 @@ export const fordFulkerson = (graph: Graph, srcId: GNode['id'], sinkId: GNode['i
         const v = path[i + 1]
         const connectingUV = graph.edges.value.find((e) => e.from === u && e.to === v)
         const connectingVU = graph.edges.value.find((e) => e.from === v && e.to === u)
-        if (!connectingUV || !connectingVU) throw 'the adj list must be wrong! 3'
+        if (!connectingUV || !connectingVU) throw 'the adj list must be wrong! (3)'
         edgeIdToWeight[connectingUV.id] -= pathFlow
         edgeIdToWeight[connectingVU.id] += pathFlow
         trace.push({
@@ -75,7 +81,7 @@ export const fordFulkerson = (graph: Graph, srcId: GNode['id'], sinkId: GNode['i
       }
 
       maxFlow += pathFlow
-      path = dfs(srcId, sinkId)
+      path = dfs(sourceId, sinkId)
     }
 
     return maxFlow

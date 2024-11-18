@@ -1,6 +1,42 @@
 import type { Graph } from '@graph/types'
 import type { ProductInfo } from 'src/types'
 import { useFlowSimulation } from './useFlowSimulation'
+import { useSourceSinkControls } from './useSourceSinkControls'
+import { useFlowColorizer } from './useFlowColorizer'
+import { useEdgeThickener } from './useEdgeThickener'
+
+const flowSimulations = (graph: Graph) => {
+  const manager = useSourceSinkControls(graph)
+
+  const {
+    activate: activeEdgeThickener,
+    deactivate: deactivateEdgeThickener
+  } = useEdgeThickener(graph)
+
+  const {
+    colorize: activateFlowColorizer,
+    decolorize: deactivateFlowColorizer
+  } = useFlowColorizer(graph, manager)
+
+  return [
+    {
+      name: 'Ford Fulkerson',
+      description: 'Iteratively find augmenting paths until the residual graph is revealed',
+      thumbnail: '/products/thumbnails/network-flow.png',
+      controls: () => useFlowSimulation(graph, manager),
+      setup: async () => {
+        activateFlowColorizer()
+        activeEdgeThickener()
+        await manager.setSourceNode()
+        await manager.setSinkNode()
+      },
+      cleanup: () => {
+        deactivateFlowColorizer()
+        deactivateEdgeThickener()
+      }
+    }
+  ]
+}
 
 const info: ProductInfo = {
   route: {
@@ -15,14 +51,7 @@ const info: ProductInfo = {
     description: 'Visualize Network Flow',
     thumbnail: '/products/thumbnails/network-flow.png',
   },
-  simulations: [
-    {
-      name: 'Ford Fulkerson',
-      description: 'Iteratively find augmenting paths until the residual graph is revealed',
-      thumbnail: '/products/thumbnails/network-flow.png',
-      controls: (graph: Graph) => useFlowSimulation(graph),
-    }
-  ]
+  simulations: (graph: Graph) => flowSimulations(graph),
 }
 
 export default info

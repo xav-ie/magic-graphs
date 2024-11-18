@@ -2,14 +2,16 @@
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
-  import { flowNodeLabelGetter, useFlowControls } from "./useFlowControls";
+  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
+  import CollabControls from "@playground/graph/CollabControls.vue";
+  import { flowNodeLabelGetter, useSourceSinkControls } from "./useSourceSinkControls";
+  import { useFlowColorizer } from "./useFlowColorizer";
   import SourceSinkControls from "./SourceSinkControls.vue";
   import { useEdgeThickener } from "./useEdgeThickener";
   import { FLOW_GRAPH_SETTINGS } from "./settings";
-  import NetworkFlowStats from "./NetworkFlowStats.vue";
-  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
   import { useFlowSimulation } from "./useFlowSimulation";
-  import CollabControls from "@playground/graph/CollabControls.vue";
+  import FlowProperties from "./FlowProperties.vue";
+  import { useFlowProperties } from "./useFlowProperties";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -18,9 +20,16 @@
 
   graph.settings.value.newNodeLabelGetter = flowNodeLabelGetter(graph);
 
-  useEdgeThickener(graph);
-  const controls = useFlowControls(graph);
-  const simControls = useFlowSimulation(graph);
+
+  const sourceSinkControls = useSourceSinkControls(graph);
+  const flowProps = useFlowProperties(graph, sourceSinkControls);
+  const simControls = useFlowSimulation(graph, sourceSinkControls);
+
+  const { activate: activateEdgeThickener } = useEdgeThickener(graph);
+  const { colorize: activateFlowColorizer } = useFlowColorizer(graph, sourceSinkControls);
+
+  activateEdgeThickener();
+  activateFlowColorizer();
 </script>
 
 <template>
@@ -34,13 +43,13 @@
 
     <div class="absolute top-0 p-3">
       <SourceSinkControls
-        :controls="controls"
+        :sourceSink="sourceSinkControls"
         :sim-controls="simControls"
       />
     </div>
 
     <div class="absolute top-0 right-0 p-3 text-white flex gap-3">
-      <NetworkFlowStats :graph="graph" />
+      <FlowProperties :flow-properties="flowProps" />
     </div>
 
     <div

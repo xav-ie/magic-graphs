@@ -1,15 +1,18 @@
 <script setup lang="ts">
   import type { Graph } from "@graph/types";
-  import type { SimulationControls } from "@ui/sim/types";
   import colors from "@utils/colors";
-  import type { ProductInfo, SimulationDeclaration } from "src/types";
+  import type {
+    ProductInfo,
+    SimulationDeclaration,
+    SimulationDeclarationGetter,
+  } from "src/types";
   import StartSimulation from "./StartSimulation.vue";
 
   const props = defineProps<{
     graph: Graph;
   }>();
 
-  const activeSimulation = defineModel<SimulationControls>();
+  const activeSimulation = defineModel<SimulationDeclaration>();
 
   const infoModules = import.meta.glob<{
     default: ProductInfo;
@@ -19,19 +22,28 @@
     (module) => module.default
   );
 
-  const simulations = productInfo
+  const simulationDeclarationGetters = productInfo
     .map((info) => info.simulations)
-    .filter(Boolean)
-    .flat() as SimulationDeclaration[];
+    .filter(Boolean) as SimulationDeclarationGetter[];
 
-  const startSimulation = (simulation: SimulationDeclaration) => {
-    const controls = simulation.controls(props.graph);
-    controls.start();
-    activeSimulation.value = controls;
+  const simulations = simulationDeclarationGetters
+    .map((getter) => getter(props.graph))
+    .flat();
+
+  const startSimulation = async (simulation: SimulationDeclaration) => {
+    const { setup, controls } = simulation;
+    await setup?.();
+    const simControls = await controls();
+    simControls.start();
+    activeSimulation.value = simulation;
   };
 
-  const stopSimulation = () => {
-    activeSimulation.value?.stop();
+  const stopSimulation = async () => {
+    if (!activeSimulation.value) return;
+    const { controls, cleanup } = activeSimulation.value;
+    const simControls = await controls();
+    simControls.stop();
+    await cleanup?.();
     activeSimulation.value = undefined;
   };
 </script>

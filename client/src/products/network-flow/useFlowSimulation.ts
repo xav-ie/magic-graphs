@@ -1,20 +1,24 @@
-import { computed, ref } from "vue"
-import type { GEdge, Graph } from "@graph/types"
+import { computed, ref, type Ref } from "vue"
+import type { GEdge, GNode, Graph } from "@graph/types"
 import { useTheme } from "@graph/themes/useTheme"
-import colors from "@utils/colors"
 import { getValue } from "@graph/helpers"
+import colors from "@utils/colors"
 import type { SimulationControls } from "@ui/sim/types"
 import { RESIDUAL_ID, useResidualEdges } from "./useResidualEdges"
 import { useFordFulkerson } from "./useFordFulkerson"
 import type { FlowTrace } from "./fordFulkerson"
+import { FLOW_USETHEME_ID } from "./constants"
 
 export type FlowSimulationControls = SimulationControls<FlowTrace>
 
-export const useFlowSimulation = (graph: Graph): FlowSimulationControls => {
+export const useFlowSimulation = (graph: Graph, { source, sink }: {
+  source: Ref<GNode | undefined>,
+  sink: Ref<GNode | undefined>
+}): FlowSimulationControls => {
 
-  const { setTheme } = useTheme(graph, 'flow')
+  const { setTheme } = useTheme(graph, FLOW_USETHEME_ID)
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
-  const { trace } = useFordFulkerson(graph)
+  const { trace } = useFordFulkerson(graph, { source, sink })
 
   const active = ref(false)
   const activeEdgeIds = ref<string[]>([])
@@ -39,7 +43,6 @@ export const useFlowSimulation = (graph: Graph): FlowSimulationControls => {
     active.value = true
     paused.value = false
     createResidualEdges()
-
     simulationInterval.value = setInterval(onSimulationInterval, playbackSpeed.value)
   }
 

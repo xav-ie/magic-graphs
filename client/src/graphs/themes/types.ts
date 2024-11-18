@@ -33,6 +33,7 @@ export type BaseGraphNodeTheme = {
 export type BaseGraphEdgeTheme = {
   edgeColor: string,
   edgeWidth: number,
+  edgeText: string,
   edgeTextSize: number,
   edgeTextColor: string,
   edgeTextFontWeight: TextFontWeight,

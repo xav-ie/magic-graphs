@@ -1,6 +1,6 @@
+import type { RouteRecordRaw } from "vue-router"
 import type { Graph } from "@graph/types"
 import type { SimulationControls } from "@ui/sim/types"
-import type { RouteRecordRaw } from "vue-router"
 
 /**
  * options for exposing a product to the main page
@@ -41,12 +41,26 @@ export type SimulationDeclaration = {
    * returning a string indicates that the simulation cannot run and the string, user facing,
    * is the reason why it cannot. returning true indicates that the simulation can run.
    */
-  canRun?: (graph: Graph) => true | string,
+  canRun?: () => true | string,
   /**
    * the controls for the simulation returned by your products useSimulation instance
    */
-  controls: (graph: Graph) => SimulationControls,
+  controls: () => Promise<SimulationControls> | SimulationControls,
+  /**
+   * setup to run when the simulation is opened or started by the user.
+   * use this to prepare the simulation experience by activating colorizers, prompting
+   * user for starting nodes, etc.
+   */
+  setup?: () => Promise<void> | void,
+  /**
+   * cleanup to run when the simulation is closed or stopped by the user.
+   * use this to deactivate colorizers or other visual effects that were activated
+   * in setup or during the simulation.
+   */
+  cleanup?: () => Promise<void> | void,
 }
+
+export type SimulationDeclarationGetter = (graph: Graph) => SimulationDeclaration[]
 
 /**
  * interface for exposing a product to global resources
@@ -78,5 +92,5 @@ export type ProductInfo = {
   /**
    * if defined, this products simulations will be exposed to other products
    */
-  simulations?: SimulationDeclaration[]
+  simulations?: SimulationDeclarationGetter,
 }

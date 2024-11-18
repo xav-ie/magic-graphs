@@ -1,8 +1,7 @@
 import { onUnmounted } from "vue";
 import { useTheme } from "@graph/themes/useTheme";
 import type { GEdge, Graph } from "@graph/types";
-
-export const EDGE_THICKENER_USETHEME_ID = 'edge-thickener';
+import { FLOW_USETHEME_ID } from "./constants";
 
 const MIN_THICKNESS = 5;
 const MAX_THICKNESS = 25;
@@ -12,8 +11,12 @@ const MAX_THICKNESS = 25;
  */
 const ZERO_THICKNESS = 3;
 
+/**
+ * hooks into the graph with useTheme to adjust the thickness of edges
+ * based on their weight
+ */
 export const useEdgeThickener = (graph: Graph) => {
-  const { setTheme, removeAllThemes } = useTheme(graph, EDGE_THICKENER_USETHEME_ID);
+  const { setTheme, removeTheme } = useTheme(graph, FLOW_USETHEME_ID);
 
   const thickener = (edge: GEdge) => {
     const edgeWeight = Number(edge.label);
@@ -26,11 +29,9 @@ export const useEdgeThickener = (graph: Graph) => {
   }
 
   const activate = () => setTheme('edgeWidth', thickener);
-  const deactivate = () => removeAllThemes();
+  const deactivate = () => removeTheme('edgeWidth');
 
   onUnmounted(deactivate);
-
-  activate();
 
   return {
     activate,
