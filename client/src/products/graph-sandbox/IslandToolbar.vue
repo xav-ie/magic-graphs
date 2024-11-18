@@ -27,12 +27,6 @@
     props.graph.bulkRemoveNode([...props.graph.focusedItemIds.value]);
     props.graph.bulkRemoveEdge([...props.graph.focusedItemIds.value]);
   }
-
-  const changeEdgeType = (type: "directed" | "undirected") => {
-    props.graph.settings.value.userAddedEdgeType = type;
-    for (const edge of props.graph.edges.value) edge.type = type;
-    props.graph.trackGraphState();
-  }
 </script>
 
 <template>
@@ -57,8 +51,8 @@
 
     <ToolbarButtonGroup>
       <ToolbarButton
-        @click="changeEdgeType('directed')"
-        :active="graph.settings.value.userAddedEdgeType === 'directed'"
+        @click="graph.settings.value.isGraphDirected = true"
+        :active="graph.settings.value.isGraphDirected"
       >
         mdi-arrow-right-thin
       </ToolbarButton>
@@ -66,8 +60,8 @@
       <ToolbarButtonDivider />
 
       <ToolbarButton
-        @click="changeEdgeType('undirected')"
-        :active="graph.settings.value.userAddedEdgeType === 'undirected'"
+        @click="graph.settings.value.isGraphDirected = false"
+        :active="!graph.settings.value.isGraphDirected"
       >
         mdi-minus
       </ToolbarButton>

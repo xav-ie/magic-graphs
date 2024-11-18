@@ -32,14 +32,12 @@ export type FocusOption = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * whether to focus the newly added item
+   * whether to focus the added item/s
 // @ts-ignore
    */
 // @ts-ignore
   focus: boolean
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type HistoryOption = {
@@ -51,9 +49,7 @@ export type HistoryOption = {
    */
 // @ts-ignore
   history: boolean
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type BroadcastOption = {
@@ -65,108 +61,22 @@ export type BroadcastOption = {
    */
 // @ts-ignore
   broadcast: boolean
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type AddNodeOptions = FocusOption & BroadcastOption & HistoryOption
-// @ts-ignore
-
-// @ts-ignore
-export const ADD_NODE_OPTIONS_DEFAULTS: AddNodeOptions = {
-// @ts-ignore
-  broadcast: true,
-// @ts-ignore
-  focus: true,
-// @ts-ignore
-  history: true,
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-export const BULK_ADD_NODE_OPTIONS_DEFAULTS: AddNodeOptions = {
-// @ts-ignore
-  broadcast: true,
-// @ts-ignore
-  focus: false,
-// @ts-ignore
-  history: true,
-// @ts-ignore
-}
-// @ts-ignore
 
 // @ts-ignore
 export type RemoveNodeOptions = BroadcastOption & HistoryOption
-// @ts-ignore
-
-// @ts-ignore
-export const REMOVE_NODE_OPTIONS_DEFAULTS: RemoveNodeOptions = {
-// @ts-ignore
-  broadcast: true,
-// @ts-ignore
-  history: true,
-// @ts-ignore
-}
-// @ts-ignore
 
 // @ts-ignore
 export type AddEdgeOptions = FocusOption & BroadcastOption & HistoryOption
-// @ts-ignore
-
-// @ts-ignore
-export const ADD_EDGE_OPTIONS_DEFAULTS: AddEdgeOptions = {
-// @ts-ignore
-  broadcast: true,
-// @ts-ignore
-  focus: false,
-// @ts-ignore
-  history: true,
-// @ts-ignore
-}
-// @ts-ignore
 
 // @ts-ignore
 export type RemoveEdgeOptions = BroadcastOption & HistoryOption
-// @ts-ignore
-
-// @ts-ignore
-export const REMOVE_EDGE_OPTIONS_DEFAULTS: RemoveEdgeOptions = {
-// @ts-ignore
-  broadcast: true,
-// @ts-ignore
-  history: true,
-// @ts-ignore
-}
-// @ts-ignore
 
 // @ts-ignore
 export type MoveNodeOptions = BroadcastOption
-// @ts-ignore
-
-// @ts-ignore
-export const MOVE_NODE_OPTIONS_DEFAULTS: MoveNodeOptions = {
-// @ts-ignore
-  broadcast: true,
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * defaults for newly added edges
-// @ts-ignore
- */
-// @ts-ignore
-export const ADD_EDGE_DEFAULTS = {
-// @ts-ignore
-  type: 'directed',
-// @ts-ignore
-  label: '',
-// @ts-ignore
-} as const
 
 // @ts-ignore
 export type UseAggregatorOptions = {
@@ -174,144 +84,12 @@ export type UseAggregatorOptions = {
   canvas: Ref<HTMLCanvasElement | null | undefined>
 // @ts-ignore
   emit: GraphEventEmitter
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
-// @ts-ignore
-  const aggregator = ref<Aggregator>([])
-// @ts-ignore
-  const updateAggregator: UpdateAggregator[] = []
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * refresh the canvas
-// @ts-ignore
-   *
-// @ts-ignore
-   * @param repaintId - the id of the repaint event (for tracking)
-// @ts-ignore
-   * @returns a function that will repaint the canvas
-// @ts-ignore
-   */
-// @ts-ignore
-  const repaint = (repaintId: string) => () => {
-// @ts-ignore
-    if (!canvas.value) return
-// @ts-ignore
-    const ctx = canvas.value.getContext('2d')
-// @ts-ignore
-    if (!ctx) return
-// @ts-ignore
-    ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
-// @ts-ignore
-
-// @ts-ignore
-    const evaluateAggregator = updateAggregator.reduce<Aggregator>((acc, fn) => fn(acc), [])
-// @ts-ignore
-    aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
-// @ts-ignore
-
-// @ts-ignore
-    const indexOfLastEdge = aggregator.value.findLastIndex(item => item.graphType === 'edge')
-// @ts-ignore
-    const beforeLastEdge = aggregator.value.slice(0, indexOfLastEdge + 1)
-// @ts-ignore
-    const afterLastEdge = aggregator.value.slice(indexOfLastEdge + 1)
-// @ts-ignore
-
-// @ts-ignore
-    for (const item of beforeLastEdge) {
-// @ts-ignore
-      item.shape.drawShape(ctx)
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    for (const item of beforeLastEdge) {
-// @ts-ignore
-      item.shape.drawTextAreaMatte?.(ctx)
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    for (const item of beforeLastEdge) {
-// @ts-ignore
-      item.shape.drawText?.(ctx)
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    for (const item of afterLastEdge) {
-// @ts-ignore
-      item.shape.draw(ctx)
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    emit('onRepaint', ctx, repaintId)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * get all schema items at given coordinates
-// @ts-ignore
-   *
-// @ts-ignore
-   * @param x - the x coord
-// @ts-ignore
-   * @param y - the y coord
-// @ts-ignore
-   * @returns an array where the first item is the bottom most schema item and the last is the top most
-// @ts-ignore
-   * @example // returns [node, nodeAnchor] where a nodeAnchor is sitting on top of a node
-// @ts-ignore
-   * getSchemaItemsByCoordinates(200, 550)
-// @ts-ignore
-   */
-// @ts-ignore
-  const getSchemaItemsByCoordinates = (x: number, y: number) => {
-// @ts-ignore
-    return aggregator.value
-// @ts-ignore
-      .sort((a, b) => a.priority - b.priority)
-// @ts-ignore
-      .filter(item => item.shape.shapeHitbox({ x, y }) || item.shape.textHitbox?.({ x, y }))
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  return {
-// @ts-ignore
-    aggregator,
-// @ts-ignore
-    updateAggregator,
-// @ts-ignore
-    repaint,
-// @ts-ignore
-    getSchemaItemsByCoordinates,
-// @ts-ignore
-  }
 }
 
 // @ts-ignore
 type GraphCRUDOptions = {
 // @ts-ignore
   emit: Emitter,
-// @ts-ignore
-  repaint: (key: string) => () => void,
 // @ts-ignore
   nodes: Ref<GNode[]>,
 // @ts-ignore
@@ -322,698 +100,6 @@ type GraphCRUDOptions = {
   edgeMap: EdgeMap,
 // @ts-ignore
   settings: Ref<GraphSettings>,
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-
-// @ts-ignore
-export const useGraphCRUD = ({
-// @ts-ignore
-  nodes,
-// @ts-ignore
-  edges,
-// @ts-ignore
-  nodeMap,
-// @ts-ignore
-  edgeMap,
-// @ts-ignore
-  repaint,
-// @ts-ignore
-  emit,
-// @ts-ignore
-  settings,
-// @ts-ignore
-}: GraphCRUDOptions) => {
-// @ts-ignore
-
-// @ts-ignore
-  // READ OPERATIONS
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * get a node by its id
-// @ts-ignore
-   *
-// @ts-ignore
-   * @param id
-// @ts-ignore
-   * @returns the node or undefined if not found
-// @ts-ignore
-   */
-// @ts-ignore
-  const getNode = (id: GNode['id']) => nodeMap.value.get(id)
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * get an edge by its id
-// @ts-ignore
-   *
-// @ts-ignore
-   * @param id
-// @ts-ignore
-   * @returns the edge or undefined if not found
-// @ts-ignore
-   */
-// @ts-ignore
-  const getEdge = (id: GEdge['id']) => edgeMap.value.get(id)
-// @ts-ignore
-
-// @ts-ignore
-
-// @ts-ignore
-  // CREATE OPERATIONS
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * add a node to the graph
-// @ts-ignore
-   *
-// @ts-ignore
-   * @param node - the node to add
-// @ts-ignore
-   * @param options - override default effects (onNodeAdded event)
-// @ts-ignore
-   * @returns the added node or undefined if not added
-// @ts-ignore
-   */
-// @ts-ignore
-  const addNode = (
-// @ts-ignore
-    node: Partial<GNode>,
-// @ts-ignore
-    options: Partial<AddNodeOptions> = {}
-// @ts-ignore
-  ) => {
-// @ts-ignore
-    if (node?.id && getNode(node.id)) {
-// @ts-ignore
-      console.warn('prevented adding a node with an existing id, this shouldn\'t happen')
-// @ts-ignore
-      return
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    const fullOptions = {
-// @ts-ignore
-      ...ADD_NODE_OPTIONS_DEFAULTS,
-// @ts-ignore
-      ...options
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    const labelGetter = settings.value.newNodeLabelGetter ?? nodeLetterLabelGetter({ nodes })
-// @ts-ignore
-
-// @ts-ignore
-    const newNode = {
-// @ts-ignore
-      id: node.id ?? generateId(),
-// @ts-ignore
-      label: node.label ?? labelGetter(),
-// @ts-ignore
-      x: node.x ?? 0,
-// @ts-ignore
-      y: node.y ?? 0,
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    nodes.value.push(newNode)
-// @ts-ignore
-    emit('onStructureChange', nodes.value, edges.value)
-// @ts-ignore
-    emit('onNodeAdded', newNode, fullOptions)
-// @ts-ignore
-    repaint('base-graph/add-node')()
-// @ts-ignore
-    return newNode
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const bulkAddNode = (
-// @ts-ignore
-    nodes: Partial<GNode>[],
-// @ts-ignore
-    options: Partial<AddNodeOptions> = {}
-// @ts-ignore
-  ) => {
-// @ts-ignore
-    if (nodes.length === 0) return
-// @ts-ignore
-
-// @ts-ignore
-    const fullOptions = {
-// @ts-ignore
-      ...BULK_ADD_NODE_OPTIONS_DEFAULTS,
-// @ts-ignore
-      ...options
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    const createdNodes = []
-// @ts-ignore
-
-// @ts-ignore
-    for (const node of nodes) {
-// @ts-ignore
-      const newNode = addNode(node, {
-// @ts-ignore
-        focus: false,
-// @ts-ignore
-        broadcast: false,
-// @ts-ignore
-        history: false,
-// @ts-ignore
-      })
-// @ts-ignore
-      if (!newNode) continue
-// @ts-ignore
-      createdNodes.push(newNode)
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    if (createdNodes.length === 0) return
-// @ts-ignore
-    emit('onBulkNodeAdded', createdNodes, fullOptions)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * add an edge to the graph
-// @ts-ignore
-   *
-// @ts-ignore
-   * @param edge - the edge to add
-// @ts-ignore
-   * @param options - override default effects (onEdgeAdded event)
-// @ts-ignore
-   * @returns the added edge or undefined if not added
-// @ts-ignore
-   */
-// @ts-ignore
-  const addEdge = (
-// @ts-ignore
-    edge: PartiallyPartial<GEdge, keyof typeof ADD_EDGE_DEFAULTS | 'id'>,
-// @ts-ignore
-    options: Partial<AddEdgeOptions> = {}
-// @ts-ignore
-  ) => {
-// @ts-ignore
-    const fullOptions = {
-// @ts-ignore
-      ...ADD_EDGE_OPTIONS_DEFAULTS,
-// @ts-ignore
-      ...options
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    const [fromNode, toNode] = [getNode(edge.from), getNode(edge.to)]
-// @ts-ignore
-    if (!fromNode || !toNode) return
-// @ts-ignore
-
-// @ts-ignore
-    const undirectedEdgeOnPath = edges.value.find(e => {
-// @ts-ignore
-      const connectedToFrom = e.to === edge.to && e.from === edge.from
-// @ts-ignore
-      const connectedFromTo = e.to === edge.from && e.from === edge.to
-// @ts-ignore
-      return (connectedToFrom || connectedFromTo) && e.type === 'undirected'
-// @ts-ignore
-    })
-// @ts-ignore
-
-// @ts-ignore
-    if (undirectedEdgeOnPath) return
-// @ts-ignore
-
-// @ts-ignore
-    const directedEdgeOnPath = edges.value.find(e => {
-// @ts-ignore
-      return e.to === edge.to && e.from === edge.from
-// @ts-ignore
-    })
-// @ts-ignore
-
-// @ts-ignore
-    if (directedEdgeOnPath) return
-// @ts-ignore
-
-// @ts-ignore
-    // if the edge type is undirected, check the other directed way
-// @ts-ignore
-    if (edge.type === 'undirected') {
-// @ts-ignore
-      const directedEdgeOnPath = edges.value.find(e => {
-// @ts-ignore
-        return e.to === edge.from && e.from === edge.to
-// @ts-ignore
-      })
-// @ts-ignore
-
-// @ts-ignore
-      if (directedEdgeOnPath) return
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    const newEdge: GEdge = {
-// @ts-ignore
-      ...ADD_EDGE_DEFAULTS,
-// @ts-ignore
-      id: generateId(),
-// @ts-ignore
-      ...edge,
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    edges.value.push(newEdge)
-// @ts-ignore
-
-// @ts-ignore
-    emit('onEdgeAdded', newEdge, fullOptions)
-// @ts-ignore
-    emit('onStructureChange', nodes.value, edges.value)
-// @ts-ignore
-
-// @ts-ignore
-    repaint('base-graph/add-edge')()
-// @ts-ignore
-    return newEdge
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const bulkAddEdge = (
-// @ts-ignore
-    edges: PartiallyPartial<GEdge, keyof typeof ADD_EDGE_DEFAULTS | 'id'>[],
-// @ts-ignore
-    options: Partial<AddEdgeOptions> = {}
-// @ts-ignore
-  ) => {
-// @ts-ignore
-    if (edges.length === 0) return
-// @ts-ignore
-
-// @ts-ignore
-    const fullOptions = {
-// @ts-ignore
-      ...ADD_EDGE_OPTIONS_DEFAULTS,
-// @ts-ignore
-      ...options
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    const createdEdges: GEdge[] = []
-// @ts-ignore
-
-// @ts-ignore
-    for (const edge of edges) {
-// @ts-ignore
-      const newEdge = addEdge(edge, {
-// @ts-ignore
-        broadcast: false,
-// @ts-ignore
-        history: false,
-// @ts-ignore
-      })
-// @ts-ignore
-      if (!newEdge) continue
-// @ts-ignore
-      createdEdges.push(newEdge)
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    if (createdEdges.length === 0) return
-// @ts-ignore
-    emit('onBulkEdgeAdded', createdEdges, fullOptions)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-
-// @ts-ignore
-  // UPDATE OPERATIONS
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * move a node to a new position (in place mutation)
-// @ts-ignore
-   *
-// @ts-ignore
-   * @param id - the id of the node to move
-// @ts-ignore
-   * @param coords - the new coordinates (x, y)
-// @ts-ignore
-   * @param options - override default effects (onNodeMoved event)
-// @ts-ignore
-   * @returns void
-// @ts-ignore
-   */
-// @ts-ignore
-  const moveNode = (
-// @ts-ignore
-    id: GNode['id'],
-// @ts-ignore
-    coords: { x: number, y: number },
-// @ts-ignore
-    options: Partial<MoveNodeOptions> = {}
-// @ts-ignore
-  ) => {
-// @ts-ignore
-    const node = getNode(id)
-// @ts-ignore
-    if (!node) return
-// @ts-ignore
-
-// @ts-ignore
-    const fullOptions = {
-// @ts-ignore
-      ...MOVE_NODE_OPTIONS_DEFAULTS,
-// @ts-ignore
-      ...options
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    node.x = coords.x
-// @ts-ignore
-    node.y = coords.y
-// @ts-ignore
-    emit('onNodeMoved', node, fullOptions)
-// @ts-ignore
-    repaint('base-graph/move-node')()
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-
-// @ts-ignore
-  // DELETE OPERATIONS
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * remove a node from the graph
-// @ts-ignore
-   *
-// @ts-ignore
-   * @param id - the id of the node to remove
-// @ts-ignore
-   * @param options - override default effects (onNodeRemoved event)
-// @ts-ignore
-   * @returns the removed node along with its removed edges or undefined if not removed
-// @ts-ignore
-   */
-// @ts-ignore
-  const removeNode = (id: GNode['id'], options: Partial<RemoveNodeOptions> = {}) => {
-// @ts-ignore
-    const removedNode = getNode(id)
-// @ts-ignore
-    if (!removedNode) return
-// @ts-ignore
-
-// @ts-ignore
-    const fullOptions = {
-// @ts-ignore
-      ...REMOVE_NODE_OPTIONS_DEFAULTS,
-// @ts-ignore
-      ...options
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    const edgesToRemove = getConnectedEdges(removedNode, edges.value)
-// @ts-ignore
-    const removedEdges = edgesToRemove.map((e) => removeEdge(e.id, {
-// @ts-ignore
-      broadcast: false,
-// @ts-ignore
-      history: false,
-// @ts-ignore
-    })).filter(Boolean) as GEdge[]
-// @ts-ignore
-
-// @ts-ignore
-    nodes.value = nodes.value.filter(n => n.id !== removedNode.id)
-// @ts-ignore
-
-// @ts-ignore
-    emit('onStructureChange', nodes.value, edges.value)
-// @ts-ignore
-    emit('onNodeRemoved', removedNode, removedEdges, fullOptions)
-// @ts-ignore
-
-// @ts-ignore
-    setTimeout(repaint('base-graph/remove-node'), 5)
-// @ts-ignore
-    return [removedNode, removedEdges] as const
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const bulkRemoveNode = (
-// @ts-ignore
-    nodeIds: GNode['id'][],
-// @ts-ignore
-    options: Partial<RemoveNodeOptions> = {}
-// @ts-ignore
-  ) => {
-// @ts-ignore
-    if (nodeIds.length === 0) return
-// @ts-ignore
-
-// @ts-ignore
-    const fullOptions = {
-// @ts-ignore
-      ...REMOVE_NODE_OPTIONS_DEFAULTS,
-// @ts-ignore
-      ...options
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    const removedNodes: GNode[] = []
-// @ts-ignore
-    const removedEdges: GEdge[] = []
-// @ts-ignore
-
-// @ts-ignore
-    for (const nodeId of nodeIds) {
-// @ts-ignore
-      const removed = removeNode(nodeId, {
-// @ts-ignore
-        broadcast: false,
-// @ts-ignore
-        history: false,
-// @ts-ignore
-      })
-// @ts-ignore
-      if (!removed) continue
-// @ts-ignore
-      const [removedNode, removedNodeEdges] = removed
-// @ts-ignore
-      removedNodes.push(removedNode)
-// @ts-ignore
-      removedEdges.push(...removedNodeEdges)
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    if (removedNodes.length === 0) return
-// @ts-ignore
-    emit('onBulkNodeRemoved', removedNodes, removedEdges, fullOptions)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * remove an edge from the graph
-// @ts-ignore
-   *
-// @ts-ignore
-   * @param edgeId - the id of the edge to remove
-// @ts-ignore
-   * @param options - override default effects (onEdgeRemoved event)
-// @ts-ignore
-   * @returns the removed edge or undefined if not removed
-// @ts-ignore
-   */
-// @ts-ignore
-  const removeEdge = (
-// @ts-ignore
-    edgeId: GEdge['id'],
-// @ts-ignore
-    options: Partial<RemoveEdgeOptions> = {}
-// @ts-ignore
-  ) => {
-// @ts-ignore
-    const edge = getEdge(edgeId)
-// @ts-ignore
-    if (!edge) return
-// @ts-ignore
-
-// @ts-ignore
-    const fullOptions = {
-// @ts-ignore
-      ...REMOVE_EDGE_OPTIONS_DEFAULTS,
-// @ts-ignore
-      ...options
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    edges.value = edges.value.filter(e => e.id !== edge.id)
-// @ts-ignore
-
-// @ts-ignore
-    emit('onEdgeRemoved', edge, fullOptions)
-// @ts-ignore
-    emit('onStructureChange', nodes.value, edges.value)
-// @ts-ignore
-    repaint('base-graph/remove-edge')()
-// @ts-ignore
-    return edge
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const bulkRemoveEdge = (
-// @ts-ignore
-    edgeIds: GEdge['id'][],
-// @ts-ignore
-    options: Partial<RemoveEdgeOptions> = {}
-// @ts-ignore
-  ) => {
-// @ts-ignore
-    if (edgeIds.length === 0) return
-// @ts-ignore
-
-// @ts-ignore
-    const fullOptions = {
-// @ts-ignore
-      ...REMOVE_EDGE_OPTIONS_DEFAULTS,
-// @ts-ignore
-      ...options
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    const removedEdges: GEdge[] = []
-// @ts-ignore
-
-// @ts-ignore
-    for (const edgeId of edgeIds) {
-// @ts-ignore
-      const removed = removeEdge(edgeId, {
-// @ts-ignore
-        broadcast: false,
-// @ts-ignore
-        history: false,
-// @ts-ignore
-      })
-// @ts-ignore
-      if (!removed) continue
-// @ts-ignore
-      removedEdges.push(removed)
-// @ts-ignore
-    }
-// @ts-ignore
-
-// @ts-ignore
-    if (removedEdges.length === 0) return
-// @ts-ignore
-    emit('onBulkEdgeRemoved', removedEdges, fullOptions)
-// @ts-ignore
-    return removedEdges
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  return {
-// @ts-ignore
-    getNode,
-// @ts-ignore
-    getEdge,
-// @ts-ignore
-
-// @ts-ignore
-    addNode,
-// @ts-ignore
-    addEdge,
-// @ts-ignore
-
-// @ts-ignore
-    moveNode,
-// @ts-ignore
-
-// @ts-ignore
-    removeNode,
-// @ts-ignore
-    removeEdge,
-// @ts-ignore
-
-// @ts-ignore
-    bulkAddNode,
-// @ts-ignore
-    bulkRemoveNode,
-// @ts-ignore
-
-// @ts-ignore
-    bulkAddEdge,
-// @ts-ignore
-    bulkRemoveEdge,
-// @ts-ignore
-  }
 }
 
 // @ts-ignore
@@ -1033,34 +119,16 @@ export type Collaborator = {
   color: string
 // @ts-ignore
   mousePosition: { x: number, y: number }
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * sends a collaborators mouse movement from the client to the server.
-// @ts-ignore
- * does not include the collaborators id, as the server knows this.
-// @ts-ignore
- */
 // @ts-ignore
 export type ToServerCollaboratorMove = {
 // @ts-ignore
   x: number
 // @ts-ignore
   y: number
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * sends a collaborators mouse movement from the server to the client.
-// @ts-ignore
- */
 // @ts-ignore
 export type ToClientCollaboratorMove = {
 // @ts-ignore
@@ -1069,42 +137,19 @@ export type ToClientCollaboratorMove = {
   x: number
 // @ts-ignore
   y: number
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * maps a collaborators id to their info
-// @ts-ignore
- */
 // @ts-ignore
 export type CollaboratorMap = Record<Collaborator['id'], Collaborator>
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * graph state for collaborative graph
-// @ts-ignore
- */
 // @ts-ignore
 export type GraphState = {
 // @ts-ignore
   nodes: GNode[],
 // @ts-ignore
   edges: GEdge[]
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * client-server + server-client events send via socket.io
-// @ts-ignore
- */
 // @ts-ignore
 export interface GraphEvents {
 // @ts-ignore
@@ -1149,72 +194,7 @@ export interface GraphEvents {
 
 // @ts-ignore
   leaveRoom: (confirmationCallback: () => void) => void
-// @ts-ignore
 }
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * list of colors that may be assigned to collaborators
-// @ts-ignore
- */
-// @ts-ignore
-export const COLLAB_COLORS = [
-// @ts-ignore
-  colors.AMBER_600,
-// @ts-ignore
-  colors.BLUE_600,
-// @ts-ignore
-  colors.CYAN_600,
-// @ts-ignore
-  colors.GREEN_600,
-// @ts-ignore
-  colors.INDIGO_600,
-// @ts-ignore
-  colors.LIME_600,
-// @ts-ignore
-  colors.ORANGE_600,
-// @ts-ignore
-  colors.PINK_600,
-// @ts-ignore
-  colors.PURPLE_600,
-// @ts-ignore
-  colors.RED_600,
-// @ts-ignore
-]
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * list of default names for collaborators
-// @ts-ignore
- */
-// @ts-ignore
-export const COLLAB_NAMES = [
-// @ts-ignore
-  'Joud',
-// @ts-ignore
-  'Zavier',
-// @ts-ignore
-  'Thomas',
-// @ts-ignore
-  'Jaime',
-// @ts-ignore
-  'Dila',
-// @ts-ignore
-  'Bella',
-// @ts-ignore
-  'Julian',
-// @ts-ignore
-  'Adriana',
-// @ts-ignore
-  'Juliana',
-// @ts-ignore
-  'Yona'
-// @ts-ignore
-]
 
 // @ts-ignore
 export type ActiveDragNode = {
@@ -1225,52 +205,13 @@ export type ActiveDragNode = {
 }
 
 // @ts-ignore
-export type Id = SchemaItem['id']
-// @ts-ignore
-export type MaybeId = Id | undefined
-// @ts-ignore
-
-// @ts-ignore
-export type FocusedItem = {
-// @ts-ignore
-  type: 'node',
-// @ts-ignore
-  item: GNode,
-// @ts-ignore
-} | {
-// @ts-ignore
-  type: 'edge',
-// @ts-ignore
-  item: GEdge,
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-export type ValidFocusableTypes = SchemaItem['graphType'] & FocusedItem['type']
-// @ts-ignore
-
-// @ts-ignore
-export const FOCUSABLE_GRAPH_TYPES: ValidFocusableTypes[] = ['node', 'edge']
-// @ts-ignore
-export const FOCUS_THEME_ID = 'use-focus-graph'
-
-// @ts-ignore
 export type GNodeRecord = {
 // @ts-ignore
   graphType: 'node',
 // @ts-ignore
   data: GNode
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * affected items that are nodes and have been moved
-// @ts-ignore
- */
 // @ts-ignore
 export type GNodeMoveRecord = {
 // @ts-ignore
@@ -1285,32 +226,16 @@ export type GNodeMoveRecord = {
     to: { x: number, y: number }
 // @ts-ignore
   }
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * affected items that are edges
-// @ts-ignore
- */
 // @ts-ignore
 export type GEdgeRecord = {
 // @ts-ignore
   graphType: 'edge',
 // @ts-ignore
   data: GEdge
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * a record indicating an item in the graph was added or removed
-// @ts-ignore
- */
 // @ts-ignore
 export type AddRemoveRecord = {
 // @ts-ignore
@@ -1329,16 +254,8 @@ export type AddRemoveRecord = {
    */
 // @ts-ignore
   affectedItems: (GNodeRecord | GEdgeRecord)[];
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * a record indicating an item in the graph was moved
-// @ts-ignore
- */
 // @ts-ignore
 export type MoveRecord = {
 // @ts-ignore
@@ -1357,20 +274,13 @@ export type MoveRecord = {
    */
 // @ts-ignore
   affectedItems: GNodeMoveRecord[];
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
-/**
-// @ts-ignore
- * a record of an event stored in the history stack of a graph.
-// @ts-ignore
- * provides for undo/redo functionality
-// @ts-ignore
- */
-// @ts-ignore
 export type HistoryRecord = AddRemoveRecord | MoveRecord;
+
+// @ts-ignore
+export type RedoHistoryOptions = FocusOption;
 
 // @ts-ignore
 export type NodeAnchor = {
@@ -1533,6 +443,8 @@ export const getInitialEventBus = () => {
 // @ts-ignore
     onKeyDown: new Set(),
 // @ts-ignore
+    onKeyUp: new Set(),
+// @ts-ignore
 
 // @ts-ignore
     onThemeChange: new Set(),
@@ -1584,6 +496,18 @@ export const getInitialEventBus = () => {
     onNodeAnchorDragStart: new Set(),
 // @ts-ignore
     onNodeAnchorDrop: new Set(),
+// @ts-ignore
+
+// @ts-ignore
+    /**
+// @ts-ignore
+     * MarqueeGraphEvents
+// @ts-ignore
+     */
+// @ts-ignore
+    onGroupDragStart: new Set(),
+// @ts-ignore
+    onGroupDrop: new Set(),
 // @ts-ignore
   } as const satisfies GraphEventBus
 // @ts-ignore
@@ -1781,6 +705,14 @@ export type BaseGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
+   * when a key is released on the canvas (native dom event)
+// @ts-ignore
+   */
+// @ts-ignore
+  onKeyUp: (ev: KeyboardEvent) => void;
+// @ts-ignore
+  /**
+// @ts-ignore
    * when the graph theme is changed
 // @ts-ignore
    */
@@ -1794,9 +726,7 @@ export type BaseGraphEventMap = {
    */
 // @ts-ignore
   onSettingsChange: (diff: DeepPartial<GraphSettings>) => void;
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type HistoryGraphEventMap = {
@@ -1807,7 +737,7 @@ export type HistoryGraphEventMap = {
 // @ts-ignore
    */
 // @ts-ignore
-  onUndo: (historyRecord: HistoryRecord) => void;
+  onUndo: (historyRecord: HistoryRecord, options: UndoHistoryOptions) => void;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -1815,26 +745,20 @@ export type HistoryGraphEventMap = {
 // @ts-ignore
    */
 // @ts-ignore
-  onRedo: (historyRecord: HistoryRecord) => void;
-// @ts-ignore
+  onRedo: (historyRecord: HistoryRecord, options: RedoHistoryOptions) => void;
 }
-// @ts-ignore
 
 // @ts-ignore
 export type FocusGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * when the focus item (ie nodes or edges) changes.
-// @ts-ignore
-   * undefined if the user is not focusing on an item
+   * when the set of focused items changes
 // @ts-ignore
    */
 // @ts-ignore
-  onFocusChange: (newItemId: string | undefined, oldItemId: string | undefined) => void;
-// @ts-ignore
+  onFocusChange: (newItemIds: Set<string>, oldItemId: Set<string>) => void;
 }
-// @ts-ignore
 
 // @ts-ignore
 export type DraggableGraphEventMap = {
@@ -1854,9 +778,7 @@ export type DraggableGraphEventMap = {
    */
 // @ts-ignore
   onNodeDrop: (node: GNode) => void;
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type NodeAnchorGraphEventMap = {
@@ -1876,54 +798,42 @@ export type NodeAnchorGraphEventMap = {
    */
 // @ts-ignore
   onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
-export type MarqueeGraphEventMap = {}
+export type MarqueeGraphEventMap = {
 // @ts-ignore
+  /**
+// @ts-ignore
+   * when the user starts a marquee drag
+// @ts-ignore
+   */
+// @ts-ignore
+  onGroupDragStart: (nodes: GNode[], startingCoordinates: Coordinate) => void;
+// @ts-ignore
+  /**
+// @ts-ignore
+   * when the user drops a marquee drag
+// @ts-ignore
+   */
+// @ts-ignore
+  onGroupDrop: (nodes: GNode[], endCoordinates: Coordinate) => void;
+}
 
 // @ts-ignore
 export type UserEditableGraphEventMap = {}
-// @ts-ignore
-
-// @ts-ignore
-export type PersistentGraphEventMap = {}
-// @ts-ignore
 
 // @ts-ignore
 export type CollaborativeGraphEventMap = {}
-// @ts-ignore
-
-// @ts-ignore
-export type GraphEventMap = (
-// @ts-ignore
-  BaseGraphEventMap &
-// @ts-ignore
-  HistoryGraphEventMap &
-// @ts-ignore
-  FocusGraphEventMap &
-// @ts-ignore
-  DraggableGraphEventMap &
-// @ts-ignore
-  NodeAnchorGraphEventMap &
-// @ts-ignore
-  MarqueeGraphEventMap &
-// @ts-ignore
-  UserEditableGraphEventMap &
-// @ts-ignore
-  PersistentGraphEventMap &
-// @ts-ignore
-  CollaborativeGraphEventMap
-// @ts-ignore
-)
 
 // @ts-ignore
 export type LabelledItem = { label: string };
 
 // @ts-ignore
 export type SupportedNodeShapes = 'circle' | 'square'
+
+// @ts-ignore
+export type SelectControls = ReturnType<typeof selectFromGraph>;
 
 // @ts-ignore
 export type BaseGraphSettings = {
@@ -1972,45 +882,17 @@ export type BaseGraphSettings = {
 // @ts-ignore
   newNodeLabelGetter: null | (() => string);
 // @ts-ignore
+  /**
+// @ts-ignore
+   * whether the graph is directed, if true, all edges are directed, else all edges are undirected
+// @ts-ignore
+   * @default true
+// @ts-ignore
+   */
+// @ts-ignore
+  isGraphDirected: boolean;
 }
-// @ts-ignore
 
-// @ts-ignore
-export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
-// @ts-ignore
-  displayEdgeLabels: true,
-// @ts-ignore
-  edgeLabelsEditable: true,
-// @ts-ignore
-  edgeInputToLabel: (input: string) => {
-// @ts-ignore
-    const trimmed = input.trim()
-// @ts-ignore
-    if (!trimmed) return
-// @ts-ignore
-    const decimalNum = fractionToDecimal(trimmed)?.toFixed(2)
-// @ts-ignore
-    if (decimalNum === "Infinity") return '∞'
-// @ts-ignore
-    else if (decimalNum === "-Infinity") return '-∞'
-// @ts-ignore
-    else if (decimalNum === undefined && isNaN(Number(trimmed))) return
-// @ts-ignore
-    return decimalNum ?? trimmed
-// @ts-ignore
-  },
-// @ts-ignore
-  newNodeLabelGetter: null,
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * FOCUS GRAPH SETTINGS
-// @ts-ignore
- */
 // @ts-ignore
 export type FocusGraphSettings = {
 // @ts-ignore
@@ -2033,26 +915,8 @@ export type FocusGraphSettings = {
    */
 // @ts-ignore
   focusBlacklist: string[];
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-export const DEFAULT_FOCUS_SETTINGS: FocusGraphSettings = {
-// @ts-ignore
-  focusable: true,
-// @ts-ignore
-  focusBlacklist: [],
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * DRAGGABLE GRAPH SETTINGS
-// @ts-ignore
- */
 // @ts-ignore
 export type DraggableGraphSettings = {
 // @ts-ignore
@@ -2065,24 +929,8 @@ export type DraggableGraphSettings = {
    */
 // @ts-ignore
   draggable: boolean;
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-export const DEFAULT_DRAGGABLE_SETTINGS: DraggableGraphSettings = {
-// @ts-ignore
-  draggable: true,
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * NODE ANCHOR GRAPH SETTINGS
-// @ts-ignore
- */
 // @ts-ignore
 export type NodeAnchorGraphSettings = {
 // @ts-ignore
@@ -2095,24 +943,8 @@ export type NodeAnchorGraphSettings = {
    */
 // @ts-ignore
   nodeAnchors: boolean
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-export const DEFAULT_NODE_ANCHOR_SETTINGS: NodeAnchorGraphSettings = {
-// @ts-ignore
-  nodeAnchors: true
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * MARQUEE GRAPH SETTINGS
-// @ts-ignore
- */
 // @ts-ignore
 export type MarqueeGraphSettings = {
 // @ts-ignore
@@ -2135,26 +967,8 @@ export type MarqueeGraphSettings = {
    */
 // @ts-ignore
   marqueeSelectableGraphTypes: SchemaItem['graphType'][];
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-export const DEFAULT_MARQUEE_SETTINGS: MarqueeGraphSettings = {
-// @ts-ignore
-  marquee: true,
-// @ts-ignore
-  marqueeSelectableGraphTypes: ['node', 'edge'],
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * USER EDITABLE GRAPH SETTINGS
-// @ts-ignore
- */
 // @ts-ignore
 export type UserEditableGraphSettings = {
 // @ts-ignore
@@ -2170,16 +984,6 @@ export type UserEditableGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * the type of edge to add when creating an edge between nodes
-// @ts-ignore
-   * @default "directed"
-// @ts-ignore
-   */
-// @ts-ignore
-  userAddedEdgeType: 'directed' | 'undirected',
-// @ts-ignore
-  /**
-// @ts-ignore
    * the default label assigned to edges when created using the UI
 // @ts-ignore
    * @default 1
@@ -2188,27 +992,31 @@ export type UserEditableGraphSettings = {
 // @ts-ignore
   userAddedEdgeLabel: string,
 // @ts-ignore
+  /**
+// @ts-ignore
+   * whether to allow self loops.
+// @ts-ignore
+   * relevant on directed graphs where a node can have an edge to itself
+// @ts-ignore
+   * @default false
+// @ts-ignore
+   */
+// @ts-ignore
+  userAddedEdgeRuleNoSelfLoops: boolean,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * whether to allow only one edge per path between two nodes.
+// @ts-ignore
+   * relevant on directed graphs where multiple edges can exist between two nodes
+// @ts-ignore
+   * @default false
+// @ts-ignore
+   */
+// @ts-ignore
+  userAddedEdgeRuleOneEdgePerPath: boolean,
 }
-// @ts-ignore
 
-// @ts-ignore
-export const DEFAULT_USER_EDITABLE_SETTINGS: UserEditableGraphSettings = {
-// @ts-ignore
-  userEditable: true,
-// @ts-ignore
-  userAddedEdgeType: 'directed',
-// @ts-ignore
-  userAddedEdgeLabel: "1",
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * PERSISTENT GRAPH SETTINGS
-// @ts-ignore
- */
 // @ts-ignore
 export type PersistentGraphSettings = {
 // @ts-ignore
@@ -2251,44 +1059,11 @@ export type PersistentGraphSettings = {
    */
 // @ts-ignore
   persistentTrackSettings: boolean,
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-export const DEFAULT_PERSISTENT_SETTINGS: PersistentGraphSettings = {
-// @ts-ignore
-  persistent: true,
-// @ts-ignore
-  persistentStorageKey: 'graph',
-// @ts-ignore
-  persistentTrackTheme: false,
-// @ts-ignore
-  persistentTrackSettings: false,
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * COLLABORATIVE GRAPH SETTINGS
-// @ts-ignore
- */
 // @ts-ignore
 export type CollaborativeGraphSettings = {}
-// @ts-ignore
 
-// @ts-ignore
-export const DEFAULT_COLLABORATIVE_SETTINGS: CollaborativeGraphSettings = {}
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * represents all settings on a graph instance
-// @ts-ignore
- */
 // @ts-ignore
 export type GraphSettings = (
 // @ts-ignore
@@ -2485,6 +1260,8 @@ export const resolveThemeForEdge = (getTheme: ThemeGetter, edge: GEdge): BaseGra
 // @ts-ignore
   edgeColor: getTheme('edgeColor', edge),
 // @ts-ignore
+  edgeText: getTheme('edgeText', edge),
+// @ts-ignore
   edgeTextSize: getTheme('edgeTextSize', edge),
 // @ts-ignore
   edgeTextColor: getTheme('edgeTextColor', edge),
@@ -2513,6 +1290,8 @@ export type NonColorGraphThemes = Pick<
   'edgeTextSize' |
 // @ts-ignore
   'nodeText' |
+// @ts-ignore
+  'edgeText' |
 // @ts-ignore
   'edgeTextFontWeight' |
 // @ts-ignore
@@ -2548,6 +1327,8 @@ export const NON_COLOR_THEMES: NonColorGraphThemes = {
 // @ts-ignore
   nodeText: ({ label }) => label,
 // @ts-ignore
+  edgeText: ({ label }) => label,
+// @ts-ignore
   edgeTextFontWeight: 'bold',
 // @ts-ignore
   linkPreviewWidth: 10,
@@ -2567,9 +1348,7 @@ export type UITheme = {
   tertiaryColor: string,
 // @ts-ignore
   tertiaryTextColor: string,
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type BaseGraphNodeTheme = {
@@ -2589,9 +1368,7 @@ export type BaseGraphNodeTheme = {
   nodeTextColor: string,
 // @ts-ignore
   nodeShape: SupportedNodeShapes,
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type BaseGraphEdgeTheme = {
@@ -2600,14 +1377,14 @@ export type BaseGraphEdgeTheme = {
 // @ts-ignore
   edgeWidth: number,
 // @ts-ignore
+  edgeText: string,
+// @ts-ignore
   edgeTextSize: number,
 // @ts-ignore
   edgeTextColor: string,
 // @ts-ignore
   edgeTextFontWeight: TextFontWeight,
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEdgeGetter<BaseGraphEdgeTheme> & {
@@ -2615,49 +1392,13 @@ export type BaseGraphTheme = WrapWithNodeGetter<BaseGraphNodeTheme> & WrapWithEd
   graphBgColor: string,
 // @ts-ignore
   graphBgPatternColor: string,
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type HistoryGraphTheme = {}
-// @ts-ignore
-
-// @ts-ignore
-export type FocusGraphTheme = {
-// @ts-ignore
-  nodeFocusColor: NodeGetterOrValue<string>;
-// @ts-ignore
-  nodeFocusBorderColor: NodeGetterOrValue<string>;
-// @ts-ignore
-  nodeFocusTextColor: NodeGetterOrValue<string>;
-// @ts-ignore
-  edgeFocusColor: EdgeGetterOrValue<string>;
-// @ts-ignore
-  edgeFocusTextColor: EdgeGetterOrValue<string>;
-// @ts-ignore
-}
-// @ts-ignore
 
 // @ts-ignore
 export type DraggableGraphTheme = {}
-// @ts-ignore
-
-// @ts-ignore
-export type NodeAnchorGraphTheme = {
-// @ts-ignore
-  nodeAnchorRadius: NodeGetterOrValue<number>;
-// @ts-ignore
-  nodeAnchorColor: NodeGetterOrValue<string>;
-// @ts-ignore
-  nodeAnchorColorWhenParentFocused: NodeGetterOrValue<string>;
-// @ts-ignore
-  linkPreviewColor: MaybeGetter<string, [GNode, NodeAnchor]>;
-// @ts-ignore
-  linkPreviewWidth: MaybeGetter<number, [GNode, NodeAnchor]>;
-// @ts-ignore
-}
-// @ts-ignore
 
 // @ts-ignore
 export type MarqueeGraphTheme = {
@@ -2669,73 +1410,22 @@ export type MarqueeGraphTheme = {
   marqueeEncapsulatedNodeBoxColor: string,
 // @ts-ignore
   marqueeEncapsulatedNodeBoxBorderColor: string,
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type UserEditableGraphTheme = {}
-// @ts-ignore
-
-// @ts-ignore
-export type PersistentGraphTheme = {}
-// @ts-ignore
 
 // @ts-ignore
 export type CollaborativeGraphTheme = {}
-// @ts-ignore
 
-// @ts-ignore
-export type GraphTheme = (
-// @ts-ignore
-  UITheme &
-// @ts-ignore
-  BaseGraphTheme &
-// @ts-ignore
-  HistoryGraphTheme &
-// @ts-ignore
-  FocusGraphTheme &
-// @ts-ignore
-  DraggableGraphTheme &
-// @ts-ignore
-  NodeAnchorGraphTheme &
-// @ts-ignore
-  MarqueeGraphTheme &
-// @ts-ignore
-  UserEditableGraphTheme &
-// @ts-ignore
-  PersistentGraphTheme &
-// @ts-ignore
-  CollaborativeGraphTheme
-// @ts-ignore
-)
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * decomposes MaybeGetter<T, K> such that it turns T into T | void
-// @ts-ignore
- */
 // @ts-ignore
 export type MaybeGetterOrVoid<T> = MaybeGetter<UnwrapMaybeGetter<T> | void, MaybeGetterParams<T>>
-// @ts-ignore
-
-// @ts-ignore
-type WrapWithNodeGetter<T extends Record<string, any>> = {
-// @ts-ignore
-  [K in keyof T]: NodeGetterOrValue<T[K]>
-// @ts-ignore
-}
-// @ts-ignore
 
 // @ts-ignore
 type WrapWithEdgeGetter<T extends Record<string, any>> = {
 // @ts-ignore
   [K in keyof T]: EdgeGetterOrValue<T[K]>
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type ThemeMapEntry<T extends keyof GraphTheme> = {
@@ -2743,132 +1433,19 @@ export type ThemeMapEntry<T extends keyof GraphTheme> = {
   value: MaybeGetterOrVoid<GraphTheme[T]>,
 // @ts-ignore
   useThemeId: string,
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type FullThemeMap = {
 // @ts-ignore
   [K in keyof GraphTheme]: ThemeMapEntry<K>[]
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type PartialThemeMap = Partial<FullThemeMap>
-// @ts-ignore
 
 // @ts-ignore
-export const getInitialThemeMap = (): FullThemeMap => ({
-// @ts-ignore
-  /**
-// @ts-ignore
-   * UI themes
-// @ts-ignore
-   */
-// @ts-ignore
-  primaryColor: [],
-// @ts-ignore
-  secondaryColor: [],
-// @ts-ignore
-  tertiaryColor: [],
-// @ts-ignore
-  primaryTextColor: [],
-// @ts-ignore
-  secondaryTextColor: [],
-// @ts-ignore
-  tertiaryTextColor: [],
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * base themes
-// @ts-ignore
-   */
-// @ts-ignore
-  nodeSize: [],
-// @ts-ignore
-  nodeBorderWidth: [],
-// @ts-ignore
-  nodeColor: [],
-// @ts-ignore
-  nodeBorderColor: [],
-// @ts-ignore
-  nodeFocusColor: [],
-// @ts-ignore
-  nodeFocusBorderColor: [],
-// @ts-ignore
-  nodeText: [],
-// @ts-ignore
-  nodeFocusTextColor: [],
-// @ts-ignore
-  nodeTextSize: [],
-// @ts-ignore
-  nodeTextColor: [],
-// @ts-ignore
-  nodeShape: [],
-// @ts-ignore
-  edgeColor: [],
-// @ts-ignore
-  edgeWidth: [],
-// @ts-ignore
-  edgeTextSize: [],
-// @ts-ignore
-  edgeTextColor: [],
-// @ts-ignore
-  edgeFocusTextColor: [],
-// @ts-ignore
-  edgeTextFontWeight: [],
-// @ts-ignore
-  edgeFocusColor: [],
-// @ts-ignore
-
-// @ts-ignore
-  graphBgColor: [],
-// @ts-ignore
-  graphBgPatternColor: [],
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * node anchor themes
-// @ts-ignore
-   */
-// @ts-ignore
-  nodeAnchorRadius: [],
-// @ts-ignore
-  nodeAnchorColor: [],
-// @ts-ignore
-  nodeAnchorColorWhenParentFocused: [],
-// @ts-ignore
-  linkPreviewColor: [],
-// @ts-ignore
-  linkPreviewWidth: [],
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * marquee themes
-// @ts-ignore
-   */
-// @ts-ignore
-  marqueeSelectionBoxColor: [],
-// @ts-ignore
-  marqueeSelectionBoxBorderColor: [],
-// @ts-ignore
-  marqueeEncapsulatedNodeBoxColor: [],
-// @ts-ignore
-  marqueeEncapsulatedNodeBoxBorderColor: [],
-// @ts-ignore
-})
-// @ts-ignore
-
-// @ts-ignore
-type ThemeableGraph = Pick<Graph, 'themeMap' | 'repaint'>
+type ThemeableGraph = Pick<Graph, 'themeMap'>
 
 // @ts-ignore
 export type TutorialStepForEvent<T extends GraphEvent> = {
@@ -3008,20 +1585,8 @@ type SharedStepProps = {
     className?: string;
 // @ts-ignore
   }
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * describes a step that will resolve after a set amount of time conditioned upon
-// @ts-ignore
- * the predicate returning true, if false the step will be re-evaluated after the interval
-// @ts-ignore
- * so on and so forth until the predicate returns true
-// @ts-ignore
- */
 // @ts-ignore
 export type IntervalStep = {
 // @ts-ignore
@@ -3052,20 +1617,8 @@ export type IntervalStep = {
    */
 // @ts-ignore
   interval?: number,
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-export const DEFAULT_INTERVAL = 1000;
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * describes a step in a tutorial sequence for a graph event
-// @ts-ignore
- */
 // @ts-ignore
 export type GraphEventStep = {
 // @ts-ignore
@@ -3116,9 +1669,123 @@ export const DELAY_UNTIL_NEXT_STEP = 1000;
 
 // @ts-ignore
 export const TUTORIAL_THEME_ID = 'tutorial'
+// @ts-ignore
 
 // @ts-ignore
-export type TutorialControls = ReturnType<typeof useBasicsTutorial>;
+export type TutorialControls = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * skip forward to the next step of the tutorial.
+// @ts-ignore
+   * wont do anything if the current step is the last step
+// @ts-ignore
+   */
+// @ts-ignore
+  nextStep: () => void
+// @ts-ignore
+  /**
+// @ts-ignore
+   * skip backward to the previous step of the tutorial.
+// @ts-ignore
+   * wont do anything if the current step is -1.
+// @ts-ignore
+   */
+// @ts-ignore
+  prevStep: () => void
+// @ts-ignore
+
+// @ts-ignore
+  /**
+// @ts-ignore
+   * an array of all the steps in the tutorial
+// @ts-ignore
+   */
+// @ts-ignore
+  sequence: Ref<TutorialSequence>
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the current step in the tutorial sequence. ranges from -1 to sequence.value.length.
+// @ts-ignore
+   * where -1 is the state before the tutorial has begun and sequence.value.length is the
+// @ts-ignore
+   * state after the tutorial has completed.
+// @ts-ignore
+   */
+// @ts-ignore
+  step: ComputedRef<number>
+// @ts-ignore
+  /**
+// @ts-ignore
+   * set the current step of the tutorial
+// @ts-ignore
+   * @param step the step to set the tutorial to
+// @ts-ignore
+   * @throws if step is not within the bounds of the sequence (-1 to sequence.value.length)
+// @ts-ignore
+   */
+// @ts-ignore
+  setStep: (step: number) => void
+// @ts-ignore
+
+// @ts-ignore
+  /**
+// @ts-ignore
+   * start the tutorial. this will begin the tutorial from step 0
+// @ts-ignore
+   */
+// @ts-ignore
+  start: () => void
+// @ts-ignore
+  /**
+// @ts-ignore
+   * stop the tutorial. this will end the tutorial and reset all state
+// @ts-ignore
+   */
+// @ts-ignore
+  stop: () => void
+// @ts-ignore
+  /**
+// @ts-ignore
+   * pause the tutorial. no progress can be made while the tutorial is paused
+// @ts-ignore
+   */
+// @ts-ignore
+  paused: Ref<boolean>
+// @ts-ignore
+
+// @ts-ignore
+  /**
+// @ts-ignore
+   * whether the tutorial is currently active.
+// @ts-ignore
+   * changes to true when start is called and false when stop is called
+// @ts-ignore
+   */
+// @ts-ignore
+  isActive: ComputedRef<boolean>
+// @ts-ignore
+  /**
+// @ts-ignore
+   * whether the tutorial is over.
+// @ts-ignore
+   * true when the step is sequence.value.length
+// @ts-ignore
+   */
+// @ts-ignore
+  isOver: ComputedRef<boolean>
+// @ts-ignore
+  /**
+// @ts-ignore
+   * whether the tutorial has begun.
+// @ts-ignore
+   * true when the step is -1
+// @ts-ignore
+   */
+// @ts-ignore
+  hasBegun: ComputedRef<boolean>
+}
 
 // @ts-ignore
 export type UseGraph = typeof useGraph
@@ -3132,18 +1799,16 @@ export type GraphOptions = {
   theme: Partial<GraphTheme>;
 // @ts-ignore
   settings: Partial<GraphSettings>;
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
-/**
-// @ts-ignore
- * @describes a node in a useGraph graph instance
-// @ts-ignore
- */
-// @ts-ignore
 export type GNode = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * unique identifier for the node
+// @ts-ignore
+   */
 // @ts-ignore
   id: string,
 // @ts-ignore
@@ -3172,18 +1837,16 @@ export type GNode = {
    */
 // @ts-ignore
   y: number,
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
-/**
-// @ts-ignore
- * @describes an edge in a useGraph graph instance
-// @ts-ignore
- */
-// @ts-ignore
 export type GEdge = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * unique identifier for the edge
+// @ts-ignore
+   */
 // @ts-ignore
   id: string,
 // @ts-ignore
@@ -3210,69 +1873,19 @@ export type GEdge = {
    */
 // @ts-ignore
   label: string,
-// @ts-ignore
-  /**
-// @ts-ignore
-   * does this edge travel in one direction or both?
-// @ts-ignore
-   */
-// @ts-ignore
-  type: 'directed' | 'undirected',
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * @describes the array in which schema items are added into in order to be rendered on the canvas
-// @ts-ignore
- */
 // @ts-ignore
 export type Aggregator = SchemaItem[]
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * @describes a function that takes an aggregator and returns an aggregator with alterations to
-// @ts-ignore
- * the internal contents, these functions are layered on top of each other to create a pipeline
-// @ts-ignore
- * which will be invoked with a reducer each render cycle
-// @ts-ignore
- */
 // @ts-ignore
 export type UpdateAggregator = (aggregator: Aggregator) => Aggregator
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * @describes something that takes an any[] our of a union of arrays
-// @ts-ignore
- */
 // @ts-ignore
 export type RemoveAnyArray<T extends any[]> = T extends ['!!!-@-NOT-A-TYPE-@-!!!'][] ? never : T
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * @describes taking some data that may be a plain value or a function that returns that value
-// @ts-ignore
- *
-// @ts-ignore
-  @template T - the type of the value
-// @ts-ignore
-  @template K - the type of the arguments necessary in order to resolve the value
-// @ts-ignore
-*/
 // @ts-ignore
 export type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
-// @ts-ignore
-
-// @ts-ignore
 
 // @ts-ignore
 export type NodeGetterOrValue<T> = MaybeGetter<T, [GNode]>
@@ -3388,12 +2001,47 @@ export type SchemaItem = {
    */
 // @ts-ignore
   shape: Shape,
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 export type AdjacencyList = Record<string, string[]>;
+
+// @ts-ignore
+export type AnnotationOptions = Partial<{
+// @ts-ignore
+  color: string;
+// @ts-ignore
+  brushWeight: number;
+// @ts-ignore
+  eraserBrushWeight: number;
+// @ts-ignore
+}>;
+// @ts-ignore
+
+// @ts-ignore
+export type Action = {
+// @ts-ignore
+  type: "draw" | "erase";
+// @ts-ignore
+  color: string;
+// @ts-ignore
+  brushWeight: number;
+// @ts-ignore
+  points: Coordinate[];
+// @ts-ignore
+};
+// @ts-ignore
+
+// @ts-ignore
+export const ANNOTATION_DEFAULTS = {
+// @ts-ignore
+  color: "red",
+// @ts-ignore
+  brushWeight: 3,
+// @ts-ignore
+  eraserBrushWeight: 50,
+// @ts-ignore
+};
 
 // @ts-ignore
 export type GraphPlaygroundControls = {
@@ -3673,15 +2321,216 @@ export const useDijkstra = (graph: Pick<Graph, 'nodes' | 'getNode' | 'edges' | '
 export type DijkstraSimulatorControls = SimulationControls<DijkstrasTrace>
 
 // @ts-ignore
+export type MarkupSize = typeof MARKUP_SIZES[number];
+
+// @ts-ignore
+type ColorMapKey = GNode['id'] | GEdge['id'];
+// @ts-ignore
+type ColorMapValue = Color;
+// @ts-ignore
+export type ColorMap = Map<ColorMapKey, ColorMapValue>;
+// @ts-ignore
+
+// @ts-ignore
+export const useMarkupColorizer = (graph: Graph) => {
+// @ts-ignore
+  const { setTheme, removeAllThemes } = useTheme(graph, MARKUP_USETHEME_ID);
+// @ts-ignore
+
+// @ts-ignore
+  const colorMap = useLocalStorage('markup-color-map', new Map<ColorMapKey, ColorMapValue>());
+// @ts-ignore
+
+// @ts-ignore
+  // go through all keys in the colorMap and remove inactive nodes/edges
+// @ts-ignore
+  // for (const key of colorMap.value.keys()) {
+// @ts-ignore
+  //   if (!graph.nodes.value[key] && !graph.edges.value[key]) {
+// @ts-ignore
+  //     colorMap.value.delete(key);
+// @ts-ignore
+  //   }
+// @ts-ignore
+  // }
+// @ts-ignore
+
+// @ts-ignore
+  const colorNode = (node: GNode) => {
+// @ts-ignore
+    const color = colorMap.value.get(node.id);
+// @ts-ignore
+    if (!color) return;
+// @ts-ignore
+    return getValue(graph.theme.value.nodeColor, node);
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  const colorNodeBorder = (node: GNode) => {
+// @ts-ignore
+    const color = colorMap.value.get(node.id);
+// @ts-ignore
+    if (!color) return;
+// @ts-ignore
+    if (graph.isFocused(node.id)) return adjustHex(color, 30);
+// @ts-ignore
+    return color;
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  const colorEdge = (edge: GEdge) => {
+// @ts-ignore
+    const color = colorMap.value.get(edge.id);
+// @ts-ignore
+    if (!color) return;
+// @ts-ignore
+    if (graph.isFocused(edge.id)) return adjustHex(color, 30);
+// @ts-ignore
+    return color;
+// @ts-ignore
+  };
+// @ts-ignore
+
+// @ts-ignore
+  const colorize = () => {
+// @ts-ignore
+    setTheme('nodeColor', colorNode);
+// @ts-ignore
+
+// @ts-ignore
+    setTheme('nodeBorderColor', colorNodeBorder);
+// @ts-ignore
+    setTheme('nodeFocusBorderColor', colorNodeBorder);
+// @ts-ignore
+    setTheme('nodeAnchorColor', colorNodeBorder);
+// @ts-ignore
+    setTheme('nodeAnchorColorWhenParentFocused', colorNodeBorder);
+// @ts-ignore
+    setTheme('edgeColor', colorEdge);
+// @ts-ignore
+
+// @ts-ignore
+    setTheme('marqueeSelectionBoxColor', colors.TRANSPARENT)
+// @ts-ignore
+    setTheme('marqueeEncapsulatedNodeBoxBorderColor', colors.WHITE + '80')
+// @ts-ignore
+    setTheme('marqueeEncapsulatedNodeBoxColor', colors.TRANSPARENT)
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  const decolorize = () => {
+// @ts-ignore
+    removeAllThemes();
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  return {
+// @ts-ignore
+    colorize,
+// @ts-ignore
+    decolorize,
+// @ts-ignore
+    colorMap,
+// @ts-ignore
+  };
+}
+
+// @ts-ignore
+export type MarkupColorizerControls = ReturnType<typeof useMarkupColorizer>;
+
+// @ts-ignore
+type SizeMapKey = GNode['id'] | GEdge['id'];
+// @ts-ignore
+type SizeMapValue = MarkupSize;
+// @ts-ignore
+export type SizeMap = Map<SizeMapKey, SizeMapValue>;
+// @ts-ignore
+
+// @ts-ignore
+export const useMarkupSizer = (graph: Graph) => {
+// @ts-ignore
+  const { setTheme, removeAllThemes } = useTheme(graph, MARKUP_USETHEME_ID);
+// @ts-ignore
+
+// @ts-ignore
+  const sizeMap = useLocalStorage('markup-size-map', new Map<SizeMapKey, SizeMapValue>());
+// @ts-ignore
+
+// @ts-ignore
+  const sizeNode = (node: GNode) => {
+// @ts-ignore
+    const size = sizeMap.value.get(node.id);
+// @ts-ignore
+    if (!size) return;
+// @ts-ignore
+    return SIZE_TO_RADIUS[size];
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  const sizeEdge = (edge: GEdge) => {
+// @ts-ignore
+    const size = sizeMap.value.get(edge.id);
+// @ts-ignore
+    if (!size) return;
+// @ts-ignore
+    return SIZE_TO_WIDTH[size];
+// @ts-ignore
+  };
+// @ts-ignore
+
+// @ts-ignore
+  const size = () => {
+// @ts-ignore
+    setTheme('nodeSize', sizeNode);
+// @ts-ignore
+    setTheme('edgeWidth', sizeEdge);
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  const desize = () => {
+// @ts-ignore
+    removeAllThemes();
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  return {
+// @ts-ignore
+    size,
+// @ts-ignore
+    desize,
+// @ts-ignore
+    sizeMap
+// @ts-ignore
+  };
+// @ts-ignore
+};
+
+// @ts-ignore
 export type AdjacencyMap = Map<number, number[]>;
 
 // @ts-ignore
 export type Parent = Map<string, string>
 
 // @ts-ignore
-export type MSTSumilationControls = SimulationControls<GEdge[]>;
+export type MSTSimulationControls = SimulationControls<GEdge[]>;
 // @ts-ignore
-export type Algorithm = "kruskal" | "prim" | "none";
+export const MST_ALGORITHMS = ["kruskal", "prim"] as const;
+// @ts-ignore
+export type MSTAlgorithm = typeof MST_ALGORITHMS[number];
 // @ts-ignore
 
 // @ts-ignore
@@ -3689,23 +2538,23 @@ export const useMSTSimulation = (
 // @ts-ignore
   graph: Graph,
 // @ts-ignore
-  currentAlgorithm: Ref<Algorithm>
+  currentAlgorithm: Ref<MSTAlgorithm>
 // @ts-ignore
-): MSTSumilationControls => {
+): MSTSimulationControls => {
 // @ts-ignore
-  const { trace: kTrace } = useKruskal(graph);
+
 // @ts-ignore
-  const { trace: pTrace } = usePrims(graph);
+  const kruskalTrace = useKruskal(graph);
+// @ts-ignore
+  const primsTrace = usePrim(graph);
 // @ts-ignore
 
 // @ts-ignore
   const trace = computed(() => {
 // @ts-ignore
-    if (currentAlgorithm.value === "none") return graph.edges.value;
+    if (currentAlgorithm.value === "prim") return primsTrace.value;
 // @ts-ignore
-    else if (currentAlgorithm.value === "prim") return pTrace.value;
-// @ts-ignore
-    else return kTrace.value;
+    else return kruskalTrace.value;
 // @ts-ignore
   });
 // @ts-ignore
@@ -3721,13 +2570,19 @@ export const useMSTSimulation = (
 // @ts-ignore
   const interval = ref<NodeJS.Timeout | undefined>();
 // @ts-ignore
-  const isOver = computed(() => step.value === trace.value.length + 1);
+
 // @ts-ignore
   const hasBegun = computed(() => step.value > 0);
+// @ts-ignore
+  const isOver = computed(() => step.value === trace.value.length + 1);
 // @ts-ignore
 
 // @ts-ignore
   const traceAtStep = computed(() => trace.value.slice(0, step.value));
+// @ts-ignore
+
+// @ts-ignore
+  const { colorize, decolorize } = useMSTColorizer(graph, traceAtStep);
 // @ts-ignore
 
 // @ts-ignore
@@ -3739,6 +2594,8 @@ export const useMSTSimulation = (
 // @ts-ignore
     step.value = 0;
 // @ts-ignore
+    colorize();
+// @ts-ignore
     interval.value = setInterval(() => {
 // @ts-ignore
       if (isOver.value || paused.value) return;
@@ -3746,8 +2603,6 @@ export const useMSTSimulation = (
       nextStep();
 // @ts-ignore
     }, playbackSpeed.value);
-// @ts-ignore
-    useColorizeGraph(graph, traceAtStep.value);
 // @ts-ignore
   };
 // @ts-ignore
@@ -3759,9 +2614,7 @@ export const useMSTSimulation = (
 // @ts-ignore
     active.value = false;
 // @ts-ignore
-    setStep(trace.value.length);
-// @ts-ignore
-    useColorizeGraph(graph, traceAtStep.value);
+    decolorize();
 // @ts-ignore
   };
 // @ts-ignore
@@ -3769,15 +2622,9 @@ export const useMSTSimulation = (
 // @ts-ignore
   const nextStep = () => {
 // @ts-ignore
-    if (!trace.value) return;
-// @ts-ignore
-    if (step.value === trace.value.length + 1) return;
+    if (isOver.value) return;
 // @ts-ignore
     step.value++;
-// @ts-ignore
-
-// @ts-ignore
-    useColorizeGraph(graph, traceAtStep.value);
 // @ts-ignore
   };
 // @ts-ignore
@@ -3785,13 +2632,9 @@ export const useMSTSimulation = (
 // @ts-ignore
   const prevStep = () => {
 // @ts-ignore
-    if (step.value === 0) return;
+    if (!hasBegun.value) return;
 // @ts-ignore
     step.value--;
-// @ts-ignore
-
-// @ts-ignore
-    useColorizeGraph(graph, traceAtStep.value);
 // @ts-ignore
   };
 // @ts-ignore
@@ -3802,10 +2645,6 @@ export const useMSTSimulation = (
     if (newStep < -1 || newStep > trace.value.length) return;
 // @ts-ignore
     step.value = newStep;
-// @ts-ignore
-
-// @ts-ignore
-    useColorizeGraph(graph, traceAtStep.value);
 // @ts-ignore
   };
 // @ts-ignore
@@ -3857,13 +2696,13 @@ export type FlowTrace = Record<GEdge['id'], number>[]
 export type EdgeThickenerControls = ReturnType<typeof useEdgeThickener>;
 
 // @ts-ignore
-export type NetworkFlowControls = ReturnType<typeof useFlowControls>;
-
-// @ts-ignore
 export type FlowProperties = ReturnType<typeof useFlowProperties>;
 
 // @ts-ignore
 export type FlowSimulationControls = SimulationControls<FlowTrace>
+
+// @ts-ignore
+export type SourceSinkControls = ReturnType<typeof useSourceSinkControls>;
 
 // @ts-ignore
 export type AlgoName = keyof typeof algos
@@ -3889,120 +2728,6 @@ export type Circle = {
   stroke?: Stroke,
 // @ts-ignore
   textArea?: TextAreaNoLocation,
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-export const CIRCLE_DEFAULTS = {
-// @ts-ignore
-  color: 'black',
-// @ts-ignore
-} as const
-// @ts-ignore
-
-// @ts-ignore
-export const circle = (options: Circle): Shape => {
-// @ts-ignore
-
-// @ts-ignore
-  if (options.radius < 0) {
-// @ts-ignore
-    throw new Error('radius must be positive')
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const drawShape = drawCircleWithCtx(options);
-// @ts-ignore
-
-// @ts-ignore
-  const shapeHitbox = circleHitbox(options);
-// @ts-ignore
-  const textHitbox = circleTextHitbox(options);
-// @ts-ignore
-  const efficientHitbox = circleEfficientHitbox(options)
-// @ts-ignore
-  const hitbox = (point: Coordinate) => {
-// @ts-ignore
-    return textHitbox?.(point) || shapeHitbox(point)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-
-// @ts-ignore
-  const drawTextArea = drawTextAreaOnCircle(options);
-// @ts-ignore
-
-// @ts-ignore
-  const drawTextAreaMatte = drawTextAreaMatteOnCircle(options);
-// @ts-ignore
-  const drawText = drawTextOnCircle(options);
-// @ts-ignore
-
-// @ts-ignore
-  const draw = (ctx: CanvasRenderingContext2D) => {
-// @ts-ignore
-    drawShape(ctx);
-// @ts-ignore
-    drawTextArea?.(ctx);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const activateTextArea = (handler: (str: string) => void) => {
-// @ts-ignore
-    if (!options.textArea) return;
-// @ts-ignore
-    const location = getTextAreaLocationOnCircle(options);
-// @ts-ignore
-    const fullTextArea = getFullTextArea(options.textArea, location);
-// @ts-ignore
-    engageTextarea(fullTextArea, handler);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  return {
-// @ts-ignore
-    id: generateId(),
-// @ts-ignore
-    name: 'circle',
-// @ts-ignore
-
-// @ts-ignore
-    draw,
-// @ts-ignore
-
-// @ts-ignore
-    drawShape,
-// @ts-ignore
-    drawTextArea,
-// @ts-ignore
-    drawTextAreaMatte,
-// @ts-ignore
-    drawText,
-// @ts-ignore
-
-// @ts-ignore
-    hitbox,
-// @ts-ignore
-    shapeHitbox,
-// @ts-ignore
-    textHitbox,
-// @ts-ignore
-    efficientHitbox,
-// @ts-ignore
-
-// @ts-ignore
-    activateTextArea,
-// @ts-ignore
-  }
 }
 
 // @ts-ignore
@@ -4019,82 +2744,6 @@ export type Cross = {
   lineWidth?: number
 // @ts-ignore
   borderRadius?: number
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-export const CROSS_DEFAULTS = {
-// @ts-ignore
-  rotation: 0,
-// @ts-ignore
-  color: 'black',
-// @ts-ignore
-  lineWidth: LINE_DEFAULTS.width,
-// @ts-ignore
-  borderRadius: 0,
-// @ts-ignore
-} as const
-// @ts-ignore
-
-// @ts-ignore
-export const cross = (options: Cross): Shape => {
-// @ts-ignore
-
-// @ts-ignore
-  if (options.lineWidth && options.lineWidth < 0) {
-// @ts-ignore
-    throw new Error('lineWidth must be positive')
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const drawShape = drawCrossWithCtx(options)
-// @ts-ignore
-  const shapeHitbox = crossHitbox(options)
-// @ts-ignore
-  const efficientHitbox = crossEfficientHitbox(options)
-// @ts-ignore
-  const hitbox = (point: Coordinate) => {
-// @ts-ignore
-    return shapeHitbox(point) // text not implemented yet
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-
-// @ts-ignore
-  const draw = (ctx: CanvasRenderingContext2D) => {
-// @ts-ignore
-    drawShape(ctx)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  return {
-// @ts-ignore
-    id: generateId(),
-// @ts-ignore
-    name: 'cross',
-// @ts-ignore
-
-// @ts-ignore
-    draw,
-// @ts-ignore
-    drawShape,
-// @ts-ignore
-
-// @ts-ignore
-    shapeHitbox,
-// @ts-ignore
-    hitbox,
-// @ts-ignore
-    efficientHitbox,
-// @ts-ignore
-  }
 }
 
 // @ts-ignore
@@ -4121,122 +2770,6 @@ export type Line = {
   textOffsetFromCenter?: number,
 // @ts-ignore
   color?: string,
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-export const LINE_DEFAULTS = {
-// @ts-ignore
-  width: 10,
-// @ts-ignore
-  textOffsetFromCenter: 0,
-// @ts-ignore
-  color: 'black',
-// @ts-ignore
-} as const
-// @ts-ignore
-
-// @ts-ignore
-export const line = (options: Line): Shape => {
-// @ts-ignore
-
-// @ts-ignore
-  if (options.width && options.width < 0) {
-// @ts-ignore
-    throw new Error('lineWidth must be positive')
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const drawShape = drawLineWithCtx(options);
-// @ts-ignore
-
-// @ts-ignore
-  const shapeHitbox = lineHitbox(options);
-// @ts-ignore
-  const textHitbox = lineTextHitbox(options);
-// @ts-ignore
-  const efficientHitbox = lineEfficientHitbox(options)
-// @ts-ignore
-  const hitbox = (point: Coordinate) => {
-// @ts-ignore
-    return textHitbox?.(point) || shapeHitbox(point)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const drawTextArea = drawTextAreaOnLine(options);
-// @ts-ignore
-
-// @ts-ignore
-  const drawTextAreaMatte = drawTextAreaMatteOnLine(options);
-// @ts-ignore
-  const drawText = drawTextOnLine(options);
-// @ts-ignore
-
-// @ts-ignore
-  const draw = (ctx: CanvasRenderingContext2D) => {
-// @ts-ignore
-    drawShape(ctx);
-// @ts-ignore
-    drawTextArea?.(ctx);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const activateTextArea = (handler: (str: string) => void) => {
-// @ts-ignore
-    if (!options.textArea) return;
-// @ts-ignore
-    const location = getTextAreaLocationOnLine(options);
-// @ts-ignore
-    const fullTextArea = getFullTextArea(options.textArea, location);
-// @ts-ignore
-    engageTextarea(fullTextArea, handler);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  return {
-// @ts-ignore
-    id: generateId(),
-// @ts-ignore
-    name: 'line',
-// @ts-ignore
-
-// @ts-ignore
-    draw,
-// @ts-ignore
-
-// @ts-ignore
-    drawShape,
-// @ts-ignore
-    drawTextArea,
-// @ts-ignore
-    drawTextAreaMatte,
-// @ts-ignore
-    drawText,
-// @ts-ignore
-
-// @ts-ignore
-    hitbox,
-// @ts-ignore
-    shapeHitbox,
-// @ts-ignore
-    textHitbox,
-// @ts-ignore
-    efficientHitbox,
-// @ts-ignore
-
-// @ts-ignore
-    activateTextArea,
-// @ts-ignore
-  }
 }
 
 // @ts-ignore
@@ -4257,122 +2790,6 @@ export type Rect = {
   borderRadius?: number
 // @ts-ignore
   rotation?: number
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-export const RECT_DEFAULTS = {
-// @ts-ignore
-  color: 'black',
-// @ts-ignore
-  borderRadius: 0,
-// @ts-ignore
-  rotation: 0,
-// @ts-ignore
-} as const
-// @ts-ignore
-
-// @ts-ignore
-export const rect = (options: Rect): Shape => {
-// @ts-ignore
-
-// @ts-ignore
-  if (options.borderRadius && options.borderRadius < 0) {
-// @ts-ignore
-    throw new Error('borderRadius must be positive')
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const drawShape = drawRectWithCtx(options);
-// @ts-ignore
-
-// @ts-ignore
-  const shapeHitbox = rectHitbox(options);
-// @ts-ignore
-  const textHitbox = rectTextHitbox(options);
-// @ts-ignore
-  const efficientHitbox = rectEfficientHitbox(options)
-// @ts-ignore
-  const hitbox = (point: Coordinate) => {
-// @ts-ignore
-    return textHitbox?.(point) || shapeHitbox(point)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const drawTextArea = drawTextAreaOnRect(options);
-// @ts-ignore
-
-// @ts-ignore
-  const drawTextAreaMatte = drawTextAreaMatteOnRect(options);
-// @ts-ignore
-  const drawText = drawTextOnRect(options);
-// @ts-ignore
-
-// @ts-ignore
-  const draw = (ctx: CanvasRenderingContext2D) => {
-// @ts-ignore
-    drawShape(ctx);
-// @ts-ignore
-    drawTextArea?.(ctx);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const activateTextArea = (handler: (str: string) => void) => {
-// @ts-ignore
-    if (!options.textArea) return;
-// @ts-ignore
-    const location = getTextAreaLocationOnRect(options);
-// @ts-ignore
-    const fullTextArea = getFullTextArea(options.textArea, location);
-// @ts-ignore
-    engageTextarea(fullTextArea, handler);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  return {
-// @ts-ignore
-    id: generateId(),
-// @ts-ignore
-    name: 'rect',
-// @ts-ignore
-
-// @ts-ignore
-    draw,
-// @ts-ignore
-
-// @ts-ignore
-    drawShape,
-// @ts-ignore
-    drawTextArea,
-// @ts-ignore
-    drawTextAreaMatte,
-// @ts-ignore
-    drawText,
-// @ts-ignore
-
-// @ts-ignore
-    hitbox,
-// @ts-ignore
-    shapeHitbox,
-// @ts-ignore
-    textHitbox,
-// @ts-ignore
-    efficientHitbox,
-// @ts-ignore
-
-// @ts-ignore
-    activateTextArea,
-// @ts-ignore
-  }
 }
 
 // @ts-ignore
@@ -4391,106 +2808,6 @@ export type Square = {
   borderRadius?: number
 // @ts-ignore
   rotation?: number
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * squares use rect default values
-// @ts-ignore
- */
-// @ts-ignore
-export const square = (options: Square): Shape => {
-// @ts-ignore
-  const drawShape = drawSquareWithCtx(options);
-// @ts-ignore
-
-// @ts-ignore
-  const shapeHitbox = squareHitbox(options);
-// @ts-ignore
-  const textHitbox = squareTextHitbox(options);
-// @ts-ignore
-  const efficientHitbox = squareEfficientHitbox(options);
-// @ts-ignore
-  const hitbox = (point: Coordinate) => {
-// @ts-ignore
-    return textHitbox?.(point) || shapeHitbox(point)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const drawTextArea = drawTextAreaOnSquare(options);
-// @ts-ignore
-
-// @ts-ignore
-  const drawTextAreaMatte = drawTextAreaMatteOnSquare(options);
-// @ts-ignore
-  const drawText = drawTextOnSquare(options);
-// @ts-ignore
-
-// @ts-ignore
-  const draw = (ctx: CanvasRenderingContext2D) => {
-// @ts-ignore
-    drawShape(ctx);
-// @ts-ignore
-    drawTextArea?.(ctx);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const activateTextArea = (handler: (str: string) => void) => {
-// @ts-ignore
-    if (!options.textArea) return;
-// @ts-ignore
-    const location = getTextAreaLocationOnSquare(options);
-// @ts-ignore
-    const fullTextArea = getFullTextArea(options.textArea, location);
-// @ts-ignore
-    engageTextarea(fullTextArea, handler);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  return {
-// @ts-ignore
-    id: generateId(),
-// @ts-ignore
-    name: 'square',
-// @ts-ignore
-
-// @ts-ignore
-    draw,
-// @ts-ignore
-
-// @ts-ignore
-    drawShape,
-// @ts-ignore
-    drawTextArea,
-// @ts-ignore
-    drawTextAreaMatte,
-// @ts-ignore
-    drawText,
-// @ts-ignore
-
-// @ts-ignore
-    hitbox,
-// @ts-ignore
-    shapeHitbox,
-// @ts-ignore
-    textHitbox,
-// @ts-ignore
-    efficientHitbox,
-// @ts-ignore
-
-// @ts-ignore
-    activateTextArea,
-// @ts-ignore
-  }
 }
 
 // @ts-ignore
@@ -4503,194 +2820,13 @@ export type Triangle = {
   point3: Coordinate,
 // @ts-ignore
   color?: string,
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-export const TRIANGLE_DEFAULTS = {
-// @ts-ignore
-  color: 'black',
-// @ts-ignore
-} as const
-// @ts-ignore
-
-// @ts-ignore
-export const triangle = (options: Triangle): Shape => {
-// @ts-ignore
-  const drawShape = drawTriangleWithCtx(options)
-// @ts-ignore
-  const shapeHitbox = triangleHitbox(options)
-// @ts-ignore
-  const efficientHitbox = triangleEfficientHitbox(options)
-// @ts-ignore
-  const hitbox = (point: Coordinate) => {
-// @ts-ignore
-    return shapeHitbox(point) // text not implemented yet
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const draw = (ctx: CanvasRenderingContext2D) => {
-// @ts-ignore
-    drawShape(ctx)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  return {
-// @ts-ignore
-    id: generateId(),
-// @ts-ignore
-    name: 'triangle',
-// @ts-ignore
-
-// @ts-ignore
-    draw,
-// @ts-ignore
-    drawShape,
-// @ts-ignore
-
-// @ts-ignore
-    hitbox,
-// @ts-ignore
-    shapeHitbox,
-// @ts-ignore
-    efficientHitbox,
-// @ts-ignore
-  }
 }
 
 // @ts-ignore
 export type BoundingBox = Pick<Rect, 'at' | 'width' | 'height'>
 
 // @ts-ignore
-export type Shape = {
-// @ts-ignore
-  /**
-// @ts-ignore
-   * a unique identifier for the shape
-// @ts-ignore
-   */
-// @ts-ignore
-  id: string,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * the name of the shape type, ie 'circle', 'line', etc
-// @ts-ignore
-   */
-// @ts-ignore
-  name: ShapeName,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * draws the entire shape including text.
-// @ts-ignore
-   * this is the default use case
-// @ts-ignore
-   */
-// @ts-ignore
-  draw: (ctx: CanvasRenderingContext2D) => void,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * draws just the shape ignoring all text properties
-// @ts-ignore
-   */
-// @ts-ignore
-  drawShape: (ctx: CanvasRenderingContext2D) => void,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * draws the text area of the shape (ie both matte and text)
-// @ts-ignore
-   */
-// @ts-ignore
-  drawTextArea?: (ctx: CanvasRenderingContext2D) => void,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * only draws the matte of the text area
-// @ts-ignore
-   */
-// @ts-ignore
-  drawTextAreaMatte?: (ctx: CanvasRenderingContext2D) => void,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * only draws the text content of the text area
-// @ts-ignore
-   */
-// @ts-ignore
-  drawText?: (ctx: CanvasRenderingContext2D) => void,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * returns true if the point is within the shape or text area of the shape
-// @ts-ignore
-   */
-// @ts-ignore
-  hitbox: (point: Coordinate) => boolean,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * returns true if the point is within the area of the shape
-// @ts-ignore
-   */
-// @ts-ignore
-  shapeHitbox: (point: Coordinate) => boolean,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * returns true if the point is within the rectangular bounding box of the shape
-// @ts-ignore
-   */
-// @ts-ignore
-  efficientHitbox: (boxToCheck: BoundingBox) => boolean,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * returns true if the point is within the text area of the shape
-// @ts-ignore
-   */
-// @ts-ignore
-  textHitbox?: (point: Coordinate) => boolean,
-// @ts-ignore
-
-// @ts-ignore
-  /**
-// @ts-ignore
-   * activates the text area of the shape
-// @ts-ignore
-   */
-// @ts-ignore
-  activateTextArea?: (handler: (str: string) => void) => void,
-// @ts-ignore
-}
-// @ts-ignore
+export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'arrow' | 'uturn' | 'cross'
 
 // @ts-ignore
 export type Coordinate = {
@@ -4698,16 +2834,8 @@ export type Coordinate = {
   x: number,
 // @ts-ignore
   y: number,
-// @ts-ignore
 }
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * an area that wraps some text
-// @ts-ignore
- */
 // @ts-ignore
 export type TextAreaNoLocation = {
 // @ts-ignore
@@ -4736,21 +2864,7 @@ export type TextAreaNoLocation = {
    */
 // @ts-ignore
   activeColor?: string,
-// @ts-ignore
 }
-// @ts-ignore
-
-// @ts-ignore
-export const TEXTAREA_DEFAULTS = {
-// @ts-ignore
-  color: 'white',
-// @ts-ignore
-  // TODO - make active color depend on the color of the text area
-// @ts-ignore
-  activeColor: 'white',
-// @ts-ignore
-} as const
-// @ts-ignore
 
 // @ts-ignore
 export type TextArea = {
@@ -4776,21 +2890,7 @@ export type Text = {
   fontWeight?: TextFontWeight,
 // @ts-ignore
   color?: string,
-// @ts-ignore
 }
-// @ts-ignore
-
-// @ts-ignore
-export const TEXT_DEFAULTS = {
-// @ts-ignore
-  fontSize: 12,
-// @ts-ignore
-  fontWeight: 'normal',
-// @ts-ignore
-  color: 'black',
-// @ts-ignore
-} as const
-// @ts-ignore
 
 // @ts-ignore
 export type Stroke = {
@@ -4803,7 +2903,7 @@ export type Stroke = {
 // @ts-ignore
    * For dashed border
 // @ts-ignore
-   *
+   * 
 // @ts-ignore
    * @params
 // @ts-ignore
@@ -4811,21 +2911,11 @@ export type Stroke = {
 // @ts-ignore
    * dash: [dashLength, gapLength]
 // @ts-ignore
-   *
+   * 
 // @ts-ignore
   */
 // @ts-ignore
     dash?: [number, number]
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-export const STROKE_DEFAULTS = {
-// @ts-ignore
-  color: 'black',
-// @ts-ignore
-  width: 0
 }
 
 // @ts-ignore
@@ -4846,126 +2936,6 @@ export type UTurn = {
   color?: string,
 // @ts-ignore
   textArea?: TextAreaNoLocation
-// @ts-ignore
-}
-// @ts-ignore
-
-// @ts-ignore
-export const UTURN_DEFAULTS = {
-// @ts-ignore
-  color: 'black',
-// @ts-ignore
-} as const
-// @ts-ignore
-
-// @ts-ignore
-export const uturn = (options: UTurn): Shape => {
-// @ts-ignore
-
-// @ts-ignore
-  if (options.downDistance < 0) {
-// @ts-ignore
-    throw new Error('downDistance must be positive')
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  if (options.upDistance < 0) {
-// @ts-ignore
-    throw new Error('upDistance must be positive')
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const drawShape = drawUTurnWithCtx(options);
-// @ts-ignore
-
-// @ts-ignore
-  const shapeHitbox = uturnHitbox(options);
-// @ts-ignore
-  const textHitbox = uturnTextHitbox(options);
-// @ts-ignore
-  const efficientHitbox = uturnEfficientHitbox(options)
-// @ts-ignore
-  const hitbox = (point: Coordinate) => {
-// @ts-ignore
-    return textHitbox?.(point) || shapeHitbox(point)
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const drawTextArea = drawTextAreaOnUTurn(options);
-// @ts-ignore
-
-// @ts-ignore
-  const drawTextAreaMatte = drawTextAreaMatteOnUTurn(options);
-// @ts-ignore
-  const drawText = drawTextOnUTurn(options);
-// @ts-ignore
-
-// @ts-ignore
-  const draw = (ctx: CanvasRenderingContext2D) => {
-// @ts-ignore
-    drawShape(ctx);
-// @ts-ignore
-    drawTextArea?.(ctx);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  const activateTextArea = (handler: (str: string) => void) => {
-// @ts-ignore
-    if (!options.textArea) return;
-// @ts-ignore
-    const location = getTextAreaLocationOnUTurn(options);
-// @ts-ignore
-    const fullTextArea = getFullTextArea(options.textArea, location);
-// @ts-ignore
-    engageTextarea(fullTextArea, handler);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  return {
-// @ts-ignore
-    id: generateId(),
-// @ts-ignore
-    name: 'uturn',
-// @ts-ignore
-
-// @ts-ignore
-    draw,
-// @ts-ignore
-
-// @ts-ignore
-    drawShape,
-// @ts-ignore
-    drawTextArea,
-// @ts-ignore
-    drawTextAreaMatte,
-// @ts-ignore
-    drawText,
-// @ts-ignore
-
-// @ts-ignore
-    hitbox,
-// @ts-ignore
-    shapeHitbox,
-// @ts-ignore
-    textHitbox,
-// @ts-ignore
-    efficientHitbox,
-// @ts-ignore
-
-// @ts-ignore
-    activateTextArea,
-// @ts-ignore
-  }
 }
 
 // @ts-ignore
@@ -4994,18 +2964,83 @@ export type MainPageInfo = {
    */
 // @ts-ignore
   thumbnail: string,
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
-/**
+export type SimulationDeclaration = {
 // @ts-ignore
- * interface for exposing a product to global resources
+  /**
 // @ts-ignore
- * like the main page and router
+   * the name of the simulation, user facing
 // @ts-ignore
- */
+   */
+// @ts-ignore
+  name: string,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the description of the simulation, user facing
+// @ts-ignore
+   */
+// @ts-ignore
+  description: string,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * an image to display in the simulation selection
+// @ts-ignore
+   */
+// @ts-ignore
+  thumbnail: string,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * a predicate to determine if the simulation can run on the given graph.
+// @ts-ignore
+   * returning a string indicates that the simulation cannot run and the string, user facing,
+// @ts-ignore
+   * is the reason why it cannot. returning true indicates that the simulation can run.
+// @ts-ignore
+   */
+// @ts-ignore
+  canRun?: () => true | string,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the controls for the simulation returned by your products useSimulation instance
+// @ts-ignore
+   */
+// @ts-ignore
+  controls: () => Promise<SimulationControls> | SimulationControls,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * setup to run when the simulation is opened or started by the user.
+// @ts-ignore
+   * use this to prepare the simulation experience by activating colorizers, prompting
+// @ts-ignore
+   * user for starting nodes, etc.
+// @ts-ignore
+   */
+// @ts-ignore
+  setup?: () => Promise<void> | void,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * cleanup to run when the simulation is closed or stopped by the user.
+// @ts-ignore
+   * use this to deactivate colorizers or other visual effects that were activated
+// @ts-ignore
+   * in setup or during the simulation.
+// @ts-ignore
+   */
+// @ts-ignore
+  cleanup?: () => Promise<void> | void,
+}
+
+// @ts-ignore
+export type SimulationDeclarationGetter = (graph: Graph) => SimulationDeclaration[]
+
 // @ts-ignore
 export type ProductInfo = {
 // @ts-ignore
@@ -5052,6 +3087,14 @@ export type ProductInfo = {
    */
 // @ts-ignore
   menu?: MainPageInfo,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * if defined, this products simulations will be exposed to other products
+// @ts-ignore
+   */
+// @ts-ignore
+  simulations?: SimulationDeclarationGetter,
 }
 
 // @ts-ignore
@@ -5176,14 +3219,10 @@ export type SimulationControls<T extends any[] = any[]> = {
    */
 // @ts-ignore
   hasBegun: ComputedRef<boolean>
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
-
-// @ts-ignore
-type PartialProgressThemeOptions = Partial<{
+type ProgressThemeOptions = {
 // @ts-ignore
   backgroundColor: string;
 // @ts-ignore
@@ -5194,20 +3233,20 @@ type PartialProgressThemeOptions = Partial<{
   borderRadius: number;
 // @ts-ignore
   progressEasing: "linear" | "ease-in-out";
-// @ts-ignore
-}>;
-// @ts-ignore
+}
 
 // @ts-ignore
 export type ProgressOptions = {
 // @ts-ignore
-  theme?: PartialProgressThemeOptions;
+  theme?: Partial<ProgressThemeOptions>;
 // @ts-ignore
   startProgress: number;
 // @ts-ignore
   currentProgress: number;
 // @ts-ignore
   endProgress: number;
+// @ts-ignore
+  setProgress: (progress: number) => void
 // @ts-ignore
 };
 // @ts-ignore
@@ -5315,9 +3354,7 @@ type OnlyObj<T> = Extract<T, object>
 type OnlyObjNested<T> = {
 // @ts-ignore
   [K in keyof T]: OnlyObj<T[K]> extends never ? T[K] : OnlyObj<T[K]>
-// @ts-ignore
 }
-// @ts-ignore
 
 // @ts-ignore
 type ExecuteDeepValue<T, Path extends string> =
