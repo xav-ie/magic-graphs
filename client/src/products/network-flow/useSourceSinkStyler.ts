@@ -5,7 +5,7 @@ import colors from "@utils/colors";
 import { FLOW_USETHEME_ID, SINK_LABEL, SOURCE_LABEL } from "./constants";
 
 /**
- * hooks into the graph with useTheme to color the source and sink nodes
+ * hooks into the graph with useTheme to color and label the source and sink nodes
  */
 export const useSourceSinkStyler = (graph: Graph, { source, sink }: {
   source: Ref<GNode | undefined>;

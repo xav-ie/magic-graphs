@@ -27,6 +27,11 @@ export type BaseGraphSettings = {
    * @default null
    */
   newNodeLabelGetter: null | (() => string);
+  /**
+   * whether the graph is directed, if true, all edges are directed, else all edges are undirected
+   * @default true
+   */
+  isGraphDirected: boolean;
 }
 
 export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
@@ -42,6 +47,7 @@ export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
     return decimalNum ?? trimmed
   },
   newNodeLabelGetter: null,
+  isGraphDirected: true,
 }
 
 /**
@@ -126,11 +132,6 @@ export type UserEditableGraphSettings = {
    */
   userEditable: boolean;
   /**
-   * the type of edge to add when creating an edge between nodes
-   * @default "directed"
-   */
-  userAddedEdgeType: 'directed' | 'undirected',
-  /**
    * the default label assigned to edges when created using the UI
    * @default 1
    */
@@ -151,7 +152,6 @@ export type UserEditableGraphSettings = {
 
 export const DEFAULT_USER_EDITABLE_SETTINGS: UserEditableGraphSettings = {
   userEditable: true,
-  userAddedEdgeType: 'directed',
   userAddedEdgeLabel: '1',
   userAddedEdgeRuleNoSelfLoops: false,
   userAddedEdgeRuleOneEdgePerPath: false,

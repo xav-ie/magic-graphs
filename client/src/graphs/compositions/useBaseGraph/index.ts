@@ -135,7 +135,6 @@ export const useBaseGraph = (
     }
   })
 
-
   const { nodeIdToNodeMap, edgeIdToEdgeMap } = useNodeEdgeMap(nodes, edges)
   const {
     getNode,
