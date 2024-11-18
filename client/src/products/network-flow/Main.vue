@@ -5,7 +5,7 @@
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
   import CollabControls from "@playground/graph/CollabControls.vue";
   import { flowNodeLabelGetter, useSourceSinkControls } from "./useSourceSinkControls";
-  import { useFlowColorizer } from "./useFlowColorizer";
+  import { useSourceSinkStyler } from "./useSourceSinkStyler";
   import SourceSinkControls from "./SourceSinkControls.vue";
   import { useEdgeThickener } from "./useEdgeThickener";
   import { FLOW_GRAPH_SETTINGS } from "./settings";
@@ -26,7 +26,7 @@
   const simControls = useFlowSimulation(graph, sourceSinkControls);
 
   const { activate: activateEdgeThickener } = useEdgeThickener(graph);
-  const { colorize: activateFlowColorizer } = useFlowColorizer(graph, sourceSinkControls);
+  const { stylize: activateFlowColorizer } = useSourceSinkStyler(graph, sourceSinkControls);
 
   activateEdgeThickener();
   activateFlowColorizer();

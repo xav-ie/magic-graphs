@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { ref } from "vue";
   import type { Graph } from "@graph/types";
   import colors from "@utils/colors";
   import type {
@@ -7,12 +8,20 @@
     SimulationDeclarationGetter,
   } from "src/types";
   import StartSimulation from "./StartSimulation.vue";
+  import type { SimulationControls } from "@ui/sim/types";
 
   const props = defineProps<{
     graph: Graph;
   }>();
 
-  const activeSimulation = defineModel<SimulationDeclaration>();
+  /**
+   * defined when the user is running a simulation in the sandbox
+   */
+  const activeSimulationDeclaration = ref<SimulationDeclaration>();
+  /**
+   * an instance of controls for the active simulation (above)
+   */
+  const activeSimulationControls = defineModel<SimulationControls>();
 
   const infoModules = import.meta.glob<{
     default: ProductInfo;
@@ -35,23 +44,27 @@
     await setup?.();
     const simControls = await controls();
     simControls.start();
-    activeSimulation.value = simulation;
+    activeSimulationDeclaration.value = simulation;
+    activeSimulationControls.value = simControls;
   };
 
   const stopSimulation = async () => {
-    if (!activeSimulation.value) return;
-    const { controls, cleanup } = activeSimulation.value;
-    const simControls = await controls();
-    simControls.stop();
+    if (!activeSimulationDeclaration.value) return;
+    if (!activeSimulationControls.value) throw new Error("active sim, but no controls");
+    activeSimulationControls.value.stop();
+
+    const { cleanup } = activeSimulationDeclaration.value;
     await cleanup?.();
-    activeSimulation.value = undefined;
+
+    activeSimulationDeclaration.value = undefined;
+    activeSimulationControls.value = undefined;
   };
 </script>
 
 <template>
   <div>
     <StartSimulation
-      v-if="!activeSimulation"
+      v-if="!activeSimulationDeclaration"
       :simulations="simulations"
       :start-simulation="startSimulation"
     />

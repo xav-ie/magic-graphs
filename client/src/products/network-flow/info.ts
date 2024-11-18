@@ -2,7 +2,7 @@ import type { Graph } from '@graph/types'
 import type { ProductInfo } from 'src/types'
 import { useFlowSimulation } from './useFlowSimulation'
 import { useSourceSinkControls } from './useSourceSinkControls'
-import { useFlowColorizer } from './useFlowColorizer'
+import { useSourceSinkStyler } from './useSourceSinkStyler'
 import { useEdgeThickener } from './useEdgeThickener'
 
 const flowSimulations = (graph: Graph) => {
@@ -14,9 +14,9 @@ const flowSimulations = (graph: Graph) => {
   } = useEdgeThickener(graph)
 
   const {
-    colorize: activateFlowColorizer,
-    decolorize: deactivateFlowColorizer
-  } = useFlowColorizer(graph, manager)
+    stylize: activateFlowColorizer,
+    destylize: deactivateFlowColorizer
+  } = useSourceSinkStyler(graph, manager)
 
   return [
     {

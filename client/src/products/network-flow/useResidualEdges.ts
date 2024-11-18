@@ -1,5 +1,8 @@
 import type { Graph } from "@graph/types";
 
+/**
+ * prefix on the edge ids to indicate that they are residual edges
+ */
 export const RESIDUAL_ID = 'residual'
 
 export const useResidualEdges = (graph: Graph) => {
@@ -20,6 +23,7 @@ export const useResidualEdges = (graph: Graph) => {
     }
 
     graph.edges.value = graph.edges.value.filter((e) => !e.id.startsWith(RESIDUAL_ID))
+    graph.trackGraphState()
   }
 
   const createResidualEdges = () => {
