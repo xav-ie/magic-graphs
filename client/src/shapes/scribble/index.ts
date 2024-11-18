@@ -3,7 +3,7 @@ import type {
   Shape,
 } from "@shape/types";
 import { drawScribbleWithCtx } from "./draw";
-// import { scribbleHitbox, scribbleEfficientHitbox, getScribbleBoundingBox } from "./hitbox";
+import { scribbleHitbox, scribbleEfficientHitbox, getScribbleBoundingBox } from "./hitbox";
 import { generateId } from "@graph/helpers";
 
 export type Scribble = {
@@ -30,13 +30,13 @@ export const scribble = (options: Scribble): Shape => {
   }
 
   
-  // const shapeHitbox = scribbleHitbox(options);
-  // const efficientHitbox = scribbleEfficientHitbox(options)
-  // const hitbox = (point: Coordinate) => {
-  //   return shapeHitbox(point)
-  // }
+  const shapeHitbox = scribbleHitbox(options);
+  const efficientHitbox = scribbleEfficientHitbox(options)
+  const hitbox = (point: Coordinate) => {
+    return shapeHitbox(point)
+  }
   
-  // const getBoundingBox = getScribbleBoundingBox(options);
+  const getBoundingBox = getScribbleBoundingBox(options);
   
   const drawShape = drawScribbleWithCtx(options);
 
@@ -53,9 +53,9 @@ export const scribble = (options: Scribble): Shape => {
     drawShape,
     draw,
 
-    // hitbox,
-    // shapeHitbox,
-    // efficientHitbox,
-    // getBoundingBox,
+    hitbox,
+    shapeHitbox,
+    efficientHitbox,
+    getBoundingBox,
   }
 }

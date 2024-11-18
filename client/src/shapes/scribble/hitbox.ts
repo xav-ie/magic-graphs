@@ -1,121 +1,73 @@
 import type { Coordinate, BoundingBox } from "@shape/types";
-import { LINE_DEFAULTS } from ".";
-import type { Line } from ".";
-import { rectEfficientHitbox } from "@shape/rect/hitbox";
+import type { Scribble } from ".";
+import { rectEfficientHitbox, rectHitbox } from "@shape/rect/hitbox";
 
 
 /**
- * @param point - the point to check if it is in the line
- * @returns a function that checks if the point is in the line
+ * @param point - the point to check if it is in the scribble bounding box
+ * @returns a function that checks if the point is in the scribble bounding box
 */
-export const lineHitbox = (line: Line) => (point: Coordinate) => {
-  const {
-    start,
-    end,
-    width
-  } = {
-    ...LINE_DEFAULTS,
-    ...line
-  };
+export const scribbleHitbox = (scribble: Scribble) => (point: Coordinate) => {
+  if (scribble.type === 'erase') return false
 
-  const { x: x1, y: y1 } = start;
-  const { x: x2, y: y2 } = end;
-  const { x, y } = point;
+  const { topLeft, bottomRight } = getScribbleBoundingBox(scribble)()
 
-  const lineLengthSquared = (x2 - x1) ** 2 + (y2 - y1) ** 2;
+  const width = bottomRight.x - topLeft.x
+  const height = bottomRight.y - topLeft.y
 
-  if (lineLengthSquared === 0) {
-    const distanceSquared = (x - x1) ** 2 + (y - y1) ** 2;
-    return distanceSquared <= (width / 2) ** 2;
-  }
+  const isInRectHitbox = rectHitbox({
+    at: {
+      x: topLeft.x,
+      y: topLeft.y
+    },
+    width,
+    height
+  });
 
-  const projectionDistance = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / lineLengthSquared;
-
-  const clampedProjectionDistance = Math.max(0, Math.min(1, projectionDistance));
-
-  const closestX = x1 + clampedProjectionDistance * (x2 - x1);
-  const closestY = y1 + clampedProjectionDistance * (y2 - y1);
-
-  const distanceSquared = (x - closestX) ** 2 + (y - closestY) ** 2;
-
-  return distanceSquared <= (width / 2) ** 2;
+  return isInRectHitbox(point)
 };
 
-export const getLineBoundingBox = (line: Line) => () => {
+export const getScribbleBoundingBox = (scribble: Scribble) => () => {
   const {
-    start,
-    end,
-    width
-  } = {
-    ...LINE_DEFAULTS,
-    ...line
-  };
-
-  const minX = Math.min(start.x, end.x) - width / 2;
-  const minY = Math.min(start.y, end.y) - width / 2;
-  const maxX = Math.max(start.x, end.x) + width / 2;
-  const maxY = Math.max(start.y, end.y) + width / 2;
+    points
+  } = scribble
   
+
+  let minX = points[0].x;
+  let minY = points[0].y;
+  let maxX = points[0].x;
+  let maxY = points[0].y;
+
+  for (const point of points) {
+    if (point.x < minX) minX = point.x;
+    if (point.y < minY) minY = point.y;
+    if (point.x > maxX) maxX = point.x;
+    if (point.y > maxY) maxY = point.y;
+  }
+
   return {
     topLeft: { x: minX, y: minY },
     bottomRight: { x: maxX, y: maxY },
-  }
+  };
 }
 
-export const lineEfficientHitbox = (line: Line) => {
-  const {
-    start,
-    end,
-    width
-  } = {
-    ...LINE_DEFAULTS,
-    ...line
-  };
+export const scribbleEfficientHitbox = (scribble: Scribble) => {
+  if (scribble.type === 'erase') return (boxToCheck: BoundingBox) => false
 
-  const lineLength = Math.hypot(end.x - start.x, end.y - start.y);
+  const { topLeft, bottomRight } = getScribbleBoundingBox(scribble)()
 
-  const angle = Math.atan2(end.y - start.y, end.x - start.x);
-  const angleFactor = Math.abs(Math.cos(angle)) + Math.abs(Math.sin(angle));
-  const segmentLength = Math.min(50, lineLength * angleFactor); // adjust segment length based on angle
-  const numSegments = Math.ceil(lineLength / segmentLength);
+  const width = bottomRight.x - topLeft.x
+  const height = bottomRight.y - topLeft.y
 
-  const dx = (end.x - start.x) / lineLength;
-  const dy = (end.y - start.y) / lineLength;
-
-  const minX = Math.min(start.x, end.x) - width / 2;
-  const minY = Math.min(start.y, end.y) - width / 2;
-  const boundingBoxWidth = Math.abs(end.x - start.x) + width;
-  const boundingBoxHeight = Math.abs(end.y - start.y) + width;
-
-  const isInBoundingBox = rectEfficientHitbox({
-    at: { x: minX, y: minY },
-    width: boundingBoxWidth,
-    height: boundingBoxHeight,
+  const isInRectEfficientHitbox = rectEfficientHitbox({
+    at: {
+      x: topLeft.x,
+      y: topLeft.y
+    },
+    width,
+    height
   });
 
-  return (boxToCheck: BoundingBox) => {
-    // initial check to see if close to line using original rectangle method
-    if (!isInBoundingBox(boxToCheck)) {
-      return false;
-    }
+  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
 
-    const segmentHitboxes = Array.from({ length: numSegments }, (_, i) => {
-      const segmentStartX = start.x + dx * segmentLength * i;
-      const segmentStartY = start.y + dy * segmentLength * i;
-      const segmentEndX = segmentStartX + dx * segmentLength;
-      const segmentEndY = segmentStartY + dy * segmentLength;
-  
-      const segMinX = Math.min(segmentStartX, segmentEndX) - width / 2;
-      const segMinY = Math.min(segmentStartY, segmentEndY) - width / 2;
-      const segWidth = Math.abs(segmentEndX - segmentStartX) + width;
-      const segHeight = Math.abs(segmentEndY - segmentStartY) + width;
-  
-      return rectEfficientHitbox({
-        at: { x: segMinX, y: segMinY },
-        width: segWidth,
-        height: segHeight,
-      });
-    });
-    return segmentHitboxes.some(hitbox => hitbox(boxToCheck));
-  };
 };
