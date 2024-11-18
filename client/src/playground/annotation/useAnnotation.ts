@@ -2,28 +2,29 @@ import { onMounted, onBeforeUnmount, ref } from "vue";
 import type { Ref } from "vue";
 import type { Coordinate } from "@shape/types";
 import { getCtx } from "@utils/ctx";
-import type { AnnotationOptions } from './types'
-import { ANNOTATION_DEFAULTS } from './types'
-import { shapes } from "@shapes";
-import type { Scribble } from "@shape/scribble"; 
+import type { AnnotationOptions } from "./types";
+import { scribble } from "@shapes";
+import {
+  ERASER_BRUSH_WEIGHT,
+  SCRIBBLE_DEFAULTS as ANNOTATION_DEFAULTS,
+  type Scribble,
+} from "@shape/scribble";
 
 export const useAnnotation = (
   canvas: Ref<HTMLCanvasElement | null | undefined>,
-  options?: AnnotationOptions
+  options?: Partial<AnnotationOptions>
 ) => {
-  const { color, brushWeight, eraserBrushWeight } = {
+  const { color, brushWeight } = {
     ...ANNOTATION_DEFAULTS,
     ...options,
   };
-
-  const { scribble } = shapes
 
   const selectedColor = ref(color);
   const selectedBrushWeight = ref(brushWeight);
   const isDrawing = ref(false);
   const lastPoint = ref<Coordinate | null>(null);
   const batch = ref<Coordinate[]>([]);
-  const actions = ref<Scribble[]>([]);
+  const scribbles = ref<Scribble[]>([]);
 
   const setColor = (color: string) => {
     selectedColor.value = color;
@@ -44,7 +45,7 @@ export const useAnnotation = (
       return;
     }
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    actions.value = [];
+    scribbles.value = [];
   };
 
   const draw = () => {
@@ -56,8 +57,8 @@ export const useAnnotation = (
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    actions.value.forEach((action) => {
-      scribble(action).draw(ctx)
+    scribbles.value.forEach((action) => {
+      scribble(action).draw(ctx);
     });
   };
 
@@ -90,7 +91,7 @@ export const useAnnotation = (
       const distance = Math.sqrt(
         Math.pow(x - lastPoint.value.x, 2) + Math.pow(y - lastPoint.value.y, 2)
       );
-      const steps = Math.ceil(distance / eraserBrushWeight);
+      const steps = Math.ceil(distance / ERASER_BRUSH_WEIGHT);
 
       for (let i = 0; i <= steps; i++) {
         const interpolatedX =
@@ -98,7 +99,13 @@ export const useAnnotation = (
         const interpolatedY =
           lastPoint.value.y + (i / steps) * (y - lastPoint.value.y);
         ctx.beginPath();
-        ctx.arc(interpolatedX, interpolatedY, eraserBrushWeight, 0, Math.PI * 2);
+        ctx.arc(
+          interpolatedX,
+          interpolatedY,
+          ERASER_BRUSH_WEIGHT,
+          0,
+          Math.PI * 2
+        );
         ctx.fill();
       }
 
@@ -121,14 +128,14 @@ export const useAnnotation = (
 
     if (batch.value.length > 0) {
       if (selectedColor.value === "") {
-        actions.value.push({
+        scribbles.value.push({
           type: "erase",
           color: "",
-          brushWeight: eraserBrushWeight,
+          brushWeight: ERASER_BRUSH_WEIGHT,
           points: [...batch.value],
         });
       } else {
-        actions.value.push({
+        scribbles.value.push({
           type: "draw",
           color: selectedColor.value,
           brushWeight: selectedBrushWeight.value,
