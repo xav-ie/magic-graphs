@@ -26,7 +26,7 @@
         Magic Algorithms
       </h1>
       <h3 class="font-bold text-2xl">
-        Select An Experience To Begin
+        Select An Experience
       </h3>
     </div>
 
