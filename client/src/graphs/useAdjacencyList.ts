@@ -1,6 +1,6 @@
 import type { GNode, Graph } from '@graph/types';
 import { computed, onUnmounted, ref } from 'vue';
-import { doesEdgeFlowOutOfToNode } from './helpers';
+import { isEdgeOriginatingFromNode } from './helpers';
 
 /**
  * an adjacency list representation of a graph where the keys are the ids or labels of the nodes
@@ -16,7 +16,7 @@ export type AdjacencyList = Record<string, string[]>;
 export const getAdjacencyList = ({ nodes, edges }: Pick<Graph, 'nodes' | 'edges'>) => {
   return nodes.value.reduce<AdjacencyList>((acc, node) => {
     acc[node.id] = edges.value
-      .filter(edge => doesEdgeFlowOutOfToNode(edge, node))
+      .filter(edge => isEdgeOriginatingFromNode(edge, node))
       .map(edge => {
         if (edge.type === 'undirected') {
           if (edge.from === node.id) return edge.to
