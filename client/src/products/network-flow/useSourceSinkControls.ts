@@ -15,6 +15,12 @@ export const flowNodeLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
   return graphLabelGetter(graph.nodes, ALPHABET_WITHOUT_SOURCE_SINK);
 }
 
+/**
+ * controls for setting source and sink nodes in a network flow graph
+ *
+ * @param graph the graph instance to control
+ * @returns controls for setting source and sink nodes
+ */
 export const useSourceSinkControls = (graph: Graph) => {
   const newNodeLabel = flowNodeLabelGetter(graph);
 

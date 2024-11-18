@@ -20,7 +20,7 @@ const info: ProductInfo = {
       name: 'Ford Fulkerson',
       description: 'Iteratively find augmenting paths until the residual graph is revealed',
       thumbnail: '/products/thumbnails/network-flow.png',
-      controls: (graph: Graph) => useFlowSimulation(graph),
+      controls: async (graph: Graph) => useFlowSimulation(graph),
     }
   ]
 }

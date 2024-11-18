@@ -20,14 +20,16 @@
 
   graph.settings.value.newNodeLabelGetter = flowNodeLabelGetter(graph);
 
-  useEdgeThickener(graph);
 
   const sourceSinkControls = useSourceSinkControls(graph);
   const flowProps = useFlowProperties(graph, sourceSinkControls);
   const simControls = useFlowSimulation(graph, sourceSinkControls);
 
-  const { colorize } = useFlowColorizer(graph, sourceSinkControls);
-  colorize();
+  const { activate: activateEdgeThickener } = useEdgeThickener(graph);
+  const { colorize: activateFlowColorizer } = useFlowColorizer(graph, sourceSinkControls);
+
+  activateEdgeThickener();
+  activateFlowColorizer();
 </script>
 
 <template>

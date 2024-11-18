@@ -4,6 +4,9 @@ import type { GNode, Graph } from "@graph/types";
 import colors from "@utils/colors";
 import { FLOW_USETHEME_ID } from "./constants";
 
+/**
+ * hooks into the graph with useTheme to color the source and sink nodes
+ */
 export const useFlowColorizer = (graph: Graph, { source, sink }: {
   source: Ref<GNode | undefined>;
   sink: Ref<GNode | undefined>;

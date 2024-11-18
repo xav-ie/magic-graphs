@@ -11,6 +11,10 @@ const MAX_THICKNESS = 25;
  */
 const ZERO_THICKNESS = 3;
 
+/**
+ * hooks into the graph with useTheme to adjust the thickness of edges
+ * based on their weight
+ */
 export const useEdgeThickener = (graph: Graph) => {
   const { setTheme, removeTheme } = useTheme(graph, FLOW_USETHEME_ID);
 
@@ -28,8 +32,6 @@ export const useEdgeThickener = (graph: Graph) => {
   const deactivate = () => removeTheme('edgeWidth');
 
   onUnmounted(deactivate);
-
-  activate();
 
   return {
     activate,
