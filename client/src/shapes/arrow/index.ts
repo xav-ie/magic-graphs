@@ -3,7 +3,7 @@ import { LINE_DEFAULTS } from "@shape/line";
 import type { Line } from "@shape/line";
 import type { Shape, Coordinate } from "@shape/types";
 import { drawArrowWithCtx } from "./draw";
-import { arrowHitbox, arrowEfficientHitbox } from "./hitbox";
+import { arrowHitbox, arrowEfficientHitbox, getArrowBoundingBox } from "./hitbox";
 import { engageTextarea } from "@shape/textarea";
 import {
   arrowTextHitbox,
@@ -32,6 +32,8 @@ export const arrow = (options: Arrow): Shape => {
   const hitbox = (point: Coordinate) => {
     return textHitbox?.(point) || shapeHitbox(point)
   }
+
+  const getBoundingBox = getArrowBoundingBox(options);
 
   const drawTextArea = drawTextAreaOnArrow(options);
 
@@ -65,6 +67,7 @@ export const arrow = (options: Arrow): Shape => {
     shapeHitbox,
     textHitbox,
     efficientHitbox,
+    getBoundingBox,
 
     activateTextArea,
   }
