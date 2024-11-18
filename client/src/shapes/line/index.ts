@@ -4,7 +4,7 @@ import type {
   TextAreaNoLocation
 } from "@shape/types";
 import { drawLineWithCtx } from "./draw";
-import { lineHitbox, lineEfficientHitbox } from "./hitbox";
+import { lineHitbox, lineEfficientHitbox, getLineBoundingBox } from "./hitbox";
 import {
   lineTextHitbox,
   drawTextAreaOnLine,
@@ -51,6 +51,8 @@ export const line = (options: Line): Shape => {
     return textHitbox?.(point) || shapeHitbox(point)
   }
 
+  const getBoundingBox = getLineBoundingBox(options);
+
   const drawTextArea = drawTextAreaOnLine(options);
 
   const drawTextAreaMatte = drawTextAreaMatteOnLine(options);
@@ -83,6 +85,7 @@ export const line = (options: Line): Shape => {
     shapeHitbox,
     textHitbox,
     efficientHitbox,
+    getBoundingBox,
 
     activateTextArea,
   }

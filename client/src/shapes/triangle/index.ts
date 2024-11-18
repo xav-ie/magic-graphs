@@ -1,6 +1,6 @@
 import { generateId } from "@graph/helpers"
 import type { Coordinate, Shape } from "@shape/types"
-import { triangleHitbox, triangleEfficientHitbox } from "./hitbox"
+import { triangleHitbox, triangleEfficientHitbox, getTriangleBoundingBox } from "./hitbox"
 import { drawTriangleWithCtx } from "./draw"
 
 export type Triangle = {
@@ -22,6 +22,8 @@ export const triangle = (options: Triangle): Shape => {
     return shapeHitbox(point) // text not implemented yet
   }
 
+  const getBoundingBox = getTriangleBoundingBox(options)
+
   const draw = (ctx: CanvasRenderingContext2D) => {
     drawShape(ctx)
   }
@@ -36,5 +38,6 @@ export const triangle = (options: Triangle): Shape => {
     hitbox,
     shapeHitbox,
     efficientHitbox,
+    getBoundingBox,
   }
 }

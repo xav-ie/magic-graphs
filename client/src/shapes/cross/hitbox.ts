@@ -39,6 +39,24 @@ export const crossHitbox = (cross: Cross) => {
   return (point: Coordinate) => horizontalHitbox(point) || verticalHitbox(point);
 };
 
+export const getCrossBoundingBox = (cross: Cross) => () => {
+  const {
+    at,
+    size
+  } = cross
+
+  return {
+    topLeft: {
+      x: at.x - size / 2,
+      y: at.y - size / 2
+    },
+    bottomRight: {
+      x: at.x + size / 2,
+      y: at.y + size / 2
+    }
+  }
+}
+
 export const crossEfficientHitbox = (cross: Cross) => {
 
   const {

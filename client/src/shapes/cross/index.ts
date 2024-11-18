@@ -2,7 +2,7 @@ import type {
   Coordinate,
   Shape
 } from "@shape/types"
-import { crossHitbox, crossEfficientHitbox } from "./hitbox"
+import { crossHitbox, crossEfficientHitbox, getCrossBoundingBox } from "./hitbox"
 import { drawCrossWithCtx } from "./draw"
 import { LINE_DEFAULTS } from "@shape/line"
 import { generateId } from "@graph/helpers"
@@ -36,6 +36,7 @@ export const cross = (options: Cross): Shape => {
     return shapeHitbox(point) // text not implemented yet
   }
 
+  const getBoundingBox = getCrossBoundingBox(options)
 
   const draw = (ctx: CanvasRenderingContext2D) => {
     drawShape(ctx)
@@ -51,5 +52,6 @@ export const cross = (options: Cross): Shape => {
     shapeHitbox,
     hitbox,
     efficientHitbox,
+    getBoundingBox,
   }
 }

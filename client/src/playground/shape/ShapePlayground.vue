@@ -3,7 +3,7 @@
   import { useDark, useWindowSize } from "@vueuse/core";
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
   import colors, { AMBER_400 } from "@colors";
-  import { shapes } from "@shapes";
+  import { shapes, triangle } from "@shapes";
   import type { Shape } from "@shape/types";
   import { getCtx } from "@utils/ctx";
   import ShapePlaygroundToolbar from "./Toolbar.vue";
@@ -24,7 +24,7 @@
   const draw = () => {
     const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    const { circle, uturn, cross, rect, square } = shapes;
+    const { circle, uturn, cross, rect, square, triangle } = shapes;
 
     items.value.push(
       circle({
@@ -46,6 +46,15 @@
         }
       })
     );
+
+    items.value.push(
+      triangle({
+        point1: { x: 800, y: 100 },
+        point2: { x: 900, y: 200 },
+        point3: { x: 700, y: 200 },
+        color: colors.BLUE_500,
+      })
+    )
 
     items.value.push(
       uturn({

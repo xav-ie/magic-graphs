@@ -41,6 +41,27 @@ export const lineHitbox = (line: Line) => (point: Coordinate) => {
   return distanceSquared <= (width / 2) ** 2;
 };
 
+export const getLineBoundingBox = (line: Line) => () => {
+  const {
+    start,
+    end,
+    width
+  } = {
+    ...LINE_DEFAULTS,
+    ...line
+  };
+
+  const minX = Math.min(start.x, end.x) - width / 2;
+  const minY = Math.min(start.y, end.y) - width / 2;
+  const maxX = Math.max(start.x, end.x) + width / 2;
+  const maxY = Math.max(start.y, end.y) + width / 2;
+  
+  return {
+    topLeft: { x: minX, y: minY },
+    bottomRight: { x: maxX, y: maxY },
+  }
+}
+
 export const lineEfficientHitbox = (line: Line) => {
   const {
     start,

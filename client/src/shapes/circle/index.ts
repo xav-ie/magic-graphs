@@ -5,7 +5,7 @@ import type {
   Shape,
 } from "@shape/types"
 import { drawCircleWithCtx } from "@shape/circle/draw";
-import { circleHitbox, circleEfficientHitbox } from "./hitbox";
+import { circleHitbox, circleEfficientHitbox, getCircleBoundingBox } from "./hitbox";
 import {
   circleTextHitbox,
   drawTextAreaOnCircle,
@@ -44,6 +44,7 @@ export const circle = (options: Circle): Shape => {
     return textHitbox?.(point) || shapeHitbox(point)
   }
 
+  const getBoundingBox = getCircleBoundingBox(options);
 
   const drawTextArea = drawTextAreaOnCircle(options);
 
@@ -77,6 +78,7 @@ export const circle = (options: Circle): Shape => {
     shapeHitbox,
     textHitbox,
     efficientHitbox,
+    getBoundingBox,
 
     activateTextArea,
   }

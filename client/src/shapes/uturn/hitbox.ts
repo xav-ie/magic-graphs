@@ -29,7 +29,7 @@ export const uturnHitbox = (uturn: UTurn) => {
   return (point: Coordinate) => isInLine(point);
 }
 
-export const uturnEfficientHitbox = (uturn: UTurn) => {
+export const getUturnBoundingBox = (uturn: UTurn) => () => {
   const {
     spacing,
     at,
@@ -43,19 +43,33 @@ export const uturnEfficientHitbox = (uturn: UTurn) => {
     y: at.y
   }, at, rotation)
 
-  const minX = Math.min(at.x, end.x)
-  const minY = Math.min(at.y, end.y)
-  const hitboxWidth = Math.abs(at.x - end.x)
-  const hitboxHeight = Math.abs(at.y - end.y)
+  const minX = Math.min(at.x, end.x) - lineWidth / 2 - spacing
+  const minY = Math.min(at.y, end.y) - lineWidth / 2 - spacing
+  const maxX = Math.max(at.x, end.x) + lineWidth / 2 + spacing
+  const maxY = Math.max(at.y, end.y) + lineWidth / 2 + spacing
+
+  return {
+    topLeft: { x: minX , y: minY  },
+    bottomRight: { x: maxX , y: maxY  }
+  }
+}
+
+export const uturnEfficientHitbox = (uturn: UTurn) => {
+
+
+  const { topLeft, bottomRight } = getUturnBoundingBox(uturn)();
+
+  const hitboxWidth = bottomRight.x - topLeft.x;
+  const hitboxHeight = bottomRight.y - topLeft.y;
 
   const isInRectEfficientHitbox = rectEfficientHitbox({
     at: {
-      x: minX - lineWidth / 2 - spacing,
-      y: minY - lineWidth / 2 - spacing
+      x: topLeft.x,
+      y: topLeft.y
     },
-    width: hitboxWidth + lineWidth + 2 * spacing,
-    height: hitboxHeight + lineWidth + 2 * spacing
-  })
+    width: hitboxWidth, 
+    height: hitboxHeight
+  });
 
-  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
+  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck);
 }

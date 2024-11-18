@@ -1,5 +1,5 @@
 import type { Coordinate, BoundingBox } from "@shape/types";
-import { lineHitbox, lineEfficientHitbox } from "@shape/line/hitbox";
+import { lineHitbox, lineEfficientHitbox, getLineBoundingBox } from "@shape/line/hitbox";
 import type { Arrow } from ".";
 
 /**
@@ -9,6 +9,10 @@ export const arrowHitbox = (arrow: Arrow) => {
   const isInLine = lineHitbox(arrow);
   return (point: Coordinate) => isInLine(point);
 }
+
+export const getArrowBoundingBox = (arrow: Arrow) => {
+  return getLineBoundingBox(arrow)
+};
 
 export const arrowEfficientHitbox = (arrow: Arrow) => {
   const isInLineEfficientHitbox = lineEfficientHitbox(arrow)
