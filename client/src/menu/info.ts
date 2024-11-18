@@ -2,7 +2,7 @@ import type { ProductInfo } from 'src/types'
 
 const info: ProductInfo = {
   route: {
-    path: '/',
+    path: '/menu',
     component: () => import('./Main.vue'),
   },
   name: 'Main Page',
