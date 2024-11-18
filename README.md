@@ -14,3 +14,9 @@
 
 ## Wanna See It In Action? Watch Our 1 Minute Demo 
 https://github.com/user-attachments/assets/ee5e5109-28dc-43da-8ab3-306801c38af8
+
+## Development
+
+```sh 
+npm i && (cd client && npm i) && (cd ../server && npm i)
+```
