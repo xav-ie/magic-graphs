@@ -15,6 +15,11 @@ describe('base graph - removeNode', () => {
       x: 1,
       y: 1
     });
+
+    if (!node1 || !node2) {
+      throw new Error('Nodes not added');
+    }
+
     graph.removeNode(node1.id);
     expect(graph.nodes.value).toMatchObject([node2]);
   });
@@ -33,6 +38,10 @@ describe('base graph - removeNode', () => {
     graph.nodes.value = [];
     const node1 = graph.addNode({ x: 0, y: 0 });
     const node2 = graph.addNode({ x: 1, y: 1 });
+
+    if (!node1 || !node2) {
+      throw new Error('Nodes not added');
+    }
 
     graph.addEdge({ from: node1.id, to: node2.id });
     graph.addEdge({ from: node2.id, to: node1.id });

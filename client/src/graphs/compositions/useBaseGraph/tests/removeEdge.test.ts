@@ -8,6 +8,8 @@ describe('base graph - removeEdge', () => {
   const node2 = graph.addNode({ x: 1, y: 1 });
   const node1 = graph.addNode({ x: 0, y: 0 });
 
+  if (!node1 || !node2) throw new Error('Nodes not added');
+
   test('remove edge', () => {
     graph.edges.value = [];
 
