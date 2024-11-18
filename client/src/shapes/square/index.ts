@@ -12,7 +12,7 @@ import {
   drawTextOnSquare,
   getTextAreaLocationOnSquare
 } from './text'
-import { squareHitbox, squareEfficientHitbox } from "./hitbox"
+import { squareHitbox, squareEfficientHitbox, getSquareBoundingBox } from "./hitbox"
 import { generateId } from "@graph/helpers"
 import { getFullTextArea } from "@shape/text";
 import { engageTextarea } from "@shape/textarea";
@@ -39,6 +39,8 @@ export const square = (options: Square): Shape => {
   const hitbox = (point: Coordinate) => {
     return textHitbox?.(point) || shapeHitbox(point)
   }
+
+  const getBoundingBox = getSquareBoundingBox(options);
 
   const drawTextArea = drawTextAreaOnSquare(options);
 
@@ -72,6 +74,7 @@ export const square = (options: Square): Shape => {
     shapeHitbox,
     textHitbox,
     efficientHitbox,
+    getBoundingBox,
 
     activateTextArea,
   }

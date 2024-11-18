@@ -48,6 +48,7 @@ export const rect = (options: Rect): Shape => {
   const hitbox = (point: Coordinate) => {
     return textHitbox?.(point) || shapeHitbox(point)
   }
+  
   const getBoundingBox = getRectBoundingBox(options);
 
   const drawTextArea = drawTextAreaOnRect(options);
