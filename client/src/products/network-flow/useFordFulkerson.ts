@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import type { GNode, Graph } from '@graph/types'
 import { fordFulkerson } from './fordFulkerson'
@@ -32,6 +32,8 @@ export const useFordFulkerson = (graph: Graph, nodes: {
   graph.subscribe('onEdgeLabelChange', update)
   graph.subscribe('onStructureChange', update)
   graph.subscribe('onGraphReset', update)
+
+  watch([nodes.source, nodes.sink], update)
 
   return {
     maxFlow,

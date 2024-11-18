@@ -1,13 +1,13 @@
 <script setup lang="ts">
-  import type { NetworkFlowControls } from "./useFlowControls";
-  import colors from "@utils/colors";
-  import Button from "@ui/Button.vue";
-  import type { FlowSimulationControls } from "./useFlowSimulation";
   import { computed } from "vue";
+  import Button from "@ui/Button.vue";
+  import colors from "@utils/colors";
+  import type { SourceSinkControls } from "./useSourceSinkControls";
+  import type { FlowSimulationControls } from "./useFlowSimulation";
 
   const props = defineProps<{
     simControls: FlowSimulationControls;
-    controls: NetworkFlowControls;
+    sourceSink: SourceSinkControls;
   }>();
 
   const simActive = computed(() => props.simControls.isActive.value);
@@ -17,11 +17,11 @@
   <div class="flex gap-3">
     <Button
       v-if="!simActive"
+      @click="simControls.start"
       :style="{
         backgroundColor: colors.BLUE_500,
         color: colors.WHITE,
       }"
-      @click="simControls.start"
     >
       Run Flow Simulation
     </Button>
@@ -42,15 +42,15 @@
       class="flex gap-3"
     >
       <Button
-        v-if="!controls.makeSourceRejector.value"
-        @click="controls.makeSource"
+        v-if="!sourceSink.cancelSetSourceNode.value"
+        @click="sourceSink.setSourceNode"
       >
         Switch Source
       </Button>
 
       <Button
         v-else
-        @click="controls.makeSourceRejector.value"
+        @click="sourceSink.cancelSetSourceNode.value"
         :style="{
           backgroundColor: colors.RED_500,
           color: colors.WHITE,
@@ -60,15 +60,15 @@
       </Button>
 
       <Button
-        v-if="!controls.makeSinkRejector.value"
-        @click="controls.makeSink"
+        v-if="!sourceSink.cancelSetSinkNode.value"
+        @click="sourceSink.setSinkNode"
       >
         Switch Sink
       </Button>
 
       <Button
         v-else
-        @click="controls.makeSinkRejector.value"
+        @click="sourceSink.cancelSetSinkNode.value"
         :style="{
           backgroundColor: colors.RED_500,
           color: colors.WHITE,

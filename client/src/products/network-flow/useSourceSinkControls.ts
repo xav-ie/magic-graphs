@@ -29,7 +29,8 @@ export const useSourceSinkControls = (graph: Graph) => {
 
   const nodeSelector = async (
     nodeRef: Ref<GNode | undefined>,
-    cancelRef: Ref<SelectControls['cancelSelection'] | undefined>
+    cancelRef: Ref<SelectControls['cancelSelection'] | undefined>,
+    selectedNodeLabel: string,
   ) => {
     const { selectedItemPromise, cancelSelection } = selectNode(graph);
     cancelRef.value = cancelSelection;
@@ -43,7 +44,7 @@ export const useSourceSinkControls = (graph: Graph) => {
     if (nodeRef.value) nodeRef.value.label = newNodeLabel();
 
     nodeRef.value = node;
-    nodeRef.value.label = SOURCE_LABEL;
+    nodeRef.value.label = selectedNodeLabel;
 
     cancelRef.value = undefined;
     graph.trackGraphState();
@@ -53,8 +54,8 @@ export const useSourceSinkControls = (graph: Graph) => {
     source: sourceNode,
     sink: sinkNode,
 
-    setSourceNode: () => nodeSelector(sourceNode, cancelSetSourceNode),
-    setSinkNode: () => nodeSelector(sinkNode, cancelSetSinkNode),
+    setSourceNode: () => nodeSelector(sourceNode, cancelSetSourceNode, SOURCE_LABEL),
+    setSinkNode: () => nodeSelector(sinkNode, cancelSetSinkNode, SINK_LABEL),
 
     cancelSetSourceNode,
     cancelSetSinkNode,
