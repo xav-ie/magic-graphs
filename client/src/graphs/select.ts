@@ -4,7 +4,24 @@ export const selectNode = (graph: Graph) => {
   return selectFromGraph(graph, item => item.graphType === 'node');
 };
 
-export const selectFromGraph = (graph: Graph, predicate: (item: SchemaItem) => boolean) => {
+export const selectEdge = (graph: Graph) => {
+  return selectFromGraph(graph, item => item.graphType === 'edge');
+};
+
+/**
+ * waits for the user to click on an item in the graph and resolves to the selected item
+ * or undefined if the cancel handler is invoked
+ *
+ * @param graph the graph to select from
+ * @param predicate only items that satisfy this predicate will be selectable.
+ * if left undefined, all items in the graph will be selectable
+ * @returns a promise that resolves to the selected item or undefined if the selection was cancelled
+ * @example const { selectedItemPromise, cancelSelection } = selectFromGraph(graph);
+ * const selectedItem = await selectedItemPromise;
+ * if (!selectedItem) return; // selection was cancelled
+ * // selection resolved. do something with the selected item
+ */
+export const selectFromGraph = (graph: Graph, predicate?: (item: SchemaItem) => boolean) => {
 
   let resolver: (value: SchemaItem | PromiseLike<SchemaItem> | undefined) => void;
 
@@ -13,7 +30,9 @@ export const selectFromGraph = (graph: Graph, predicate: (item: SchemaItem) => b
   const onClick = (event: MouseEvent) => {
     const { offsetX, offsetY } = event;
     const item = graph.getSchemaItemsByCoordinates(offsetX, offsetY).pop();
-    if (item && predicate(item)) resolve(item);
+    if (!item) return;
+    if (predicate && !predicate(item)) return;
+    resolve(item);
   }
 
   const initialUserEditable = graph.settings.value.userEditable;
@@ -48,7 +67,7 @@ export const selectFromGraph = (graph: Graph, predicate: (item: SchemaItem) => b
   /**
    * cancels the selection process and returns undefined from the promise (public)
    */
-  const cancel = () => {
+  const cancelSelection = () => {
     cleanup();
     resolver(undefined);
   }
@@ -61,7 +80,7 @@ export const selectFromGraph = (graph: Graph, predicate: (item: SchemaItem) => b
      * selection was cancelled by calling the cancel handler
      */
     selectedItemPromise,
-    cancel
+    cancelSelection
   };
 };
 

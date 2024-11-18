@@ -23,12 +23,14 @@ export const useFlowControls = (graph: Graph) => {
   const { setTheme } = useTheme(graph, 'flow');
   const newNodeLabel = flowNodeLabelGetter(graph);
 
-  const makeSourceRejector = ref<SelectControls['cancel']>();
+  const cancelMakeSource = ref<SelectControls['cancelSelection']>();
+  const cancelMakeSink = ref<SelectControls['cancelSelection']>();
+
   const makeSource = async () => {
-    const { selectedItemPromise, cancel } = selectNode(graph);
-    makeSourceRejector.value = cancel;
+    const { selectedItemPromise, cancelSelection } = selectNode(graph);
+    cancelMakeSource.value = cancelSelection;
     const nodeSchema = await selectedItemPromise;
-    if (!nodeSchema) return makeSourceRejector.value = undefined;
+    if (!nodeSchema) return cancelMakeSource.value = undefined;
     const node = graph.getNode(nodeSchema.id);
     if (!node) throw new Error('illegitimate schema item returned from selectNode');
     graph.nodes.value.forEach(node => {
@@ -36,15 +38,14 @@ export const useFlowControls = (graph: Graph) => {
     });
     node.label = SOURCE_LABEL;
     graph.trackGraphState();
-    makeSourceRejector.value = undefined;
+    cancelMakeSource.value = undefined;
   }
 
-  const makeSinkRejector = ref<SelectControls['cancel']>();
   const makeSink = async () => {
-    const { selectedItemPromise, cancel } = selectNode(graph);
-    makeSinkRejector.value = cancel;
+    const { selectedItemPromise, cancelSelection } = selectNode(graph);
+    cancelMakeSink.value = cancelSelection;
     const nodeSchema = await selectedItemPromise;
-    if (!nodeSchema) return makeSinkRejector.value = undefined;
+    if (!nodeSchema) return cancelMakeSink.value = undefined;
     const node = graph.getNode(nodeSchema.id);
     if (!node) throw new Error('illegitimate schema item returned from selectNode');
     graph.nodes.value.forEach(node => {
@@ -52,7 +53,7 @@ export const useFlowControls = (graph: Graph) => {
     });
     node.label = SINK_LABEL;
     graph.trackGraphState();
-    makeSinkRejector.value = undefined;
+    cancelMakeSink.value = undefined;
   }
 
   const colorSourceAndSink = (node: GNode) => {
@@ -70,8 +71,8 @@ export const useFlowControls = (graph: Graph) => {
     makeSource,
     makeSink,
 
-    makeSourceRejector,
-    makeSinkRejector,
+    makeSourceRejector: cancelMakeSource,
+    makeSinkRejector: cancelMakeSink,
   }
 };
 
