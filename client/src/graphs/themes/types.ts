@@ -141,6 +141,7 @@ export const getInitialThemeMap = (): FullThemeMap => ({
   nodeShape: [],
   edgeColor: [],
   edgeWidth: [],
+  edgeText: [],
   edgeTextSize: [],
   edgeTextColor: [],
   edgeFocusTextColor: [],
