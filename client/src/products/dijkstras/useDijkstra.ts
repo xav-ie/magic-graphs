@@ -12,7 +12,7 @@ type TraceExploredNode = { id: string; distance: number };
  */
 export const INF = 999999;
 
-const dijkstras = (graph: Pick<Graph, 'nodes' | 'edges'>) => (startingNodeId: GNode['id']) => {
+const dijkstras = (graph: Graph) => (startingNodeId: GNode['id']) => {
 
   const distanceArr = graph.nodes.value.map(
     (n) =>
@@ -105,7 +105,7 @@ const dijkstras = (graph: Pick<Graph, 'nodes' | 'edges'>) => (startingNodeId: GN
   return trace;
 };
 
-export const useDijkstra = (graph: Pick<Graph, 'nodes' | 'getNode' | 'edges' | 'subscribe'>) => {
+export const useDijkstra = (graph: Graph) => {
   const trace = ref<DijkstrasTrace>([]);
   const getDijkstrasTrace = dijkstras(graph);
 

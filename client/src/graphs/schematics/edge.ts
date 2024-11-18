@@ -9,22 +9,25 @@ import {
   uturn
 } from '@shapes'
 
+const WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE = 2
+
+type PropsNeededFromGraph = 'edges' | 'getNode' | 'getEdge' | 'getTheme' | 'settings'
+
 export const getEdgeSchematic = (
   edge: GEdge,
-  graph: Pick<BaseGraph, 'edges' | 'getNode' | 'getTheme' | 'settings'>,
+  graph: Pick<BaseGraph, PropsNeededFromGraph>,
 ): Omit<SchemaItem, 'priority'> | undefined => {
 
-  const WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE = 2
 
-  const { from, to } = getConnectedNodes(edge, graph)
+  const { displayEdgeLabels, isGraphDirected } = graph.settings.value
+
+  const [from, to] = getConnectedNodes(edge.id, graph)
 
   const isThereAnEdgeGoingTheOtherWay = graph.edges.value.some(e => e.from === to.id && e.to === from.id)
-  const isSelfDirecting = to === from
-
+  const isSelfDirected = to === from
 
   const fromNodeBorderWidth = graph.getTheme('nodeBorderWidth', from)
   const toNodeBorderWidth = graph.getTheme('nodeBorderWidth', to)
-
 
   const fromNodeSize = graph.getTheme('nodeSize', from)
   const toNodeSize = graph.getTheme('nodeSize', to)
@@ -42,6 +45,10 @@ export const getEdgeSchematic = (
 
   const edgeWidth = graph.getTheme('edgeWidth', edge)
 
+  /**
+   * the number of pixels we space out the edges if there are multiple edges
+   * in a path between two nodes
+   */
   const bidirectionalEdgeSpacing = edgeWidth * 1.2
 
   if (isThereAnEdgeGoingTheOtherWay) {
@@ -63,7 +70,7 @@ export const getEdgeSchematic = (
     graph.edges.value
       .filter((e) => (e.from === from.id || e.to === to.id) && e.from !== e.to)
       .map((e) => {
-        const { from: fromNode, to: toNode } = getConnectedNodes(e, graph)
+        const [fromNode, toNode] = getConnectedNodes(e.id, graph)
         return from.id === fromNode.id ? { x: toNode.x, y: toNode.y } : { x: fromNode.x, y: fromNode.y }
       })
       .filter((point, index, self) =>
@@ -92,13 +99,12 @@ export const getEdgeSchematic = (
     }
   }
 
-  const { displayEdgeLabels } = graph.settings.value
   const textArea = displayEdgeLabels ? textAreaOnEdge : undefined
 
   const upDistance = (fromNodeSize + fromNodeBorderWidth) * GOLDEN_RATIO;
   const downDistance = upDistance - (fromNodeSize + fromNodeBorderWidth / 2) - WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE;
 
-  if (isSelfDirecting) {
+  if (isSelfDirected) {
     const shape = uturn({
       spacing: edgeWidth * 1.2,
       at: { x: from.x, y: from.y },
@@ -121,10 +127,10 @@ export const getEdgeSchematic = (
   const distanceSquaredBetweenNodes = (from.x - to.x) ** 2 + (from.y - to.y) ** 2
   const areNodesTouching = (sumOfToAndFromNodeSize ** 2) > distanceSquaredBetweenNodes
 
-  // unregisters the edge if the linked nodes are cozy together
+  // prevents edges from rendering if the connecting nodes are touching
   if (areNodesTouching) return
 
-  if (edge.type === 'undirected') {
+  if (!isGraphDirected) {
     const shape = line({
       start: { x: from.x, y: from.y },
       end: { x: to.x, y: to.y },
@@ -140,14 +146,12 @@ export const getEdgeSchematic = (
     }
   }
 
-  const edgeTextAdjustment = fromNodeSize >=50 ? 0.9 : (fromNodeSize >= 25 ? 1 : 1.3)
+  const edgeTextAdjustment = fromNodeSize >= 50 ? 0.9 : (fromNodeSize >= 25 ? 1 : 1.3)
 
   const shape = arrow({
     start: edgeStart,
     end: edgeEnd,
     width: edgeWidth,
-    // TODO - must take into account of actual node size.
-    // TODO - 32 is approx default node size but wont work if node size is different
     textOffsetFromCenter: fromNodeSize ** edgeTextAdjustment,
     color,
     textArea,

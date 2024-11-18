@@ -25,6 +25,9 @@ export type GraphOptions = {
  * @describes a node in a useGraph graph instance
  */
 export type GNode = {
+  /**
+   * unique identifier for the node
+   */
   id: string,
   /**
    * it reflects what the user sees in the UI.
@@ -45,6 +48,9 @@ export type GNode = {
  * @describes an edge in a useGraph graph instance
  */
 export type GEdge = {
+  /**
+   * unique identifier for the edge
+   */
   id: string,
   /**
    * id of the node that the edge is coming from
@@ -58,10 +64,6 @@ export type GEdge = {
    * the text label that appears on the edge - NOT IMPLEMENTED
    */
   label: string,
-  /**
-   * does this edge travel in one direction or both?
-   */
-  type: 'directed' | 'undirected',
 }
 
 /**

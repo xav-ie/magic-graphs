@@ -32,7 +32,6 @@ type GraphCRUDOptions = {
   settings: Ref<GraphSettings>,
 }
 
-
 export const useGraphCRUD = ({
   nodes,
   edges,
@@ -142,30 +141,20 @@ export const useGraphCRUD = ({
       ...options
     }
 
+    const { isGraphDirected } = settings.value
+
     const [fromNode, toNode] = [getNode(edge.from), getNode(edge.to)]
     if (!fromNode || !toNode) return
 
-    const undirectedEdgeOnPath = edges.value.find(e => {
-      const connectedToFrom = e.to === edge.to && e.from === edge.from
-      const connectedFromTo = e.to === edge.from && e.from === edge.to
-      return (connectedToFrom || connectedFromTo) && e.type === 'undirected'
-    })
-
-    if (undirectedEdgeOnPath) return
-
-    const directedEdgeOnPath = edges.value.find(e => {
-      return e.to === edge.to && e.from === edge.from
-    })
-
-    if (directedEdgeOnPath) return
-
-    // if the edge type is undirected, check the other directed way
-    if (edge.type === 'undirected') {
-      const directedEdgeOnPath = edges.value.find(e => {
-        return e.to === edge.from && e.from === edge.to
-      })
-
-      if (directedEdgeOnPath) return
+    if (isGraphDirected) {
+      const existingEdge = edges.value.find(e => e.from === edge.from && e.to === edge.to)
+      if (existingEdge) return
+    } else {
+      const existingEdge = edges.value.find(e => (
+        (e.from === edge.from && e.to === edge.to) ||
+        (e.from === edge.to && e.to === edge.from)
+      ))
+      if (existingEdge) return
     }
 
     const newEdge: GEdge = {
@@ -256,7 +245,7 @@ export const useGraphCRUD = ({
       ...options
     }
 
-    const edgesToRemove = getConnectedEdges(removedNode, edges.value)
+    const edgesToRemove = getConnectedEdges(removedNode.id, { edges, settings })
     const removedEdges = edgesToRemove.map((e) => removeEdge(e.id, {
       broadcast: false,
       history: false,

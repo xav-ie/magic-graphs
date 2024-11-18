@@ -5,7 +5,6 @@ import type { GButton } from "@graph/buttons/types";
 import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
 import { getRandomElement } from "@utils/array";
 import { COLLAB_COLORS, COLLAB_NAMES } from "@graph/compositions/useCollaborativeGraph/types";
-import { capitalize } from "@utils/string";
 
 /**
  * a one stop shop for the dials you need to control your graph
@@ -55,24 +54,6 @@ export const useGraphBtns = (graph: Graph) => {
     action: () => graph.settings.value.userEditable = !graph.settings.value.userEditable,
     color: () => graph.settings.value.userEditable ? 'green' : 'orange',
     id: GRAPH_BUTTON_ID.userEditable,
-  };
-
-  const toggleEdgeType: GButton = {
-    cond: () => !!graph.settings.value.userEditable,
-    label: () => capitalize(graph.settings.value.userAddedEdgeType),
-    action: () => {
-      const addedEdgeType = graph.settings.value.userAddedEdgeType;
-      if (addedEdgeType === 'directed') {
-        graph.settings.value.userAddedEdgeType = 'undirected';
-      } else {
-        graph.settings.value.userAddedEdgeType = 'directed';
-      }
-    },
-    color: () => {
-      const { userAddedEdgeType } = graph.settings.value;
-      return userAddedEdgeType === 'directed' ? 'blue' : 'purple';
-    },
-    id: GRAPH_BUTTON_ID.edgeType,
   };
 
   const changeEdgeWeight: GButton = {
@@ -194,7 +175,6 @@ export const useGraphBtns = (graph: Graph) => {
 
     // user editable
     toggleUserEditable,
-    toggleEdgeType,
     changeEdgeWeight,
 
     // persistent
