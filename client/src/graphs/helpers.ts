@@ -116,11 +116,11 @@ export const getConnectedEdges = (nodeId: GNode['id'], graph: Graph) => graph.ed
   return isFlowingOut || isFlowingIn
 })
 
-const getDirectedInboundEdges = (nodeId: string, edges: GEdge[]) => {
+export const getDirectedInboundEdges = (nodeId: string, edges: GEdge[]) => {
   return edges.filter(edge => isDirectedEdgeFlowingIntoNode(edge, nodeId))
 }
 
-const getUndirectedInboundEdges = (nodeId: string, edges: GEdge[]) => {
+export const getUndirectedInboundEdges = (nodeId: string, edges: GEdge[]) => {
   return edges.filter(edge => isUndirectedEdgeFlowingIntoNode(edge, nodeId))
 }
 

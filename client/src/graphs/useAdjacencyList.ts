@@ -1,51 +1,62 @@
 import type { GNode, Graph } from '@graph/types';
 import { computed, onUnmounted, ref } from 'vue';
-import { isEdgeOriginatingFromNode } from './helpers';
+import { getDirectedInboundEdges, getUndirectedInboundEdges } from './helpers';
 
 /**
- * an adjacency list representation of a graph where the keys are the ids or labels of the nodes
- * depending on the function used to generate it
+ * a mapping of nodes to their neighbors.
+ * could take the form of either node ids or labels
  */
 export type AdjacencyList = Record<string, string[]>;
 
-/**
- * converts a list of nodes and edges to an adjacency list
- *
- * @returns an adjacency list using ids of nodes as keys
- */
-export const getAdjacencyList = ({ nodes, edges }: Pick<Graph, 'nodes' | 'edges'>) => {
-  return nodes.value.reduce<AdjacencyList>((acc, node) => {
-    acc[node.id] = edges.value
-      .filter(edge => isEdgeOriginatingFromNode(edge, node))
-      .map(edge => {
-        if (edge.type === 'undirected') {
-          if (edge.from === node.id) return edge.to
-          return edge.from
-        }
-        return edge.to
-      });
+export const getDirectedGraphAdjacencyList = (graph: Graph) => {
+  return graph.nodes.value.reduce<AdjacencyList>((acc, node) => {
+    acc[node.id] = getDirectedInboundEdges(node.id, graph.edges.value).map(edge => edge.from);
+    return acc;
+  }, {});
+}
+
+export const getUndirectedGraphAdjacencyList = (graph: Graph) => {
+  return graph.nodes.value.reduce<AdjacencyList>((acc, node) => {
+    acc[node.id] = getUndirectedInboundEdges(node.id, graph.edges.value).map(edge => {
+      return edge.from === node.id ? edge.to : edge.from;
+    });
     return acc;
   }, {});
 }
 
 /**
- * @returns an adjacency list using labels of nodes as keys as opposed to ids
+ * creates an adjacency list mapping node ids to the node ids of their neighbors
+ *
+ * @param graph - the graph instance
+ * @returns an adjacency list using ids of nodes as keys
+ * @example getAdjacencyList(graph)
+ * // { 'abc123': ['def456'], 'def456': ['abc123'] }
  */
-export const getLabelAdjacencyList = ({
-  nodes,
-  edges,
-  getNode
-}: Pick<Graph, 'nodes' | 'edges' | 'getNode'>) => {
-  const adjList = getAdjacencyList({ nodes, edges });
-  const entries = Object.entries(adjList);
-  return entries.reduce<AdjacencyList>((acc, [from, tos]) => {
-    const keyNode = getNode(from);
-    if (!keyNode) return acc;
-    const toNodeLabels = tos
-      .map(to => getNode(to))
-      .filter(Boolean)
-      .map(node => node!.label)
-    acc[keyNode.label] = toNodeLabels;
+export const getAdjacencyList = (graph: Graph) => {
+  const { isGraphDirected } = graph.settings.value;
+  const fn = isGraphDirected ? getDirectedGraphAdjacencyList : getUndirectedGraphAdjacencyList;
+  return fn(graph);
+}
+
+/**
+ * creates a human readable adjacency list mapping node labels to the labels of their neighbors
+ *
+ * @returns an adjacency list using labels of nodes as keys as opposed to ids
+ * @example getLabelAdjacencyList(graph)
+ * // { 'A': ['B'], 'B': ['A'] }
+ */
+export const getLabelAdjacencyList = (graph: Graph) => {
+  const adjList = getAdjacencyList(graph);
+  const adjListEntries = Object.entries(adjList);
+
+  return adjListEntries.reduce<AdjacencyList>((acc, [keyNodeId, toNodeIds]) => {
+    const keyNode = graph.getNode(keyNodeId);
+    const toNodes = toNodeIds.map(to => graph.getNode(to));
+
+    if (!keyNode) throw new Error('the "key node" is missing from the graph');
+    if (toNodes.some(node => !node)) throw new Error('a "to node" is missing from the graph');
+
+    acc[keyNode.label] = (toNodes as GNode[]).map(node => node.label);
     return acc;
   }, {});
 }
