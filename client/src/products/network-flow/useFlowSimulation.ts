@@ -43,7 +43,6 @@ export const useFlowSimulation = (graph: Graph, { source, sink }: {
     active.value = true
     paused.value = false
     createResidualEdges()
-
     simulationInterval.value = setInterval(onSimulationInterval, playbackSpeed.value)
   }
 

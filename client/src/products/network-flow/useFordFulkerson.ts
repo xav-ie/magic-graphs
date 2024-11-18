@@ -35,6 +35,8 @@ export const useFordFulkerson = (graph: Graph, nodes: {
 
   watch([nodes.source, nodes.sink], update)
 
+  update()
+
   return {
     maxFlow,
     trace,

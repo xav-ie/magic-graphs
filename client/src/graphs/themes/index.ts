@@ -46,6 +46,7 @@ export const resolveThemeForNode = (getTheme: ThemeGetter, node: GNode): BaseGra
 export const resolveThemeForEdge = (getTheme: ThemeGetter, edge: GEdge): BaseGraphEdgeTheme => ({
   edgeWidth: getTheme('edgeWidth', edge),
   edgeColor: getTheme('edgeColor', edge),
+  edgeText: getTheme('edgeText', edge),
   edgeTextSize: getTheme('edgeTextSize', edge),
   edgeTextColor: getTheme('edgeTextColor', edge),
   edgeTextFontWeight: getTheme('edgeTextFontWeight', edge),

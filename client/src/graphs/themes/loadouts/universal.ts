@@ -10,6 +10,7 @@ export type NonColorGraphThemes = Pick<
   'edgeWidth' |
   'edgeTextSize' |
   'nodeText' |
+  'edgeText' |
   'edgeTextFontWeight' |
   'linkPreviewWidth'
 >
@@ -27,6 +28,7 @@ export const NON_COLOR_THEMES: NonColorGraphThemes = {
   edgeWidth: 10,
   edgeTextSize: 20,
   nodeText: ({ label }) => label,
+  edgeText: ({ label }) => label,
   edgeTextFontWeight: 'bold',
   linkPreviewWidth: 10,
 }

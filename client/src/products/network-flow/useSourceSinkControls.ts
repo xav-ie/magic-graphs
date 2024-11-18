@@ -36,7 +36,6 @@ export const useSourceSinkControls = (graph: Graph) => {
   const nodeSelector = async (
     nodeRef: Ref<GNode | undefined>,
     cancelRef: Ref<SelectControls['cancelSelection'] | undefined>,
-    selectedNodeLabel: string,
   ) => {
     const { selectedItemPromise, cancelSelection } = selectNode(graph);
     cancelRef.value = cancelSelection;
@@ -47,10 +46,7 @@ export const useSourceSinkControls = (graph: Graph) => {
     const node = graph.getNode(nodeSchema.id);
     if (!node) throw new Error('illegitimate schema item returned from selectNode');
 
-    if (nodeRef.value) nodeRef.value.label = newNodeLabel();
-
     nodeRef.value = node;
-    nodeRef.value.label = selectedNodeLabel;
 
     cancelRef.value = undefined;
     graph.trackGraphState();
@@ -60,8 +56,8 @@ export const useSourceSinkControls = (graph: Graph) => {
     source: sourceNode,
     sink: sinkNode,
 
-    setSourceNode: () => nodeSelector(sourceNode, cancelSetSourceNode, SOURCE_LABEL),
-    setSinkNode: () => nodeSelector(sinkNode, cancelSetSinkNode, SINK_LABEL),
+    setSourceNode: () => nodeSelector(sourceNode, cancelSetSourceNode),
+    setSinkNode: () => nodeSelector(sinkNode, cancelSetSinkNode),
 
     cancelSetSourceNode,
     cancelSetSinkNode,
