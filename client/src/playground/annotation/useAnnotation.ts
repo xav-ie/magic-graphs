@@ -2,8 +2,10 @@ import { onMounted, onBeforeUnmount, ref } from "vue";
 import type { Ref } from "vue";
 import type { Coordinate } from "@shape/types";
 import { getCtx } from "@utils/ctx";
-import type { Action, AnnotationOptions } from './types'
+import type { AnnotationOptions } from './types'
 import { ANNOTATION_DEFAULTS } from './types'
+import { shapes } from "@shapes";
+import type { Scribble } from "@shape/scribble"; 
 
 export const useAnnotation = (
   canvas: Ref<HTMLCanvasElement | null | undefined>,
@@ -14,12 +16,14 @@ export const useAnnotation = (
     ...options,
   };
 
+  const { scribble } = shapes
+
   const selectedColor = ref(color);
   const selectedBrushWeight = ref(brushWeight);
   const isDrawing = ref(false);
   const lastPoint = ref<Coordinate | null>(null);
   const batch = ref<Coordinate[]>([]);
-  const actions = ref<Action[]>([]);
+  const actions = ref<Scribble[]>([]);
 
   const setColor = (color: string) => {
     selectedColor.value = color;
@@ -53,42 +57,7 @@ export const useAnnotation = (
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     actions.value.forEach((action) => {
-      if (action.type === "draw") {
-        ctx.strokeStyle = action.color;
-        ctx.lineWidth = action.brushWeight;
-        ctx.beginPath();
-        action.points.forEach((point, index) => {
-          if (index === 0) {
-            ctx.moveTo(point.x, point.y);
-          } else {
-            ctx.lineTo(point.x, point.y);
-          }
-        });
-        ctx.stroke();
-      } else if (action.type === "erase") {
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.lineWidth = eraserBrushWeight;
-
-        for (let i = 0; i < action.points.length - 1; i++) {
-          const start = action.points[i];
-          const end = action.points[i + 1];
-          const distance = Math.sqrt(
-            Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
-          );
-          const steps = Math.ceil(distance / eraserBrushWeight); 
-
-          for (let j = 0; j <= steps; j++) {
-            const interpolatedX = start.x + (j / steps) * (end.x - start.x);
-            const interpolatedY = start.y + (j / steps) * (end.y - start.y);
-
-            ctx.beginPath();
-            ctx.arc(interpolatedX, interpolatedY, eraserBrushWeight, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        }
-
-        ctx.globalCompositeOperation = "source-over";
-      }
+      scribble(action).draw(ctx)
     });
   };
 
