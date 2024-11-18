@@ -830,6 +830,9 @@ export type CollaborativeGraphEventMap = {}
 export type LabelledItem = { label: string };
 
 // @ts-ignore
+type PropsNeededFromGraph = 'edges' | 'getNode' | 'getEdge' | 'getTheme' | 'settings'
+
+// @ts-ignore
 export type SupportedNodeShapes = 'circle' | 'square'
 
 // @ts-ignore
@@ -2007,6 +2010,9 @@ export type SchemaItem = {
 export type AdjacencyList = Record<string, string[]>;
 
 // @ts-ignore
+export type FullNodeAdjacencyList = Record<string, GNode[]>;
+
+// @ts-ignore
 export type AnnotationOptions = Partial<{
 // @ts-ignore
   color: string;
@@ -2078,7 +2084,7 @@ export const INF = 999999;
 // @ts-ignore
 
 // @ts-ignore
-const dijkstras = (graph: Pick<Graph, 'nodes' | 'edges'>) => (startingNodeId: GNode['id']) => {
+const dijkstras = (graph: Graph) => (startingNodeId: GNode['id']) => {
 // @ts-ignore
 
 // @ts-ignore
@@ -2264,7 +2270,7 @@ const dijkstras = (graph: Pick<Graph, 'nodes' | 'edges'>) => (startingNodeId: GN
 // @ts-ignore
 
 // @ts-ignore
-export const useDijkstra = (graph: Pick<Graph, 'nodes' | 'getNode' | 'edges' | 'subscribe'>) => {
+export const useDijkstra = (graph: Graph) => {
 // @ts-ignore
   const trace = ref<DijkstrasTrace>([]);
 // @ts-ignore
@@ -3011,11 +3017,11 @@ export type SimulationDeclaration = {
 // @ts-ignore
    */
 // @ts-ignore
-  controls: () => Promise<SimulationControls> | SimulationControls,
+  controls: SimulationControls,
 // @ts-ignore
   /**
 // @ts-ignore
-   * setup to run when the simulation is opened or started by the user.
+   * runs when the simulation is opened or started by the user.
 // @ts-ignore
    * use this to prepare the simulation experience by activating colorizers, prompting
 // @ts-ignore
@@ -3023,19 +3029,19 @@ export type SimulationDeclaration = {
 // @ts-ignore
    */
 // @ts-ignore
-  setup?: () => Promise<void> | void,
+  onInit?: () => Promise<void> | void,
 // @ts-ignore
   /**
 // @ts-ignore
-   * cleanup to run when the simulation is closed or stopped by the user.
+   * runs when the simulation is closed or stopped by the user.
 // @ts-ignore
    * use this to deactivate colorizers or other visual effects that were activated
 // @ts-ignore
-   * in setup or during the simulation.
+   * in `onInit` or during the runtime of the simulation.
 // @ts-ignore
    */
 // @ts-ignore
-  cleanup?: () => Promise<void> | void,
+  onDismiss?: () => Promise<void> | void,
 }
 
 // @ts-ignore

@@ -83,6 +83,7 @@ export const useBaseGraph = (
     const edgeOptions = {
       edges,
       getNode,
+      getEdge,
       getTheme,
       settings,
     }

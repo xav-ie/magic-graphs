@@ -110,7 +110,10 @@ export const getConnectedNodes = (edgeId: GEdge['id'], graph: Pick<Graph, 'getNo
  * @example getConnectedEdges('abc123', graph)
  * // [{ from: 'abc123', to: 'def456' }, { from: 'ghi789', to: 'abc123' }]
  */
-export const getConnectedEdges = (nodeId: GNode['id'], graph: Graph) => graph.edges.value.filter(edge => {
+export const getConnectedEdges = (
+  nodeId: GNode['id'],
+  graph: Pick<Graph, 'edges' | 'settings'>
+) => graph.edges.value.filter(edge => {
   const isFlowingOut = isEdgeFlowingOutOfNode(edge, nodeId, graph)
   const isFlowingIn = isEdgeFlowingIntoNode(edge, nodeId, graph)
   return isFlowingOut || isFlowingIn
@@ -176,7 +179,11 @@ const isUndirectedEdgeFlowingOutOfNode = (edge: GEdge, nodeId: GNode['id']) => {
  * @param graph - the graph instance
  * @returns true if the edge flows out of the node, false otherwise
  */
-export const isEdgeFlowingOutOfNode = (edge: GEdge, nodeId: GNode['id'], graph: Graph) => {
+export const isEdgeFlowingOutOfNode = (
+  edge: GEdge,
+  nodeId: GNode['id'],
+  graph: Pick<Graph, 'settings'>
+) => {
   const fn = graph.settings.value.isGraphDirected ? isDirectedEdgeFlowingOutOfNode : isUndirectedEdgeFlowingOutOfNode
   return fn(edge, nodeId)
 }
@@ -197,7 +204,11 @@ const isUndirectedEdgeFlowingIntoNode = (edge: GEdge, nodeId: GNode['id']) => {
  * @param graph - the graph instance
  * @returns true if the edge flows out of the node, false otherwise
  */
-export const isEdgeFlowingIntoNode = (edge: GEdge, nodeId: GNode['id'], graph: Graph) => {
+export const isEdgeFlowingIntoNode = (
+  edge: GEdge,
+  nodeId: GNode['id'],
+  graph: Pick<Graph, 'settings'>
+) => {
   const fn = graph.settings.value.isGraphDirected ? isDirectedEdgeFlowingIntoNode : isUndirectedEdgeFlowingIntoNode
   return fn(edge, nodeId)
 }
