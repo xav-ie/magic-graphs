@@ -17,7 +17,7 @@ export const circleHitbox = (circle: Circle) => (point: Coordinate) => {
   return dx ** 2 + dy ** 2 <= radiusWithStroke ** 2;
 }
 
-export const circleEfficientHitbox = (circle: Circle) => {
+export const getCircleBoundingBox = (circle: Circle) => () => {
   const {
     at,
     radius,
@@ -28,14 +28,30 @@ export const circleEfficientHitbox = (circle: Circle) => {
     ...circle.stroke
   }
 
-  const isInRectEfficientHitbox = rectEfficientHitbox({
-    at: {
+  return {
+    topLeft: {
       x: at.x - (radius + (borderWidth / 2)),
       y: at.y - (radius + (borderWidth / 2))
     },
-    width: 2 * radius + borderWidth,
-    height: 2 * radius + borderWidth
-  })
+    bottomRight: {
+      x: at.x + (radius + (borderWidth / 2)),
+      y: at.y + (radius + (borderWidth / 2))
+    }
+  }
+
+}
+
+export const circleEfficientHitbox = (circle: Circle) => {
+  const { topLeft, bottomRight } = getCircleBoundingBox(circle)();
+
+  const isInRectEfficientHitbox = rectEfficientHitbox({
+    at: {
+      x: topLeft.x,
+      y: topLeft.y
+    },
+    width: bottomRight.x - topLeft.x,
+    height: bottomRight.y - topLeft.y
+  });
 
   return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
 }
