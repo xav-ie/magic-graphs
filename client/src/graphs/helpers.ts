@@ -1,15 +1,20 @@
 import type {
-  MaybeGetter,
-  SchemaItem,
+  Graph,
   GNode,
   GEdge,
-  Graph
+  MaybeGetter,
+  SchemaItem,
 } from '@graph/types'
 
 /**
-  unwraps MaybeGetter type into a value of type T.
-  @returns UnwrapMaybeGetter<MaybeGetter<T, K>> <-> T
-*/
+ * unwraps a MaybeGetter into a value of type T.
+ *
+ * @param value - the value to unwrap
+ * @param args - the arguments to pass to the getter if the value is a getter
+ * @returns T, which is UnwrapMaybeGetter<MaybeGetter<T, K>>
+ * @example getValue(5) // 5
+ * getValue(() => 5) // 5
+ */
 export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
   if (typeof value === 'function') {
     return (value as (...args: K) => T)(...args)
@@ -18,12 +23,13 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
 }
 
 /**
-  generates an id. Every item on the canvas must have a unique id
-*/
+ * generates a new, random, id
+ * @example generateId() // 'abc123'
+ */
 export const generateId = () => Math.random().toString(36).substring(2, 9)
 
 /**
- * @description modifies the priority of the items passed in
+ * modifies the priority of the items passed in
  * such that the item with the id passed in has the highest priority
  * while preserving the order of the other items and their relative priorities.
  *
@@ -34,12 +40,15 @@ export const generateId = () => Math.random().toString(36).substring(2, 9)
 export const prioritize = (id: SchemaItem['id'], items: SchemaItem[]) => {
   const itemToPrioritize = items.find(item => item.id === id)
   if (!itemToPrioritize) return
+
   const priorities = items.map(item => item.priority)
   const [max, min] = [Math.max(...priorities), Math.min(...priorities)]
   const range = max - min
-  const increment = Number((range / items.length).toFixed(2))
   itemToPrioritize.priority = max
+
   items.sort((a, b) => a.priority - b.priority)
+
+  const increment = Number((range / items.length).toFixed(2))
   for (let i = 0; i < items.length; i++) {
     if (items[i].id === id) continue
     items[i].priority = min + (increment * i)

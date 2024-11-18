@@ -1,10 +1,11 @@
 import { test, describe, expect } from 'vitest'
-import { selectFromGraph, selectEdge, selectNode } from '@graph/select'
+import { selectFromGraph } from '@graph/select'
 import { useGraph } from '@graph/useGraph'
 import { ref } from 'vue'
 
 describe('select from graph', () => {
 
+  // TODO get canvas to actually work in the test suite
   // const canvas = document.createElement('canvas')
   // canvas.width = 1000
   // canvas.height = 1000
@@ -12,7 +13,6 @@ describe('select from graph', () => {
   // canvas.style.top = '0'
   // canvas.style.left = '0'
   // document.body.appendChild(canvas)
-
 
   const graph = useGraph(ref())
 
@@ -26,7 +26,7 @@ describe('select from graph', () => {
   if (!edge) throw new Error('failed to add edge')
 
   test('select from graph cancels properly', async () => {
-    const { selectedItemPromise, cancelSelection } = selectNode(graph)
+    const { selectedItemPromise, cancelSelection } = selectFromGraph(graph)
     setTimeout(cancelSelection, 100)
     const nodeSchema = await selectedItemPromise
     expect(nodeSchema).toBeUndefined()

@@ -5,9 +5,7 @@ import colors from "@utils/colors";
 import { LETTERS, graphLabelGetter } from "@graph/labels";
 import { selectNode } from "@graph/select";
 import type { SelectControls } from "@graph/select";
-
-export const SOURCE_LABEL = "S";
-export const SINK_LABEL = "T";
+import { FLOW_USETHEME_ID, SINK_LABEL, SOURCE_LABEL } from "./constants";
 
 const ALPHABET_WITHOUT_SOURCE_SINK = LETTERS.filter(l => l !== SOURCE_LABEL && l !== SINK_LABEL);
 
@@ -20,7 +18,7 @@ export const flowNodeLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
 
 export const useFlowControls = (graph: Graph) => {
 
-  const { setTheme } = useTheme(graph, 'flow');
+  const { setTheme } = useTheme(graph, FLOW_USETHEME_ID);
   const newNodeLabel = flowNodeLabelGetter(graph);
 
   const cancelMakeSource = ref<SelectControls['cancelSelection']>();

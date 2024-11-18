@@ -45,7 +45,7 @@ export type SimulationDeclaration = {
   /**
    * the controls for the simulation returned by your products useSimulation instance
    */
-  controls: (graph: Graph) => SimulationControls,
+  controls: (graph: Graph) => Promise<SimulationControls>,
 }
 
 /**
