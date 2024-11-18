@@ -45,19 +45,19 @@ export type SimulationDeclaration = {
   /**
    * the controls for the simulation returned by your products useSimulation instance
    */
-  controls: () => Promise<SimulationControls> | SimulationControls,
+  controls: SimulationControls,
   /**
-   * setup to run when the simulation is opened or started by the user.
+   * runs when the simulation is opened or started by the user.
    * use this to prepare the simulation experience by activating colorizers, prompting
    * user for starting nodes, etc.
    */
-  setup?: () => Promise<void> | void,
+  onInit?: () => Promise<void> | void,
   /**
-   * cleanup to run when the simulation is closed or stopped by the user.
+   * runs when the simulation is closed or stopped by the user.
    * use this to deactivate colorizers or other visual effects that were activated
-   * in setup or during the simulation.
+   * in `onInit` or during the runtime of the simulation.
    */
-  cleanup?: () => Promise<void> | void,
+  onDismiss?: () => Promise<void> | void,
 }
 
 export type SimulationDeclarationGetter = (graph: Graph) => SimulationDeclaration[]

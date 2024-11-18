@@ -11,9 +11,11 @@ import {
 
 const WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE = 2
 
+type PropsNeededFromGraph = 'edges' | 'getNode' | 'getEdge' | 'getTheme' | 'settings'
+
 export const getEdgeSchematic = (
   edge: GEdge,
-  graph: Pick<BaseGraph, 'edges' | 'getNode' | 'getEdge' | 'getTheme' | 'settings'>,
+  graph: Pick<BaseGraph, PropsNeededFromGraph>,
 ): Omit<SchemaItem, 'priority'> | undefined => {
 
 

@@ -1,20 +1,21 @@
 <script setup lang="ts">
-  import { ref } from "vue";
+  import { computed, ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
   import IslandMarkup from "./IslandMarkup.vue";
   import SimulationDropdown from "./SimulationDropdown.vue";
-  import type { SimulationControls } from "@ui/sim/types";
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
+  import type { SimulationDeclaration } from "src/types";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: SANDBOX_GRAPH_SETTINGS,
   });
 
-  const simControls = ref<SimulationControls>();
+  const activeSimulation = ref<SimulationDeclaration>();
+  const simControls = computed(() => activeSimulation.value?.controls);
 </script>
 
 <template>
@@ -41,7 +42,7 @@
 
   <div class="absolute top-6 right-6">
     <SimulationDropdown
-      v-model="simControls"
+      v-model="activeSimulation"
       :graph="graph"
     />
   </div>

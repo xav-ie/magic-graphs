@@ -1,11 +1,11 @@
 import type { Graph } from '@graph/types'
-import type { ProductInfo } from 'src/types'
+import type { ProductInfo, SimulationDeclaration } from 'src/types'
 import { useFlowSimulation } from './useFlowSimulation'
 import { useSourceSinkControls } from './useSourceSinkControls'
 import { useSourceSinkStyler } from './useSourceSinkStyler'
 import { useEdgeThickener } from './useEdgeThickener'
 
-const flowSimulations = (graph: Graph) => {
+const flowSimulations = (graph: Graph): SimulationDeclaration[] => {
   const manager = useSourceSinkControls(graph)
 
   const {
@@ -18,19 +18,21 @@ const flowSimulations = (graph: Graph) => {
     destylize: deactivateFlowColorizer
   } = useSourceSinkStyler(graph, manager)
 
+  const controls = useFlowSimulation(graph, manager)
+
   return [
     {
       name: 'Ford Fulkerson',
       description: 'Iteratively find augmenting paths until the residual graph is revealed',
       thumbnail: '/products/thumbnails/network-flow.png',
-      controls: () => useFlowSimulation(graph, manager),
-      setup: async () => {
+      controls,
+      onInit: async () => {
         activateFlowColorizer()
         activeEdgeThickener()
         await manager.setSourceNode()
         await manager.setSinkNode()
       },
-      cleanup: () => {
+      onDismiss: () => {
         deactivateFlowColorizer()
         deactivateEdgeThickener()
       }

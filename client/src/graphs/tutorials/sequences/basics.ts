@@ -30,14 +30,6 @@ export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (gra
     hint: 'Create an edge by dragging an anchor onto another node',
     dismiss: 'onEdgeAdded'
   },
-  createUndirectedEdge: {
-    hint: 'Now create an undirected edge by toggling the edge type',
-    highlightElement: GRAPH_BUTTON_ID.edgeType,
-    dismiss: {
-      event: 'onEdgeAdded',
-      predicate: (edge) => edge.type === 'undirected'
-    }
-  },
   createSelfDirectedEdge: {
     hint: 'You can even create self directed edges! Make sure you are in "directed" mode and drag an anchor inwards',
     highlightElement: GRAPH_BUTTON_ID.edgeType,
