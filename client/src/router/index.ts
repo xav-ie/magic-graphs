@@ -8,7 +8,14 @@ const infoModules = import.meta.glob<{
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: Object.values(infoModules).flatMap((mod) => mod.default.route ?? []),
+  routes: [
+    ...Object.values(infoModules).flatMap((mod) => mod.default.route ?? []),
+    {
+      path: '/:pathMatch(.*)*',
+      name: '404',
+      component: () => import('./404.vue'),
+    }
+  ],
 })
 
 router.beforeEach((to, _, next) => {
