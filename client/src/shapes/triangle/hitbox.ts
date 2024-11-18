@@ -26,7 +26,7 @@ export const triangleHitbox = (triangle: Triangle) => (point: Coordinate) => {
   return s > 0 && t > 0 && 1 - s - t > 0;
 }
 
-export const triangleEfficientHitbox = (triangle: Triangle) => {
+export const getTriangleBoundingBox = (triangle: Triangle) => () => {
   const {
     point1: a,
     point2: b,
@@ -35,13 +35,22 @@ export const triangleEfficientHitbox = (triangle: Triangle) => {
 
   const minX = Math.min(a.x, b.x, c.x)
   const minY = Math.min(a.y, b.y, c.y)
-  const width = Math.max(a.x, b.x, c.x) - minX
-  const height = Math.max(a.y, b.y, c.y) - minY
+  const maxX = Math.max(a.x, b.x, c.x)
+  const maxY = Math.max(a.y, b.y, c.y)
+
+  return {
+    topLeft: { x: minX, y: minY },
+    bottomRight: { x: maxX, y: maxY }
+  }
+}
+
+export const triangleEfficientHitbox = (triangle: Triangle) => {
+  const { topLeft, bottomRight } = getTriangleBoundingBox(triangle)()
 
   const isInRectEfficientHitbox = rectEfficientHitbox({
-    at: { x: minX, y: minY },
-    width,
-    height
+    at: topLeft,
+    width: bottomRight.x - topLeft.x,
+    height: bottomRight.y - topLeft.y
   })
 
   return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck) 
