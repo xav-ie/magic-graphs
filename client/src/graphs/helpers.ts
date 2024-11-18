@@ -92,7 +92,7 @@ export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement, buffer = 50) =
  * // [{ id: 'dla4me', x: 0, y: 0 }, { id: 'def456', x: 100, y: 100 }]
  * // because edge 'abc123' links nodes 'dla4me' and 'def456'
  */
-export const getConnectedNodes = (edgeId: GEdge['id'], graph: Graph) => {
+export const getConnectedNodes = (edgeId: GEdge['id'], graph: Pick<Graph, 'getNode' | 'getEdge'>) => {
   const edge = graph.getEdge(edgeId)
   if (!edge) throw new Error('edge not found')
   const from = graph.getNode(edge.from)

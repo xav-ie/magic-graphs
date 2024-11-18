@@ -86,10 +86,10 @@ export const getFullNodeAdjacencyList = (graph: Graph) => {
 }
 
 /**
- * a reactively updating adjacency list
+ * reactively updating adjacency lists for a graph
  *
  * @param graph - the graph instance
- * @returns all forms of adjacency lists including standard (ids), labels, and full node objects
+ * @returns all forms of adjacency lists including standard (ids), labels, and full node
  * @example const { adjacencyList, labelAdjacencyList, fullNodeAdjacencyList } = useAdjacencyList(graph)
  * // adjacencyList.value = { 'abc123': ['def456'], 'def456': ['abc123'] }
  * // labelAdjacencyList.value = { 'A': ['B'], 'B': ['A'] }
