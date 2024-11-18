@@ -6,6 +6,11 @@ import type { Rect } from '@shape/rect'
 
 export type BoundingBox = Pick<Rect, 'at' | 'width' | 'height'>
 
+export type BoundingBoxCorners = {
+  topLeft: Coordinate,
+  bottomRight: Coordinate
+}
+
 export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'arrow' | 'uturn' | 'cross'
 
 export type Shape = {
@@ -59,6 +64,11 @@ export type Shape = {
    * returns true if the point is within the rectangular bounding box of the shape
    */
   efficientHitbox: (boxToCheck: BoundingBox) => boolean,
+
+  /**
+   * returns the top left and bottom right corners of the bounding box as Coordinates
+   */
+  getBoundingBox: () => BoundingBoxCorners,
 
   /**
    * returns true if the point is within the text area of the shape

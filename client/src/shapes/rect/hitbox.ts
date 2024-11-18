@@ -84,35 +84,42 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
   );
 };
 
-
-export const rectEfficientHitbox = (rectangle: Rect) => (boxToCheck: BoundingBox) => {
+export const getRectBoundingBox = (rectangle: Rect) => () => {
   const {
     at: rectAt,
     width: rectWidth,
     height: rectHeight,
   } = rectangle;
 
+  const rectLeft = Math.min(rectAt.x, rectAt.x + rectWidth);
+  const rectRight = Math.max(rectAt.x, rectAt.x + rectWidth);
+  const rectTop = Math.min(rectAt.y, rectAt.y + rectHeight);
+  const rectBottom = Math.max(rectAt.y, rectAt.y + rectHeight);
+  return {
+    topLeft: { x: rectLeft, y: rectTop },
+    bottomRight: { x: rectRight, y: rectBottom },
+  }
+}
+
+export const rectEfficientHitbox = (rectangle: Rect) => (boxToCheck: BoundingBox) => {
   const {
     at: boxAt,
     width: boxWidth,
     height: boxHeight,
   } = boxToCheck;
 
-  const rectLeft = Math.min(rectAt.x, rectAt.x + rectWidth);
-  const rectRight = Math.max(rectAt.x, rectAt.x + rectWidth);
-  const rectTop = Math.min(rectAt.y, rectAt.y + rectHeight);
-  const rectBottom = Math.max(rectAt.y, rectAt.y + rectHeight);
+  const { topLeft, bottomRight } = getRectBoundingBox(rectangle)();
 
   const boxLeft = Math.min(boxAt.x, boxAt.x + boxWidth);
   const boxRight = Math.max(boxAt.x, boxAt.x + boxWidth);
   const boxTop = Math.min(boxAt.y, boxAt.y + boxHeight);
   const boxBottom = Math.max(boxAt.y, boxAt.y + boxHeight);
 
-  if (rectRight <= boxLeft || boxRight <= rectLeft) {
+  if (bottomRight.x <= boxLeft || boxRight <= topLeft.x) {
     return false;
   }
 
-  if (rectBottom <= boxTop || boxBottom <= rectTop) {
+  if (bottomRight.y <= boxTop || boxBottom <= topLeft.y) {
     return false;
   }
 

@@ -4,7 +4,7 @@ import type {
   Coordinate,
   Shape
 } from "@shape/types"
-import { rectHitbox, rectEfficientHitbox } from "./hitbox"
+import { rectHitbox, rectEfficientHitbox, getRectBoundingBox } from "./hitbox"
 import { drawRectWithCtx } from "./draw"
 import {
   rectTextHitbox,
@@ -48,6 +48,7 @@ export const rect = (options: Rect): Shape => {
   const hitbox = (point: Coordinate) => {
     return textHitbox?.(point) || shapeHitbox(point)
   }
+  const getBoundingBox = getRectBoundingBox(options);
 
   const drawTextArea = drawTextAreaOnRect(options);
 
@@ -81,6 +82,7 @@ export const rect = (options: Rect): Shape => {
     shapeHitbox,
     textHitbox,
     efficientHitbox,
+    getBoundingBox,
 
     activateTextArea,
   }
