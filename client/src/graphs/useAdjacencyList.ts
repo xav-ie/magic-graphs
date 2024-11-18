@@ -62,53 +62,69 @@ export const getLabelAdjacencyList = (graph: Graph) => {
 }
 
 /**
- * a reactively updated adjacency list based on the graph's nodes and edges
+ * a mapping of nodes to their neighbors where
+ * neighbors are the full node objects instead of just their ids or labels
+ */
+export type FullNodeAdjacencyList = Record<string, GNode[]>;
+
+/**
+ * creates an adjacency list mapping node ids to the node objects of their neighbors
  *
  * @param graph - the graph instance
- * @returns an object containing the adjacency list and a human readable version of it using labels
+ * @returns an adjacency list using ids of nodes as keys and the full node objects as values
+ * @example getFullNodeAdjacencyList(graph)
+ * // { 'abc123': [{ id: 'def456', label: 'B' }], 'def456': [{ id: 'abc123', label: 'A' }] }
  */
-export const useAdjacencyList = (graph: Pick<
-  Graph,
-  'nodes' |
-  'edges' |
-  'getNode' |
-  'subscribe' |
-  'unsubscribe'
->) => {
+export const getFullNodeAdjacencyList = (graph: Graph) => {
+  const adjList = getAdjacencyList(graph);
+  const adjListEntries = Object.entries(adjList);
+
+  return adjListEntries.reduce<FullNodeAdjacencyList>((acc, [keyNodeId, toNodeIds]) => {
+    acc[keyNodeId] = toNodeIds.map(to => graph.getNode(to)!);
+    return acc;
+  }, {});
+}
+
+/**
+ * a reactively updating adjacency list
+ *
+ * @param graph - the graph instance
+ * @returns all forms of adjacency lists including standard (ids), labels, and full node objects
+ * @example const { adjacencyList, labelAdjacencyList, fullNodeAdjacencyList } = useAdjacencyList(graph)
+ * // adjacencyList.value = { 'abc123': ['def456'], 'def456': ['abc123'] }
+ * // labelAdjacencyList.value = { 'A': ['B'], 'B': ['A'] }
+ * // fullNodeAdjacencyList.value = {
+ * //   'abc123': [{ id: 'def456', label: 'B' }],
+ * //   'def456': [{ id: 'abc123', label: 'A' }]
+ * // }
+ */
+export const useAdjacencyList = (graph: Graph) => {
   const adjacencyList = ref<AdjacencyList>({});
   const labelAdjacencyList = ref<AdjacencyList>({});
+  const fullNodeAdjacencyList = ref<FullNodeAdjacencyList>({});
 
-  const makeAdjLists = () => {
+  const update = () => {
     adjacencyList.value = getAdjacencyList(graph);
     labelAdjacencyList.value = getLabelAdjacencyList(graph);
+    fullNodeAdjacencyList.value = getFullNodeAdjacencyList(graph);
   }
 
-  const fullNodeAdjacencyList = computed(() => {
-    const entries = Object.entries(adjacencyList.value);
-    const fullAdjList: Record<string, GNode[]> = {};
-    for (const [from, tos] of entries) {
-      fullAdjList[from] = tos.map(to => graph.getNode(to)!);
-    }
-    return fullAdjList;
-  })
+  update();
 
-  makeAdjLists();
-
-  graph.subscribe('onStructureChange', makeAdjLists);
-  onUnmounted(() => graph.unsubscribe('onStructureChange', makeAdjLists));
+  graph.subscribe('onStructureChange', update);
+  onUnmounted(() => graph.unsubscribe('onStructureChange', update));
 
   return {
     /**
-     * an adjacency list representation of a graph where the keys are the ids of the nodes
+     * the adjacency list using node ids as keys
      */
     adjacencyList,
     /**
-     * an adjacency list representation of a graph where the keys are the labels of the nodes
+     * the adjacency list using node labels as keys
      */
     labelAdjacencyList,
     /**
-     * an adjacency list representation of a graph where the keys are the ids of the nodes
-     * and the values are the full node objects instead of just their ids or labels
+     * the adjacency list using node ids as keys and full node objects as values
      */
     fullNodeAdjacencyList,
   };
