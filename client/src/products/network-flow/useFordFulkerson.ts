@@ -1,11 +1,14 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
+import type { GNode, Graph } from '@graph/types'
 import { fordFulkerson } from './fordFulkerson'
 import type { FlowTrace } from './fordFulkerson'
-import type { GNode, Graph } from '@graph/types'
 import { useResidualEdges } from './useResidualEdges'
 
-export const useFordFulkerson = (graph: Graph, { source, sink }: {
+/**
+ * reactive Ford-Fulkerson algorithm
+ */
+export const useFordFulkerson = (graph: Graph, nodes: {
   source: Ref<GNode | undefined>,
   sink: Ref<GNode | undefined>
 }) => {
@@ -15,11 +18,11 @@ export const useFordFulkerson = (graph: Graph, { source, sink }: {
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
 
   const update = () => {
-    if (!source.value || !sink.value) return
+    if (!nodes.source.value || !nodes.sink.value) return
     createResidualEdges()
     const { maxFlow: gotMaxFlow, trace: gotTrace } = fordFulkerson(graph, {
-      sourceId: source.value.id,
-      sinkId: sink.value.id,
+      sourceId: nodes.source.value.id,
+      sinkId: nodes.sink.value.id,
     })
     trace.value = gotTrace
     maxFlow.value = gotMaxFlow
