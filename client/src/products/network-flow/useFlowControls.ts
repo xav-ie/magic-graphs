@@ -12,7 +12,7 @@ export const SINK_LABEL = "T";
 const ALPHABET_WITHOUT_SOURCE_SINK = LETTERS.filter(l => l !== SOURCE_LABEL && l !== SINK_LABEL);
 
 /**
- * labeller for flow network nodes
+ * labeller network flow graph instances (nodes)
  */
 export const flowNodeLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
   return graphLabelGetter(graph.nodes, ALPHABET_WITHOUT_SOURCE_SINK);

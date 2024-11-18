@@ -1,9 +1,23 @@
 import type { Graph, SchemaItem } from "./types";
 
+/**
+ * selects schema items only of graph type 'node'
+ *
+ * @param graph the graph to select from
+ * @returns a promise that resolves to the selected node schema or
+ * undefined if the selection was cancelled
+ */
 export const selectNode = (graph: Graph) => {
   return selectFromGraph(graph, item => item.graphType === 'node');
 };
 
+/**
+ * selects schema items only of graph type 'edge'
+ *
+ * @param graph the graph to select from
+ * @returns a promise that resolves to the selected edge schema or
+ * undefined if the selection was cancelled
+ */
 export const selectEdge = (graph: Graph) => {
   return selectFromGraph(graph, item => item.graphType === 'edge');
 };
