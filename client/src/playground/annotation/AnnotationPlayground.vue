@@ -25,8 +25,6 @@
     colors.YELLOW_600,
   ];
 
-  const brushWeights = [1, 3, 5, 7];
-
   const canvasColor = computed(() =>
     isDark.value ? colors.GRAY_600 : colors.GRAY_200
   );
@@ -52,8 +50,6 @@
       <AnnotationControls
         :set-brush-weight="setBrushWeight"
         :set-color="setColor"
-        :brush-colors="colorList"
-        :brush-weights="brushWeights"
         :clear="clear"
         :set-eraser="setEraser"
         :selected-color="selectedColor"

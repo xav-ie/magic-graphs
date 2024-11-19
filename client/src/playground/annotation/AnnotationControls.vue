@@ -4,14 +4,13 @@
   import ToolbarButton from "@product/graph-sandbox/ToolbarButton.vue";
   import ToolbarButtonDivider from "@product/graph-sandbox/ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "@product/graph-sandbox/ToolbarButtonGroup.vue";
+  import { COLORS, BRUSH_WEIGHTS } from "./types";
 
   defineProps<{
     setColor: (color: string) => void;
     setBrushWeight: (brushWeight: number) => void;
     setEraser: () => void;
     clear: () => void;
-    brushColors: string[];
-    brushWeights: number[];
     selectedColor: string;
     selectedBrushWeight: number;
   }>();
@@ -21,7 +20,7 @@
   <Toolbar>
     <ToolbarButtonGroup>
       <ToolbarButton
-        v-for="color in brushColors"
+        v-for="color in COLORS"
         @click="setColor(color)"
         :active="selectedColor === color"
         :key="color"
@@ -43,7 +42,7 @@
 
     <ToolbarButtonGroup>
       <ToolbarButton
-        v-for="weight in brushWeights"
+        v-for="weight in BRUSH_WEIGHTS"
         @click="setBrushWeight(weight)"
         :active="selectedBrushWeight === weight"
         :key="weight"
