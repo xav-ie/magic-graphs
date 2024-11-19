@@ -8,11 +8,14 @@
   import CostDisplay from "./CostDisplay.vue";
   import CollabControls from "@playground/graph/CollabControls.vue";
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
+  import type { GNode } from "@graph/types";
+import { selectNode } from "@graph/select";
+import { useTextTip } from "@ui/useTextTip";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: {
-      persistentStorageKey: 'dijkstras',
+      persistentStorageKey: "dijkstras",
       userAddedEdgeRuleNoSelfLoops: true,
       userAddedEdgeRuleOneEdgePerPath: true,
       edgeInputToLabel: (input) => {
@@ -25,7 +28,25 @@
     },
   });
 
-  const simControls = useDijkstraSimulation(graph);
+  const startingNode = ref<GNode>();
+  const simControls = useDijkstraSimulation(graph, startingNode);
+  const { showText, hideText } = useTextTip("select the starting node")
+
+  const startSimulation = async () => {
+    showText()
+
+    const { selectedItemPromise } = selectNode(graph)
+    const nodeSchema = await selectedItemPromise;
+    if (!nodeSchema) return;
+
+    const node = graph.getNode(nodeSchema.id);
+    if (!node) throw new Error("illegitimate node selected from selectNode")
+
+    startingNode.value = node;
+    simControls.start();
+
+    hideText()
+  };
 </script>
 
 <template>
@@ -39,7 +60,7 @@
   <div class="absolute top-0 p-3 flex gap-3">
     <Button
       v-if="!simControls.isActive.value"
-      @click="simControls.start"
+      @click="startSimulation"
     >
       Start Simulation
     </Button>

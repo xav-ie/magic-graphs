@@ -1,10 +1,12 @@
 import { computed, ref } from "vue"
+import type { Ref } from "vue"
 import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
 import type { SimulationControls } from "@ui/sim/types";
-import { useDijkstra, INF } from "./useDijkstra";
-import type { DijkstrasTrace } from "./useDijkstra";
+import { useDijkstra } from "./useDijkstra";
+import { INF } from "./dijkstra";
+import type { DijkstrasTrace } from "./dijkstra";
 
 export const SIM_COLORS = {
   SOURCE: colors.AMBER_600,
@@ -14,9 +16,11 @@ export const SIM_COLORS = {
 
 export type DijkstraSimulatorControls = SimulationControls<DijkstrasTrace>
 
-export const useDijkstraSimulation = (graph: Graph): DijkstraSimulatorControls => {
-
-  const { trace } = useDijkstra(graph)
+export const useDijkstraSimulation = (
+  graph: Graph,
+  startingNode: Ref<GNode | undefined>
+): DijkstraSimulatorControls => {
+  const { trace } = useDijkstra(graph, startingNode)
   const { setTheme } = useTheme(graph, 'dijkstra');
 
   const step = ref(0);

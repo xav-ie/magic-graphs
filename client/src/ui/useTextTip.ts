@@ -37,6 +37,8 @@ export const useTextTip = (textInput?: MaybeRef<string>) => {
   outerDiv.appendChild(innerDiv)
   document.body.appendChild(outerDiv)
 
+  if (text.value) innerDiv.textContent = text.value
+
   const showText = () => {
     outerDiv.style.opacity = '1'
   }
@@ -52,7 +54,7 @@ export const useTextTip = (textInput?: MaybeRef<string>) => {
     innerDiv.textContent = newText
     await new Promise((res) => setTimeout(res, TRANSITION_DURATION))
     showText()
-  }, { immediate: true })
+  })
 
   return {
     showText,
