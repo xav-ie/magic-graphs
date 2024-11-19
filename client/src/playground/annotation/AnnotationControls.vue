@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import Button from "@ui/Button.vue";
   import colors from "@utils/colors";
   import Toolbar from "@product/graph-sandbox/Toolbar.vue";
   import ToolbarButton from "@product/graph-sandbox/ToolbarButton.vue";
@@ -51,10 +50,12 @@
         :color="colors.TRANSPARENT"
       >
         <div
-          class="flex justify-center items-center bg-gray-400 rounded-md w-[15px]"
-          :style="{
-            height: `${weight * 2}px`,
-          }"
+          :class="[
+            'bg-gray-400',
+            'rounded-md',
+            'w-[15px]',
+            `h-[${weight * 2}px]`,
+          ]"
         ></div>
       </ToolbarButton>
     </ToolbarButtonGroup>
@@ -65,7 +66,9 @@
       <ToolbarButton
         @click="setEraser"
         :active="!selectedColor"
-      >mdi-eraser</ToolbarButton>
+      >
+        mdi-eraser
+      </ToolbarButton>
 
       <ToolbarButton @click="clear">mdi-delete-outline</ToolbarButton>
     </ToolbarButtonGroup>
