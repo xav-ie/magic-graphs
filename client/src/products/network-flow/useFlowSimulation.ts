@@ -37,6 +37,8 @@ export const useFlowSimulation = (graph: Graph, { source, sink }: {
   }
 
   const start = () => {
+    if (active.value) return
+
     step.value = -1
     graph.settings.value.userEditable = false
     graph.settings.value.focusable = false

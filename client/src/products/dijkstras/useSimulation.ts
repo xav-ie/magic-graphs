@@ -49,6 +49,8 @@ export const useDijkstraSimulation = (
   })
 
   const start = () => {
+    if (active.value) return
+
     paused.value = false
     active.value = true
     step.value = 0

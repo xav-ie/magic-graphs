@@ -1,18 +1,18 @@
 import type { ProductInfo, SimulationDeclaration } from 'src/types'
-import { useDijkstraSimulation } from './useSimulation'
 import type { Graph } from '@graph/types'
+import { useSimulationRunner } from './useSimulationRunner'
 
 const simulations = (graph: Graph): SimulationDeclaration[] => {
-  const controls = useDijkstraSimulation(graph)
+  const manager = useSimulationRunner(graph)
 
   return [
     {
       name: 'Dijkstras Algorithm',
       description: 'Finds the shortest path from a source node to all other nodes in a graph',
       thumbnail: '/products/thumbnails/dijkstras.png',
-      controls,
-      onInit: async () => {},
-      onDismiss: async () => {},
+      controls: manager.simControls,
+      onInit: manager.start,
+      onDismiss: manager.stop,
     },
   ]
 }
