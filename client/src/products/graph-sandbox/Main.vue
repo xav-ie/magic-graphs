@@ -1,13 +1,14 @@
 <script setup lang="ts">
   import { computed, ref } from "vue";
+  import type { SimulationDeclaration } from "src/types";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
+  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
   import IslandMarkup from "./IslandMarkup.vue";
   import SimulationDropdown from "./SimulationDropdown.vue";
-  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
-  import type { SimulationDeclaration } from "src/types";
+  import ExperienceDropdown from "./ExperienceDropdown.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -38,6 +39,10 @@
     <div class="ml-4">
       <IslandMarkup :graph="graph" />
     </div>
+  </div>
+
+  <div class="absolute top-6 left-6">
+    <ExperienceDropdown />
   </div>
 
   <div class="absolute top-6 right-6">
