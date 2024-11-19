@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import type { Graph } from "@graph/types";
+  import Toolbar from "./Toolbar.vue";
   import ToolbarButton from "./ToolbarButton.vue";
   import ToolbarButtonDivider from "./ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "./ToolbarButtonGroup.vue";
@@ -30,7 +31,7 @@
 </script>
 
 <template>
-  <div class="flex items-center gap-2 bg-gray-800 py-1 px-1 rounded-lg">
+  <Toolbar>
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="graph.settings.value.displayEdgeLabels = true"
@@ -97,8 +98,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton>mdi-account-group</ToolbarButton>
     </ToolbarButtonGroup>
-  </div>
+  </Toolbar>
 
   <ToolbarHint :tutorial="tutorial" />
-
 </template>
