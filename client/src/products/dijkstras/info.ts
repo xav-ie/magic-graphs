@@ -11,6 +11,8 @@ const simulations = (graph: Graph): SimulationDeclaration[] => {
       description: 'Finds the shortest path from a source node to all other nodes in a graph',
       thumbnail: '/products/thumbnails/dijkstras.png',
       controls,
+      onInit: async () => {},
+      onDismiss: async () => {},
     },
   ]
 }

@@ -2,15 +2,12 @@
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
-  import { useDijkstraSimulation } from "./useSimulation";
   import Button from "@ui/Button.vue";
-  import colors from "@colors";
-  import CostDisplay from "./CostDisplay.vue";
-  import CollabControls from "@playground/graph/CollabControls.vue";
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
-  import type { GNode } from "@graph/types";
-import { selectNode } from "@graph/select";
-import { useTextTip } from "@ui/useTextTip";
+  import colors from "@colors";
+  import CollabControls from "@playground/graph/CollabControls.vue";
+  import { useSimulationRunner } from "./useSimulationRunner";
+  import CostDisplay from "./CostDisplay.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -28,25 +25,12 @@ import { useTextTip } from "@ui/useTextTip";
     },
   });
 
-  const startingNode = ref<GNode>();
-  const simControls = useDijkstraSimulation(graph, startingNode);
-  const { showText, hideText } = useTextTip("select the starting node")
-
-  const startSimulation = async () => {
-    showText()
-
-    const { selectedItemPromise } = selectNode(graph)
-    const nodeSchema = await selectedItemPromise;
-    if (!nodeSchema) return;
-
-    const node = graph.getNode(nodeSchema.id);
-    if (!node) throw new Error("illegitimate node selected from selectNode")
-
-    startingNode.value = node;
-    simControls.start();
-
-    hideText()
-  };
+  const {
+    start: startSim,
+    stop: stopSim,
+    running: simRunning,
+    simControls
+  } = useSimulationRunner(graph);
 </script>
 
 <template>
@@ -59,15 +43,15 @@ import { useTextTip } from "@ui/useTextTip";
 
   <div class="absolute top-0 p-3 flex gap-3">
     <Button
-      v-if="!simControls.isActive.value"
-      @click="startSimulation"
+      v-if="!simRunning"
+      @click="startSim"
     >
       Start Simulation
     </Button>
 
     <Button
       v-else
-      @click="simControls.stop"
+      @click="stopSim"
       :color="colors.RED_600"
       :text-color="colors.WHITE"
     >
