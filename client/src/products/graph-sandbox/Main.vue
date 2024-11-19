@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue";
+  import { ref } from "vue";
   import type { SimulationDeclaration } from "src/types";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
@@ -16,7 +16,6 @@
   });
 
   const activeSimulation = ref<SimulationDeclaration>();
-  const simControls = computed(() => activeSimulation.value?.controls);
 </script>
 
 <template>
@@ -26,14 +25,14 @@
   />
 
   <div
-    v-if="!simControls"
+    v-if="!activeSimulation"
     class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
   >
     <IslandToolbar :graph="graph" />
   </div>
 
   <div
-    v-if="!simControls"
+    v-if="!activeSimulation"
     class="absolute top-0 w-0 h-full flex items-center"
   >
     <div class="ml-4">
@@ -53,9 +52,9 @@
   </div>
 
   <div
-    v-if="simControls"
+    v-if="activeSimulation?.controls.isActive"
     class="absolute bottom-8 w-full flex justify-center items-center p-3"
   >
-    <SimulationPlaybackControls :controls="simControls" />
+    <SimulationPlaybackControls :controls="activeSimulation.controls" />
   </div>
 </template>

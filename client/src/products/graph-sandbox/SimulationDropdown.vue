@@ -35,10 +35,10 @@
 
   const startSimulation = async (simulation: SimulationDeclaration) => {
     const { controls, onInit } = simulation;
+    activeSimulation.value = simulation;
+
     await onInit?.();
     controls.start();
-
-    activeSimulation.value = simulation;
   };
 
   const stopSimulation = async () => {

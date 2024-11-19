@@ -1,5 +1,6 @@
-import type { Graph } from '@graph/types'
 import type { ProductInfo, SimulationDeclaration } from 'src/types'
+import type { Graph } from '@graph/types'
+import { useTextTip } from '@ui/useTextTip'
 import { useFlowSimulation } from './useFlowSimulation'
 import { useSourceSinkControls } from './useSourceSinkControls'
 import { useSourceSinkStyler } from './useSourceSinkStyler'
@@ -20,6 +21,8 @@ const flowSimulations = (graph: Graph): SimulationDeclaration[] => {
 
   const controls = useFlowSimulation(graph, manager)
 
+  const { text } = useTextTip()
+
   return [
     {
       name: 'Ford Fulkerson',
@@ -29,12 +32,20 @@ const flowSimulations = (graph: Graph): SimulationDeclaration[] => {
       onInit: async () => {
         activateFlowColorizer()
         activeEdgeThickener()
+        text.value = 'Select a source node'
         await manager.setSourceNode()
+        text.value = 'Select a sink node'
         await manager.setSinkNode()
+        text.value = undefined
       },
-      onDismiss: () => {
+      onDismiss: async () => {
         deactivateFlowColorizer()
         deactivateEdgeThickener()
+        manager.source.value = undefined
+        manager.sink.value = undefined
+
+        text.value = undefined
+        await new Promise((res) => setTimeout(res, 500))
       }
     }
   ]
