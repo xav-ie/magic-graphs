@@ -13,51 +13,60 @@
     clear: () => void;
     brushColors: string[];
     brushWeights: number[];
+    selectedColor: string;
+    selectedBrushWeight: number;
   }>();
 </script>
 
 <template>
   <Toolbar>
-    <ToolbarButtonGroup
-      v-for="color in brushColors"
-      :key="color"
-    >
+    <ToolbarButtonGroup>
       <ToolbarButton
+        v-for="color in brushColors"
         @click="setColor(color)"
+        :active="selectedColor === color"
+        :key="color"
         :color="color"
-        :style="{ backgroundColor: color, borderRadius: '50%' }"
-        class="w-8 h-8"
-      ></ToolbarButton>
+      >
+        <div
+          :class="[
+            'rounded-full',
+            'p-[3px]',
+            // selectedColor === color && 'border border-white',
+          ]"
+        >
+          <div :class="['w-6', 'h-6', 'rounded-full', `bg-[${color}]`]"></div>
+        </div>
+      </ToolbarButton>
     </ToolbarButtonGroup>
 
     <ToolbarButtonDivider />
 
     <ToolbarButtonGroup>
-      <Button
+      <ToolbarButton
         v-for="weight in brushWeights"
-        :key="weight"
         @click="setBrushWeight(weight)"
+        :active="selectedBrushWeight === weight"
+        :key="weight"
         :color="colors.TRANSPARENT"
-        class="h-[25px]"
       >
         <div
-          class="flex justify-center items-center bg-gray-300 rounded-md w-[15px]"
+          class="flex justify-center items-center bg-gray-400 rounded-md w-[15px]"
           :style="{
             height: `${weight * 2}px`,
           }"
         ></div>
-      </Button>
+      </ToolbarButton>
     </ToolbarButtonGroup>
 
     <ToolbarButtonDivider />
 
-    <ToolbarButtonGroup>
-      <ToolbarButton @click="setEraser">mdi-eraser</ToolbarButton>
-    </ToolbarButtonGroup>
+    <ToolbarButtonGroup class="gap-1">
+      <ToolbarButton
+        @click="setEraser"
+        :active="!selectedColor"
+      >mdi-eraser</ToolbarButton>
 
-    <ToolbarButtonDivider />
-
-    <ToolbarButtonGroup>
       <ToolbarButton @click="clear">mdi-delete-outline</ToolbarButton>
     </ToolbarButtonGroup>
   </Toolbar>

@@ -9,7 +9,14 @@
   const canvas = ref<HTMLCanvasElement>();
   const isDark = useDark();
 
-  const { setBrushWeight, setColor, clear, setEraser } = useAnnotation(canvas);
+  const {
+    setBrushWeight,
+    setColor,
+    clear,
+    setEraser,
+    selectedColor,
+    selectedBrushWeight,
+  } = useAnnotation(canvas);
 
   const colorList = [
     colors.RED_600,
@@ -49,6 +56,8 @@
         :brush-weights="brushWeights"
         :clear="clear"
         :set-eraser="setEraser"
+        :selected-color="selectedColor"
+        :selected-brush-weight="selectedBrushWeight"
       />
     </div>
   </div>

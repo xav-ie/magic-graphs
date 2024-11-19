@@ -75,7 +75,7 @@ export const useAnnotation = (
           const distance = Math.sqrt(
             Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
           );
-          const steps = Math.ceil(distance / eraserBrushWeight); 
+          const steps = Math.ceil(distance / eraserBrushWeight);
 
           for (let j = 0; j <= steps; j++) {
             const interpolatedX = start.x + (j / steps) * (end.x - start.x);
@@ -212,6 +212,7 @@ export const useAnnotation = (
 
   return {
     selectedColor,
+    selectedBrushWeight,
     setColor,
     setEraser,
     clear,
