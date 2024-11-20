@@ -2,11 +2,12 @@ import { onMounted, onBeforeUnmount, ref } from "vue";
 import type { Ref } from "vue";
 import type { Coordinate } from "@shape/types";
 import { getCtx } from "@utils/ctx";
-import type { Action, AnnotationOptions, DrawAction, EraseAction } from './types'
+import type { Action, AnnotationOptions } from './types'
 import { ANNOTATION_DEFAULTS } from './types'
+import type { Graph } from "@graph/types";
 
 export const useAnnotation = (
-  canvas: Ref<HTMLCanvasElement | null | undefined>,
+  graph: Graph,
   options: AnnotationOptions = {}
 ) => {
   const { color, brushWeight, eraserBrushWeight } = {
@@ -17,80 +18,74 @@ export const useAnnotation = (
   const selectedColor = ref(color);
   const selectedBrushWeight = ref(brushWeight);
   const isDrawing = ref(false);
-  const lastPoint = ref<Coordinate>();
+  const lastPoint = ref<Coordinate | null>(null);
   const batch = ref<Coordinate[]>([]);
   const actions = ref<Action[]>([]);
+
+  const setColor = (color: string) => {
+    selectedColor.value = color;
+  };
+
+  const setBrushWeight = (brushWeight: number) => {
+    selectedBrushWeight.value = brushWeight;
+  };
 
   const setEraser = () => {
     selectedColor.value = "";
   };
 
   const clear = () => {
-    const ctx = getCtx(canvas);
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     actions.value = [];
   };
 
-  const actionDraw = (ctx: CanvasRenderingContext2D) => (action: DrawAction) => {
-    ctx.strokeStyle = action.color;
-    ctx.lineWidth = action.brushWeight;
-    ctx.beginPath();
-    action.points.forEach((point, index) => {
-      if (index === 0) {
-        ctx.moveTo(point.x, point.y);
-      } else {
-        ctx.lineTo(point.x, point.y);
+  const draw = (ctx: CanvasRenderingContext2D) => {
+
+    actions.value.forEach((action) => {
+      if (action.type === "draw") {
+        ctx.strokeStyle = action.color;
+        ctx.lineWidth = action.brushWeight;
+        ctx.beginPath();
+        action.points.forEach((point, index) => {
+          if (index === 0) {
+            ctx.moveTo(point.x, point.y);
+          } else {
+            ctx.lineTo(point.x, point.y);
+          }
+        });
+        ctx.stroke();
+      } else if (action.type === "erase") {
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.lineWidth = eraserBrushWeight;
+
+        for (let i = 0; i < action.points.length - 1; i++) {
+          const start = action.points[i];
+          const end = action.points[i + 1];
+          const distance = Math.sqrt(
+            Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
+          );
+          const steps = Math.ceil(distance / eraserBrushWeight);
+
+          for (let j = 0; j <= steps; j++) {
+            const interpolatedX = start.x + (j / steps) * (end.x - start.x);
+            const interpolatedY = start.y + (j / steps) * (end.y - start.y);
+
+            ctx.beginPath();
+            ctx.arc(interpolatedX, interpolatedY, eraserBrushWeight, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        ctx.globalCompositeOperation = "source-over";
       }
     });
-    ctx.stroke();
-  }
-
-  const actionErase = (ctx: CanvasRenderingContext2D) => (action: EraseAction) => {
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.lineWidth = eraserBrushWeight;
-
-    for (let i = 0; i < action.points.length - 1; i++) {
-      const start = action.points[i];
-      const end = action.points[i + 1];
-      const distance = Math.sqrt(
-        Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
-      );
-      const steps = Math.ceil(distance / eraserBrushWeight);
-
-      for (let j = 0; j <= steps; j++) {
-        const interpolatedX = start.x + (j / steps) * (end.x - start.x);
-        const interpolatedY = start.y + (j / steps) * (end.y - start.y);
-
-        ctx.beginPath();
-        ctx.arc(interpolatedX, interpolatedY, eraserBrushWeight, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    ctx.globalCompositeOperation = "source-over";
-  }
-
-  const draw = () => {
-    const ctx = getCtx(canvas);
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-    const draw = actionDraw(ctx);
-    const erase = actionErase(ctx);
-
-    for (const action of actions.value) {
-      action.type === "draw" ? draw(action) : erase(action);
-    }
   };
 
   const startDrawing = (event: MouseEvent) => {
-    if (!canvas.value) return;
-
-    const ctx = getCtx(canvas);
-    if (!ctx) return;
+    const ctx = getCtx(graph.canvas);
 
     isDrawing.value = true;
 
-    const { offsetX: x, offsetY: y } = event;
+    const { offsetX: x, offsetY: y } = event
     ctx.beginPath();
     ctx.moveTo(x, y);
 
@@ -102,9 +97,8 @@ export const useAnnotation = (
     if (!isDrawing.value || !canvas.value || !lastPoint.value) return;
 
     const ctx = getCtx(canvas);
-    if (!ctx) return;
 
-    const { offsetX: x, offsetY: y } = event;
+    const { x, y } = getCanvasCoordinates(event);
 
     if (selectedColor.value === "") {
       ctx.globalCompositeOperation = "destination-out";
@@ -126,7 +120,6 @@ export const useAnnotation = (
       ctx.globalCompositeOperation = "source-over";
     } else {
       ctx.lineTo(x, y);
-      console.log(selectedColor.value);
       ctx.strokeStyle = selectedColor.value;
       ctx.lineWidth = selectedBrushWeight.value;
       ctx.stroke();
@@ -159,7 +152,7 @@ export const useAnnotation = (
       }
     }
 
-    lastPoint.value = undefined;
+    lastPoint.value = null;
     batch.value = [];
   };
 
@@ -187,11 +180,11 @@ export const useAnnotation = (
   return {
     selectedColor,
     selectedBrushWeight,
+    setColor,
     setEraser,
     clear,
+    setBrushWeight,
     isDrawing,
     draw,
   };
 };
-
-export type AnnotationControls = ReturnType<typeof useAnnotation>;

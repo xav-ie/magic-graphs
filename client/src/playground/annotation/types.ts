@@ -7,12 +7,20 @@ export type AnnotationOptions = Partial<{
   eraserBrushWeight: number;
 }>;
 
-export type Action = {
-  type: "draw" | "erase";
+export type DrawAction = {
+  type: "draw";
   color: string;
   brushWeight: number;
   points: Coordinate[];
-};
+}
+
+export type EraseAction = {
+  type: "erase";
+  brushWeight: number;
+  points: Coordinate[];
+}
+
+export type Action = DrawAction | EraseAction;
 
 export const COLORS = [
   colors.RED_600,

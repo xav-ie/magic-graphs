@@ -9,14 +9,7 @@
   const canvas = ref<HTMLCanvasElement>();
   const isDark = useDark();
 
-  const {
-    setBrushWeight,
-    setColor,
-    clear,
-    setEraser,
-    selectedColor,
-    selectedBrushWeight,
-  } = useAnnotation(canvas);
+  const annotationControls = useAnnotation(canvas);
 
   const colorList = [
     colors.RED_600,
@@ -47,14 +40,7 @@
     ></ResponsiveCanvas>
 
     <div class="absolute bottom-12 flex w-full justify-center">
-      <AnnotationControls
-        :set-brush-weight="setBrushWeight"
-        :set-color="setColor"
-        :clear="clear"
-        :set-eraser="setEraser"
-        :selected-color="selectedColor"
-        :selected-brush-weight="selectedBrushWeight"
-      />
+      <AnnotationControls :controls="annotationControls" />
     </div>
   </div>
 </template>

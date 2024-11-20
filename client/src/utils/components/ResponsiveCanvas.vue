@@ -7,7 +7,8 @@
   import type { Color } from "@colors";
   import { getCtx } from "@utils/ctx";
   import CoordinateIndicator from "./CoordinateIndicator.vue";
-import { useCanvasCoords } from "./useCanvasCoord";
+  import { useCanvasCoords } from "./useCanvasCoord";
+  import { usePinchToZoom } from "./usePinchToZoom";
 
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
@@ -38,33 +39,38 @@ import { useCanvasCoords } from "./useCanvasCoord";
     (e: "heightChange", value: number): void;
   }>();
 
-  const DEFAULT_PARENT_CLASSES = ["w-full", "h-full"];
+  const DEFAULT_PARENT_CLASSES = ["w-full", "h-full", "relative", "overflow-auto"];
+  const callerClasses = useClassAttrs();
+  const parentElClasses = computed(() => [
+    ...DEFAULT_PARENT_CLASSES,
+    ...callerClasses.value
+  ]);
 
-  const parentClasses = useClassAttrs();
-
-  const emitRef = (el: HTMLCanvasElement | undefined) => emit("canvasRef", el);
+  const canvasRef = ref<HTMLCanvasElement>();
+  const emitRef = (el: HTMLCanvasElement | undefined) => {
+    canvasRef.value = el;
+    emit("canvasRef", el);
+  };
 
   const parentEl = ref<HTMLDivElement>();
   const { height: parentWidth, width: parentHeight } = useElementSize(parentEl);
 
-  const setCanvasSize = async () => {
+  const setCanvasSize = () => {
     canvasWidth.value = widthProp.value;
     canvasHeight.value = heightProp.value;
   };
 
-  const getParentEl = async () => {
-    if (parentEl.value) return parentEl.value;
-    return new Promise<HTMLDivElement>((resolve) => {
+  const getParentEl = async () =>
+    parentEl.value ??
+    new Promise<HTMLDivElement>((res) => {
       const interval = setInterval(() => {
-        if (parentEl.value) {
-          clearInterval(interval);
-          resolve(parentEl.value);
-        }
+        if (!parentEl.value) return;
+        clearInterval(interval);
+        res(parentEl.value);
       }, 100);
     });
-  };
 
-  const getBgCanvasContext = async () =>
+  const getBgCanvasCtx = async () =>
     new Promise<CanvasRenderingContext2D>((res) => {
       const interval = setInterval(() => {
         if (!bgCanvas.value) return;
@@ -73,23 +79,29 @@ import { useCanvasCoords } from "./useCanvasCoord";
       }, 100);
     });
 
-  const drawBackgroundPattern = debounce(async () => {
-    const ctx = await getBgCanvasContext();
-
+  const drawBackgroundPattern = async () => {
+    const ctx = await getBgCanvasCtx();
     ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
 
     const RATE = 75;
 
-    for (let x = RATE / 2; x < canvasWidth.value; x += RATE) {
-      for (let y = RATE / 2; y < canvasHeight.value; y += RATE) {
-        cross({
-          at: { x, y },
-          size: 2,
-          color: props.patternColor,
-        }).draw(ctx);
-      }
+    const drawCross = (x: number, y: number) => {
+      cross({
+        at: { x, y },
+        size: 2,
+        color: props.patternColor,
+      }).draw(ctx);
+    };
+
+    const w = canvasWidth.value;
+    const h = canvasHeight.value;
+
+    for (let x = RATE / 2; x < w; x += RATE) {
+      for (let y = RATE / 2; y < h; y += RATE) drawCross(x, y);
     }
-  }, 250);
+  }
+
+  const debouncedDrawBackgroundPattern = debounce(drawBackgroundPattern, 250);
 
   const initCanvas = async () => {
     drawBackgroundPattern();
@@ -104,7 +116,7 @@ import { useCanvasCoords } from "./useCanvasCoord";
     loading.value = false;
   };
 
-  setTimeout(initCanvas, 100);
+  initCanvas();
 
   watch(parentWidth, () => {
     setCanvasSize();
@@ -132,19 +144,32 @@ import { useCanvasCoords } from "./useCanvasCoord";
     canvasHeight,
     getParentEl,
   });
+
+  const controls = usePinchToZoom(canvasRef)
+
+  watch(controls.scale, () => {
+    const { scale, origin } = controls;
+    const ctx = getCtx(bgCanvas.value);
+    ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
+    ctx.resetTransform();
+    ctx.translate(origin.value.x, origin.value.y);
+    ctx.scale(scale.value, scale.value);
+    debouncedDrawBackgroundPattern();
+  });
 </script>
 
 <template>
-  <CoordinateIndicator :coords="coords" />
+  <!-- <CoordinateIndicator :coords="coords" /> -->
   <div
     ref="parentEl"
-    class="h-full w-full overflow-auto relative"
+    :class="parentElClasses"
     id="responsive-canvas-container"
   >
+    <!-- prevents canvas contents from jumping after the loading is completed -->
     <div
       v-if="loading"
       :style="{ backgroundColor: color }"
-      class="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+      class="absolute top-0 left-0 w-full h-full"
     ></div>
 
     <canvas
