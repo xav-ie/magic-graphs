@@ -3,7 +3,7 @@
   import { useDark, useWindowSize } from "@vueuse/core";
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
   import colors, { AMBER_400 } from "@colors";
-  import { scribble, shapes, triangle } from "@shapes";
+  import { shapes } from "@shapes";
   import type { Shape } from "@shape/types";
   import { getCtx } from "@utils/ctx";
   import ShapePlaygroundToolbar from "./Toolbar.vue";
