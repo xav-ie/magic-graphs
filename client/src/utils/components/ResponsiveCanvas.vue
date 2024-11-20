@@ -159,7 +159,7 @@
 </script>
 
 <template>
-  <!-- <CoordinateIndicator :coords="coords" /> -->
+  <CoordinateIndicator :coords="coords" />
   <div
     ref="parentEl"
     :class="parentElClasses"
