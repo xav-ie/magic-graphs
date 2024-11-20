@@ -1,0 +1,61 @@
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import type { Ref } from "vue";
+
+/**
+ * reactive coordinates for the responsive canvas that track over the mouse position
+ *
+ * @param {Ref<number>} canvasWidth the width of the canvas
+ * @param {Ref<number>} canvasHeight the height of the canvas
+ * @param {() => Promise<HTMLElement>} getParentEl a function that returns the parent element of the canvas
+ * @returns {CanvasCoords} the reactive coordinates of the canvas
+ * @example const { canvasCoords, humanCoords } = useCanvasCoords({ canvasWidth, canvasHeight, getParentEl });
+ */
+export const useCanvasCoords = ({
+  canvasWidth,
+  canvasHeight,
+  getParentEl,
+}: {
+  canvasWidth: Ref<number>;
+  canvasHeight: Ref<number>;
+  getParentEl: () => Promise<HTMLElement>;
+}) => {
+  const mousePos = ref({ x: 0, y: 0 });
+  const canvasCoords = ref({ x: 0, y: 0 });
+
+  const updateMousePos = (ev: MouseEvent) => {
+    mousePos.value = { x: ev.clientX, y: ev.clientY };
+    updateCanvasCoords();
+  };
+
+  const updateCanvasCoords = async () => {
+    const parentEl = await getParentEl();
+
+    const { x: mouseOffsetX, y: mouseOffsetY } = mousePos.value;
+    const { scrollLeft, scrollTop } = parentEl;
+
+    canvasCoords.value.x = scrollLeft + mouseOffsetX;
+    canvasCoords.value.y = scrollTop + mouseOffsetY;
+  };
+
+  onMounted(async () => {
+    const parentEl = await getParentEl();
+    parentEl.addEventListener("mousemove", updateMousePos);
+    parentEl.addEventListener("scroll", updateCanvasCoords);
+  });
+
+  onUnmounted(async () => {
+    const parentEl = await getParentEl();
+    parentEl.removeEventListener("mousemove", updateMousePos);
+    parentEl.removeEventListener("scroll", updateCanvasCoords);
+  });
+
+  return {
+    canvasCoords,
+    humanCoords: computed(() => ({
+      x: canvasCoords.value.x - (canvasWidth.value / 2),
+      y: (canvasCoords.value.y - (canvasHeight.value / 2)) * -1,
+    }))
+  };
+}
+
+export type CanvasCoords = ReturnType<typeof useCanvasCoords>;

@@ -1,9 +1,14 @@
 <script setup lang="ts">
-  import { ref, useAttrs, watch, computed, onUnmounted } from "vue";
+  import { ref, watch, computed } from "vue";
   import { useElementSize } from "@vueuse/core";
   import { debounce } from "@utils/debounce";
+  import { useClassAttrs } from "@ui/useClassAttrs";
   import { cross } from "@shapes";
   import type { Color } from "@colors";
+  import { getCtx } from "@utils/ctx";
+  import CoordinateIndicator from "./CoordinateIndicator.vue";
+  import { useCanvasCoords } from "./useCanvasCoord";
+  import { usePinchToZoom } from "./usePinchToZoom";
 
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
@@ -34,75 +39,69 @@
     (e: "heightChange", value: number): void;
   }>();
 
-  const DEFAULT_PARENT_CLASSES = ["w-full", "h-full"];
+  const DEFAULT_PARENT_CLASSES = ["w-full", "h-full", "relative", "overflow-auto"];
+  const callerClasses = useClassAttrs();
+  const parentElClasses = computed(() => [
+    ...DEFAULT_PARENT_CLASSES,
+    ...callerClasses.value
+  ]);
 
-  /**
-   * intercepts the class html prop to allow for custom class handling
-   */
-  const { class: classAttr } = useAttrs();
-
-  const parentClasses = computed<string | string[]>(() => {
-    if (!classAttr) return DEFAULT_PARENT_CLASSES;
-    else if (Array.isArray(classAttr)) return classAttr;
-    else if (typeof classAttr === "string") return classAttr;
-    else throw new Error("invalid class attribute");
-  });
-
-  const emitRef = (el: HTMLCanvasElement | undefined) => emit("canvasRef", el);
+  const canvasRef = ref<HTMLCanvasElement>();
+  const emitRef = (el: HTMLCanvasElement | undefined) => {
+    canvasRef.value = el;
+    emit("canvasRef", el);
+  };
 
   const parentEl = ref<HTMLDivElement>();
   const { height: parentWidth, width: parentHeight } = useElementSize(parentEl);
 
-  const setCanvasSize = async () => {
+  const setCanvasSize = () => {
     canvasWidth.value = widthProp.value;
     canvasHeight.value = heightProp.value;
   };
 
-  const getParentEl = async () => {
-    if (parentEl.value) return parentEl.value;
-    return new Promise<HTMLDivElement>((resolve) => {
+  const getParentEl = async () =>
+    parentEl.value ??
+    new Promise<HTMLDivElement>((res) => {
       const interval = setInterval(() => {
-        if (parentEl.value) {
-          clearInterval(interval);
-          resolve(parentEl.value);
-        }
-      }, 100);
-    });
-  };
-
-  const getBgCanvasContext = async () =>
-    new Promise<CanvasRenderingContext2D>((resolve, reject) => {
-      const interval = setInterval(() => {
-        if (bgCanvas.value) {
-          const ctx = bgCanvas.value.getContext("2d");
-          clearInterval(interval);
-          ctx ? resolve(ctx) : reject("2d context not found");
-        }
+        if (!parentEl.value) return;
+        clearInterval(interval);
+        res(parentEl.value);
       }, 100);
     });
 
-  const drawBackgroundPattern = debounce(async () => {
-    const ctx = await getBgCanvasContext();
+  const getBgCanvasCtx = async () =>
+    new Promise<CanvasRenderingContext2D>((res) => {
+      const interval = setInterval(() => {
+        if (!bgCanvas.value) return;
+        res(getCtx(bgCanvas.value));
+        clearInterval(interval);
+      }, 100);
+    });
 
+  const drawBackgroundPattern = async () => {
+    const ctx = await getBgCanvasCtx();
     ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
 
     const RATE = 75;
 
-    for (let x = RATE / 2; x < canvasWidth.value; x += RATE) {
-      for (let y = RATE / 2; y < canvasHeight.value; y += RATE) {
-        cross({
-          at: { x, y },
-          size: 2,
-          color: props.patternColor,
-        }).draw(ctx);
-      }
-    }
-  }, 250);
+    const drawCross = (x: number, y: number) => {
+      cross({
+        at: { x, y },
+        size: 2,
+        color: props.patternColor,
+      }).draw(ctx);
+    };
 
-  const updateMousePos = (ev: MouseEvent) => {
-    mousePos.value = { x: ev.clientX, y: ev.clientY };
-    updatePositionCoords();
-  };
+    const w = canvasWidth.value;
+    const h = canvasHeight.value;
+
+    for (let x = RATE / 2; x < w; x += RATE) {
+      for (let y = RATE / 2; y < h; y += RATE) drawCross(x, y);
+    }
+  }
+
+  const debouncedDrawBackgroundPattern = debounce(drawBackgroundPattern, 250);
 
   const initCanvas = async () => {
     drawBackgroundPattern();
@@ -114,30 +113,10 @@
     const middleX = canvasWidth.value / 2 - parentEl.clientWidth / 2;
     parentEl.scrollLeft = middleX;
 
-    parentEl.addEventListener("scroll", updatePositionCoords);
-    parentEl.addEventListener("mousemove", updateMousePos);
     loading.value = false;
   };
 
-  setTimeout(initCanvas, 100);
-
-  const mousePos = ref({ x: 0, y: 0 });
-  const canvasCoords = ref({ x: 0, y: 0 });
-  const humanCoords = ref({ x: 0, y: 0 });
-
-  const updatePositionCoords = async () => {
-    const parentEl = await getParentEl();
-
-    const { x: mouseOffsetX, y: mouseOffsetY } = mousePos.value;
-    const { scrollLeft, scrollTop } = parentEl;
-
-    canvasCoords.value.x = scrollLeft + mouseOffsetX;
-    canvasCoords.value.y = scrollTop + mouseOffsetY;
-
-    // -1 flips axis to get a standard cartesian plane
-    humanCoords.value.x = canvasCoords.value.x - canvasWidth.value / 2;
-    humanCoords.value.y = (canvasCoords.value.y - canvasHeight.value / 2) * -1;
-  };
+  initCanvas();
 
   watch(parentWidth, () => {
     setCanvasSize();
@@ -151,44 +130,46 @@
     emit("heightChange", canvasHeight.value);
   });
 
-  watch(
-    () => widthProp.value + heightProp.value,
-    () => {
-      setCanvasSize();
-      drawBackgroundPattern();
-      emit("widthChange", canvasWidth.value);
-      emit("heightChange", canvasHeight.value);
-    }
-  );
+  watch([widthProp, heightProp], () => {
+    setCanvasSize();
+    drawBackgroundPattern();
+    emit("widthChange", canvasWidth.value);
+    emit("heightChange", canvasHeight.value);
+  });
 
   watch(() => props.patternColor, drawBackgroundPattern);
 
-  onUnmounted(async () => {
-    const parentEl = await getParentEl();
-    parentEl.removeEventListener("scroll", updatePositionCoords);
-    parentEl.removeEventListener("mousemove", updateMousePos);
+  const coords = useCanvasCoords({
+    canvasWidth,
+    canvasHeight,
+    getParentEl,
+  });
+
+  const controls = usePinchToZoom(canvasRef)
+
+  watch(controls.scale, () => {
+    const { scale, origin } = controls;
+    const ctx = getCtx(bgCanvas.value);
+    ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
+    ctx.resetTransform();
+    ctx.translate(origin.value.x, origin.value.y);
+    ctx.scale(scale.value, scale.value);
+    debouncedDrawBackgroundPattern();
   });
 </script>
 
 <template>
-  <!-- coordinates for debugging -->
-  <!-- <p
-    class="dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none text-right pointer-events-none"
-  >
-    ({{ canvasCoords.x }}, {{ canvasCoords.y }})
-    <br />
-    ({{ humanCoords.x }}, {{ humanCoords.y }})
-  </p> -->
-
+  <!-- <CoordinateIndicator :coords="coords" /> -->
   <div
     ref="parentEl"
-    class="h-full w-full overflow-auto relative"
+    :class="parentElClasses"
     id="responsive-canvas-container"
   >
+    <!-- prevents canvas contents from jumping after the loading is completed -->
     <div
       v-if="loading"
       :style="{ backgroundColor: color }"
-      class="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+      class="absolute top-0 left-0 w-full h-full"
     ></div>
 
     <canvas

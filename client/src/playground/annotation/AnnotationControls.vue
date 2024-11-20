@@ -1,19 +1,19 @@
 <script setup lang="ts">
+  import { toRefs } from "vue";
   import colors from "@utils/colors";
   import Toolbar from "@product/graph-sandbox/Toolbar.vue";
   import ToolbarButton from "@product/graph-sandbox/ToolbarButton.vue";
   import ToolbarButtonDivider from "@product/graph-sandbox/ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "@product/graph-sandbox/ToolbarButtonGroup.vue";
   import { COLORS, BRUSH_WEIGHTS } from "./types";
+  import type { AnnotationControls } from "./useAnnotation";
 
-  defineProps<{
-    setColor: (color: string) => void;
-    setBrushWeight: (brushWeight: number) => void;
-    setEraser: () => void;
-    clear: () => void;
-    selectedColor: string;
-    selectedBrushWeight: number;
+  const props = defineProps<{
+    controls: Pick<AnnotationControls, "selectedColor" | "selectedBrushWeight" | "erasing" | "clear">;
   }>();
+
+  const { selectedColor, selectedBrushWeight, erasing } = toRefs(props.controls);
+  const { clear } = props.controls;
 </script>
 
 <template>
@@ -21,7 +21,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         v-for="color in COLORS"
-        @click="setColor(color)"
+        @click="selectedColor = color"
         :active="selectedColor === color"
         :key="color"
         :color="color"
@@ -43,7 +43,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         v-for="weight in BRUSH_WEIGHTS"
-        @click="setBrushWeight(weight)"
+        @click="selectedBrushWeight = weight"
         :active="selectedBrushWeight === weight"
         :key="weight"
         :color="colors.TRANSPARENT"
@@ -63,8 +63,8 @@
 
     <ToolbarButtonGroup class="gap-1">
       <ToolbarButton
-        @click="setEraser"
-        :active="!selectedColor"
+        @click="erasing = !erasing"
+        :active="erasing"
       >
         mdi-eraser
       </ToolbarButton>

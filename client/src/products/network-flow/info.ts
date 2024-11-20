@@ -39,13 +39,12 @@ const flowSimulations = (graph: Graph): SimulationDeclaration[] => {
         text.value = undefined
       },
       onDismiss: async () => {
+        // TODO - call cancel on source/sink promises so that onInit isn't lingering
         deactivateFlowColorizer()
         deactivateEdgeThickener()
         manager.source.value = undefined
         manager.sink.value = undefined
-
         text.value = undefined
-        await new Promise((res) => setTimeout(res, 500))
       }
     }
   ]

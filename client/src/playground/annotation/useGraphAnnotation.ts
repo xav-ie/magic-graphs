@@ -1,12 +1,17 @@
-import { onMounted, onBeforeUnmount, ref } from "vue";
-import type { Ref } from "vue";
+import { ref } from "vue";
 import type { Coordinate } from "@shape/types";
 import { getCtx } from "@utils/ctx";
-import type { Action, AnnotationOptions, DrawAction, EraseAction } from './types'
+import type {
+  Action,
+  AnnotationOptions,
+  DrawAction,
+  EraseAction,
+} from './types'
 import { ANNOTATION_DEFAULTS } from './types'
+import type { Graph } from "@graph/types";
 
 export const useAnnotation = (
-  canvas: Ref<HTMLCanvasElement | null | undefined>,
+  graph: Graph,
   options: AnnotationOptions = {}
 ) => {
   const { color, brushWeight, eraserBrushWeight } = {
@@ -24,8 +29,10 @@ export const useAnnotation = (
   const batch = ref<Coordinate[]>([]);
   const actions = ref<Action[]>([]);
 
+  const isActive = ref(false)
+
   const clear = () => {
-    const ctx = getCtx(canvas);
+    const ctx = getCtx(graph.canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     actions.value = [];
   };
@@ -64,10 +71,7 @@ export const useAnnotation = (
     ctx.globalCompositeOperation = "source-over";
   }
 
-  const draw = () => {
-    const ctx = getCtx(canvas);
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
+  const draw = (ctx: CanvasRenderingContext2D) => {
     const draw = actionDraw(ctx);
     const erase = actionErase(ctx);
 
@@ -80,7 +84,7 @@ export const useAnnotation = (
    * starts drawing a line from the current mouse position
    */
   const startDrawing = (event: MouseEvent) => {
-    const ctx = getCtx(canvas);
+    const ctx = getCtx(graph.canvas);
 
     isDrawing.value = true;
 
@@ -132,7 +136,7 @@ export const useAnnotation = (
   const drawLine = (event: MouseEvent) => {
     if (!isDrawing.value || !lastPoint.value) return;
 
-    const ctx = getCtx(canvas);
+    const ctx = getCtx(graph.canvas);
 
     const { offsetX: x, offsetY: y } = event;
 
@@ -141,6 +145,7 @@ export const useAnnotation = (
 
     lastPoint.value = { x, y };
     batch.value.push({ x, y });
+
   };
 
   const stopDrawing = () => {
@@ -170,26 +175,25 @@ export const useAnnotation = (
     batch.value = [];
   };
 
-  const addEventListeners = () => {
-    if (!canvas.value) return;
-
-    canvas.value.addEventListener("mousedown", startDrawing);
-    canvas.value.addEventListener("mousemove", drawLine);
-    canvas.value.addEventListener("mouseup", stopDrawing);
-    window.addEventListener("resize", draw);
+  const activate = () => {
+    isActive.value = true;
+    graph.settings.value.userEditable = false;
+    graph.settings.value.marquee = false;
+    graph.subscribe('onMouseDown', startDrawing);
+    graph.subscribe('onMouseMove', drawLine);
+    graph.subscribe('onMouseUp', stopDrawing);
+    graph.subscribe('onRepaint', draw);
   };
 
-  const removeEventListeners = () => {
-    if (!canvas.value) return;
-
-    canvas.value.removeEventListener("mousedown", startDrawing);
-    canvas.value.removeEventListener("mousemove", drawLine);
-    canvas.value.removeEventListener("mouseup", stopDrawing);
-    window.removeEventListener("resize", draw);
+  const deactivate = () => {
+    isActive.value = false;
+    graph.settings.value.userEditable = true;
+    graph.settings.value.marquee = true;
+    graph.unsubscribe('onMouseDown', startDrawing);
+    graph.unsubscribe('onMouseMove', drawLine);
+    graph.unsubscribe('onMouseUp', stopDrawing);
+    graph.unsubscribe('onRepaint', draw);
   };
-
-  onMounted(addEventListeners);
-  onBeforeUnmount(removeEventListeners);
 
   return {
     selectedColor,
@@ -198,6 +202,10 @@ export const useAnnotation = (
     clear,
     isDrawing,
     draw,
+
+    isActive,
+    activate,
+    deactivate,
   };
 };
 
