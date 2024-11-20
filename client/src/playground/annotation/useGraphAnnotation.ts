@@ -1,4 +1,4 @@
-import { onMounted, onBeforeUnmount, ref } from "vue";
+import { ref } from "vue";
 import type { Coordinate } from "@shape/types";
 import { getCtx } from "@utils/ctx";
 import type {
@@ -28,6 +28,8 @@ export const useAnnotation = (
   const lastPoint = ref<Coordinate>();
   const batch = ref<Coordinate[]>([]);
   const actions = ref<Action[]>([]);
+
+  const isActive = ref(false)
 
   const clear = () => {
     const ctx = getCtx(graph.canvas);
@@ -143,6 +145,7 @@ export const useAnnotation = (
 
     lastPoint.value = { x, y };
     batch.value.push({ x, y });
+
   };
 
   const stopDrawing = () => {
@@ -172,20 +175,25 @@ export const useAnnotation = (
     batch.value = [];
   };
 
-  const sub = () => {
+  const activate = () => {
+    isActive.value = true;
+    graph.settings.value.userEditable = false;
+    graph.settings.value.marquee = false;
     graph.subscribe('onMouseDown', startDrawing);
     graph.subscribe('onMouseMove', drawLine);
     graph.subscribe('onMouseUp', stopDrawing);
+    graph.subscribe('onRepaint', draw);
   };
 
-  const unsub = () => {
+  const deactivate = () => {
+    isActive.value = false;
+    graph.settings.value.userEditable = true;
+    graph.settings.value.marquee = true;
     graph.unsubscribe('onMouseDown', startDrawing);
     graph.unsubscribe('onMouseMove', drawLine);
     graph.unsubscribe('onMouseUp', stopDrawing);
+    graph.unsubscribe('onRepaint', draw);
   };
-
-  onMounted(sub);
-  onBeforeUnmount(unsub);
 
   return {
     selectedColor,
@@ -194,6 +202,10 @@ export const useAnnotation = (
     clear,
     isDrawing,
     draw,
+
+    isActive,
+    activate,
+    deactivate,
   };
 };
 

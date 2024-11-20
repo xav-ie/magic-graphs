@@ -9,7 +9,7 @@
   import type { AnnotationControls } from "./useAnnotation";
 
   const props = defineProps<{
-    controls: AnnotationControls;
+    controls: Pick<AnnotationControls, "selectedColor" | "selectedBrushWeight" | "erasing" | "clear">;
   }>();
 
   const { selectedColor, selectedBrushWeight, erasing } = toRefs(props.controls);
