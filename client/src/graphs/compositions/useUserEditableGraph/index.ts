@@ -56,7 +56,6 @@ export const useUserEditableGraph = (
     graph.addEdge({
       from: fromNode.id,
       to: toNode.id,
-      type: graph.settings.value.userAddedEdgeType,
       label: graph.settings.value.userAddedEdgeLabel,
     })
   }

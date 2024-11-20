@@ -1,14 +1,20 @@
 <script setup lang="ts">
   import type { Graph } from "@graph/types";
+  import Toolbar from "./Toolbar.vue";
   import ToolbarButton from "./ToolbarButton.vue";
   import ToolbarButtonDivider from "./ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "./ToolbarButtonGroup.vue";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
   import ToolbarHint from "./ToolbarHint.vue";
+  import type { AnnotationControls } from "@playground/annotation/useGraphAnnotation";
+  import { toRefs } from "vue";
 
   const props = defineProps<{
     graph: Graph;
+    annotationControls: AnnotationControls;
   }>();
+
+  const { isActive } = toRefs(props.annotationControls);
 
   const tutorial = useGraphTutorial(props.graph, [
     {
@@ -26,17 +32,16 @@
   const eraseItems = () => {
     props.graph.bulkRemoveNode([...props.graph.focusedItemIds.value]);
     props.graph.bulkRemoveEdge([...props.graph.focusedItemIds.value]);
-  }
+  };
 
-  const changeEdgeType = (type: "directed" | "undirected") => {
-    props.graph.settings.value.userAddedEdgeType = type;
-    for (const edge of props.graph.edges.value) edge.type = type;
-    props.graph.trackGraphState();
-  }
+  const toggleAnnotation = () => {
+    const { activate, deactivate } = props.annotationControls;
+    isActive.value ? deactivate() : activate();
+  };
 </script>
 
 <template>
-  <div class="flex items-center gap-2 bg-gray-800 py-1 px-1 rounded-lg">
+  <Toolbar>
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="graph.settings.value.displayEdgeLabels = true"
@@ -57,8 +62,8 @@
 
     <ToolbarButtonGroup>
       <ToolbarButton
-        @click="changeEdgeType('directed')"
-        :active="graph.settings.value.userAddedEdgeType === 'directed'"
+        @click="graph.settings.value.isGraphDirected = true"
+        :active="graph.settings.value.isGraphDirected"
       >
         mdi-arrow-right-thin
       </ToolbarButton>
@@ -66,8 +71,8 @@
       <ToolbarButtonDivider />
 
       <ToolbarButton
-        @click="changeEdgeType('undirected')"
-        :active="graph.settings.value.userAddedEdgeType === 'undirected'"
+        @click="graph.settings.value.isGraphDirected = false"
+        :active="!graph.settings.value.isGraphDirected"
       >
         mdi-minus
       </ToolbarButton>
@@ -103,8 +108,16 @@
     <ToolbarButtonGroup>
       <ToolbarButton>mdi-account-group</ToolbarButton>
     </ToolbarButtonGroup>
-  </div>
+
+    <ToolbarButtonGroup>
+      <ToolbarButton
+        @click="toggleAnnotation"
+        :active="isActive"
+      >
+        mdi-pencil
+      </ToolbarButton>
+    </ToolbarButtonGroup>
+  </Toolbar>
 
   <ToolbarHint :tutorial="tutorial" />
-
 </template>

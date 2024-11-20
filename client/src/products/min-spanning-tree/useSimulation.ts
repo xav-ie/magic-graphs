@@ -36,6 +36,8 @@ export const useMSTSimulation = (
   const { colorize, decolorize } = useMSTColorizer(graph, traceAtStep);
 
   const start = () => {
+    if (active.value) return;
+
     paused.value = false;
     active.value = true;
     step.value = 0;

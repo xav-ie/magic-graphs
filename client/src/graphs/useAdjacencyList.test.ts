@@ -1,19 +1,20 @@
 import { ref } from 'vue';
 import { expect, test, describe } from 'vitest';
+import { useGraph } from '@graph/useGraph';
 import {
   getAdjacencyList,
+  getFullNodeAdjacencyList,
   getLabelAdjacencyList,
   useAdjacencyList
 } from './useAdjacencyList';
-import { useBaseGraph } from './compositions/useBaseGraph';
 
-describe('useAdjacencyList', () => {
+describe('adjacency lists', () => {
 
-  const graph = useBaseGraph(ref())
+  const graph = useGraph(ref())
 
-  const nodeA = graph.addNode({ id: 'a', label: '1', x: 0, y: 0 })
-  const nodeB = graph.addNode({ id: 'b', label: '2', x: 0, y: 0 })
-  const nodeC = graph.addNode({ id: 'c', label: '3', x: 0, y: 0 })
+  const nodeA = graph.addNode({ id: '1', label: 'a', x: 0, y: 0 })
+  const nodeB = graph.addNode({ id: '2', label: 'b', x: 0, y: 0 })
+  const nodeC = graph.addNode({ id: '3', label: 'c', x: 0, y: 0 })
 
   if (!nodeA || !nodeB || !nodeC) {
     throw new Error('Failed to create nodes')
@@ -24,6 +25,7 @@ describe('useAdjacencyList', () => {
   graph.addEdge({ from: nodeC.id, to: nodeC.id })
 
   test('get adjacency list', () => {
+    graph.settings.value.isGraphDirected = true
     const adjacencyList = getAdjacencyList(graph)
     expect(adjacencyList).toEqual({
       [nodeA.id]: [nodeB.id],
@@ -32,7 +34,18 @@ describe('useAdjacencyList', () => {
     })
   })
 
+  test('get adjacency list - undirected', () => {
+    graph.settings.value.isGraphDirected = false
+    const adjacencyList = getAdjacencyList(graph)
+    expect(adjacencyList).toEqual({
+      [nodeA.id]: [nodeB.id],
+      [nodeB.id]: [nodeA.id, nodeC.id],
+      [nodeC.id]: [nodeB.id, nodeC.id]
+    })
+  })
+
   test('get label adjacency list', () => {
+    graph.settings.value.isGraphDirected = true
     const adjacencyList = getLabelAdjacencyList(graph)
     expect(adjacencyList).toEqual({
       [nodeA.label]: [nodeB.label],
@@ -41,21 +54,13 @@ describe('useAdjacencyList', () => {
     })
   })
 
-  test('use adjacency list', () => {
-    const { fullNodeAdjacencyList } = useAdjacencyList(graph)
-
-    expect(fullNodeAdjacencyList.value).toEqual({
+  test('get full node adjacency list', () => {
+    graph.settings.value.isGraphDirected = true
+    const fullNodeAdjacencyList = getFullNodeAdjacencyList(graph)
+    expect(fullNodeAdjacencyList).toEqual({
       [nodeA.id]: [nodeB],
       [nodeB.id]: [nodeC],
       [nodeC.id]: [nodeC]
-    })
-
-    graph.addEdge({ from: 'c', to: 'a', type: 'undirected' })
-
-    expect(fullNodeAdjacencyList.value).toEqual({
-      [nodeA.id]: [nodeB, nodeC],
-      [nodeB.id]: [nodeC],
-      [nodeC.id]: [nodeC, nodeA]
     })
   })
 })

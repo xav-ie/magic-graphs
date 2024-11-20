@@ -1,58 +1,75 @@
 <script setup lang="ts">
-import Button from "@ui/Button.vue";
-import colors from "@utils/colors";
-import ToolbarButton from "@product/graph-sandbox/ToolbarButton.vue";
-import ToolbarButtonDivider from "@product/graph-sandbox/ToolbarButtonDivider.vue";
-import ToolbarButtonGroup from "@product/graph-sandbox/ToolbarButtonGroup.vue";
+  import { toRefs } from "vue";
+  import colors from "@utils/colors";
+  import Toolbar from "@product/graph-sandbox/Toolbar.vue";
+  import ToolbarButton from "@product/graph-sandbox/ToolbarButton.vue";
+  import ToolbarButtonDivider from "@product/graph-sandbox/ToolbarButtonDivider.vue";
+  import ToolbarButtonGroup from "@product/graph-sandbox/ToolbarButtonGroup.vue";
+  import { COLORS, BRUSH_WEIGHTS } from "./types";
+  import type { AnnotationControls } from "./useAnnotation";
 
-const props = defineProps<{
-  setColor: (color: string) => void;
-  setBrushWeight: (brushWeight: number) => void;
-  setEraser: () => void;
-  clear: () => void;
-  brushColors: string[];
-  brushWeights: number[];
-}>();
+  const props = defineProps<{
+    controls: Pick<AnnotationControls, "selectedColor" | "selectedBrushWeight" | "erasing" | "clear">;
+  }>();
+
+  const { selectedColor, selectedBrushWeight, erasing } = toRefs(props.controls);
+  const { clear } = props.controls;
 </script>
 
 <template>
-  <div class="absolute bottom-12 flex w-full justify-center z-10">
-    <div class="bg-gray-900 px-3 py-2 rounded-xl flex items-center gap-3">
-      <ToolbarButtonGroup>
-        <ToolbarButton
-          v-for="color in brushColors"
-          :key="color"
-          @click="setColor(color)"
-          :color="color"
-          class="w-8 h-8"
-          :style="{ backgroundColor: color, borderRadius: '50%' }"
-        ></ToolbarButton>
-      </ToolbarButtonGroup>
-      <ToolbarButtonDivider />
-      <ToolbarButtonGroup>
-        <Button
-          v-for="weight in brushWeights"
-          :key="weight"
-          @click="setBrushWeight(weight)"
-          :color="colors.TRANSPARENT"
-          class="h-[25px]"
+  <Toolbar>
+    <ToolbarButtonGroup>
+      <ToolbarButton
+        v-for="color in COLORS"
+        @click="selectedColor = color"
+        :active="selectedColor === color"
+        :key="color"
+        :color="color"
+      >
+        <div
+          :class="[
+            'rounded-full',
+            'p-[3px]',
+            // selectedColor === color && 'border border-white',
+          ]"
         >
-          <div
-            class="flex justify-center items-center bg-gray-300 rounded-md w-[15px]"
-            :style="{
-              height: `${weight * 2}px`,
-            }"
-          ></div>
-        </Button>
-      </ToolbarButtonGroup>
-      <ToolbarButtonDivider />
-      <ToolbarButton @click="setEraser">
-        <v-icon>mdi-eraser </v-icon>
+          <div :class="['w-6', 'h-6', 'rounded-full', `bg-[${color}]`]"></div>
+        </div>
       </ToolbarButton>
-      <ToolbarButtonDivider />
-      <ToolbarButton @click="clear">
-        <v-icon>mdi-nuke</v-icon>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonDivider />
+
+    <ToolbarButtonGroup>
+      <ToolbarButton
+        v-for="weight in BRUSH_WEIGHTS"
+        @click="selectedBrushWeight = weight"
+        :active="selectedBrushWeight === weight"
+        :key="weight"
+        :color="colors.TRANSPARENT"
+      >
+        <div
+          :class="[
+            'bg-gray-400',
+            'rounded-md',
+            'w-[15px]',
+            `h-[${weight * 2}px]`,
+          ]"
+        ></div>
       </ToolbarButton>
-    </div>
-  </div>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonDivider />
+
+    <ToolbarButtonGroup class="gap-1">
+      <ToolbarButton
+        @click="erasing = !erasing"
+        :active="erasing"
+      >
+        mdi-eraser
+      </ToolbarButton>
+
+      <ToolbarButton @click="clear">mdi-delete-outline</ToolbarButton>
+    </ToolbarButtonGroup>
+  </Toolbar>
 </template>

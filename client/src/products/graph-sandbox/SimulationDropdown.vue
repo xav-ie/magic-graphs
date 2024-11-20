@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { ref } from "vue";
   import type { Graph } from "@graph/types";
   import colors from "@utils/colors";
   import type {
@@ -8,20 +7,15 @@
     SimulationDeclarationGetter,
   } from "src/types";
   import StartSimulation from "./StartSimulation.vue";
-  import type { SimulationControls } from "@ui/sim/types";
 
   const props = defineProps<{
     graph: Graph;
   }>();
 
   /**
-   * defined when the user is running a simulation in the sandbox
+   * actively running simulation, as selected by the user
    */
-  const activeSimulationDeclaration = ref<SimulationDeclaration>();
-  /**
-   * an instance of controls for the active simulation (above)
-   */
-  const activeSimulationControls = defineModel<SimulationControls>();
+  const activeSimulation = defineModel<SimulationDeclaration>();
 
   const infoModules = import.meta.glob<{
     default: ProductInfo;
@@ -40,31 +34,28 @@
     .flat();
 
   const startSimulation = async (simulation: SimulationDeclaration) => {
-    const { setup, controls } = simulation;
-    await setup?.();
-    const simControls = await controls();
-    simControls.start();
-    activeSimulationDeclaration.value = simulation;
-    activeSimulationControls.value = simControls;
+    const { controls, onInit } = simulation;
+    activeSimulation.value = simulation;
+
+    await onInit?.();
+    controls.start();
   };
 
   const stopSimulation = async () => {
-    if (!activeSimulationDeclaration.value) return;
-    if (!activeSimulationControls.value) throw new Error("active sim, but no controls");
-    activeSimulationControls.value.stop();
+    if (!activeSimulation.value) return;
 
-    const { cleanup } = activeSimulationDeclaration.value;
-    await cleanup?.();
+    const { controls, onDismiss } = activeSimulation.value;
+    controls.stop();
+    await onDismiss?.();
 
-    activeSimulationDeclaration.value = undefined;
-    activeSimulationControls.value = undefined;
+    activeSimulation.value = undefined;
   };
 </script>
 
 <template>
   <div>
     <StartSimulation
-      v-if="!activeSimulationDeclaration"
+      v-if="!activeSimulation"
       :simulations="simulations"
       :start-simulation="startSimulation"
     />

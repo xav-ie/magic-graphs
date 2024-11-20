@@ -70,6 +70,5 @@ export const MOVE_NODE_OPTIONS_DEFAULTS: MoveNodeOptions = {
  * defaults for newly added edges
  */
 export const ADD_EDGE_DEFAULTS = {
-  type: 'directed',
   label: '',
 } as const

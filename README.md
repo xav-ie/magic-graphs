@@ -14,3 +14,20 @@
 
 ## Wanna See It In Action? Watch Our 1 Minute Demo 
 https://github.com/user-attachments/assets/ee5e5109-28dc-43da-8ab3-306801c38af8
+
+## Development
+
+### Install
+```sh 
+npm i && (cd client && npm i) && (cd ../server && npm i)
+```
+
+### Run
+```sh
+npm run dev
+```
+
+### Build
+```sh
+cd client && npm run build
+```

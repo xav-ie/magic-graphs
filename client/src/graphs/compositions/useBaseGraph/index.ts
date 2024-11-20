@@ -83,6 +83,7 @@ export const useBaseGraph = (
     const edgeOptions = {
       edges,
       getNode,
+      getEdge,
       getTheme,
       settings,
     }
@@ -134,7 +135,6 @@ export const useBaseGraph = (
       document.removeEventListener(event, listeners)
     }
   })
-
 
   const { nodeIdToNodeMap, edgeIdToEdgeMap } = useNodeEdgeMap(nodes, edges)
   const {

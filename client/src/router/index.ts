@@ -1,5 +1,6 @@
 import { createWebHistory, createRouter } from 'vue-router'
 import type { ProductInfo } from 'src/types'
+import GraphSandboxInfo from '@product/graph-sandbox/info'
 
 // import all route.ts files dynamically
 const infoModules = import.meta.glob<{
@@ -8,7 +9,18 @@ const infoModules = import.meta.glob<{
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: Object.values(infoModules).flatMap((mod) => mod.default.route ?? []),
+  routes: [
+    {
+      path: '/',
+      redirect: GraphSandboxInfo.route.path,
+    },
+    ...Object.values(infoModules).flatMap((mod) => mod.default.route ?? []),
+    {
+      path: '/:pathMatch(.*)*',
+      name: '404',
+      component: () => import('./404.vue'),
+    }
+  ],
 })
 
 router.beforeEach((to, _, next) => {

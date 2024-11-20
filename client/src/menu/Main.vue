@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import type { ProductInfo } from "src/types";
   import { ref } from "vue";
+  import type { ProductInfo } from "src/types";
   import ProductCatalog from "./ProductCatalog.vue";
 
   const infoModules = import.meta.glob<{
@@ -26,7 +26,7 @@
         Magic Algorithms
       </h1>
       <h3 class="font-bold text-2xl">
-        Select An Experience To Begin
+        Select An Experience
       </h3>
     </div>
 

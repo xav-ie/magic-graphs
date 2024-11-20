@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import colors from "@utils/colors";
-import type { SimulationDeclaration } from "src/types";
+  import colors from "@utils/colors";
+  import type { SimulationDeclaration } from "src/types";
 
-defineProps<{
-  simulations: SimulationDeclaration[];
-  startSimulation: (simulation: SimulationDeclaration) => void;
-}>();
+  defineProps<{
+    simulations: SimulationDeclaration[];
+    startSimulation: (simulation: SimulationDeclaration) => void;
+  }>();
 </script>
 
 <template>

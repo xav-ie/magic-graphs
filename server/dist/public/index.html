@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      href="/favicon.ico"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>
-      Magic CS ✨🦄
-    </title>
-    <script type="module" crossorigin src="/assets/index-fWF74cCw.js"></script>
+    <title>Magic CS ✨🦄</title>
+    <script type="module" crossorigin src="/assets/index-Bnp4Kkft.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-EnOOfFXC.css">
   </head>
   <body>
     <div id="app"></div>
+    <script>
+      // TODO add postcss configuration to create alias for tailwindcss
+      window.tailwindConfig = {
+        content: ["./src/**/*.{html,js,vue}"], // Adjust based on your project structure
+        theme: {
+          extend: {},
+        },
+        plugins: [
+          function ({ addUtilities }) {
+            addUtilities({
+              ".magic-text": {
+                "@apply bg-gradient-to-tr dark:from-purple-700 dark:to-orange-600 from-purple-500 to-orange-500 text-transparent bg-clip-text":
+                  {},
+              },
+            });
+          },
+        ],
+      };
+    </script>
   </body>
 </html>

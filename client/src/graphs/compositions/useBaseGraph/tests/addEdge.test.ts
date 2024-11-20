@@ -20,7 +20,6 @@ describe("base graph - addEdge", () => {
   test("add basic edge", () => {
     graph.edges.value = [];
     const basicDirectedEdge: GEdge = {
-      type: "directed",
       from: graph.nodes.value[0].id,
       to: graph.nodes.value[1].id,
       id: generateId(),
@@ -30,7 +29,6 @@ describe("base graph - addEdge", () => {
     expect(graph.edges.value).toEqual([basicDirectedEdge]);
 
     const basicUndirectedEdge: GEdge = {
-      type: "undirected",
       from: graph.nodes.value[2].id,
       to: graph.nodes.value[3].id,
       id: generateId(),
@@ -49,7 +47,6 @@ describe("base graph - addEdge", () => {
     graph.addEdge(edge1);
     const [addedEdge1] = graph.edges.value;
     expect(addedEdge1.label).toEqual(ADD_EDGE_DEFAULTS.label);
-    expect(addedEdge1.type).toEqual(ADD_EDGE_DEFAULTS.type);
     expect(addedEdge1.id).toBeDefined();
   })
 
@@ -65,18 +62,17 @@ describe("base graph - addEdge", () => {
 
   test("add directed edge when another directed edge already exists", () => {
     graph.edges.value = [];
+    graph.settings.value.isGraphDirected = true;
 
     const edge1 = {
       from: graph.nodes.value[0].id,
       to: graph.nodes.value[1].id,
-      type: "directed",
     } as const;
     const addedEdge1 = graph.addEdge(edge1);
 
     const edge2 = {
       from: graph.nodes.value[0].id,
       to: graph.nodes.value[1].id,
-      type: "directed",
     } as const;
     graph.addEdge(edge2);
 
@@ -85,19 +81,18 @@ describe("base graph - addEdge", () => {
 
   test("add undirected edge when another undirected edge already exists", () => {
     graph.edges.value = [];
+    graph.settings.value.isGraphDirected = false;
 
     // standard case
     const edge1 = {
       from: graph.nodes.value[0].id,
       to: graph.nodes.value[1].id,
-      type: "undirected",
     } as const;
     const addedEdge1 = graph.addEdge(edge1);
 
     const edge2 = {
       from: graph.nodes.value[0].id,
       to: graph.nodes.value[1].id,
-      type: "undirected",
     } as const;
     graph.addEdge(edge2);
 
@@ -107,61 +102,6 @@ describe("base graph - addEdge", () => {
     const edge3 = {
       from: graph.nodes.value[1].id,
       to: graph.nodes.value[0].id,
-      type: "undirected",
-    } as const;
-    graph.addEdge(edge3);
-
-    expect(graph.edges.value).toEqual([addedEdge1]);
-  })
-
-  test("add directed edge when an undirected edge already exists", () => {
-    graph.edges.value = [];
-
-    const edge1 = {
-      from: graph.nodes.value[0].id,
-      to: graph.nodes.value[1].id,
-      type: "undirected",
-    } as const;
-    const addedEdge1 = graph.addEdge(edge1);
-
-    const edge2 = {
-      from: graph.nodes.value[0].id,
-      to: graph.nodes.value[1].id,
-      type: "directed",
-    } as const;
-    graph.addEdge(edge2);
-
-    const edge3 = {
-      from: graph.nodes.value[1].id,
-      to: graph.nodes.value[0].id,
-      type: "directed",
-    } as const;
-    graph.addEdge(edge3);
-
-    expect(graph.edges.value).toEqual([addedEdge1]);
-  })
-
-  test("add undirected edge when a directed edge already exists", () => {
-    graph.edges.value = [];
-
-    const edge1 = {
-      from: graph.nodes.value[0].id,
-      to: graph.nodes.value[1].id,
-      type: "directed",
-    } as const;
-    const addedEdge1 = graph.addEdge(edge1);
-
-    const edge2 = {
-      from: graph.nodes.value[0].id,
-      to: graph.nodes.value[1].id,
-      type: "undirected",
-    } as const;
-    graph.addEdge(edge2);
-
-    const edge3 = {
-      from: graph.nodes.value[1].id,
-      to: graph.nodes.value[0].id,
-      type: "undirected",
     } as const;
     graph.addEdge(edge3);
 

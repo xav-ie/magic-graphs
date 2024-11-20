@@ -5,7 +5,7 @@ import type { GraphSettings } from "@graph/settings";
  */
 export const MST_GRAPH_SETTINGS: Partial<GraphSettings> = {
   persistentStorageKey: "min-spanning-tree",
-  userAddedEdgeType: "undirected",
+  isGraphDirected: false,
   edgeInputToLabel: (input) => {
     const parsedInput = Number(input);
     const isNegative = parsedInput < 0;

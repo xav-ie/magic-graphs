@@ -2,17 +2,17 @@
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
-  import { useDijkstraSimulation } from "./useSimulation";
   import Button from "@ui/Button.vue";
-  import colors from "@colors";
-  import CostDisplay from "./CostDisplay.vue";
-  import CollabControls from "@playground/graph/CollabControls.vue";
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
+  import colors from "@colors";
+  import CollabControls from "@playground/graph/CollabControls.vue";
+  import { useSimulationRunner } from "./useSimulationRunner";
+  import CostDisplay from "./CostDisplay.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: {
-      persistentStorageKey: 'dijkstras',
+      persistentStorageKey: "dijkstras",
       userAddedEdgeRuleNoSelfLoops: true,
       userAddedEdgeRuleOneEdgePerPath: true,
       edgeInputToLabel: (input) => {
@@ -25,7 +25,12 @@
     },
   });
 
-  const simControls = useDijkstraSimulation(graph);
+  const {
+    start: startSim,
+    stop: stopSim,
+    running: simRunning,
+    simControls
+  } = useSimulationRunner(graph);
 </script>
 
 <template>
@@ -38,15 +43,15 @@
 
   <div class="absolute top-0 p-3 flex gap-3">
     <Button
-      v-if="!simControls.isActive.value"
-      @click="simControls.start"
+      v-if="!simRunning"
+      @click="startSim"
     >
       Start Simulation
     </Button>
 
     <Button
       v-else
-      @click="simControls.stop"
+      @click="stopSim"
       :color="colors.RED_600"
       :text-color="colors.WHITE"
     >

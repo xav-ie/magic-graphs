@@ -1,103 +1,130 @@
 import type { GNode, Graph } from '@graph/types';
 import { computed, onUnmounted, ref } from 'vue';
-import { doesEdgeFlowOutOfToNode } from './helpers';
+import { getDirectedInboundEdges, getUndirectedInboundEdges } from './helpers';
 
 /**
- * an adjacency list representation of a graph where the keys are the ids or labels of the nodes
- * depending on the function used to generate it
+ * a mapping of nodes to their neighbors.
+ * could take the form of either node ids or labels
  */
 export type AdjacencyList = Record<string, string[]>;
 
-/**
- * converts a list of nodes and edges to an adjacency list
- *
- * @returns an adjacency list using ids of nodes as keys
- */
-export const getAdjacencyList = ({ nodes, edges }: Pick<Graph, 'nodes' | 'edges'>) => {
-  return nodes.value.reduce<AdjacencyList>((acc, node) => {
-    acc[node.id] = edges.value
-      .filter(edge => doesEdgeFlowOutOfToNode(edge, node))
-      .map(edge => {
-        if (edge.type === 'undirected') {
-          if (edge.from === node.id) return edge.to
-          return edge.from
-        }
-        return edge.to
-      });
+export const getDirectedGraphAdjacencyList = (graph: Graph) => {
+  return graph.nodes.value.reduce<AdjacencyList>((acc, node) => {
+    acc[node.id] = getDirectedInboundEdges(node.id, graph.edges.value).map(edge => edge.from);
+    return acc;
+  }, {});
+}
+
+export const getUndirectedGraphAdjacencyList = (graph: Graph) => {
+  return graph.nodes.value.reduce<AdjacencyList>((acc, node) => {
+    acc[node.id] = getUndirectedInboundEdges(node.id, graph.edges.value).map(edge => {
+      return edge.from === node.id ? edge.to : edge.from;
+    });
     return acc;
   }, {});
 }
 
 /**
- * @returns an adjacency list using labels of nodes as keys as opposed to ids
- */
-export const getLabelAdjacencyList = ({
-  nodes,
-  edges,
-  getNode
-}: Pick<Graph, 'nodes' | 'edges' | 'getNode'>) => {
-  const adjList = getAdjacencyList({ nodes, edges });
-  const entries = Object.entries(adjList);
-  return entries.reduce<AdjacencyList>((acc, [from, tos]) => {
-    const keyNode = getNode(from);
-    if (!keyNode) return acc;
-    const toNodeLabels = tos
-      .map(to => getNode(to))
-      .filter(Boolean)
-      .map(node => node!.label)
-    acc[keyNode.label] = toNodeLabels;
-    return acc;
-  }, {});
-}
-
-/**
- * a reactively updated adjacency list based on the graph's nodes and edges
+ * creates an adjacency list mapping node ids to the node ids of their neighbors
  *
  * @param graph - the graph instance
- * @returns an object containing the adjacency list and a human readable version of it using labels
+ * @returns an adjacency list using ids of nodes as keys
+ * @example getAdjacencyList(graph)
+ * // { 'abc123': ['def456'], 'def456': ['abc123'] }
  */
-export const useAdjacencyList = (graph: Pick<
-  Graph,
-  'nodes' |
-  'edges' |
-  'getNode' |
-  'subscribe' |
-  'unsubscribe'
->) => {
+export const getAdjacencyList = (graph: Graph) => {
+  const { isGraphDirected } = graph.settings.value;
+  const fn = isGraphDirected ? getDirectedGraphAdjacencyList : getUndirectedGraphAdjacencyList;
+  return fn(graph);
+}
+
+/**
+ * creates a human readable adjacency list mapping node labels to the labels of their neighbors
+ *
+ * @returns an adjacency list using labels of nodes as keys as opposed to ids
+ * @example getLabelAdjacencyList(graph)
+ * // { 'A': ['B'], 'B': ['A'] }
+ */
+export const getLabelAdjacencyList = (graph: Graph) => {
+  const adjList = getAdjacencyList(graph);
+  const adjListEntries = Object.entries(adjList);
+
+  return adjListEntries.reduce<AdjacencyList>((acc, [keyNodeId, toNodeIds]) => {
+    const keyNode = graph.getNode(keyNodeId);
+    const toNodes = toNodeIds.map(to => graph.getNode(to));
+
+    if (!keyNode) throw new Error('the "key node" is missing from the graph');
+    if (toNodes.some(node => !node)) throw new Error('a "to node" is missing from the graph');
+
+    acc[keyNode.label] = (toNodes as GNode[]).map(node => node.label);
+    return acc;
+  }, {});
+}
+
+/**
+ * a mapping of nodes to their neighbors where
+ * neighbors are the full node objects instead of just their ids or labels
+ */
+export type FullNodeAdjacencyList = Record<string, GNode[]>;
+
+/**
+ * creates an adjacency list mapping node ids to the node objects of their neighbors
+ *
+ * @param graph - the graph instance
+ * @returns an adjacency list using ids of nodes as keys and the full node objects as values
+ * @example getFullNodeAdjacencyList(graph)
+ * // { 'abc123': [{ id: 'def456', label: 'B' }], 'def456': [{ id: 'abc123', label: 'A' }] }
+ */
+export const getFullNodeAdjacencyList = (graph: Graph) => {
+  const adjList = getAdjacencyList(graph);
+  const adjListEntries = Object.entries(adjList);
+
+  return adjListEntries.reduce<FullNodeAdjacencyList>((acc, [keyNodeId, toNodeIds]) => {
+    acc[keyNodeId] = toNodeIds.map(to => graph.getNode(to)!);
+    return acc;
+  }, {});
+}
+
+/**
+ * reactively updating adjacency lists for a graph
+ *
+ * @param graph - the graph instance
+ * @returns all forms of adjacency lists including standard (ids), labels, and full node
+ * @example const { adjacencyList, labelAdjacencyList, fullNodeAdjacencyList } = useAdjacencyList(graph)
+ * // adjacencyList.value = { 'abc123': ['def456'], 'def456': ['abc123'] }
+ * // labelAdjacencyList.value = { 'A': ['B'], 'B': ['A'] }
+ * // fullNodeAdjacencyList.value = {
+ * //   'abc123': [{ id: 'def456', label: 'B' }],
+ * //   'def456': [{ id: 'abc123', label: 'A' }]
+ * // }
+ */
+export const useAdjacencyList = (graph: Graph) => {
   const adjacencyList = ref<AdjacencyList>({});
   const labelAdjacencyList = ref<AdjacencyList>({});
+  const fullNodeAdjacencyList = ref<FullNodeAdjacencyList>({});
 
-  const makeAdjLists = () => {
+  const update = () => {
     adjacencyList.value = getAdjacencyList(graph);
     labelAdjacencyList.value = getLabelAdjacencyList(graph);
+    fullNodeAdjacencyList.value = getFullNodeAdjacencyList(graph);
   }
 
-  const fullNodeAdjacencyList = computed(() => {
-    const entries = Object.entries(adjacencyList.value);
-    const fullAdjList: Record<string, GNode[]> = {};
-    for (const [from, tos] of entries) {
-      fullAdjList[from] = tos.map(to => graph.getNode(to)!);
-    }
-    return fullAdjList;
-  })
+  update();
 
-  makeAdjLists();
-
-  graph.subscribe('onStructureChange', makeAdjLists);
-  onUnmounted(() => graph.unsubscribe('onStructureChange', makeAdjLists));
+  graph.subscribe('onStructureChange', update);
+  onUnmounted(() => graph.unsubscribe('onStructureChange', update));
 
   return {
     /**
-     * an adjacency list representation of a graph where the keys are the ids of the nodes
+     * the adjacency list using node ids as keys
      */
     adjacencyList,
     /**
-     * an adjacency list representation of a graph where the keys are the labels of the nodes
+     * the adjacency list using node labels as keys
      */
     labelAdjacencyList,
     /**
-     * an adjacency list representation of a graph where the keys are the ids of the nodes
-     * and the values are the full node objects instead of just their ids or labels
+     * the adjacency list using node ids as keys and full node objects as values
      */
     fullNodeAdjacencyList,
   };

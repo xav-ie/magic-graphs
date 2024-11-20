@@ -2,7 +2,7 @@ import { ref } from "vue";
 import type { Ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { LETTERS, graphLabelGetter } from "@graph/labels";
-import { selectNode } from "@graph/select";
+import { selectFromGraph, selectNode } from "@graph/select";
 import type { SelectControls } from "@graph/select";
 import { SINK_LABEL, SOURCE_LABEL } from "./constants";
 
@@ -22,8 +22,6 @@ export const flowNodeLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
  * @returns controls for setting source and sink nodes
  */
 export const useSourceSinkControls = (graph: Graph) => {
-  const newNodeLabel = flowNodeLabelGetter(graph);
-
   const initialSource = graph.nodes.value.find(node => node.label === SOURCE_LABEL);
   const initialSink = graph.nodes.value.find(node => node.label === SINK_LABEL);
 
@@ -37,7 +35,10 @@ export const useSourceSinkControls = (graph: Graph) => {
     nodeRef: Ref<GNode | undefined>,
     cancelRef: Ref<SelectControls['cancelSelection'] | undefined>,
   ) => {
-    const { selectedItemPromise, cancelSelection } = selectNode(graph);
+    const { selectedItemPromise, cancelSelection } = selectFromGraph(graph, (item) => {
+      const isAlreadySourceOrSink = item.id === sourceNode.value?.id || item.id === sinkNode.value?.id;
+      return item.graphType === 'node' && !isAlreadySourceOrSink;
+    });
     cancelRef.value = cancelSelection;
 
     const nodeSchema = await selectedItemPromise;
