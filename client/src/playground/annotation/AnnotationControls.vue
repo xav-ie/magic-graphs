@@ -12,8 +12,8 @@
     controls: AnnotationControls;
   }>();
 
-  const { selectedColor, selectedBrushWeight } = toRefs(props.controls);
-  const { clear, setEraser } = props.controls;
+  const { selectedColor, selectedBrushWeight, erasing } = toRefs(props.controls);
+  const { clear } = props.controls;
 </script>
 
 <template>
@@ -63,8 +63,8 @@
 
     <ToolbarButtonGroup class="gap-1">
       <ToolbarButton
-        @click="setEraser"
-        :active="!selectedColor"
+        @click="erasing = !erasing"
+        :active="erasing"
       >
         mdi-eraser
       </ToolbarButton>

@@ -16,14 +16,13 @@ export const useAnnotation = (
 
   const selectedColor = ref(color);
   const selectedBrushWeight = ref(brushWeight);
+
+  const erasing = ref(false);
+
   const isDrawing = ref(false);
   const lastPoint = ref<Coordinate>();
   const batch = ref<Coordinate[]>([]);
   const actions = ref<Action[]>([]);
-
-  const setEraser = () => {
-    selectedColor.value = "";
-  };
 
   const clear = () => {
     const ctx = getCtx(canvas);
@@ -35,13 +34,9 @@ export const useAnnotation = (
     ctx.strokeStyle = action.color;
     ctx.lineWidth = action.brushWeight;
     ctx.beginPath();
-    action.points.forEach((point, index) => {
-      if (index === 0) {
-        ctx.moveTo(point.x, point.y);
-      } else {
-        ctx.lineTo(point.x, point.y);
-      }
-    });
+    const [first, ...rest] = action.points;
+    ctx.moveTo(first.x, first.y);
+    rest.forEach(({ x, y }) => ctx.lineTo(x, y));
     ctx.stroke();
   }
 
@@ -52,9 +47,8 @@ export const useAnnotation = (
     for (let i = 0; i < action.points.length - 1; i++) {
       const start = action.points[i];
       const end = action.points[i + 1];
-      const distance = Math.sqrt(
-        Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
-      );
+      const squaredDistance = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
+      const distance = Math.sqrt(squaredDistance);
       const steps = Math.ceil(distance / eraserBrushWeight);
 
       for (let j = 0; j <= steps; j++) {
@@ -82,11 +76,11 @@ export const useAnnotation = (
     }
   };
 
+  /**
+   * starts drawing a line from the current mouse position
+   */
   const startDrawing = (event: MouseEvent) => {
-    if (!canvas.value) return;
-
     const ctx = getCtx(canvas);
-    if (!ctx) return;
 
     isDrawing.value = true;
 
@@ -98,39 +92,52 @@ export const useAnnotation = (
     batch.value = [{ x, y }];
   };
 
+  const actionEraseLine = ({ ctx, at: { x, y } }: {
+    ctx: CanvasRenderingContext2D;
+    at: Coordinate;
+  }) => {
+    if (!lastPoint.value) return;
+    const { x: lastX, y: lastY } = lastPoint.value;
+
+    ctx.globalCompositeOperation = "destination-out";
+
+    const squaredDistance = Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2);
+    const distance = Math.sqrt(squaredDistance);
+    const steps = Math.ceil(distance / eraserBrushWeight);
+
+    for (let i = 0; i <= steps; i++) {
+      const interpolatedX = lastX + (i / steps) * (x - lastX);
+      const interpolatedY = lastY + (i / steps) * (y - lastY);
+
+      ctx.beginPath();
+      ctx.arc(interpolatedX, interpolatedY, eraserBrushWeight, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  const actionDrawLine = ({ ctx, at: { x, y } }: { ctx: CanvasRenderingContext2D, at: Coordinate }) => {
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = selectedColor.value;
+    ctx.lineWidth = selectedBrushWeight.value;
+    ctx.stroke();
+  }
+
+  /**
+   * draws a line that connects two points.
+   * the delta between two mouse points while
+   * mouse is being dragged
+   */
   const drawLine = (event: MouseEvent) => {
-    if (!isDrawing.value || !canvas.value || !lastPoint.value) return;
+    if (!isDrawing.value || !lastPoint.value) return;
 
     const ctx = getCtx(canvas);
-    if (!ctx) return;
 
     const { offsetX: x, offsetY: y } = event;
 
-    if (selectedColor.value === "") {
-      ctx.globalCompositeOperation = "destination-out";
-      const distance = Math.sqrt(
-        Math.pow(x - lastPoint.value.x, 2) + Math.pow(y - lastPoint.value.y, 2)
-      );
-      const steps = Math.ceil(distance / eraserBrushWeight);
-
-      for (let i = 0; i <= steps; i++) {
-        const interpolatedX =
-          lastPoint.value.x + (i / steps) * (x - lastPoint.value.x);
-        const interpolatedY =
-          lastPoint.value.y + (i / steps) * (y - lastPoint.value.y);
-        ctx.beginPath();
-        ctx.arc(interpolatedX, interpolatedY, eraserBrushWeight, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      ctx.globalCompositeOperation = "source-over";
-    } else {
-      ctx.lineTo(x, y);
-      console.log(selectedColor.value);
-      ctx.strokeStyle = selectedColor.value;
-      ctx.lineWidth = selectedBrushWeight.value;
-      ctx.stroke();
-    }
+    const options = { ctx, at: { x, y } };
+    erasing.value ? actionEraseLine(options) : actionDrawLine(options);
 
     lastPoint.value = { x, y };
     batch.value.push({ x, y });
@@ -140,26 +147,26 @@ export const useAnnotation = (
     if (!isDrawing.value) return;
 
     isDrawing.value = false;
-
-    if (batch.value.length > 0) {
-      if (selectedColor.value === "") {
-        actions.value.push({
-          type: "erase",
-          color: "",
-          brushWeight: eraserBrushWeight,
-          points: [...batch.value],
-        });
-      } else {
-        actions.value.push({
-          type: "draw",
-          color: selectedColor.value,
-          brushWeight: selectedBrushWeight.value,
-          points: [...batch.value],
-        });
-      }
-    }
-
     lastPoint.value = undefined;
+
+    if (batch.value.length === 0) return;
+
+    const drawAction = {
+      type: "draw",
+      color: selectedColor.value,
+      brushWeight: selectedBrushWeight.value,
+      points: batch.value,
+    } as const;
+
+    const eraseAction = {
+      type: "erase",
+      brushWeight: eraserBrushWeight,
+      points: batch.value,
+    } as const;
+
+    const action = erasing.value ? eraseAction : drawAction;
+    actions.value.push(action);
+
     batch.value = [];
   };
 
@@ -187,7 +194,7 @@ export const useAnnotation = (
   return {
     selectedColor,
     selectedBrushWeight,
-    setEraser,
+    erasing,
     clear,
     isDrawing,
     draw,

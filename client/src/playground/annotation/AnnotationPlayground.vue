@@ -11,13 +11,6 @@
 
   const annotationControls = useAnnotation(canvas);
 
-  const colorList = [
-    colors.RED_600,
-    colors.BLUE_600,
-    colors.GREEN_600,
-    colors.YELLOW_600,
-  ];
-
   const canvasColor = computed(() =>
     isDark.value ? colors.GRAY_600 : colors.GRAY_200
   );
