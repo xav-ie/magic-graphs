@@ -99,7 +99,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="eraseItems"
-        :disabled="graph.focusedItemIds.value.size === 0"
+        :disabled="graph.focusedItemIds.value.size === 0 || isActive"
       >
         mdi-eraser
       </ToolbarButton>
