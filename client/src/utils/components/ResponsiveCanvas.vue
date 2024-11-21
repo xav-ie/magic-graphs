@@ -171,13 +171,27 @@
       :style="{ backgroundColor: color }"
       class="absolute top-0 left-0 w-full h-full"
     ></div>
-
+    
+    
+    <canvas
+    :width="canvasWidth"
+    :height="canvasHeight"
+    :ref="(emitRef as any)"
+    :class="[`w-[${canvasWidth}px]`, `h-[${canvasHeight}px]`]"
+    id="responsive-canvas"
+    ></canvas>
+    
     <canvas
       :width="canvasWidth"
       :height="canvasHeight"
-      :ref="(emitRef as any)"
-      :class="[`w-[${canvasWidth}px]`, `h-[${canvasHeight}px]`]"
-      id="responsive-canvas"
+      :class="[
+        `w-[${canvasWidth}px]`,
+        `h-[${canvasHeight}px]`,
+        'absolute',
+        'top-0',
+      ]"
+      style="display: none;"
+      id="annotation-canvas"
     ></canvas>
 
     <canvas
