@@ -4,37 +4,34 @@ import type { Scribble } from ".";
 export const drawScribbleWithCtx = (scribble: Scribble) => (ctx: CanvasRenderingContext2D) => {
   
   const {
+    type,
     color,
     brushWeight,
+    points,
   } = {
     ...SCRIBBLE_DEFAULTS,
     ...scribble
   }
-
-  if (scribble.type === "draw") {
+ 
+  const draw = () => {
     ctx.strokeStyle = color;
     ctx.lineWidth = brushWeight;
     ctx.beginPath();
-    scribble.points.forEach((point, index) => {
-      if (index === 0) {
-        ctx.moveTo(point.x, point.y);
-      } else {
-        ctx.lineTo(point.x, point.y);
-      }
-    });
-    
+    const [first, ...rest] = points;
+    ctx.moveTo(first.x, first.y);
+    rest.forEach(({ x, y }) => ctx.lineTo(x, y));
     ctx.stroke();
+  }
 
-  } else if (scribble.type === "erase") {
+  const erase = () => {
     ctx.globalCompositeOperation = "destination-out";
     ctx.lineWidth = ERASER_BRUSH_WEIGHT;
 
-    for (let i = 0; i < scribble.points.length - 1; i++) {
-      const start = scribble.points[i];
-      const end = scribble.points[i + 1];
-      const distance = Math.sqrt(
-        Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
-      );
+    for (let i = 0; i < points.length - 1; i++) {
+      const start = points[i];
+      const end = points[i + 1];
+      const squaredDistance = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
+      const distance = Math.sqrt(squaredDistance);
       const steps = Math.ceil(distance / ERASER_BRUSH_WEIGHT);
 
       for (let j = 0; j <= steps; j++) {
@@ -49,5 +46,7 @@ export const drawScribbleWithCtx = (scribble: Scribble) => (ctx: CanvasRendering
 
     ctx.globalCompositeOperation = "source-over";
   }
- 
+
+  type === "draw" ? draw() : erase()
+
 }
