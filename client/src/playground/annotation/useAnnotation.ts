@@ -9,7 +9,7 @@ export const useAnnotation = (
   canvas: Ref<HTMLCanvasElement | null | undefined>,
   options: AnnotationOptions = {}
 ) => {
-  const { color, brushWeight, eraserBrushWeight } = {
+  const { color, brushWeight } = {
     ...ANNOTATION_DEFAULTS,
     ...options,
   };
@@ -22,12 +22,12 @@ export const useAnnotation = (
   const isDrawing = ref(false);
   const lastPoint = ref<Coordinate>();
   const batch = ref<Coordinate[]>([]);
-  const actions = ref<Action[]>([]);
+  const scribbles = ref<Scribble[]>([]);
 
   const clear = () => {
     const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    actions.value = [];
+    scribbles.value = [];
   };
 
   const actionDraw = (ctx: CanvasRenderingContext2D) => (action: DrawAction) => {

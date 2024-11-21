@@ -6,6 +6,7 @@ import { square as squareAPI } from "./square";
 import { triangle as triangleAPI } from "./triangle";
 import { uturn as uturnAPI } from "./uturn";
 import { cross as crossAPI } from "./cross";
+import { scribble as scribbleAPI} from "./scribble"
 
 export const line = lineAPI;
 export const arrow = arrowAPI;
@@ -15,6 +16,7 @@ export const square = squareAPI;
 export const triangle = triangleAPI;
 export const uturn = uturnAPI;
 export const cross = crossAPI;
+export const scribble = scribbleAPI;
 
 export const shapes = {
   arrow,
@@ -24,5 +26,6 @@ export const shapes = {
   square,
   triangle,
   uturn,
-  cross
+  cross,
+  scribble
 };
