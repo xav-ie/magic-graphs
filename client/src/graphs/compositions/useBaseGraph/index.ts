@@ -32,6 +32,7 @@ import { getThemeResolver } from '@graph/themes/getThemeResolver';
 import { useNodeEdgeMap } from './useNodeEdgeMap';
 import { useAggregator } from './useAggregator';
 import { useGraphCRUD } from './useGraphCRUD';
+import { getCtx } from '@utils/ctx';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -59,13 +60,23 @@ export const useBaseGraph = (
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
 
+  const getCanvasCoords = (ev: MouseEvent) => {
+    const ctx = getCtx(canvas)
+    const transform = ctx.getTransform();
+    const invertedTransform = transform.inverse();
+    return {
+      x: invertedTransform.a * ev.offsetX + invertedTransform.c * ev.offsetY + invertedTransform.e,
+      y: invertedTransform.b * ev.offsetX + invertedTransform.d * ev.offsetY + invertedTransform.f,
+    }
+  }
+
   const mouseEvents: Partial<MouseEventMap> = {
-    click: (ev: MouseEvent) => emit('onClick', ev),
-    mousedown: (ev: MouseEvent) => emit('onMouseDown', ev),
-    mouseup: (ev: MouseEvent) => emit('onMouseUp', ev),
-    mousemove: (ev: MouseEvent) => emit('onMouseMove', ev),
-    dblclick: (ev: MouseEvent) => emit('onDblClick', ev),
-    contextmenu: (ev: MouseEvent) => emit('onContextMenu', ev),
+    click: (ev: MouseEvent) => emit('onClick', getCanvasCoords(ev), ev),
+    mousedown: (ev: MouseEvent) => emit('onMouseDown', getCanvasCoords(ev), ev),
+    mouseup: (ev: MouseEvent) => emit('onMouseUp', getCanvasCoords(ev), ev),
+    mousemove: (ev: MouseEvent) => emit('onMouseMove', getCanvasCoords(ev), ev),
+    dblclick: (ev: MouseEvent) => emit('onDblClick', getCanvasCoords(ev), ev),
+    contextmenu: (ev: MouseEvent) => emit('onContextMenu', getCanvasCoords(ev), ev),
   }
 
   const keyboardEvents: Partial<KeyboardEventMap> = {
@@ -166,9 +177,8 @@ export const useBaseGraph = (
   }
 
   let currHoveredNode: GNode | undefined = undefined
-  subscribe('onMouseMove', (ev) => {
-    const { offsetX: x, offsetY: y } = ev
-    const node = getNodeByCoordinates(x, y)
+  subscribe('onMouseMove', (coords) => {
+    const node = getNodeByCoordinates(coords.x, coords.y)
     if (node === currHoveredNode) return
     emit('onNodeHoverChange', node, currHoveredNode)
     currHoveredNode = node

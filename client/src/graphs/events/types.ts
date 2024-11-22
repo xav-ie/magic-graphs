@@ -81,27 +81,27 @@ export type BaseGraphEventMap = {
   /**
    * when the canvas is clicked on (native dom event)
    */
-  onClick: (ev: MouseEvent) => void;
+  onClick: (canvasCoords: Coordinate, ev: MouseEvent) => void;
   /**
    * when the user clicks the mouse button on the canvas (native dom event)
    */
-  onMouseDown: (ev: MouseEvent) => void;
+  onMouseDown: (canvasCoords: Coordinate, ev: MouseEvent) => void;
   /**
    * when the user releases the mouse button on the canvas (native dom event)
    */
-  onMouseUp: (ev: MouseEvent) => void;
+  onMouseUp: (canvasCoords: Coordinate, ev: MouseEvent) => void;
   /**
    * when the user moves the mouse on the canvas (native dom event)
    */
-  onMouseMove: (ev: MouseEvent) => void;
+  onMouseMove: (canvasCoords: Coordinate, ev: MouseEvent) => void;
   /**
    * when the canvas is double clicked on (native dom event)
    */
-  onDblClick: (ev: MouseEvent) => void;
+  onDblClick: (canvasCoords: Coordinate, ev: MouseEvent) => void;
   /**
    * when the canvas is right clicked on (native dom event)
    */
-  onContextMenu: (ev: MouseEvent) => void;
+  onContextMenu: (canvasCoords: Coordinate, ev: MouseEvent) => void;
   /**
    * when a key is pressed down on the canvas (native dom event)
    */

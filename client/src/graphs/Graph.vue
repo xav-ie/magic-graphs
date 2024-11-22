@@ -2,6 +2,7 @@
   import { ref } from "vue";
   import type { Graph } from "@graph/types";
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
+import { useWindowSize } from "@vueuse/core";
 
   const props = defineProps<{
     graph: Graph;
@@ -21,6 +22,8 @@
     if (graphBgPatternColor) patternColor.value = graphBgPatternColor;
     if (graphBgColor) bgColor.value = graphBgColor;
   });
+
+  const { width, height } = useWindowSize()
 </script>
 
 <template>

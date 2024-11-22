@@ -14,8 +14,8 @@ const canvasCoords = computed(() => props.coords.canvasCoords.value);
   <p
     class="dark:text-white text-lg absolute top-0 right-0 mt-2 mr-6 select-none text-right pointer-events-none"
   >
-    ({{ canvasCoords.x }}, {{ canvasCoords.y }})
+    Canvas ({{ canvasCoords.x }}, {{ canvasCoords.y }})
     <br />
-    ({{ humanCoords.x }}, {{ humanCoords.y }})
+    Human ({{ humanCoords.x }}, {{ humanCoords.y }})
   </p>
 </template>
