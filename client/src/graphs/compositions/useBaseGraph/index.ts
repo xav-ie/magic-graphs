@@ -33,7 +33,7 @@ import { useNodeEdgeMap } from './useNodeEdgeMap';
 import { useAggregator } from './useAggregator';
 import { useGraphCRUD } from './useGraphCRUD';
 import { getCtx } from '@utils/ctx';
-import type { GraphAtMousePosition } from './types';
+import type { GraphAtMousePosition, GraphMouseEvent } from './types';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -213,6 +213,21 @@ export const useBaseGraph = (
     prioritizeNode(currHoveredNode.id, aggregator)
     return aggregator
   }
+
+  const changeCursorType = ({ items }: GraphMouseEvent) => {
+    if (!canvas.value) return
+    const topItem = items.at(-1)
+    if (!topItem) return canvas.value.style.cursor = 'default'
+    const GRAPH_TYPE_TO_CURSOR: Partial<Record<SchemaItem['graphType'], string>> = {
+      node: 'pointer',
+      edge: 'pointer',
+      "node-anchor": 'grab'
+    }
+    const cursor = GRAPH_TYPE_TO_CURSOR[topItem.graphType] ?? 'default'
+    canvas.value.style.cursor = cursor
+  }
+
+  subscribe('onMouseMove', changeCursorType)
 
   updateAggregator.push(liftHoveredNodeToTop)
 
