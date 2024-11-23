@@ -3,6 +3,9 @@
  * such as addNode, removeNode, etc.
  */
 
+import type { SchemaItem } from "@graph/types"
+import type { Coordinate } from "@shape/types"
+
 export type FocusOption = {
   /**
    * whether to focus the added item/s
@@ -72,3 +75,28 @@ export const MOVE_NODE_OPTIONS_DEFAULTS: MoveNodeOptions = {
 export const ADD_EDGE_DEFAULTS = {
   label: '',
 } as const
+
+/**
+ * stores info about the last mouse position on the graph
+ */
+export type GraphAtMousePosition = {
+  /**
+   * coordinates translated to the graph's coordinate system
+   */
+  coords: Coordinate,
+  /**
+   * the schema items for the coordinates defined in this instance
+   */
+  items: SchemaItem[],
+}
+
+/**
+ * a standard mouse event along with extra graph related info
+ * regarding the mouse position
+ */
+export type GraphMouseEvent = GraphAtMousePosition & {
+  /**
+   * the native browser event that triggered this graph event
+   */
+  event: MouseEvent,
+}

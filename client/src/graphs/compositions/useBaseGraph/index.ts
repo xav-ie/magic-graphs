@@ -60,23 +60,24 @@ export const useBaseGraph = (
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
 
-  const getCanvasCoords = (ev: MouseEvent) => {
+  const mouseOptions = (ev: MouseEvent) => {
     const ctx = getCtx(canvas)
     const transform = ctx.getTransform();
     const invertedTransform = transform.inverse();
-    return {
-      x: invertedTransform.a * ev.offsetX + invertedTransform.c * ev.offsetY + invertedTransform.e,
-      y: invertedTransform.b * ev.offsetX + invertedTransform.d * ev.offsetY + invertedTransform.f,
-    }
+    const x = invertedTransform.a * ev.offsetX + invertedTransform.c * ev.offsetY + invertedTransform.e;
+    const y = invertedTransform.b * ev.offsetX + invertedTransform.d * ev.offsetY + invertedTransform.f;
+    const coords = { x, y }
+    const items = getSchemaItemsByCoordinates(coords.x, coords.y)
+    return { ev, coords, items }
   }
 
   const mouseEvents: Partial<MouseEventMap> = {
-    click: (ev: MouseEvent) => emit('onClick', getCanvasCoords(ev), ev),
-    mousedown: (ev: MouseEvent) => emit('onMouseDown', getCanvasCoords(ev), ev),
-    mouseup: (ev: MouseEvent) => emit('onMouseUp', getCanvasCoords(ev), ev),
-    mousemove: (ev: MouseEvent) => emit('onMouseMove', getCanvasCoords(ev), ev),
-    dblclick: (ev: MouseEvent) => emit('onDblClick', getCanvasCoords(ev), ev),
-    contextmenu: (ev: MouseEvent) => emit('onContextMenu', getCanvasCoords(ev), ev),
+    click: (ev: MouseEvent) => emit('onClick', mouseOptions(ev)),
+    mousedown: (ev: MouseEvent) => emit('onMouseDown', mouseOptions(ev)),
+    mouseup: (ev: MouseEvent) => emit('onMouseUp', mouseOptions(ev)),
+    mousemove: (ev: MouseEvent) => emit('onMouseMove', mouseOptions(ev)),
+    dblclick: (ev: MouseEvent) => emit('onDblClick', mouseOptions(ev)),
+    contextmenu: (ev: MouseEvent) => emit('onContextMenu', mouseOptions(ev)),
   }
 
   const keyboardEvents: Partial<KeyboardEventMap> = {
