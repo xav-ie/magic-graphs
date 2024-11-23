@@ -40,7 +40,10 @@ export const drawTextWithTextArea = (textArea: DeepRequired<TextArea>) => (ctx: 
   ctx.fillStyle = color;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(content, at.x + fontSize, at.y + fontSize);
+
+  const textVerticalOffset = fontSize >= 50 ? 0.3 : 0.1;
+
+  ctx.fillText(content, at.x + fontSize, at.y + fontSize + fontSize ** textVerticalOffset);
 }
 
 export const getFullTextArea = (textAreaInput: TextAreaNoLocation, at: Coordinate) => {
