@@ -242,6 +242,9 @@ export const useMarqueeGraph = (
     graph.subscribe('onMouseDown', beginGroupDrag)
     graph.subscribe('onMouseUp', groupDrop)
     graph.subscribe('onMouseMove', groupDrag)
+
+    graph.subscribe('onUndo', updateEncapsulatedNodeBox)
+    graph.subscribe('onRedo', updateEncapsulatedNodeBox)
   }
 
   const deactivate = () => {
@@ -255,6 +258,9 @@ export const useMarqueeGraph = (
     graph.unsubscribe('onMouseDown', beginGroupDrag)
     graph.unsubscribe('onMouseUp', groupDrop)
     graph.unsubscribe('onMouseMove', groupDrag)
+
+    graph.unsubscribe('onUndo', updateEncapsulatedNodeBox)
+    graph.unsubscribe('onRedo', updateEncapsulatedNodeBox)
 
     if (marqueeBox.value) disengageMarqueeBox()
   }
