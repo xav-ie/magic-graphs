@@ -1,43 +1,71 @@
-import { generateId } from "@graph/helpers"
-import type { Coordinate, Shape } from "@shape/types"
-import { triangleHitbox, triangleEfficientHitbox, getTriangleBoundingBox } from "./hitbox"
-import { drawTriangleWithCtx } from "./draw"
+import { generateId } from "@graph/helpers";
+import type {
+  Coordinate,
+  Shape,
+  Stroke,
+  TextAreaNoLocation,
+} from "@shape/types";
+import {
+  drawTextAreaOnTriangle,
+  drawTextAreaMatteOnTriangle,
+  drawTextOnTriangle,
+  triangleTextHitbox,
+} from './text'
+import {
+  triangleHitbox,
+  triangleEfficientHitbox,
+  getTriangleBoundingBox,
+} from "./hitbox";
+import { drawTriangleWithCtx } from "./draw";
 
 export type Triangle = {
-  point1: Coordinate,
-  point2: Coordinate,
-  point3: Coordinate,
-  color?: string,
-}
+  point1: Coordinate;
+  point2: Coordinate;
+  point3: Coordinate;
+  color?: string;
+  stroke?: Stroke;
+  textArea?: TextAreaNoLocation;
+};
 
 export const TRIANGLE_DEFAULTS = {
-  color: 'black',
-} as const
+  color: "black",
+} as const;
 
 export const triangle = (options: Triangle): Shape => {
-  const drawShape = drawTriangleWithCtx(options)
-  const shapeHitbox = triangleHitbox(options)
-  const efficientHitbox = triangleEfficientHitbox(options)
+  const drawShape = drawTriangleWithCtx(options);
+  const shapeHitbox = triangleHitbox(options);
+  const textHitbox = triangleTextHitbox(options);
+  const efficientHitbox = triangleEfficientHitbox(options);
   const hitbox = (point: Coordinate) => {
-    return shapeHitbox(point) // text not implemented yet
-  }
+    return shapeHitbox(point); // text not implemented yet
+  };
 
-  const getBoundingBox = getTriangleBoundingBox(options)
+  const getBoundingBox = getTriangleBoundingBox(options);
+
+  const drawTextArea = drawTextAreaOnTriangle(options);
+
+  const drawTextAreaMatte = drawTextAreaMatteOnTriangle(options);
+  const drawText = drawTextOnTriangle(options);
 
   const draw = (ctx: CanvasRenderingContext2D) => {
-    drawShape(ctx)
-  }
+    drawShape(ctx);
+    drawTextArea?.(ctx);
+  };
 
   return {
     id: generateId(),
-    name: 'triangle',
+    name: "triangle",
 
     draw,
     drawShape,
+    drawTextArea,
+    drawTextAreaMatte,
+    drawText,
 
     hitbox,
     shapeHitbox,
+    textHitbox,
     efficientHitbox,
     getBoundingBox,
-  }
-}
+  };
+};

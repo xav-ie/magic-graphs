@@ -1,8 +1,10 @@
 import { onMounted, onBeforeUnmount, ref } from "vue";
 import type { Ref } from "vue";
+import type { Scribble } from "@shape/scribble";
 import type { Coordinate } from "@shape/types";
 import { getCtx } from "@utils/ctx";
-import type { Action, AnnotationOptions, DrawAction, EraseAction } from './types'
+import { scribble } from "@shapes";
+import type { AnnotationOptions } from './types'
 import { ANNOTATION_DEFAULTS } from './types'
 
 export const useAnnotation = (
@@ -22,57 +24,22 @@ export const useAnnotation = (
   const isDrawing = ref(false);
   const lastPoint = ref<Coordinate>();
   const batch = ref<Coordinate[]>([]);
-  const actions = ref<Action[]>([]);
+  const scribbles = ref<Scribble[]>([]);
 
   const clear = () => {
     const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    actions.value = [];
+    scribbles.value = [];
   };
 
-  const actionDraw = (ctx: CanvasRenderingContext2D) => (action: DrawAction) => {
-    ctx.strokeStyle = action.color;
-    ctx.lineWidth = action.brushWeight;
-    ctx.beginPath();
-    const [first, ...rest] = action.points;
-    ctx.moveTo(first.x, first.y);
-    rest.forEach(({ x, y }) => ctx.lineTo(x, y));
-    ctx.stroke();
-  }
-
-  const actionErase = (ctx: CanvasRenderingContext2D) => (action: EraseAction) => {
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.lineWidth = eraserBrushWeight;
-
-    for (let i = 0; i < action.points.length - 1; i++) {
-      const start = action.points[i];
-      const end = action.points[i + 1];
-      const squaredDistance = Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2);
-      const distance = Math.sqrt(squaredDistance);
-      const steps = Math.ceil(distance / eraserBrushWeight);
-
-      for (let j = 0; j <= steps; j++) {
-        const interpolatedX = start.x + (j / steps) * (end.x - start.x);
-        const interpolatedY = start.y + (j / steps) * (end.y - start.y);
-
-        ctx.beginPath();
-        ctx.arc(interpolatedX, interpolatedY, eraserBrushWeight, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    ctx.globalCompositeOperation = "source-over";
-  }
+  
 
   const draw = () => {
     const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    const draw = actionDraw(ctx);
-    const erase = actionErase(ctx);
-
-    for (const action of actions.value) {
-      action.type === "draw" ? draw(action) : erase(action);
+    for (const action of scribbles.value) {
+      scribble(action).draw(ctx)
     }
   };
 
@@ -165,7 +132,7 @@ export const useAnnotation = (
     } as const;
 
     const action = erasing.value ? eraseAction : drawAction;
-    actions.value.push(action);
+    scribbles.value.push(action);
 
     batch.value = [];
   };

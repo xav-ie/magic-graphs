@@ -21,7 +21,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         v-for="color in COLORS"
-        @click="selectedColor = color"
+        @click="selectedColor = color, erasing = false"
         :active="selectedColor === color"
         :key="color"
         :color="color"
