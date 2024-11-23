@@ -21,17 +21,17 @@
     color: Color;
     patternColor: Color;
     /**
-     * @default 2500
+     * @default 5_000
      */
     canvasWidth?: number;
     /**
-     * @default 2500
+     * @default 3_000
      */
     canvasHeight?: number;
   }>();
 
-  const widthProp = computed(() => props?.canvasWidth ?? 2500);
-  const heightProp = computed(() => props?.canvasHeight ?? 2500);
+  const widthProp = computed(() => props?.canvasWidth ?? 5_000);
+  const heightProp = computed(() => props?.canvasHeight ?? 3_000);
 
   const emit = defineEmits<{
     (e: "canvasRef", value: HTMLCanvasElement | undefined): void;
