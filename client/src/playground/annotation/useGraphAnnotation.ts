@@ -9,6 +9,7 @@ import type {
 } from './types'
 import { ANNOTATION_DEFAULTS } from './types'
 import type { Graph } from "@graph/types";
+import type { GraphMouseEvent } from "@graph/compositions/useBaseGraph/types";
 
 export const useAnnotation = (
   graph: Graph,
@@ -83,17 +84,16 @@ export const useAnnotation = (
   /**
    * starts drawing a line from the current mouse position
    */
-  const startDrawing = (event: MouseEvent) => {
+  const startDrawing = ({ coords }: GraphMouseEvent) => {
     const ctx = getCtx(graph.canvas);
 
     isDrawing.value = true;
 
-    const { offsetX: x, offsetY: y } = event;
     ctx.beginPath();
-    ctx.moveTo(x, y);
+    ctx.moveTo(coords.x, coords.y);
 
-    lastPoint.value = { x, y };
-    batch.value = [{ x, y }];
+    lastPoint.value = coords;
+    batch.value = [{ ...coords }];
   };
 
   const actionEraseLine = ({ ctx, at: { x, y } }: {
@@ -133,18 +133,15 @@ export const useAnnotation = (
    * the delta between two mouse points while
    * mouse is being dragged
    */
-  const drawLine = (event: MouseEvent) => {
+  const drawLine = ({ coords }: GraphMouseEvent) => {
     if (!isDrawing.value || !lastPoint.value) return;
-
     const ctx = getCtx(graph.canvas);
 
-    const { offsetX: x, offsetY: y } = event;
-
-    const options = { ctx, at: { x, y } };
+    const options = { ctx, at: coords };
     erasing.value ? actionEraseLine(options) : actionDrawLine(options);
 
-    lastPoint.value = { x, y };
-    batch.value.push({ x, y });
+    lastPoint.value = coords;
+    batch.value.push({ ...coords });
 
   };
 

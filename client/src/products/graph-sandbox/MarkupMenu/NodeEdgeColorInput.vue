@@ -1,9 +1,9 @@
 <script setup lang="ts">
+  import { ref } from "vue";
   import type { Graph } from "@graph/types";
   import type { ColorMap } from "../useMarkupColorizer";
   import InputColor from "./InputColor.vue";
   import type { Color } from "@utils/colors";
-  import { ref } from "vue";
 
   const props = defineProps<{
     graph: Graph;

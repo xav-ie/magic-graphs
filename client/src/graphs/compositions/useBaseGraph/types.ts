@@ -85,7 +85,7 @@ export type GraphAtMousePosition = {
    */
   coords: Coordinate,
   /**
-   * the schema items for the coordinates defined in this instance
+   * the schema items at the coordinates of the mouse
    */
   items: SchemaItem[],
 }

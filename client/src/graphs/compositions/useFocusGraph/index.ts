@@ -13,7 +13,7 @@ import type {
 import { useTheme } from "@graph/themes/useTheme";
 import { useHistoryGraph } from "@graph/compositions/useHistoryGraph";
 import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "@graph/compositions/useFocusGraph/types";
-import type { AddNodeOptions, FocusOption } from "../useBaseGraph/types";
+import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../useBaseGraph/types";
 
 export const useFocusGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -65,14 +65,12 @@ export const useFocusGraph = (
     setFocus(newFocusedIds)
   }
 
-  const handleFocusChange = (ev: MouseEvent) => {
-    const { offsetX: x, offsetY: y } = ev
-
-    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    if (!topItem) return resetFocus()
+  const handleFocusChange = ({ items, coords }: GraphMouseEvent) => {
+    const topItem = items.pop()
+    if (!topItem) return shiftKeyHeldDown.value ? resetFocus() : undefined
 
     // handle text areas
-    const inATextArea = topItem.shape.textHitbox?.({ x, y })
+    const inATextArea = topItem.shape.textHitbox?.(coords)
     const canEdit = (
       inATextArea &&
       graph.settings.value.edgeLabelsEditable &&

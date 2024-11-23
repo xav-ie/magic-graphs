@@ -59,9 +59,6 @@ export const useGraphTutorial = (
       return () => clearInterval(interval);
     }
 
-    /**
-     * must remain defined names and not anonymous to not create multiple function references
-     */
     const eventFired = (...args: any[]) => {
       const predicate = dismissPredicate?.(...args);
       if (predicate) stepIndex.value++;
