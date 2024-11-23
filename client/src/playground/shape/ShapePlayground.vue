@@ -53,6 +53,13 @@
         point2: { x: 900, y: 200 },
         point3: { x: 700, y: 200 },
         color: colors.BLUE_500,
+        textArea: {
+          text: {
+            content: 'hihi',
+            fontSize: 20,
+          },
+
+        }
       })
     )
 
