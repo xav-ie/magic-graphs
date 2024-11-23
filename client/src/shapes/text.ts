@@ -23,8 +23,7 @@ export const drawTextMatteWithTextArea = (textArea: DeepRequired<TextArea>) => {
   return (ctx: CanvasRenderingContext2D) => matte.drawShape(ctx);
 };
 
-export const drawTextWithTextArea =
-  (textArea: DeepRequired<TextArea>) => (ctx: CanvasRenderingContext2D) => {
+export const drawTextWithTextArea = (textArea: DeepRequired<TextArea>) => (ctx: CanvasRenderingContext2D) => {
     const { at } = textArea;
     const { content, fontSize, fontWeight, color } = textArea.text;
 
