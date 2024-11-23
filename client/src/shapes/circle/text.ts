@@ -25,11 +25,9 @@ export const getTextAreaLocationOnCircle = (circle: Circle) => {
     ...text,
   };
 
-  const textVerticalOffset = fontSize >= 50 ? 0.3 : 0.1;
-
   return {
     x: at.x - fontSize,
-    y: at.y + fontSize ** textVerticalOffset - fontSize,
+    y: at.y - fontSize,
   };
 };
 

@@ -38,9 +38,9 @@
         },
         textArea: {
           text: {
-            content: '51',
+            content: '--',
             color: colors.WHITE,
-            fontSize: 20,
+            fontSize: 55,
           },
           color: colors.TRANSPARENT
         }
