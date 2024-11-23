@@ -12,7 +12,7 @@ export const lineHitbox = (line: Line) => (point: Coordinate) => {
   const {
     start,
     end,
-    width
+    width,
   } = {
     ...LINE_DEFAULTS,
     ...line

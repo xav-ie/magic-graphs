@@ -7,7 +7,8 @@ export const drawTriangleWithCtx = (options: Triangle) => (ctx: CanvasRenderingC
     point1,
     point2,
     point3,
-    color
+    color,
+    stroke,
   } = {
     ...TRIANGLE_DEFAULTS,
     ...options
@@ -20,4 +21,17 @@ export const drawTriangleWithCtx = (options: Triangle) => (ctx: CanvasRenderingC
   ctx.fillStyle = color;
   ctx.fill();
   ctx.closePath();
+
+  if (stroke) {
+    ctx.lineWidth = stroke.width;
+    ctx.strokeStyle = stroke.color;
+    if (stroke.dash) {
+      ctx.setLineDash(stroke.dash);
+    } else {
+      ctx.setLineDash([]);
+    }
+    ctx.stroke();
+
+    ctx.setLineDash([])
+  }
 }
