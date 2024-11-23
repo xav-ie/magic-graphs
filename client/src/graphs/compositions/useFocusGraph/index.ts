@@ -30,20 +30,26 @@ export const useFocusGraph = (
   const setFocus = (ids: string[]) => {
     const nonBlacklistedIds = ids.filter(id => !graph.settings.value.focusBlacklist.includes(id))
     const sameLength = nonBlacklistedIds.length === focusedItemIds.value.size
+
     const sameIds = sameLength && nonBlacklistedIds.every(id => focusedItemIds.value.has(id))
     if (sameIds) return
+
     const oldIds = new Set([...focusedItemIds.value])
     focusedItemIds.value = new Set(nonBlacklistedIds)
+
     graph.emit('onFocusChange', focusedItemIds.value, oldIds)
   }
 
   const addToFocus = (id: string) => {
     const isInFocusAlready = focusedItemIds.value.has(id)
     if (isInFocusAlready) return
+
     const isOnBlacklist = graph.settings.value.focusBlacklist.includes(id)
     if (isOnBlacklist) return
+
     const oldIds = new Set([...focusedItemIds.value])
     focusedItemIds.value.add(id)
+
     graph.emit('onFocusChange', focusedItemIds.value, oldIds)
   }
 
@@ -67,7 +73,7 @@ export const useFocusGraph = (
 
   const handleFocusChange = ({ items, coords }: GraphMouseEvent) => {
     const topItem = items.at(-1)
-    if (!topItem) return shiftKeyHeldDown.value ? resetFocus() : undefined
+    if (!topItem) return shiftKeyHeldDown.value ? undefined : resetFocus()
 
     // handle text areas
     const inATextArea = topItem.shape.textHitbox?.(coords)
