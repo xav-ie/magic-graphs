@@ -53,11 +53,6 @@
         point2: { x: 900, y: 200 },
         point3: { x: 700, y: 200 },
         color: colors.BLUE_500,
-        stroke: {
-          color: 'green',
-          width: 10,
-          dash: [10, 5]
-        },
         textArea: {
           text: {
             content: 'hihi',

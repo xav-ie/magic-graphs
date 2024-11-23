@@ -13,6 +13,7 @@ export const squareHitbox = (square: Square) => {
     height: square.size,
     borderRadius: square.borderRadius,
     rotation: square.rotation,
+    stroke: square.stroke
   });
   return (point: Coordinate) => isInRect(point);
 }
