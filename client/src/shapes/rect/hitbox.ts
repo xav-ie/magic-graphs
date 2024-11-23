@@ -15,6 +15,7 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
     height,
     borderRadius,
     rotation,
+    stroke
   } = {
     ...RECT_DEFAULTS,
     ...rectangle
@@ -23,16 +24,18 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
   const centerX = at.x + width / 2;
   const centerY = at.y + height / 2;
 
+  const strokeWidth = stroke?.width || 0
+
   const localPoint = rotatePoint(point, { x: centerX, y: centerY }, -rotation);
 
   const { x, y } = { x: centerX - width / 2, y: centerY - height / 2 };
 
   if (borderRadius === 0) {
     return (
-      localPoint.x >= x &&
-      localPoint.x <= x + width &&
-      localPoint.y >= y &&
-      localPoint.y <= y + height
+      localPoint.x >= x - strokeWidth / 2 &&
+      localPoint.x <= x + width + strokeWidth / 2 &&
+      localPoint.y >= y - strokeWidth / 2 &&
+      localPoint.y <= y + height + strokeWidth / 2
     );
   }
 
@@ -43,7 +46,8 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
     at: { x: x + radius, y },
     width: width - 2 * radius,
     borderRadius: 0,
-    rotation: 0
+    rotation: 0,
+    stroke,
   });
 
   const rectHorizontal = rectHitbox({
@@ -51,29 +55,34 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
     at: { x, y: y + radius },
     height: height - 2 * radius,
     borderRadius: 0,
-    rotation: 0
+    rotation: 0,
+    stroke,
   });
 
   if (rectVertical(localPoint) || rectHorizontal(localPoint)) return true;
 
   const isInTopLeftCircle = circleHitbox({
     at: { x: x + radius, y: y + radius },
-    radius
+    radius,
+    stroke,
   });
 
   const isInTopRightCircle = circleHitbox({
     at: { x: x + width - radius, y: y + radius },
-    radius
+    radius,
+    stroke,
   });
 
   const isInBottomLeftCircle = circleHitbox({
     at: { x: x + radius, y: y + height - radius },
-    radius
+    radius,
+    stroke,
   });
 
   const isInBottomRightCircle = circleHitbox({
     at: { x: x + width - radius, y: y + height - radius },
-    radius
+    radius,
+    stroke,
   });
 
   return (

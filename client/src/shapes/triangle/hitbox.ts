@@ -1,6 +1,7 @@
 import type { Coordinate, BoundingBox } from "@shape/types";
 import type { Triangle } from ".";
 import { rectEfficientHitbox } from "@shape/rect/hitbox";
+import { lineHitbox } from "@shape/line/hitbox";
 
 /**
  * uses barycentric coordinate system for triangles. dont ask me, im not that smart.
@@ -14,8 +15,19 @@ export const triangleHitbox = (triangle: Triangle) => (point: Coordinate) => {
   const {
     point1: a,
     point2: b,
-    point3: c
+    point3: c,
+    stroke,
   } = triangle;
+
+
+  if (stroke) {
+    
+    const edge1 = { start: a, end: b, width: stroke.width };
+    const edge2 = { start: b, end: c, width: stroke.width };
+    const edge3 = { start: c, end: a, width: stroke.width };
+  
+    return lineHitbox(edge1)(point) || lineHitbox(edge2)(point) || lineHitbox(edge3)(point);
+  }
 
   const { x, y } = point;
 
@@ -23,7 +35,9 @@ export const triangleHitbox = (triangle: Triangle) => (point: Coordinate) => {
   const s = 1 / (2 * area) * (a.y * c.x - a.x * c.y + (c.y - a.y) * x + (a.x - c.x) * y);
   const t = 1 / (2 * area) * (a.x * b.y - a.y * b.x + (a.y - b.y) * x + (b.x - a.x) * y);
 
-  return s > 0 && t > 0 && 1 - s - t > 0;
+  const isInsideTriangle = s > 0 && t > 0 && 1 - s - t > 0;
+
+  return isInsideTriangle
 }
 
 export const getTriangleBoundingBox = (triangle: Triangle) => () => {
