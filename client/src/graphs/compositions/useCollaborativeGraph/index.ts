@@ -8,6 +8,7 @@ import { getRandomElement } from "@utils/array";
 import type {
   AddEdgeOptions,
   AddNodeOptions,
+  GraphMouseEvent,
   MoveNodeOptions,
   RemoveNodeOptions
 } from "@graph/compositions/useBaseGraph/types";
@@ -108,10 +109,9 @@ export const useCollaborativeGraph = (
     onEdgeLabelChange: (edge: GEdge) => {
       socket.emit('edgeLabelEdited', edge.id, edge.label)
     },
-    onMouseMove: (ev: MouseEvent) => {
+    onMouseMove: ({ coords }: GraphMouseEvent) => {
       if (collaboratorCount.value < 1) return
-      const { offsetX: x, offsetY: y } = ev
-      meAsACollaborator.value.mousePosition = { x, y }
+      meAsACollaborator.value.mousePosition = coords
       socket.emit('toServerCollaboratorMoved', meAsACollaborator.value.mousePosition)
     },
     onRepaint: (ctx: CanvasRenderingContext2D) => {

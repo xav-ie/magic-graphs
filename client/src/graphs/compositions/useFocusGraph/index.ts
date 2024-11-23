@@ -13,7 +13,7 @@ import type {
 import { useTheme } from "@graph/themes/useTheme";
 import { useHistoryGraph } from "@graph/compositions/useHistoryGraph";
 import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "@graph/compositions/useFocusGraph/types";
-import type { AddNodeOptions, FocusOption } from "../useBaseGraph/types";
+import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../useBaseGraph/types";
 
 export const useFocusGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -30,20 +30,26 @@ export const useFocusGraph = (
   const setFocus = (ids: string[]) => {
     const nonBlacklistedIds = ids.filter(id => !graph.settings.value.focusBlacklist.includes(id))
     const sameLength = nonBlacklistedIds.length === focusedItemIds.value.size
+
     const sameIds = sameLength && nonBlacklistedIds.every(id => focusedItemIds.value.has(id))
     if (sameIds) return
+
     const oldIds = new Set([...focusedItemIds.value])
     focusedItemIds.value = new Set(nonBlacklistedIds)
+
     graph.emit('onFocusChange', focusedItemIds.value, oldIds)
   }
 
   const addToFocus = (id: string) => {
     const isInFocusAlready = focusedItemIds.value.has(id)
     if (isInFocusAlready) return
+
     const isOnBlacklist = graph.settings.value.focusBlacklist.includes(id)
     if (isOnBlacklist) return
+
     const oldIds = new Set([...focusedItemIds.value])
     focusedItemIds.value.add(id)
+
     graph.emit('onFocusChange', focusedItemIds.value, oldIds)
   }
 
@@ -65,14 +71,12 @@ export const useFocusGraph = (
     setFocus(newFocusedIds)
   }
 
-  const handleFocusChange = (ev: MouseEvent) => {
-    const { offsetX: x, offsetY: y } = ev
-
-    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
-    if (!topItem) return resetFocus()
+  const handleFocusChange = ({ items, coords }: GraphMouseEvent) => {
+    const topItem = items.at(-1)
+    if (!topItem) return shiftKeyHeldDown.value ? undefined : resetFocus()
 
     // handle text areas
-    const inATextArea = topItem.shape.textHitbox?.({ x, y })
+    const inATextArea = topItem.shape.textHitbox?.(coords)
     const canEdit = (
       inATextArea &&
       graph.settings.value.edgeLabelsEditable &&

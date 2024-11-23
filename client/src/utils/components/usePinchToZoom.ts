@@ -1,59 +1,54 @@
+import { ref, onMounted, onUnmounted } from 'vue';
+import type { Ref } from 'vue';
 import { getCtx } from '@utils/ctx';
-import { ref, onMounted, onUnmounted, type Ref } from 'vue';
 
 export function usePinchToZoom(canvasRef: Ref<HTMLCanvasElement | undefined | null>) {
-  const scale = ref(1); // Current zoom level
-  const maxScale = 5; // Maximum zoom level
-  const minScale = 0.5; // Minimum zoom level
-  const origin = ref({ x: 0, y: 0 }); // Current origin for zoom
+  const scale = ref(1);
+  const MAX_SCALE = 7.5;
+  const MIN_SCALE = 0.25;
+  const zoomOrigin = ref({ x: 0, y: 0 });
 
-  const handleWheel = (event: WheelEvent) => {
-    if (event.ctrlKey) {
-      event.preventDefault(); // Prevent scrolling
-      const canvas = canvasRef.value;
-      if (!canvas) return;
+  const handleWheel = (ev: WheelEvent) => {
+    if (!ev.ctrlKey) return
+    ev.preventDefault();
+    const canvas = canvasRef.value;
+    if (!canvas) return;
 
-      const rect = canvas.getBoundingClientRect();
-      const cursorX = event.clientX - rect.left; // Cursor position in canvas space
-      const cursorY = event.clientY - rect.top;
+    const rect = canvas.getBoundingClientRect();
+    const cursorX = ev.clientX - rect.left;
+    const cursorY = ev.clientY - rect.top;
 
-      const scaleChange = event.deltaY < 0 ? 1.03 : 0.97; // Zoom in or out
-      const newScale = Math.min(maxScale, Math.max(minScale, scale.value * scaleChange));
+    const scaleChange = ev.deltaY < 0 ? 1.03 : 0.97;
+    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale.value * scaleChange));
 
-      // Adjust origin to keep the zoom centered around the cursor
-      origin.value.x =
-        cursorX - (cursorX - origin.value.x) * (newScale / scale.value);
-      origin.value.y =
-        cursorY - (cursorY - origin.value.y) * (newScale / scale.value);
+    zoomOrigin.value.x = cursorX - (cursorX - zoomOrigin.value.x) * (newScale / scale.value);
+    zoomOrigin.value.y = cursorY - (cursorY - zoomOrigin.value.y) * (newScale / scale.value);
 
-      scale.value = newScale;
-      applyZoom();
-    }
+    scale.value = newScale;
+    applyZoom();
   };
 
   const applyZoom = () => {
     const ctx = getCtx(canvasRef);
     ctx.resetTransform();
-    ctx.translate(origin.value.x, origin.value.y);
+    ctx.translate(zoomOrigin.value.x, zoomOrigin.value.y);
     ctx.scale(scale.value, scale.value);
   };
 
   onMounted(() => {
     const canvas = canvasRef.value;
-    if (canvas) {
-      canvas.addEventListener('wheel', handleWheel, { passive: false });
-    }
+    if (!canvas) throw new Error('Canvas ref is not defined');
+    canvas.addEventListener('wheel', handleWheel, { passive: false });
   });
 
   onUnmounted(() => {
     const canvas = canvasRef.value;
-    if (canvas) {
-      canvas.removeEventListener('wheel', handleWheel);
-    }
+    if (!canvas) return;
+    canvas.removeEventListener('wheel', handleWheel);
   });
 
   return {
     scale,
-    origin,
+    origin: zoomOrigin,
   };
 }

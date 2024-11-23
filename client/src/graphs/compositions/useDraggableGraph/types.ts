@@ -1,9 +1,10 @@
 import type { GNode } from "@graph/types"
+import type { Coordinate } from "@shape/types"
 
 /**
- * information for the node being dragged
+ * info for the node being dragged
  */
 export type ActiveDragNode = {
   node: GNode,
-  startingCoordinates: { x: number, y: number }
+  coords: Coordinate,
 }

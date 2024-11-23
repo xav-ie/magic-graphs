@@ -32,6 +32,8 @@ import { getThemeResolver } from '@graph/themes/getThemeResolver';
 import { useNodeEdgeMap } from './useNodeEdgeMap';
 import { useAggregator } from './useAggregator';
 import { useGraphCRUD } from './useGraphCRUD';
+import { getCtx } from '@utils/ctx';
+import type { GraphAtMousePosition } from './types';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -55,17 +57,39 @@ export const useBaseGraph = (
 
   const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
 
-
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
 
+  const graphAtMousePosition = ref<GraphAtMousePosition>({
+    coords: { x: 0, y: 0 },
+    items: [],
+  })
+
+  const updateGraphAtMousePosition = (ev: MouseEvent) => {
+    const ctx = getCtx(canvas)
+    const transform = ctx.getTransform();
+    const invertedTransform = transform.inverse();
+    const { offsetX, offsetY } = ev
+    const x = invertedTransform.a * offsetX + invertedTransform.c * offsetY + invertedTransform.e;
+    const y = invertedTransform.b * offsetX + invertedTransform.d * offsetY + invertedTransform.f;
+    graphAtMousePosition.value = {
+      coords: { x, y },
+      items: getSchemaItemsByCoordinates({ x, y }),
+    }
+  }
+
+  const graphMouseEv = (event: MouseEvent) => ({
+    ...graphAtMousePosition.value,
+    event,
+  })
+
   const mouseEvents: Partial<MouseEventMap> = {
-    click: (ev: MouseEvent) => emit('onClick', ev),
-    mousedown: (ev: MouseEvent) => emit('onMouseDown', ev),
-    mouseup: (ev: MouseEvent) => emit('onMouseUp', ev),
-    mousemove: (ev: MouseEvent) => emit('onMouseMove', ev),
-    dblclick: (ev: MouseEvent) => emit('onDblClick', ev),
-    contextmenu: (ev: MouseEvent) => emit('onContextMenu', ev),
+    click: (ev: MouseEvent) => emit('onClick', graphMouseEv(ev)),
+    mousemove: (ev: MouseEvent) => emit('onMouseMove', graphMouseEv(ev)),
+    mousedown: (ev: MouseEvent) => emit('onMouseDown', graphMouseEv(ev)),
+    mouseup: (ev: MouseEvent) => emit('onMouseUp', graphMouseEv(ev)),
+    dblclick: (ev: MouseEvent) => emit('onDblClick', graphMouseEv(ev)),
+    contextmenu: (ev: MouseEvent) => emit('onContextMenu', graphMouseEv(ev)),
   }
 
   const keyboardEvents: Partial<KeyboardEventMap> = {
@@ -106,10 +130,12 @@ export const useBaseGraph = (
 
   updateAggregator.push(addNodesAndEdgesToAggregator)
 
-  const initCanvas = () => {
+  onMounted(() => {
     if (!canvas.value) {
       throw new Error('canvas element not found')
     }
+
+    canvas.value.addEventListener('mousemove', updateGraphAtMousePosition)
 
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.addEventListener(event, listeners)
@@ -118,14 +144,14 @@ export const useBaseGraph = (
     for (const [event, listeners] of Object.entries(keyboardEvents) as KeyboardEventEntries) {
       document.addEventListener(event, listeners)
     }
-  }
-
-  onMounted(initCanvas)
+  })
 
   onBeforeUnmount(() => {
     if (!canvas.value) {
       throw new Error('Canvas element not found')
     }
+
+    canvas.value.removeEventListener('mousemove', updateGraphAtMousePosition)
 
     for (const [event, listeners] of Object.entries(mouseEvents) as MouseEventEntries) {
       canvas.value.removeEventListener(event, listeners)
@@ -158,17 +184,25 @@ export const useBaseGraph = (
     settings,
   })
 
+  /**
+   * get a node by its coordinates
+   *
+   * @param x - the x coord
+   * @param y - the y coord
+   * @returns the node at given coords or undefined if not there or obscured by another schema item
+   */
   const getNodeByCoordinates = (x: number, y: number) => {
-    const topItem = getSchemaItemsByCoordinates(x, y).pop()
+    const topItem = getSchemaItemsByCoordinates({ x, y }).pop()
     if (!topItem) return
     if (topItem.graphType !== 'node') return
     return getNode(topItem.id)
   }
 
-  let currHoveredNode: GNode | undefined = undefined
-  subscribe('onMouseMove', (ev) => {
-    const { offsetX: x, offsetY: y } = ev
-    const node = getNodeByCoordinates(x, y)
+  let currHoveredNode: GNode | undefined;
+  subscribe('onMouseMove', ({ items }) => {
+    const topItem = items.at(-1)
+    if (!topItem || topItem.graphType !== 'node') return
+    const node = getNode(topItem.id)
     if (node === currHoveredNode) return
     emit('onNodeHoverChange', node, currHoveredNode)
     currHoveredNode = node
@@ -233,16 +267,8 @@ export const useBaseGraph = (
     bulkAddEdge,
     bulkRemoveEdge,
 
-    /**
-     * get a node by its coordinates
-     *
-     * @param x - the x coord
-     * @param y - the y coord
-     * @returns the node at given coords or undefined if not there or obscured by another schema item
-     */
-    getNodeByCoordinates,
-
     getSchemaItemsByCoordinates,
+    getNodeByCoordinates,
 
     /**
      * a mapping of all graph events to a set of their callback functions
@@ -263,6 +289,7 @@ export const useBaseGraph = (
     reset,
 
     canvas,
+    graphAtMousePosition,
   }
 }
 

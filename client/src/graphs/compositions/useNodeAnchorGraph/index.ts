@@ -19,6 +19,7 @@ import type {
   GraphOptions,
 } from "@graph/types";
 import { circle, line } from '@shapes';
+import type { GraphMouseEvent } from '../useBaseGraph/types';
 
 /**
  * Node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
@@ -133,12 +134,10 @@ export const useNodeAnchorGraph = (
   }
 
   /**
-   * @param {number} x - the x-coordinate to check
-   * @param {number} y - the y-coordinate to check
-   * @returns the anchor at the given coordinates if it exists or undefined
+   * the anchor at the given event location
    */
-  const getAnchor = (x: number, y: number) => {
-    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
+  const getAnchor = ({ items }: GraphMouseEvent) => {
+    const topItem = items.at(-1)
     if (!topItem || topItem.graphType !== 'node-anchor') return
     const { id: anchorId } = topItem
     return nodeAnchors.value.find((anchor) => anchor.id === anchorId)
@@ -172,25 +171,39 @@ export const useNodeAnchorGraph = (
 
   /**
    * updates which node is the parent node based on the mouse event
-   * @param {MouseEvent} ev - the mouse event to update the parent node
    */
-  const updateParentNode = (ev: MouseEvent) => {
+  const updateParentNode = ({ items }: GraphMouseEvent) => {
     if (activeAnchor.value) return
-    const topItem = graph.getSchemaItemsByCoordinates(ev.offsetX, ev.offsetY).pop()
+
+    const topItem = items.at(-1)
     if (!topItem) return resetParentNode()
     if (topItem.graphType !== 'node') return
+
+    /**
+     * TODO try making this simpler by making a rule that if there is more than 1
+     * focused node, the parent node should be reset. I dont think
+     * all this other logic-ing is necessary
+     */
+
     const perspectiveNode = graph.getNode(topItem.id)
     if (!perspectiveNode) throw new Error('node in aggregator but not in graph')
+
     const perspectiveNodeFocused = graph.isFocused(perspectiveNode.id)
     const moreThanOneNodeFocused = graph.focusedNodes.value.length > 1
+
     if (perspectiveNodeFocused && moreThanOneNodeFocused) return resetParentNode()
+
     parentNode.value = perspectiveNode
     updateNodeAnchors(perspectiveNode)
   }
 
-  const setActiveAnchor = (ev: MouseEvent) => {
+  const setActiveAnchor = (ev: GraphMouseEvent) => {
     if (!parentNode.value) return
-    const anchor = getAnchor(ev.offsetX, ev.offsetY)
+    /**
+     * TODO shouldn't getAnchor be unnecessary here because the top item in this event should
+     * point to the anchor itself?
+     */
+    const anchor = getAnchor(ev)
     if (!anchor) return
     activeAnchor.value = anchor
     graph.emit('onNodeAnchorDragStart', parentNode.value, anchor)
@@ -198,17 +211,16 @@ export const useNodeAnchorGraph = (
 
   /**
    * updates the position of the active anchor based on the mouse event
-   * @param {MouseEvent} ev - the mouse event to update the active anchor position
    */
-  const updateActiveAnchorPosition = (ev: MouseEvent) => {
+  const updateActiveAnchorPosition = ({ coords }: GraphMouseEvent) => {
     if (!activeAnchor.value) return
-    activeAnchor.value.x = ev.offsetX
-    activeAnchor.value.y = ev.offsetY
+    const { x, y } = coords
+    activeAnchor.value.x = x
+    activeAnchor.value.y = y
   }
 
   /**
-   * drops the active anchor and triggers the onNodeAnchorDrop
-   * event with the parent node and active anchor
+   * drops the active anchor and triggers graph events
    */
   const dropAnchor = () => {
     if (!activeAnchor.value) return

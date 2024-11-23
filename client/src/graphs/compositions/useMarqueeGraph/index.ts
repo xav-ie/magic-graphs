@@ -18,6 +18,7 @@ import type {
   RedoHistoryOptions,
   UndoHistoryOptions
 } from '../useHistoryGraph/types'
+import type { GraphMouseEvent } from '../useBaseGraph/types'
 
 export const useMarqueeGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -63,21 +64,19 @@ export const useMarqueeGraph = (
   /**
    * given a mouse event, engages or disengages the marquee box
    */
-  const handleMarqueeEngagement = (event: MouseEvent) => {
-    const { offsetX: x, offsetY: y } = event
-    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
+  const handleMarqueeEngagement = ({ items, coords }: GraphMouseEvent) => {
+    const topItem = items.at(-1)
     if (topItem?.graphType !== 'encapsulated-node-box') showNodeAnchors()
-    if (!topItem) engageMarqueeBox({ x, y })
+    if (!topItem) engageMarqueeBox(coords)
   }
 
-  const groupDrag = (event: MouseEvent) => {
+  const groupDrag = ({ items, coords }: GraphMouseEvent) => {
     if (!groupDragCoordinates.value) return;
-    const { offsetX: x, offsetY: y } = event
-    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
+    const topItem = items.at(-1)
     if (topItem?.graphType !== 'encapsulated-node-box') return
-    const dx = x - groupDragCoordinates.value.x
-    const dy = y - groupDragCoordinates.value.y
-    groupDragCoordinates.value = { x, y }
+    const dx = coords.x - groupDragCoordinates.value.x
+    const dy = coords.y - groupDragCoordinates.value.y
+    groupDragCoordinates.value = coords
     for (const node of graph.focusedNodes.value) {
       graph.moveNode(node.id, {
         x: node.x + dx,
@@ -87,13 +86,12 @@ export const useMarqueeGraph = (
     updateEncapsulatedNodeBox()
   }
 
-  const beginGroupDrag = (event: MouseEvent) => {
+  const beginGroupDrag = ({ items, coords }: GraphMouseEvent) => {
     if (marqueeBox.value) return
-    const { offsetX: x, offsetY: y } = event
-    const topItem = graph.getSchemaItemsByCoordinates(x, y).pop()
+    const topItem = items.at(-1)
     if (topItem?.graphType !== 'encapsulated-node-box') return
-    groupDragCoordinates.value = { x, y }
-    graph.emit('onGroupDragStart', graph.focusedNodes.value, { x, y })
+    groupDragCoordinates.value = coords
+    graph.emit('onGroupDragStart', graph.focusedNodes.value, coords)
   }
 
   const groupDrop = () => {
@@ -171,9 +169,9 @@ export const useMarqueeGraph = (
     }
   };
 
-  const setMarqueeBoxDimensions = (event: MouseEvent) => {
+  const setMarqueeBoxDimensions = ({ coords }: GraphMouseEvent) => {
     if (!marqueeBox.value) return
-    const { offsetX: x, offsetY: y } = event
+    const { x, y } = coords
     marqueeBox.value.width = x - marqueeBox.value.at.x
     marqueeBox.value.height = y - marqueeBox.value.at.y
     updateMarqueeSelectedItems(marqueeBox.value)
@@ -244,6 +242,9 @@ export const useMarqueeGraph = (
     graph.subscribe('onMouseDown', beginGroupDrag)
     graph.subscribe('onMouseUp', groupDrop)
     graph.subscribe('onMouseMove', groupDrag)
+
+    graph.subscribe('onUndo', updateEncapsulatedNodeBox)
+    graph.subscribe('onRedo', updateEncapsulatedNodeBox)
   }
 
   const deactivate = () => {
@@ -257,6 +258,9 @@ export const useMarqueeGraph = (
     graph.unsubscribe('onMouseDown', beginGroupDrag)
     graph.unsubscribe('onMouseUp', groupDrop)
     graph.unsubscribe('onMouseMove', groupDrag)
+
+    graph.unsubscribe('onUndo', updateEncapsulatedNodeBox)
+    graph.unsubscribe('onRedo', updateEncapsulatedNodeBox)
 
     if (marqueeBox.value) disengageMarqueeBox()
   }

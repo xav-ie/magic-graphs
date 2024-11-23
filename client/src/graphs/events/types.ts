@@ -10,8 +10,13 @@ import type {
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types";
 import type { GraphTheme } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
-import type { HistoryRecord, RedoHistoryOptions, UndoHistoryOptions } from "@graph/compositions/useHistoryGraph/types";
+import type {
+  HistoryRecord,
+  RedoHistoryOptions,
+  UndoHistoryOptions,
+} from "@graph/compositions/useHistoryGraph/types";
 import type { Coordinate } from "@shape/types";
+import type { GraphMouseEvent } from "@graph/compositions/useBaseGraph/types";
 
 export type BaseGraphEventMap = {
   /**
@@ -81,27 +86,27 @@ export type BaseGraphEventMap = {
   /**
    * when the canvas is clicked on (native dom event)
    */
-  onClick: (ev: MouseEvent) => void;
+  onClick: (ev: GraphMouseEvent) => void;
   /**
    * when the user clicks the mouse button on the canvas (native dom event)
    */
-  onMouseDown: (ev: MouseEvent) => void;
+  onMouseDown: (ev: GraphMouseEvent) => void;
   /**
    * when the user releases the mouse button on the canvas (native dom event)
    */
-  onMouseUp: (ev: MouseEvent) => void;
+  onMouseUp: (ev: GraphMouseEvent) => void;
   /**
    * when the user moves the mouse on the canvas (native dom event)
    */
-  onMouseMove: (ev: MouseEvent) => void;
+  onMouseMove: (ev: GraphMouseEvent) => void;
   /**
    * when the canvas is double clicked on (native dom event)
    */
-  onDblClick: (ev: MouseEvent) => void;
+  onDblClick: (ev: GraphMouseEvent) => void;
   /**
    * when the canvas is right clicked on (native dom event)
    */
-  onContextMenu: (ev: MouseEvent) => void;
+  onContextMenu: (ev: GraphMouseEvent) => void;
   /**
    * when a key is pressed down on the canvas (native dom event)
    */

@@ -32,7 +32,6 @@ export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (gra
   },
   createSelfDirectedEdge: {
     hint: 'You can even create self directed edges! Make sure you are in "directed" mode and drag an anchor inwards',
-    highlightElement: GRAPH_BUTTON_ID.edgeType,
     dismiss: {
       event: 'onEdgeAdded',
       predicate: (edge) => edge.to === edge.from

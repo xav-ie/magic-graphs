@@ -1,7 +1,8 @@
-import { onUnmounted, ref } from "vue"
+import { onMounted, onUnmounted, ref } from "vue"
 import type { Ref } from "vue"
 import type { Aggregator, UpdateAggregator } from "@graph/types"
 import type { Emitter as GraphEventEmitter } from "@graph/events"
+import type { Coordinate } from "@shape/types"
 
 export type UseAggregatorOptions = {
   canvas: Ref<HTMLCanvasElement | null | undefined>
@@ -50,19 +51,19 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
     clearInterval(loop)
   })
 
+  setTimeout(repaintLoop, 1000)
+
   /**
    * get all schema items at given coordinates
    *
-   * @param x - the x coord
-   * @param y - the y coord
    * @returns an array where the first item is the bottom most schema item and the last is the top most
    * @example // returns [node, nodeAnchor] where a nodeAnchor is sitting on top of a node
    * getSchemaItemsByCoordinates(200, 550)
    */
-  const getSchemaItemsByCoordinates = (x: number, y: number) => {
+  const getSchemaItemsByCoordinates = (coords: Coordinate) => {
     return aggregator.value
       .sort((a, b) => a.priority - b.priority)
-      .filter(item => item.shape.shapeHitbox({ x, y }) || item.shape.textHitbox?.({ x, y }))
+      .filter(item => item.shape.shapeHitbox(coords) || item.shape.textHitbox?.(coords))
   }
 
   return {

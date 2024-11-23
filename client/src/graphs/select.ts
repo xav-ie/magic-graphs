@@ -1,3 +1,4 @@
+import type { GraphMouseEvent } from "./compositions/useBaseGraph/types";
 import type { Graph, SchemaItem } from "./types";
 
 /**
@@ -41,12 +42,11 @@ export const selectFromGraph = (graph: Graph, predicate?: (item: SchemaItem) => 
 
   const selectedItemPromise = new Promise<SchemaItem | undefined>((res) => resolver = res);
 
-  const onClick = (event: MouseEvent) => {
-    const { offsetX, offsetY } = event;
-    const item = graph.getSchemaItemsByCoordinates(offsetX, offsetY).pop();
-    if (!item) return;
-    if (predicate && !predicate(item)) return;
-    resolve(item);
+  const onClick = ({ items }: GraphMouseEvent) => {
+    const topItem = items.at(-1);
+    if (!topItem) return;
+    if (predicate && !predicate(topItem)) return;
+    resolve(topItem);
   }
 
   const initialUserEditable = graph.settings.value.userEditable;
