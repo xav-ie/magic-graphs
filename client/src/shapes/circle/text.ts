@@ -13,7 +13,6 @@ import { CIRCLE_DEFAULTS } from ".";
 export const getTextAreaLocationOnCircle = (circle: Circle) => {
   const {
     at,
-    radius,
     textArea    
   } = { ...CIRCLE_DEFAULTS, ...circle };
 
