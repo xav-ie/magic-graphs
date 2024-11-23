@@ -93,6 +93,12 @@ export const useFocusGraph = (
 
   const resetFocus = () => setFocus([])
 
+  const focusAll = () => {
+    const nodeIds = graph.nodes.value.map(node => node.id)
+    const edgeIds = graph.edges.value.map(edge => edge.id)
+    setFocus([...nodeIds, ...edgeIds])
+  }
+
   const setFocusToAddedItem = ({ id }: { id: string }, { focus }: FocusOption) => {
     if (focus) setFocus([id])
   }
@@ -189,6 +195,10 @@ export const useFocusGraph = (
      * @returns true if the item is focused
      */
     isFocused,
+    /**
+     * Focus all nodes and edges
+     */
+    focusAll,
     /**
      * all the nodes that are currently focused
      */

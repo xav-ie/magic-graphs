@@ -69,11 +69,13 @@ export const useUserEditableGraph = (
       ['Meta+Z']: () => graph.undo(),
       ['Shift+Meta+Z']: () => graph.redo(),
       ['Backspace']: handleDeletion,
+      ['Meta+A']: graph.focusAll,
     },
     Windows: {
       ['Control+Z']: () => graph.undo(),
       ['Shift+Control+Z']: () => graph.redo(),
       ['Backspace']: handleDeletion,
+      ['Control+A']: graph.focusAll,
     },
   } as const
 
