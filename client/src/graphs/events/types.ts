@@ -10,7 +10,11 @@ import type {
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types";
 import type { GraphTheme } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
-import type { HistoryRecord, RedoHistoryOptions, UndoHistoryOptions } from "@graph/compositions/useHistoryGraph/types";
+import type {
+  HistoryRecord,
+  RedoHistoryOptions,
+  UndoHistoryOptions,
+} from "@graph/compositions/useHistoryGraph/types";
 import type { Coordinate } from "@shape/types";
 import type { GraphMouseEvent } from "@graph/compositions/useBaseGraph/types";
 

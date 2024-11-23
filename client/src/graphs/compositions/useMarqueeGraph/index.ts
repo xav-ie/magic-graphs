@@ -65,14 +65,14 @@ export const useMarqueeGraph = (
    * given a mouse event, engages or disengages the marquee box
    */
   const handleMarqueeEngagement = ({ items, coords }: GraphMouseEvent) => {
-    const topItem = items.pop()
+    const topItem = items.at(-1)
     if (topItem?.graphType !== 'encapsulated-node-box') showNodeAnchors()
     if (!topItem) engageMarqueeBox(coords)
   }
 
   const groupDrag = ({ items, coords }: GraphMouseEvent) => {
     if (!groupDragCoordinates.value) return;
-    const topItem = items.pop()
+    const topItem = items.at(-1)
     if (topItem?.graphType !== 'encapsulated-node-box') return
     const dx = coords.x - groupDragCoordinates.value.x
     const dy = coords.y - groupDragCoordinates.value.y
@@ -88,7 +88,7 @@ export const useMarqueeGraph = (
 
   const beginGroupDrag = ({ items, coords }: GraphMouseEvent) => {
     if (marqueeBox.value) return
-    const topItem = items.pop()
+    const topItem = items.at(-1)
     if (topItem?.graphType !== 'encapsulated-node-box') return
     groupDragCoordinates.value = coords
     graph.emit('onGroupDragStart', graph.focusedNodes.value, coords)

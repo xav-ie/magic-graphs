@@ -57,7 +57,6 @@ export const useBaseGraph = (
 
   const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
 
-
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
 
@@ -73,15 +72,15 @@ export const useBaseGraph = (
     const { offsetX, offsetY } = ev
     const x = invertedTransform.a * offsetX + invertedTransform.c * offsetY + invertedTransform.e;
     const y = invertedTransform.b * offsetX + invertedTransform.d * offsetY + invertedTransform.f;
-    const coords = { x, y }
-    const items = getSchemaItemsByCoordinates(coords)
-    console.log('coords', coords, 'items', JSON.stringify(items, null, 2))
-    graphAtMousePosition.value = { coords, items }
+    graphAtMousePosition.value = {
+      coords: { x, y },
+      items: getSchemaItemsByCoordinates({ x, y }),
+    }
   }
 
-  const graphMouseEv = (ev: MouseEvent) => ({
-    event: ev,
+  const graphMouseEv = (event: MouseEvent) => ({
     ...graphAtMousePosition.value,
+    event,
   })
 
   const mouseEvents: Partial<MouseEventMap> = {
@@ -193,7 +192,7 @@ export const useBaseGraph = (
    * @returns the node at given coords or undefined if not there or obscured by another schema item
    */
   const getNodeByCoordinates = (x: number, y: number) => {
-    const topItem = getSchemaItemsByCoordinates(x, y).pop()
+    const topItem = getSchemaItemsByCoordinates({ x, y }).pop()
     if (!topItem) return
     if (topItem.graphType !== 'node') return
     return getNode(topItem.id)
@@ -201,7 +200,7 @@ export const useBaseGraph = (
 
   let currHoveredNode: GNode | undefined;
   subscribe('onMouseMove', ({ items }) => {
-    const topItem = items.pop()
+    const topItem = items.at(-1)
     if (!topItem || topItem.graphType !== 'node') return
     const node = getNode(topItem.id)
     if (node === currHoveredNode) return

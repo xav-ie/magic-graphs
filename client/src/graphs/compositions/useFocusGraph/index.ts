@@ -66,7 +66,7 @@ export const useFocusGraph = (
   }
 
   const handleFocusChange = ({ items, coords }: GraphMouseEvent) => {
-    const topItem = items.pop()
+    const topItem = items.at(-1)
     if (!topItem) return shiftKeyHeldDown.value ? resetFocus() : undefined
 
     // handle text areas

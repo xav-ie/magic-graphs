@@ -5,6 +5,7 @@
 
 import type { SchemaItem } from "@graph/types"
 import type { Coordinate } from "@shape/types"
+import type { DeepReadonly } from "vue"
 
 export type FocusOption = {
   /**
@@ -94,9 +95,9 @@ export type GraphAtMousePosition = {
  * a standard mouse event along with extra graph related info
  * regarding the mouse position
  */
-export type GraphMouseEvent = GraphAtMousePosition & {
+export type GraphMouseEvent = DeepReadonly<GraphAtMousePosition & {
   /**
    * the native browser event that triggered this graph event
    */
   event: MouseEvent,
-}
+}>

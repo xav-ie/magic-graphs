@@ -43,7 +43,7 @@ export const selectFromGraph = (graph: Graph, predicate?: (item: SchemaItem) => 
   const selectedItemPromise = new Promise<SchemaItem | undefined>((res) => resolver = res);
 
   const onClick = ({ items }: GraphMouseEvent) => {
-    const topItem = items.pop();
+    const topItem = items.at(-1);
     if (!topItem) return;
     if (predicate && !predicate(topItem)) return;
     resolve(topItem);

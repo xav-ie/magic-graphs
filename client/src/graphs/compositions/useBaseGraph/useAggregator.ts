@@ -1,4 +1,4 @@
-import { onUnmounted, ref } from "vue"
+import { onMounted, onUnmounted, ref } from "vue"
 import type { Ref } from "vue"
 import type { Aggregator, UpdateAggregator } from "@graph/types"
 import type { Emitter as GraphEventEmitter } from "@graph/events"
@@ -50,6 +50,8 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
   onUnmounted(() => {
     clearInterval(loop)
   })
+
+  setTimeout(repaintLoop, 1000)
 
   /**
    * get all schema items at given coordinates

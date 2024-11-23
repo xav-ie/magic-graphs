@@ -137,7 +137,7 @@ export const useNodeAnchorGraph = (
    * the anchor at the given event location
    */
   const getAnchor = ({ items }: GraphMouseEvent) => {
-    const topItem = items.pop()
+    const topItem = items.at(-1)
     if (!topItem || topItem.graphType !== 'node-anchor') return
     const { id: anchorId } = topItem
     return nodeAnchors.value.find((anchor) => anchor.id === anchorId)
@@ -175,7 +175,7 @@ export const useNodeAnchorGraph = (
   const updateParentNode = ({ items }: GraphMouseEvent) => {
     if (activeAnchor.value) return
 
-    const topItem = items.pop()
+    const topItem = items.at(-1)
     if (!topItem) return resetParentNode()
     if (topItem.graphType !== 'node') return
 

@@ -14,15 +14,13 @@ export const useDraggableGraph = (
 
   const activeDragNode = ref<ActiveDragNode | undefined>()
 
-  const beginDrag = (ev: GraphMouseEvent) => {
-    console.log(JSON.stringify(ev, null, 2))
-    console.log(JSON.stringify(graph.graphAtMousePosition.value, null, 2))
-    // const topItem = items.pop()
-    // if (!topItem || topItem.graphType !== 'node') return
-    // const node = graph.getNode(topItem.id)
-    // if (!node) return
-    // activeDragNode.value = { node, coords }
-    // graph.emit('onNodeDragStart', node)
+  const beginDrag = ({ items, coords }: GraphMouseEvent) => {
+    const topItem = items.at(-1)
+    if (!topItem || topItem.graphType !== 'node') return
+    const node = graph.getNode(topItem.id)
+    if (!node) return
+    activeDragNode.value = { node, coords }
+    graph.emit('onNodeDragStart', node)
   }
 
   const drop = () => {

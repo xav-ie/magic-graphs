@@ -8,6 +8,7 @@ import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types"
 import { useMarqueeGraph } from '@graph/compositions/useMarqueeGraph'
 import type { HistoryRecord } from '../useHistoryGraph/types'
 import { useShortcutPressed } from './useShortcutPressed'
+import type { GraphMouseEvent } from '../useBaseGraph/types'
 
 /**
  * The user editable graph implements handlers for node creation,
@@ -24,14 +25,12 @@ export const useUserEditableGraph = (
 
   const graph = useMarqueeGraph(canvas, options)
 
-  const handleNodeCreation = (ev: MouseEvent) => {
-    const { offsetX, offsetY } = ev
-    graph.addNode({ x: offsetX, y: offsetY })
+  const handleNodeCreation = ({ coords }: GraphMouseEvent) => {
+    graph.addNode(coords)
   }
 
   const handleEdgeCreation = (fromNode: GNode, anchor: NodeAnchor) => {
-    const { x, y } = anchor
-    const itemStack = graph.getSchemaItemsByCoordinates(x, y)
+    const itemStack = graph.getSchemaItemsByCoordinates(anchor)
     const toNodeSchema = itemStack.findLast((item) => item.graphType === 'node')
     if (!toNodeSchema) return
     const toNode = graph.getNode(toNodeSchema.id)

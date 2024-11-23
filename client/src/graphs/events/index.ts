@@ -1,3 +1,4 @@
+import { clone } from '@utils/clone';
 import type { GraphEventMap as ImportedGraphEventMap } from './types'
 
 /**
@@ -49,7 +50,7 @@ export const generateSubscriber = <T extends GraphEventMap>(eventBus: EventMapTo
    */
   emit: <K extends keyof T>(event: K, ...args: PermissiveParams<T[K]>) => {
     for (const fn of eventBus[event]) {
-      fn(...args)
+      fn(...args);
     }
   }
 });
