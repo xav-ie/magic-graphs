@@ -9,7 +9,6 @@ import {
 } from "@shape/text";
 import { rectHitbox } from "@shape/rect/hitbox";
 import { RECT_DEFAULTS } from ".";
-import { rotatePoint } from "@shape/helpers";
 
 export const getTextAreaLocationOnRect = (rect: Rect) => {
   const {
@@ -30,7 +29,6 @@ export const getTextAreaLocationOnRect = (rect: Rect) => {
 
   const centerX = at.x + width / 2;
   const centerY = at.y + height / 2;
-
 
 
   return {

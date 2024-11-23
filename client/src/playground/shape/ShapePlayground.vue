@@ -38,9 +38,9 @@
         },
         textArea: {
           text: {
-            content: '--',
+            content: 'dsadsadsadsadsadsadsa',
             color: colors.WHITE,
-            fontSize: 55,
+            fontSize: 10,
           },
           color: colors.TRANSPARENT
         }
@@ -55,7 +55,7 @@
         color: colors.BLUE_500,
         textArea: {
           text: {
-            content: 'hihi',
+            content: 'hihidsadsadsadsadsa',
             fontSize: 20,
           },
 
