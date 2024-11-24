@@ -1,4 +1,4 @@
-import { onMounted, ref, onBeforeUnmount } from "vue";
+import { onMounted, ref } from "vue";
 import type { Coordinate } from "@shape/types";
 import { getCtx } from "@utils/ctx";
 import type {
@@ -11,7 +11,7 @@ import { ANNOTATION_DEFAULTS } from './types'
 import type { Graph } from "@graph/types";
 import type { GraphMouseEvent } from "@graph/compositions/useBaseGraph/types";
 
-export const useAnnotation = (
+export const useGraphAnnotation = (
   graph: Graph,
   options: AnnotationOptions = {}
 ) => {
@@ -85,9 +85,9 @@ export const useAnnotation = (
   };
 
   /**
-   * starts drawing a line from the current mouse position
+   * starts drawing from the current mouse position
    */
-  const startDrawing = (event: MouseEvent) => {
+  const startDrawing = ({ coords }: GraphMouseEvent) => {
     const ctx = getCtx(annotationCanvas);
     isDrawing.value = true;
 
@@ -174,46 +174,31 @@ export const useAnnotation = (
   };
 
   const activate = () => {
+    if (!annotationCanvas.value) return;
     isActive.value = true;
-    graph.settings.value.userEditable = false;
-    graph.settings.value.marquee = false;
-   
-    if (annotationCanvas.value) annotationCanvas.value.style.display = ''
+    graph.subscribe('onMouseDown', startDrawing)
+    graph.subscribe('onMouseMove', drawLine)
+    graph.subscribe('onMouseUp', stopDrawing)
+
+    annotationCanvas.value.style.display = ''
   };
 
   const deactivate = () => {
+    if (!annotationCanvas.value) return;
     isActive.value = false;
-    graph.settings.value.userEditable = true;
-    graph.settings.value.marquee = true;
-    
-    if (annotationCanvas.value) annotationCanvas.value.style.display = 'none'
+    graph.unsubscribe('onMouseDown', startDrawing)
+    graph.unsubscribe('onMouseMove', drawLine)
+    graph.unsubscribe('onMouseUp', stopDrawing)
+
+    annotationCanvas.value.style.display = 'none'
   };
 
-  const addEventListeners = () => {
-    if (!annotationCanvas.value) return;
-
-    annotationCanvas.value.addEventListener("mousedown", startDrawing);
-    annotationCanvas.value.addEventListener("mousemove", drawLine);
-    annotationCanvas.value.addEventListener("mouseup", stopDrawing);
-    // window.addEventListener("resize", draw);
-  };
-
-  const removeEventListeners = () => {
-    if (!annotationCanvas.value) return;
-
-    annotationCanvas.value.removeEventListener("mousedown", startDrawing);
-    annotationCanvas.value.removeEventListener("mousemove", drawLine);
-    annotationCanvas.value.removeEventListener("mouseup", stopDrawing);
-    // window.removeEventListener("resize", draw);
-  };
-
-  
   onMounted(() => {
-    const canvas = document.getElementById('annotation-canvas') 
-    if (canvas) annotationCanvas.value = canvas as HTMLCanvasElement
-  })
-  onMounted(addEventListeners);
-  onBeforeUnmount(removeEventListeners);
+    const canvas = document.getElementById('annotation-canvas')
+    if (!canvas) throw new Error('annotation canvas not found')
+    if (!(canvas instanceof HTMLCanvasElement)) throw new Error('annotation canvas is not a canvas element')
+    annotationCanvas.value = canvas
+  });
 
   return {
     selectedColor,
@@ -229,4 +214,4 @@ export const useAnnotation = (
   };
 };
 
-export type AnnotationControls = ReturnType<typeof useAnnotation>;
+export type AnnotationControls = ReturnType<typeof useGraphAnnotation>;

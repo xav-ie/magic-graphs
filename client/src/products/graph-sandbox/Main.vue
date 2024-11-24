@@ -9,7 +9,7 @@
   import IslandMarkup from "./IslandMarkup.vue";
   import SimulationDropdown from "./SimulationDropdown.vue";
   import ExperienceDropdown from "./ExperienceDropdown.vue";
-  import { useAnnotation } from "@playground/annotation/useGraphAnnotation";
+  import { useGraphAnnotation } from "@playground/annotation/useGraphAnnotation";
   import AnnotationControls from "@playground/annotation/AnnotationControls.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
@@ -18,7 +18,7 @@
   });
 
   const activeSimulation = ref<SimulationDeclaration>();
-  const annotationControls = useAnnotation(graph);
+  const annotationControls = useGraphAnnotation(graph);
 </script>
 
 <template>
