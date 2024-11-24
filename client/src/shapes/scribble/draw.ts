@@ -15,6 +15,8 @@ export const drawScribbleWithCtx = (scribble: Scribble) => (ctx: CanvasRendering
  
   const draw = () => {
     ctx.strokeStyle = color;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.lineWidth = brushWeight;
     ctx.beginPath();
     const [first, ...rest] = points;
@@ -49,4 +51,7 @@ export const drawScribbleWithCtx = (scribble: Scribble) => (ctx: CanvasRendering
 
   type === "draw" ? draw() : erase()
 
+
+  ctx.lineCap = "butt";
+  ctx.lineJoin = "miter";
 }
