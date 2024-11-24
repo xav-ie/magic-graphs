@@ -4,7 +4,8 @@
   import type { ColorMap } from "../useMarkupColorizer";
   import InputColor from "./InputColor.vue";
   import type { Color } from "@utils/colors";
-  import { DEFAULT_MARKUP_COLOR } from "../types";
+  import { DEFAULT_MARKUP_COLOR, MARKUP_USETHEME_ID } from "../types";
+  import { useTheme } from "@graph/themes/useTheme";
 
   const props = defineProps<{
     graph: Graph;
@@ -16,9 +17,11 @@
     const itemColors = new Set(
       highlightedIds.map((id) => props.colorMap.get(id))
     );
-    if (itemColors.has(undefined)) return DEFAULT_MARKUP_COLOR;
-    if (itemColors.size !== 1) return DEFAULT_MARKUP_COLOR;
-    return itemColors.values().next().value
+    if (itemColors.has(undefined)) return
+    if (itemColors.size !== 1) return
+    const color = itemColors.values().next().value;
+    if (!color) return DEFAULT_MARKUP_COLOR;
+    return color;
   };
 
   const activeColor = ref(getColor());
@@ -49,6 +52,9 @@
     await new Promise((resolve) => setTimeout(resolve, 0));
     activeColor.value = getColor();
   });
+
+  const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID);
+  setTheme('linkPreviewColor', () => activeColor.value ?? DEFAULT_MARKUP_COLOR);
 </script>
 
 <template>
