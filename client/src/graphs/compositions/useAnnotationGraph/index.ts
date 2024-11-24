@@ -16,8 +16,8 @@ export const useAnnotationGraph = (
 ) => {
   const graph = useMarqueeGraph(canvas, options)
 
-  const selectedColor = ref<Color>(COLORS.at(-1)!)
-  const selectedBrushWeight = ref(BRUSH_WEIGHTS.at(-1)!)
+  const selectedColor = ref<Color>(COLORS[0])
+  const selectedBrushWeight = ref(BRUSH_WEIGHTS[1])
   const erasing = ref(false)
   const erasedScribbleIds = ref(new Set<string>())
 
