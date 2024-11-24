@@ -27,6 +27,11 @@
     selectedColor.value = color;
     erasing.value = false;
   };
+
+  const selectBrushWeight = (brushWeight: number) => {
+    selectedBrushWeight.value = brushWeight;
+    erasing.value = false;
+  }
 </script>
 
 <template>
@@ -50,7 +55,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         v-for="(weight, index) in BRUSH_WEIGHTS"
-        @click="selectedBrushWeight = weight"
+        @click="selectBrushWeight(weight)"
         :active="selectedBrushWeight === weight"
         :key="weight"
         :color="colors.TRANSPARENT"
