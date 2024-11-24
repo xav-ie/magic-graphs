@@ -1,5 +1,5 @@
 import type { GEdge, SchemaItem } from '@graph/types'
-import { getConnectedNodes } from '@graph/helpers'
+import { getConnectedNodes, getEdgesAlongPath } from '@graph/helpers'
 import { getLargestAngularSpace } from '@shape/helpers'
 import type { BaseGraph } from '@graph/compositions/useBaseGraph'
 import { GOLDEN_RATIO } from '@utils/math'
@@ -22,8 +22,9 @@ export const getEdgeSchematic = (
   const { displayEdgeLabels, isGraphDirected } = graph.settings.value
 
   const [from, to] = getConnectedNodes(edge.id, graph)
+  const edgesAlongPath = getEdgesAlongPath(from.id, to.id, graph)
 
-  const isThereAnEdgeGoingTheOtherWay = graph.edges.value.some(e => e.from === to.id && e.to === from.id)
+  const multipleEdgesInPath = edgesAlongPath.length > 1
   const isSelfDirected = to === from
 
   const fromNodeBorderWidth = graph.getTheme('nodeBorderWidth', from)
@@ -35,13 +36,16 @@ export const getEdgeSchematic = (
   const angle = Math.atan2(to.y - from.y, to.x - from.x);
 
   const arrowHeadSpacingAwayFromNode = (toNodeBorderWidth / 2) + WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE
-  const arrowDrawLocation = {
-    x: to.x - (toNodeSize + arrowHeadSpacingAwayFromNode) * Math.cos(angle),
-    y: to.y - (toNodeSize + arrowHeadSpacingAwayFromNode) * Math.sin(angle),
+  const arrowDrawOffset = {
+    x: (toNodeSize + arrowHeadSpacingAwayFromNode) * Math.cos(angle),
+    y: (toNodeSize + arrowHeadSpacingAwayFromNode) * Math.sin(angle),
   }
 
   const edgeStart = { x: from.x, y: from.y }
-  const edgeEnd = arrowDrawLocation
+  const edgeEnd = {
+    x: to.x - (isGraphDirected ? arrowDrawOffset.x : 0),
+    y: to.y - (isGraphDirected ? arrowDrawOffset.y : 0),
+  }
 
   const edgeWidth = graph.getTheme('edgeWidth', edge)
 
@@ -51,7 +55,7 @@ export const getEdgeSchematic = (
    */
   const bidirectionalEdgeSpacing = edgeWidth * 1.2
 
-  if (isThereAnEdgeGoingTheOtherWay) {
+  if (multipleEdgesInPath) {
     edgeStart.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
     edgeStart.y += Math.sin(angle + Math.PI / 2) * bidirectionalEdgeSpacing
 
@@ -132,8 +136,8 @@ export const getEdgeSchematic = (
 
   if (!isGraphDirected) {
     const shape = line({
-      start: { x: from.x, y: from.y },
-      end: { x: to.x, y: to.y },
+      start: edgeStart,
+      end: edgeEnd,
       width: edgeWidth,
       color,
       textArea,

@@ -172,7 +172,7 @@ const isUndirectedEdgeFlowingOutOfNode = (edge: GEdge, nodeId: GNode['id']) => {
 }
 
 /**
- * true if the edge flows out of the node, false otherwise
+ * checks if an edge originates from a node
  *
  * @param edge - the edge to check
  * @param nodeId - the id of the node to check
@@ -197,7 +197,7 @@ const isUndirectedEdgeFlowingIntoNode = (edge: GEdge, nodeId: GNode['id']) => {
 }
 
 /**
- * true if the edge flows out of the node, false otherwise
+ * checks if an edge goes to a node
  *
  * @param edge - the edge to check
  * @param nodeId - the id of the node to check
@@ -211,4 +211,26 @@ export const isEdgeFlowingIntoNode = (
 ) => {
   const fn = graph.settings.value.isGraphDirected ? isDirectedEdgeFlowingIntoNode : isUndirectedEdgeFlowingIntoNode
   return fn(edge, nodeId)
+}
+
+/**
+ * gets all the edges along a path connecting two nodes. only checks direct connections.
+ *
+ * @param node1Id - the first node
+ * @param node2Id - the second node
+ * @param graph - the graph instance
+ * @returns an array of edges that connect the two nodes.
+ */
+export const getEdgesAlongPath = (
+  node1Id: GNode['id'],
+  node2Id: GNode['id'],
+  graph: Pick<Graph, 'edges'>
+) => {
+  const isConnecting = (edge: GEdge) => {
+    const fromNode1ToNode2 = edge.from === node1Id && edge.to === node2Id
+    const fromNode2ToNode1 = edge.from === node2Id && edge.to === node1Id
+    return fromNode1ToNode2 || fromNode2ToNode1
+  }
+
+  return graph.edges.value.filter(isConnecting)
 }
