@@ -6,6 +6,7 @@
   import ToolbarButtonGroup from "./ToolbarButtonGroup.vue";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
   import ToolbarHint from "./ToolbarHint.vue";
+  import GraphInfoMenu from "./GraphInfoMenu.vue";
 
   const props = defineProps<{
     graph: Graph;
@@ -99,14 +100,12 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="eraseItems"
-        :disabled="graph.focusedItemIds.value.size === 0 || graph.annotationActive.value"
+        :disabled="
+          graph.focusedItemIds.value.size === 0 || graph.annotationActive.value
+        "
       >
         mdi-eraser
       </ToolbarButton>
-    </ToolbarButtonGroup>
-
-    <ToolbarButtonGroup>
-      <ToolbarButton>mdi-account-group</ToolbarButton>
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
@@ -116,6 +115,21 @@
       >
         mdi-pencil
       </ToolbarButton>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonGroup>
+      <GraphInfoMenu
+        :graph="graph"
+        v-slot="{ isActive }"
+      >
+        <ToolbarButton
+          :active="isActive"
+        >mdi-information-outline</ToolbarButton>
+      </GraphInfoMenu>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonGroup>
+      <ToolbarButton>mdi-account-group</ToolbarButton>
     </ToolbarButtonGroup>
   </Toolbar>
 

@@ -40,7 +40,7 @@
       <ToolbarButton
         v-for="color in COLORS"
         @click="selectColor(color)"
-        :active="selectedColor === color"
+        :active="selectedColor === color && !erasing"
         :key="color"
         :color="color"
       >

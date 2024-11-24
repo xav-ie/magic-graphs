@@ -141,11 +141,11 @@ export const getInboundEdges = (nodeId: string, graph: Graph) => {
   return fn(nodeId, graph.edges.value)
 }
 
-const getDirectedOutboundEdges = (nodeId: string, edges: GEdge[]) => {
+export const getDirectedOutboundEdges = (nodeId: string, edges: GEdge[]) => {
   return edges.filter(edge => isDirectedEdgeFlowingOutOfNode(edge, nodeId))
 }
 
-const getUndirectedOutboundEdges = (nodeId: string, edges: GEdge[]) => {
+export const getUndirectedOutboundEdges = (nodeId: string, edges: GEdge[]) => {
   return edges.filter(edge => isUndirectedEdgeFlowingOutOfNode(edge, nodeId))
 }
 

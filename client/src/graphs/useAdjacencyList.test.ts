@@ -20,9 +20,13 @@ describe('adjacency lists', () => {
     throw new Error('Failed to create nodes')
   }
 
-  graph.addEdge({ from: nodeA.id, to: nodeB.id })
-  graph.addEdge({ from: nodeB.id, to: nodeC.id })
-  graph.addEdge({ from: nodeC.id, to: nodeC.id })
+  const edge1 = graph.addEdge({ from: nodeA.id, to: nodeB.id })
+  const edge2 = graph.addEdge({ from: nodeB.id, to: nodeC.id })
+  const edge3 = graph.addEdge({ from: nodeC.id, to: nodeC.id })
+
+  if (!edge1 || !edge2 || !edge3) {
+    throw new Error('Failed to create edges')
+  }
 
   test('get adjacency list', () => {
     graph.settings.value.isGraphDirected = true
