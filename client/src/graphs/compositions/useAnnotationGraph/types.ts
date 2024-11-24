@@ -7,4 +7,4 @@ export const COLORS = [
   colors.YELLOW_600,
 ];
 
-export const BRUSH_WEIGHTS = [1, 3, 5, 7];
+export const BRUSH_WEIGHTS = [3, 6, 9, 12];

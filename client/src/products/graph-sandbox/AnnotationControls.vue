@@ -49,7 +49,7 @@
 
     <ToolbarButtonGroup>
       <ToolbarButton
-        v-for="weight in BRUSH_WEIGHTS"
+        v-for="(weight, index) in BRUSH_WEIGHTS"
         @click="selectedBrushWeight = weight"
         :active="selectedBrushWeight === weight"
         :key="weight"
@@ -60,7 +60,7 @@
             'bg-gray-400',
             'rounded-md',
             'w-[15px]',
-            `h-[${weight * 2}px]`,
+            `h-[${index * 5 + 1}px]`,
           ]"
         ></div>
       </ToolbarButton>
