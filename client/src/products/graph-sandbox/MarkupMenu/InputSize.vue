@@ -4,15 +4,13 @@
   import { MARKUP_SIZES } from "../types";
   import type { MarkupSize } from "../types";
 
-  const SIZES = MARKUP_SIZES;
-
   const activeSize = defineModel<MarkupSize>();
 </script>
 
 <template>
   <ButtonGroup>
     <Button
-      v-for="size in SIZES"
+      v-for="size in MARKUP_SIZES"
       @click="activeSize = size"
       :key="size"
       :active="activeSize === size"

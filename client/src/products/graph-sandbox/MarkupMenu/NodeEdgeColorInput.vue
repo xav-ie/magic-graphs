@@ -4,6 +4,7 @@
   import type { ColorMap } from "../useMarkupColorizer";
   import InputColor from "./InputColor.vue";
   import type { Color } from "@utils/colors";
+  import { DEFAULT_MARKUP_COLOR } from "../types";
 
   const props = defineProps<{
     graph: Graph;
@@ -15,8 +16,8 @@
     const itemColors = new Set(
       highlightedIds.map((id) => props.colorMap.get(id))
     );
-    if (itemColors.has(undefined)) return
-    if (itemColors.size > 1) return
+    if (itemColors.has(undefined)) return DEFAULT_MARKUP_COLOR;
+    if (itemColors.size !== 1) return DEFAULT_MARKUP_COLOR;
     return itemColors.values().next().value
   };
 
@@ -29,14 +30,30 @@
     activeColor.value = value;
   };
 
-  props.graph.subscribe("onFocusChange", () => {
+  props.graph.subscribe('onNodeAdded', (node) => {
+    if (!activeColor.value) return;
+    props.colorMap.set(node.id, activeColor.value);
+  });
+
+  props.graph.subscribe('onEdgeAdded', (edge) => {
+    if (!activeColor.value) return;
+    props.colorMap.set(edge.id, activeColor.value);
+  });
+
+  props.graph.subscribe("onFocusChange", async (newFocusedItems) => {
+    if (newFocusedItems.size === 0) return;
+    /**
+     * wait for the next tick to ensure that onNodeAdded and onEdgeAdded
+     * have a chance to set the color of the just added node or edge
+     */
+    await new Promise((resolve) => setTimeout(resolve, 0));
     activeColor.value = getColor();
   });
 </script>
 
 <template>
   <InputColor
-    :model-value="activeColor"
     @update:model-value="setActiveColor"
+    :model-value="activeColor"
   />
 </template>

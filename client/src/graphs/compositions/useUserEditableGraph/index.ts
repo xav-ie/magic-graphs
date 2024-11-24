@@ -25,8 +25,9 @@ export const useUserEditableGraph = (
 
   const graph = useAnnotationGraph(canvas, options)
 
-  const handleNodeCreation = ({ coords }: GraphMouseEvent) => {
+  const handleNodeCreation = ({ coords, event }: GraphMouseEvent) => {
     graph.addNode(coords)
+    setTimeout(() => graph.updateGraphAtMousePosition(event), 10)
   }
 
   const handleEdgeCreation = (fromNode: GNode, anchor: NodeAnchor) => {
