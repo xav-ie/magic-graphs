@@ -32,6 +32,9 @@ export type SelectFromGraphOptions = {
   predicate: (item: SchemaItem) => boolean;
 };
 
+/**
+ * default predicate for `selectFromGraph`
+ */
 const DEFAULT_PREDICATE = () => true;
 
 /**
@@ -39,7 +42,7 @@ const DEFAULT_PREDICATE = () => true;
  * or undefined if the cancel handler is invoked
  *
  * @param graph the graph to select from
- * @param predicate
+ * @param options options for the selection process
  * @returns a promise that resolves to the selected item or undefined if the selection was cancelled
  * @example const { selectedItemPromise, cancelSelection } = selectFromGraph(graph);
  * const selectedItem = await selectedItemPromise;
@@ -47,7 +50,7 @@ const DEFAULT_PREDICATE = () => true;
  * // selection resolved. do something with the selected item
  */
 export const selectFromGraph = (graph: Graph, {
-  predicate = DEFAULT_PREDICATE,
+  predicate = DEFAULT_PREDICATE
 }: Partial<SelectFromGraphOptions>) => {
   let resolver: (value: SchemaItem | PromiseLike<SchemaItem> | undefined) => void;
 
