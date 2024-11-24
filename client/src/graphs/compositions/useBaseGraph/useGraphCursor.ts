@@ -40,7 +40,7 @@ export type Cursor =
   | "row-resize"
   | "all-scroll"
   | "zoom-in"
-  | "zoom-out";
+  | "zoom-out"
 
 export const useGraphCursor = ({
   subscribe,
@@ -57,7 +57,8 @@ export const useGraphCursor = ({
   const graphToCursorMap = ref<Partial<Record<SchemaItem['graphType'], Cursor>>>({
     'node': 'grab',
     'edge': 'pointer',
-    'node-anchor': 'grab'
+    'node-anchor': 'grab',
+    'encapsulated-node-box': 'move',
   })
 
   const selectModeGraphTypes = ref<SchemaItem['graphType'][] | undefined>()

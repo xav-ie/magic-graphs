@@ -8,9 +8,10 @@ import type { Graph, SchemaItem } from "./types";
  * @returns a promise that resolves to the selected node schema or
  * undefined if the selection was cancelled
  */
-export const selectNode = (graph: Graph) => {
-  return selectFromGraph(graph, item => item.graphType === 'node');
-};
+export const selectNode = (graph: Graph) => selectFromGraph(graph, {
+  predicate: item => item.graphType === 'node',
+  cursorSelectModeGraphTypes: ['node'],
+});
 
 /**
  * selects schema items only of graph type 'edge'
@@ -19,8 +20,23 @@ export const selectNode = (graph: Graph) => {
  * @returns a promise that resolves to the selected edge schema or
  * undefined if the selection was cancelled
  */
-export const selectEdge = (graph: Graph) => {
-  return selectFromGraph(graph, item => item.graphType === 'edge');
+export const selectEdge = (graph: Graph) => selectFromGraph(graph, {
+  predicate: item => item.graphType === 'edge',
+  cursorSelectModeGraphTypes: ['edge'],
+});
+
+export type SelectFromGraphOptions = {
+  /**
+   * only items that satisfy this predicate will be selectable.
+   * if left undefined, all items in the graph will be selectable
+   * @default () => true
+   */
+  predicate: (item: SchemaItem) => boolean;
+  /**
+   * the graph types that will be selectable in cursor select mode
+   * @default ['node', 'edge']
+   */
+  cursorSelectModeGraphTypes: SchemaItem['graphType'][];
 };
 
 /**
@@ -28,24 +44,24 @@ export const selectEdge = (graph: Graph) => {
  * or undefined if the cancel handler is invoked
  *
  * @param graph the graph to select from
- * @param predicate only items that satisfy this predicate will be selectable.
- * if left undefined, all items in the graph will be selectable
+ * @param predicate
  * @returns a promise that resolves to the selected item or undefined if the selection was cancelled
  * @example const { selectedItemPromise, cancelSelection } = selectFromGraph(graph);
  * const selectedItem = await selectedItemPromise;
  * if (!selectedItem) return; // selection was cancelled
  * // selection resolved. do something with the selected item
  */
-export const selectFromGraph = (graph: Graph, predicate?: (item: SchemaItem) => boolean) => {
-
+export const selectFromGraph = (graph: Graph, {
+  predicate = () => true,
+  cursorSelectModeGraphTypes = ['node', 'edge'],
+}: SelectFromGraphOptions) => {
   let resolver: (value: SchemaItem | PromiseLike<SchemaItem> | undefined) => void;
 
   const selectedItemPromise = new Promise<SchemaItem | undefined>((res) => resolver = res);
 
   const onClick = ({ items }: GraphMouseEvent) => {
     const topItem = items.at(-1);
-    if (!topItem) return;
-    if (predicate && !predicate(topItem)) return;
+    if (!topItem || !predicate(topItem)) return;
     resolve(topItem);
   }
 
@@ -59,6 +75,7 @@ export const selectFromGraph = (graph: Graph, predicate?: (item: SchemaItem) => 
     graph.subscribe('onClick', onClick);
     graph.settings.value.userEditable = false;
     graph.settings.value.focusable = false;
+    graph.activateCursorSelectMode(cursorSelectModeGraphTypes);
   }
 
   /**
@@ -68,6 +85,7 @@ export const selectFromGraph = (graph: Graph, predicate?: (item: SchemaItem) => 
     graph.unsubscribe('onClick', onClick);
     graph.settings.value.userEditable = initialUserEditable;
     graph.settings.value.focusable = initialFocusable;
+    graph.deactivateCursorSelectMode();
   }
 
   /**
@@ -94,7 +112,7 @@ export const selectFromGraph = (graph: Graph, predicate?: (item: SchemaItem) => 
      * selection was cancelled by calling the cancel handler
      */
     selectedItemPromise,
-    cancelSelection
+    cancelSelection,
   };
 };
 
