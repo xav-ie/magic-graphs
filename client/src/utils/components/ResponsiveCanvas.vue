@@ -17,7 +17,6 @@
 
   const mainCanvasRef = ref<HTMLCanvasElement>();
   const bgCanvas = ref<HTMLCanvasElement>();
-  const annotationCanvas = ref<HTMLCanvasElement>();
 
   const props = defineProps<{
     color: Color;
@@ -157,16 +156,11 @@
     const { scale, origin } = controls;
 
     const bgCanvasCtx = getCtx(bgCanvas.value);
-    const annotationCanvasCtx = getCtx(annotationCanvas.value);
 
-    const contexts = [bgCanvasCtx, annotationCanvasCtx];
-
-    for (const ctx of contexts) {
-      ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
-      ctx.resetTransform();
-      ctx.translate(origin.value.x, origin.value.y);
-      ctx.scale(scale.value, scale.value);
-    }
+    bgCanvasCtx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
+    bgCanvasCtx.resetTransform();
+    bgCanvasCtx.translate(origin.value.x, origin.value.y);
+    bgCanvasCtx.scale(scale.value, scale.value);
 
     debouncedDrawBackgroundPattern();
   });
@@ -192,20 +186,6 @@
       :height="canvasHeight"
       :class="[`w-[${canvasWidth}px]`, `h-[${canvasHeight}px]`]"
       id="responsive-canvas"
-    ></canvas>
-
-    <canvas
-      ref="annotationCanvas"
-      :width="canvasWidth"
-      :height="canvasHeight"
-      :class="[
-        `w-[${canvasWidth}px]`,
-        `h-[${canvasHeight}px]`,
-        'absolute',
-        'top-0',
-      ]"
-      style="display: none"
-      id="annotation-canvas"
     ></canvas>
 
     <canvas
