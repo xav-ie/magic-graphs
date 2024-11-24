@@ -8,7 +8,7 @@ export const socket = ref<Socket | undefined>();
 export const collaborators = ref<CollaboratorMap>({});
 export const roomId = ref<string | undefined>();
 
-const connect = async () => new Promise<void>((res, rej) => {
+export const connect = async () => new Promise<void>((res, rej) => {
   if (socket.value) return res()
 
   socket.value = io(SOCKET_URL)
@@ -24,4 +24,9 @@ const connect = async () => new Promise<void>((res, rej) => {
   })
 })
 
-const disconnect = () => {}
+export const disconnect = () => {
+  if (!socket.value) return
+
+  socket.value.disconnect()
+  socket.value = undefined
+}
