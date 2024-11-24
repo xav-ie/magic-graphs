@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import type { Ref } from "vue";
 import type { SchemaItem } from "@graph/types";
 import type { GraphAtMousePosition, GraphMouseEvent } from "./types";
@@ -52,17 +52,37 @@ export const useGraphCursor = ({
   graphAtMousePosition: Ref<GraphAtMousePosition>;
 }) => {
   const isMouseDown = ref(false)
+  const graphCursorDisabled = ref(false)
 
   const graphToCursorMap = ref<Partial<Record<SchemaItem['graphType'], Cursor>>>({
-    'node': 'pointer',
+    'node': 'grab',
     'edge': 'pointer',
     'node-anchor': 'grab'
   })
 
+  const selectModeGraphTypes = ref<SchemaItem['graphType'][] | undefined>()
+
+  const inSelectMode = computed(() => !!selectModeGraphTypes.value)
+
+  const activateCursorSelectMode = (selectableTypes: SchemaItem['graphType'][]) => {
+    selectModeGraphTypes.value = selectableTypes
+  }
+
+  const deactivateCursorSelectMode = () => {
+    selectModeGraphTypes.value = undefined
+  }
+
   const getCursorType = (item: SchemaItem | undefined) => {
-    if (!item) return 'default'
+    if (graphCursorDisabled.value || !item) return 'default'
+
+    if (inSelectMode.value) {
+      const isSelectable = selectModeGraphTypes.value?.includes(item.graphType)
+      return isSelectable ? 'pointer' : 'default'
+    }
+
     const cursor = graphToCursorMap.value[item.graphType] ?? 'default'
     if (cursor === 'grab' && isMouseDown.value) return 'grabbing'
+
     return cursor
   }
 
@@ -96,5 +116,19 @@ export const useGraphCursor = ({
      * changing this mapping will change the cursor type when hovering over the graph.
      */
     graphToCursorMap,
+    /**
+     * activates a cursor select mode, where only the specified graph types will receive a pointer cursor.
+     * everything else will receive the default cursor as long as this mode is active.
+     * @param selectableTypes - the graph types that will be selectable.
+     */
+    activateCursorSelectMode,
+    /**
+     * deactivates the cursor select mode.
+     */
+    deactivateCursorSelectMode,
+    /**
+     * when the graph cursor is disabled, the cursor will always be the default cursor.
+     */
+    graphCursorDisabled,
   }
 };

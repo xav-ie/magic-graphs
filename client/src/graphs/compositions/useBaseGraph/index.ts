@@ -66,7 +66,7 @@ export const useBaseGraph = (
     items: [],
   })
 
-  const { graphToCursorMap } = useGraphCursor({
+  const graphCursorControls = useGraphCursor({
     canvas,
     subscribe,
     graphAtMousePosition,
@@ -296,8 +296,9 @@ export const useBaseGraph = (
     reset,
 
     canvas,
+
     graphAtMousePosition,
-    graphToCursorMap,
+    ...graphCursorControls,
   }
 }
 
