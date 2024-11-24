@@ -2,6 +2,19 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import type { Ref } from "vue";
 
 /**
+ * gets the canvas coordinates with a mouse event on a *potentially* transformed canvas
+ */
+export const getCanvasCoords = (ev: MouseEvent, ctx: CanvasRenderingContext2D) => {
+  const transform = ctx.getTransform();
+  const invertedTransform = transform.inverse();
+  const { offsetX, offsetY } = ev
+  return {
+    x: invertedTransform.a * offsetX + invertedTransform.c * offsetY + invertedTransform.e,
+    y: invertedTransform.b * offsetX + invertedTransform.d * offsetY + invertedTransform.f,
+  }
+}
+
+/**
  * reactive coordinates for the responsive canvas that track over the mouse position
  *
  * @param {Ref<number>} canvasWidth the width of the canvas

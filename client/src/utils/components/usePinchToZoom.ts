@@ -2,10 +2,11 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import type { Ref } from 'vue';
 import { getCtx } from '@utils/ctx';
 
+const MIN_SCALE = 0.5;
+const MAX_SCALE = 5;
+
 export function usePinchToZoom(canvasRef: Ref<HTMLCanvasElement | undefined | null>) {
   const scale = ref(1);
-  const MAX_SCALE = 7.5;
-  const MIN_SCALE = 0.25;
   const zoomOrigin = ref({ x: 0, y: 0 });
 
   const handleWheel = (ev: WheelEvent) => {

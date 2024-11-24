@@ -35,6 +35,7 @@ import { useGraphCRUD } from './useGraphCRUD';
 import { getCtx } from '@utils/ctx';
 import type { GraphAtMousePosition } from './types';
 import { useGraphCursor } from './useGraphCursor';
+import { getCanvasCoords } from '@utils/components/useCanvasCoord';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -74,14 +75,10 @@ export const useBaseGraph = (
 
   const updateGraphAtMousePosition = (ev: MouseEvent) => {
     const ctx = getCtx(canvas)
-    const transform = ctx.getTransform();
-    const invertedTransform = transform.inverse();
-    const { offsetX, offsetY } = ev
-    const x = invertedTransform.a * offsetX + invertedTransform.c * offsetY + invertedTransform.e;
-    const y = invertedTransform.b * offsetX + invertedTransform.d * offsetY + invertedTransform.f;
+    const coords = getCanvasCoords(ev, ctx)
     graphAtMousePosition.value = {
-      coords: { x, y },
-      items: getSchemaItemsByCoordinates({ x, y }),
+      coords,
+      items: getSchemaItemsByCoordinates(coords),
     }
   }
 
