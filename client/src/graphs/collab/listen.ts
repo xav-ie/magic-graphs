@@ -1,14 +1,14 @@
 import type { Ref } from "vue"
 import type { Graph } from "@graph/types"
-import type { CollaboratorMap, GraphSocketEvents, CollabSocketEvents } from "./types"
+import type { CollaboratorMap, GraphSocketEvents, CollabSocketEvents, SocketEvents } from "./types"
 import type { Socket } from "socket.io-client"
 
-type SocketEventOptions = {
+type SocketListenOptions = {
   graph: Graph,
   collaborators: Ref<CollaboratorMap>
 }
 
-const collabEvents = ({ collaborators }: SocketEventOptions): CollabSocketEvents => ({
+const collabListeners = ({ collaborators }: SocketListenOptions): CollabSocketEvents => ({
   'collaboratorJoined': (collaborator) => {
     collaborators.value[collaborator.id] = collaborator
   },
@@ -22,7 +22,7 @@ const collabEvents = ({ collaborators }: SocketEventOptions): CollabSocketEvents
   }
 })
 
-const graphEvents = ({ graph }: SocketEventOptions): GraphSocketEvents => ({
+const graphListeners = ({ graph }: SocketListenOptions): GraphSocketEvents => ({
   'nodeAdded': (node) => {
     graph.addNode(node, { broadcast: false, focus: false, history: false })
   },
@@ -45,14 +45,18 @@ const graphEvents = ({ graph }: SocketEventOptions): GraphSocketEvents => ({
   },
 })
 
-const events = (options: SocketEventOptions) => ({
-  ...graphEvents(options),
-  ...collabEvents(options)
+const listeners = (options: SocketListenOptions) => ({
+  ...graphListeners(options),
+  ...collabListeners(options)
 })
 
-const listen = (socket: Socket, options: SocketEventOptions) => {
-  const eventHandlers = events(options)
+export const startListening = (
+  socket: Socket<SocketEvents, SocketEvents>,
+  options: SocketListenOptions
+) => {
+  const eventHandlers = listeners(options)
   for (const [event, handler] of Object.entries(eventHandlers)) {
+    // @ts-ignore ts cant handle Object.entries return type
     socket.on(event, handler)
   }
 }
