@@ -85,7 +85,15 @@ export const useAnnotationGraph = (
   graph.updateAggregator.push(addScribblesToAggregator)
 
   const activate = () => {
+    if (!graph.canvas.value) return;
+
     isActive.value = true;
+    graph.settings.value.userEditable = false;
+    graph.settings.value.marquee = false;
+    graph.settings.value.focusable = false;
+    graph.graphCursorDisabled.value = true;
+
+    graph.canvas.value.style.cursor = 'crosshair';
 
     graph.subscribe('onMouseDown', startDrawing)
     graph.subscribe('onMouseMove', drawLine)
@@ -93,7 +101,16 @@ export const useAnnotationGraph = (
   }
 
   const deactivate = () => {
+    if (!graph.canvas.value) return;
+
     isActive.value = false;
+
+    graph.settings.value.userEditable = true;
+    graph.settings.value.marquee = true;
+    graph.settings.value.focusable = true;
+    graph.graphCursorDisabled.value = false;
+
+    graph.canvas.value.style.cursor = 'default';
 
     graph.unsubscribe('onMouseDown', startDrawing)
     graph.unsubscribe('onMouseMove', drawLine)
@@ -105,6 +122,9 @@ export const useAnnotationGraph = (
 
     clearAnnotations: clear,
     annotationActive: isActive,
+
+    annotationColor: selectedColor,
+    annotationBrushWeight: selectedBrushWeight,
 
     activateAnnotation: activate,
     deactivateAnnotation: deactivate,

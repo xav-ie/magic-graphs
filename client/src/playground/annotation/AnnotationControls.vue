@@ -5,17 +5,18 @@
   import ToolbarButton from "@product/graph-sandbox/ToolbarButton.vue";
   import ToolbarButtonDivider from "@product/graph-sandbox/ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "@product/graph-sandbox/ToolbarButtonGroup.vue";
-  import { COLORS, BRUSH_WEIGHTS } from "./types";
+  import {
+    COLORS,
+    BRUSH_WEIGHTS,
+  } from "@graph/compositions/useAnnotationGraph/types";
   import type { Graph } from "@graph/types";
 
   const props = defineProps<{
     graph: Graph;
   }>();
 
-  const { selectedColor, selectedBrushWeight, erasing } = toRefs(
-    props.controls
-  );
-  const { clear } = props.controls;
+  const { annotationColor, annotationBrushWeight } = toRefs(props.graph);
+  const { clearAnnotations } = props.graph;
 </script>
 
 <template>
@@ -23,18 +24,12 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         v-for="color in COLORS"
-        @click="(selectedColor = color), (erasing = false)"
-        :active="selectedColor === color"
+        @click="annotationColor = color"
+        :active="annotationColor === color"
         :key="color"
         :color="color"
       >
-        <div
-          :class="[
-            'rounded-full',
-            'p-[3px]',
-            // selectedColor === color && 'border border-white',
-          ]"
-        >
+        <div :class="['rounded-full', 'p-[3px]']">
           <div :class="['w-6', 'h-6', 'rounded-full', `bg-[${color}]`]"></div>
         </div>
       </ToolbarButton>
@@ -45,8 +40,8 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         v-for="weight in BRUSH_WEIGHTS"
-        @click="selectedBrushWeight = weight"
-        :active="selectedBrushWeight === weight"
+        @click="annotationBrushWeight = weight"
+        :active="annotationBrushWeight === weight"
         :key="weight"
         :color="colors.TRANSPARENT"
       >
@@ -64,14 +59,11 @@
     <ToolbarButtonDivider />
 
     <ToolbarButtonGroup class="gap-1">
-      <ToolbarButton
-        @click="erasing = !erasing"
-        :active="erasing"
-      >
-        mdi-eraser
-      </ToolbarButton>
+      <ToolbarButton>mdi-eraser</ToolbarButton>
 
-      <ToolbarButton @click="clear">mdi-delete-outline</ToolbarButton>
+      <ToolbarButton @click="clearAnnotations">
+        mdi-delete-outline
+      </ToolbarButton>
     </ToolbarButtonGroup>
   </Toolbar>
 </template>

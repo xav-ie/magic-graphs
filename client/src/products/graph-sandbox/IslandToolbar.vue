@@ -36,7 +36,7 @@
       annotationActive: isActive,
     } = props.graph;
 
-    isActive ? deactivate() : activate();
+    isActive.value ? deactivate() : activate();
   };
 </script>
 
