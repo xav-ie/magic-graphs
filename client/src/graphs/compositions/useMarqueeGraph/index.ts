@@ -12,7 +12,7 @@ import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
 import { MARQUEE_CONSTANTS } from '@graph/compositions/useMarqueeGraph/types'
 import colors from '@colors'
 import { rect } from '@shapes'
-import type { BoundingBox } from "@shape/types";
+import type { BoundingBox, Coordinate } from "@shape/types";
 import type {
   HistoryRecord,
   RedoHistoryOptions,
@@ -29,7 +29,7 @@ export const useMarqueeGraph = (
   const marqueeBox = ref<BoundingBox | undefined>()
   const encapsulatedNodeBox = ref<BoundingBox | undefined>()
 
-  const groupDragCoordinates = ref<{ x: number, y: number } | undefined>()
+  const groupDragCoordinates = ref<Coordinate | undefined>()
 
   const { setTheme, removeTheme } = useTheme(graph, MARQUEE_CONSTANTS.THEME_ID)
 
@@ -108,6 +108,7 @@ export const useMarqueeGraph = (
 
   const engageMarqueeBox = (startingCoords: { x: number, y: number }) => {
     hideNodeAnchors()
+    graph.graphCursorDisabled.value = true
     marqueeBox.value = {
       at: startingCoords,
       width: 0,
@@ -121,6 +122,7 @@ export const useMarqueeGraph = (
     const surfaceArea = getSurfaceArea(marqueeBox.value)
     if (surfaceArea > 200) disableNodeCreationNextTick()
     marqueeBox.value = undefined
+    graph.graphCursorDisabled.value = false
     showNodeAnchors()
   }
 

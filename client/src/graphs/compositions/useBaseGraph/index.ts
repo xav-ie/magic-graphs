@@ -34,6 +34,7 @@ import { useAggregator } from './useAggregator';
 import { useGraphCRUD } from './useGraphCRUD';
 import { getCtx } from '@utils/ctx';
 import type { GraphAtMousePosition } from './types';
+import { useGraphCursor } from './useGraphCursor';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -63,6 +64,12 @@ export const useBaseGraph = (
   const graphAtMousePosition = ref<GraphAtMousePosition>({
     coords: { x: 0, y: 0 },
     items: [],
+  })
+
+  const graphCursorControls = useGraphCursor({
+    canvas,
+    subscribe,
+    graphAtMousePosition,
   })
 
   const updateGraphAtMousePosition = (ev: MouseEvent) => {
@@ -289,7 +296,9 @@ export const useBaseGraph = (
     reset,
 
     canvas,
+
     graphAtMousePosition,
+    ...graphCursorControls,
   }
 }
 
