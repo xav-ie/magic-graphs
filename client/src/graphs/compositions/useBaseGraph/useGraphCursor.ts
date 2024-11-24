@@ -128,13 +128,21 @@ export const useGraphCursor = ({
      */
     graphToCursorMap,
     /**
-     * activates a cursor select mode, where only the specified graph types will receive a pointer cursor.
+     * activates a cursor select mode, where only the schema items that pass the
+     * `predicate` will receive a pointer cursor.
      * everything else will receive the default cursor as long as this mode is active.
-     * @param selectableTypes - the graph types that will be selectable.
+     * @param predicate - a predicate that determines, given a schema item, whether it is selectable.
+     * @example activateCursorSelectMode((item) => item.graphType === 'node')
+     * // in select mode
+     * // only nodes will receive a pointer cursor
      */
     activateCursorSelectMode,
     /**
-     * deactivates the cursor select mode.
+     * deactivates the cursor select mode. to be called after `activateCursorSelectMode`.
+     * @example activateCursorSelectMode((item) => item.graphType === 'node')
+     * // in select mode
+     * deactivateCursorSelectMode()
+     * // no longer in select mode
      */
     deactivateCursorSelectMode,
     /**
