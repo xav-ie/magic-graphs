@@ -15,7 +15,9 @@
 
   const loading = ref(true);
 
+  const mainCanvasRef = ref<HTMLCanvasElement>();
   const bgCanvas = ref<HTMLCanvasElement>();
+  const annotationCanvas = ref<HTMLCanvasElement>();
 
   const props = defineProps<{
     color: Color;
@@ -39,16 +41,20 @@
     (e: "heightChange", value: number): void;
   }>();
 
-  const DEFAULT_PARENT_CLASSES = ["w-full", "h-full", "relative", "overflow-auto"];
+  const DEFAULT_PARENT_CLASSES = [
+    "w-full",
+    "h-full",
+    "relative",
+    "overflow-auto",
+  ];
   const callerClasses = useClassAttrs();
   const parentElClasses = computed(() => [
     ...DEFAULT_PARENT_CLASSES,
-    ...callerClasses.value
+    ...callerClasses.value,
   ]);
 
-  const canvasRef = ref<HTMLCanvasElement>();
   const emitRef = (el: HTMLCanvasElement | undefined) => {
-    canvasRef.value = el;
+    mainCanvasRef.value = el;
     emit("canvasRef", el);
   };
 
@@ -99,7 +105,7 @@
     for (let x = RATE / 2; x < w; x += RATE) {
       for (let y = RATE / 2; y < h; y += RATE) drawCross(x, y);
     }
-  }
+  };
 
   const debouncedDrawBackgroundPattern = debounce(drawBackgroundPattern, 250);
 
@@ -145,15 +151,23 @@
     getParentEl,
   });
 
-  const controls = usePinchToZoom(canvasRef)
+  const controls = usePinchToZoom(mainCanvasRef);
 
   watch(controls.scale, () => {
     const { scale, origin } = controls;
-    const ctx = getCtx(bgCanvas.value);
-    ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
-    ctx.resetTransform();
-    ctx.translate(origin.value.x, origin.value.y);
-    ctx.scale(scale.value, scale.value);
+
+    const bgCanvasCtx = getCtx(bgCanvas.value);
+    const annotationCanvasCtx = getCtx(annotationCanvas.value);
+
+    const contexts = [bgCanvasCtx, annotationCanvasCtx];
+
+    for (const ctx of contexts) {
+      ctx.clearRect(0, 0, canvasWidth.value, canvasHeight.value);
+      ctx.resetTransform();
+      ctx.translate(origin.value.x, origin.value.y);
+      ctx.scale(scale.value, scale.value);
+    }
+
     debouncedDrawBackgroundPattern();
   });
 </script>
@@ -171,17 +185,17 @@
       :style="{ backgroundColor: color }"
       class="absolute top-0 left-0 w-full h-full"
     ></div>
-    
-    
+
     <canvas
-    :width="canvasWidth"
-    :height="canvasHeight"
-    :ref="(emitRef as any)"
-    :class="[`w-[${canvasWidth}px]`, `h-[${canvasHeight}px]`]"
-    id="responsive-canvas"
+      :ref="(emitRef as any)"
+      :width="canvasWidth"
+      :height="canvasHeight"
+      :class="[`w-[${canvasWidth}px]`, `h-[${canvasHeight}px]`]"
+      id="responsive-canvas"
     ></canvas>
-    
+
     <canvas
+      ref="annotationCanvas"
       :width="canvasWidth"
       :height="canvasHeight"
       :class="[
@@ -190,7 +204,7 @@
         'absolute',
         'top-0',
       ]"
-      style="display: none;"
+      style="display: none"
       id="annotation-canvas"
     ></canvas>
 

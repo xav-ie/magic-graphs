@@ -9,7 +9,6 @@ import type {
 } from './types'
 import { ANNOTATION_DEFAULTS } from './types'
 import type { Graph } from "@graph/types";
-import type { GraphMouseEvent } from "@graph/compositions/useBaseGraph/types";
 
 export const useGraphAnnotation = (
   graph: Graph,
@@ -87,9 +86,11 @@ export const useGraphAnnotation = (
   /**
    * starts drawing from the current mouse position
    */
-  const startDrawing = ({ coords }: GraphMouseEvent) => {
+  const startDrawing = (ev: MouseEvent) => {
     const ctx = getCtx(annotationCanvas);
     isDrawing.value = true;
+
+    const coords = { x: ev.offsetX, y: ev.offsetY };
 
     ctx.beginPath();
     ctx.moveTo(coords.x, coords.y);
@@ -135,10 +136,11 @@ export const useGraphAnnotation = (
    * the delta between two mouse points while
    * mouse is being dragged
    */
-  const drawLine = ({ coords }: GraphMouseEvent) => {
+  const drawLine = (ev: MouseEvent) => {
     if (!isDrawing.value || !lastPoint.value) return;
     const ctx = getCtx(graph.canvas);
 
+    const coords = { x: ev.offsetX, y: ev.offsetY };
     const options = { ctx, at: coords };
     erasing.value ? actionEraseLine(options) : actionDrawLine(options);
 
@@ -176,9 +178,10 @@ export const useGraphAnnotation = (
   const activate = () => {
     if (!annotationCanvas.value) return;
     isActive.value = true;
-    graph.subscribe('onMouseDown', startDrawing)
-    graph.subscribe('onMouseMove', drawLine)
-    graph.subscribe('onMouseUp', stopDrawing)
+
+    annotationCanvas.value.addEventListener('mousedown', startDrawing)
+    annotationCanvas.value.addEventListener('mousemove', drawLine)
+    annotationCanvas.value.addEventListener('mouseup', stopDrawing)
 
     annotationCanvas.value.style.display = ''
   };
@@ -186,9 +189,10 @@ export const useGraphAnnotation = (
   const deactivate = () => {
     if (!annotationCanvas.value) return;
     isActive.value = false;
-    graph.unsubscribe('onMouseDown', startDrawing)
-    graph.unsubscribe('onMouseMove', drawLine)
-    graph.unsubscribe('onMouseUp', stopDrawing)
+
+    annotationCanvas.value.removeEventListener('mousedown', startDrawing)
+    annotationCanvas.value.removeEventListener('mousemove', drawLine)
+    annotationCanvas.value.removeEventListener('mouseup', stopDrawing)
 
     annotationCanvas.value.style.display = 'none'
   };
