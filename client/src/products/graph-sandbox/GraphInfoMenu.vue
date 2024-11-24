@@ -8,17 +8,26 @@
     graph: Graph;
   }>();
 
-  const { adjacencyList } = useAdjacencyList(props.graph);
+  const { labelAdjacencyList } = useAdjacencyList(props.graph);
 </script>
 
 <template>
-  <v-menu>
+  <v-menu :offset="[10, 0]">
     <template #activator="{ props }">
       <ToolbarButton v-bind="props">mdi-information-outline</ToolbarButton>
     </template>
 
-    <div>
-      <AdjacencyListDisplay :adjacencyList="adjacencyList" />
+    <div class="bg-gray-800 flex flex-col text-white p-3 w-[400px] rounded-lg">
+      <h1 class="text-2xl font-bold text-gray-200 mb-3">
+        Graph Info
+      </h1>
+
+      <h2 class="text-xl font-bold text-gray-200 mb-2">
+        Adjacency List
+      </h2>
+      <div class="bg-gray-700 p-4 rounded-lg max-h-[200px] overflow-auto">
+        <AdjacencyListDisplay :adjacencyList="labelAdjacencyList" />
+      </div>
     </div>
   </v-menu>
 </template>
