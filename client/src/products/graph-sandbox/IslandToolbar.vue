@@ -109,10 +109,6 @@
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
-      <ToolbarButton>mdi-account-group</ToolbarButton>
-    </ToolbarButtonGroup>
-
-    <ToolbarButtonGroup>
       <ToolbarButton
         @click="toggleAnnotation"
         :active="graph.annotationActive.value"
@@ -130,6 +126,10 @@
           :active="isActive"
         >mdi-information-outline</ToolbarButton>
       </GraphInfoMenu>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonGroup>
+      <ToolbarButton>mdi-account-group</ToolbarButton>
     </ToolbarButtonGroup>
   </Toolbar>
 
