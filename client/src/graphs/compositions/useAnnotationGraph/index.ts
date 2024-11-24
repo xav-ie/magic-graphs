@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { Ref } from "vue";
 import type { Aggregator, GraphOptions } from "@graph/types";
 import type { Coordinate, Shape } from "@shape/types";
@@ -6,6 +6,7 @@ import { shapes } from "@shapes";
 import { useMarqueeGraph } from "../useMarqueeGraph";
 import type { GraphMouseEvent } from "../useBaseGraph/types";
 import { BRUSH_WEIGHTS, COLORS } from "./types";
+import colors from "@utils/colors";
 
 export const useAnnotationGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -15,6 +16,7 @@ export const useAnnotationGraph = (
 
   const selectedColor = ref(COLORS[0])
   const selectedBrushWeight = ref(BRUSH_WEIGHTS[0])
+  const erasing = ref(false)
 
   const batch = ref<Coordinate[]>([])
   const scribbles = ref<Shape[]>([])
@@ -26,6 +28,15 @@ export const useAnnotationGraph = (
   const clear = () => {
     scribbles.value = []
   }
+
+  const erasedScribbles = computed(() => {
+    if (!erasing.value) return []
+    return scribbles.value.filter(scribble => {
+      return batch.value.some((coord) => {
+        return scribble.hitbox(coord)
+      })
+    })
+  })
 
   /**
    * starts drawing from the current mouse position
@@ -57,21 +68,48 @@ export const useAnnotationGraph = (
 
     if (batch.value.length === 0) return;
 
-    const scribbleShape = shapes.scribble({
-      type: 'draw',
-      points: batch.value,
-      color: selectedColor.value,
-      brushWeight: selectedBrushWeight.value,
-    })
+    if (erasing.value) {
+      scribbles.value = scribbles.value.filter(scribble => {
+        return erasedScribbles.value.some(erasedScribble => {
+          return erasedScribble.id === scribble.id
+        })
+      })
+    } else {
+      const scribbleShape = shapes.scribble({
+        type: 'draw',
+        points: batch.value,
+        color: selectedColor.value,
+        brushWeight: selectedBrushWeight.value,
+      })
 
-    scribbles.value.push(scribbleShape);
+      scribbles.value.push(scribbleShape);
+    }
+
     batch.value = [];
   };
 
   const addScribblesToAggregator = (aggregator: Aggregator) => {
     if (!isActive.value) return aggregator
 
-    if (batch.value.length > 0) {
+    if (erasing.value) {
+      graph.canvas.value!.style.cursor = 'none';
+      const circle = shapes.circle({
+        at: graph.graphAtMousePosition.value.coords,
+        radius: 10,
+        color: colors.TRANSPARENT,
+        stroke: {
+          color: colors.WHITE + '60',
+          width: 2,
+        }
+      })
+
+      aggregator.push({
+        graphType: "annotation",
+        id: circle.id,
+        shape: circle,
+        priority: 5050,
+      })
+    } else if (batch.value.length > 0) {
       const incompleteScribble = shapes.scribble({
         type: 'draw',
         points: batch.value,
@@ -140,6 +178,7 @@ export const useAnnotationGraph = (
     clearAnnotations: clear,
     annotationActive: isActive,
 
+    annotationErasing: erasing,
     annotationColor: selectedColor,
     annotationBrushWeight: selectedBrushWeight,
 

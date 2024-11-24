@@ -15,7 +15,12 @@
     graph: Graph;
   }>();
 
-  const { annotationColor, annotationBrushWeight } = toRefs(props.graph);
+  const {
+    annotationColor: selectedColor,
+    annotationBrushWeight: selectedBrushWeight,
+    annotationErasing: erasing,
+  } = toRefs(props.graph);
+
   const { clearAnnotations } = props.graph;
 </script>
 
@@ -24,8 +29,8 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         v-for="color in COLORS"
-        @click="annotationColor = color"
-        :active="annotationColor === color"
+        @click="selectedColor = color"
+        :active="selectedColor === color"
         :key="color"
         :color="color"
       >
@@ -40,8 +45,8 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         v-for="weight in BRUSH_WEIGHTS"
-        @click="annotationBrushWeight = weight"
-        :active="annotationBrushWeight === weight"
+        @click="selectedBrushWeight = weight"
+        :active="selectedBrushWeight === weight"
         :key="weight"
         :color="colors.TRANSPARENT"
       >
@@ -59,7 +64,10 @@
     <ToolbarButtonDivider />
 
     <ToolbarButtonGroup class="gap-1">
-      <ToolbarButton>mdi-eraser</ToolbarButton>
+      <ToolbarButton
+        @click="erasing = !erasing"
+        :active="erasing"
+      >mdi-eraser</ToolbarButton>
 
       <ToolbarButton @click="clearAnnotations">
         mdi-delete-outline
