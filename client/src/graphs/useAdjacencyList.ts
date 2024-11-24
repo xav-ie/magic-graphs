@@ -1,6 +1,8 @@
+import { onUnmounted, ref } from 'vue';
 import type { GNode, Graph } from '@graph/types';
-import { computed, onUnmounted, ref } from 'vue';
-import { getDirectedInboundEdges, getUndirectedInboundEdges } from './helpers';
+import { getDirectedOutboundEdges, getUndirectedOutboundEdges } from './helpers';
+import type { DeepPartial } from '@utils/types';
+import type { GraphSettings } from './settings';
 
 /**
  * a mapping of nodes to their neighbors.
@@ -10,14 +12,14 @@ export type AdjacencyList = Record<string, string[]>;
 
 export const getDirectedGraphAdjacencyList = (graph: Graph) => {
   return graph.nodes.value.reduce<AdjacencyList>((acc, node) => {
-    acc[node.id] = getDirectedInboundEdges(node.id, graph.edges.value).map(edge => edge.from);
+    acc[node.id] = getDirectedOutboundEdges(node.id, graph.edges.value).map(edge => edge.to);
     return acc;
   }, {});
 }
 
 export const getUndirectedGraphAdjacencyList = (graph: Graph) => {
   return graph.nodes.value.reduce<AdjacencyList>((acc, node) => {
-    acc[node.id] = getUndirectedInboundEdges(node.id, graph.edges.value).map(edge => {
+    acc[node.id] = getUndirectedOutboundEdges(node.id, graph.edges.value).map(edge => {
       return edge.from === node.id ? edge.to : edge.from;
     });
     return acc;
@@ -111,8 +113,17 @@ export const useAdjacencyList = (graph: Graph) => {
 
   update();
 
+  const checkSettingsDiffForUpdate = (diff: DeepPartial<GraphSettings>) => {
+    if ('isGraphDirected' in diff) update();
+  }
+
   graph.subscribe('onStructureChange', update);
-  onUnmounted(() => graph.unsubscribe('onStructureChange', update));
+  graph.subscribe('onSettingsChange', checkSettingsDiffForUpdate);
+
+  onUnmounted(() => {
+    graph.unsubscribe('onStructureChange', update);
+    graph.unsubscribe('onSettingsChange', checkSettingsDiffForUpdate);
+  });
 
   return {
     /**

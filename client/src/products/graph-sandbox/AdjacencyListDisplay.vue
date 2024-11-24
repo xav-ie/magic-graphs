@@ -14,8 +14,8 @@
       :key="key"
       class="flex items-center"
     >
-      <div class="w-[60px]">
-        <GraphNode>
+      <div>
+        <GraphNode class="bg-gray-600">
           {{ key }}
         </GraphNode>
       </div>
