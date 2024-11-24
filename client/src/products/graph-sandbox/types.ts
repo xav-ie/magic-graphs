@@ -1,3 +1,4 @@
+import colors from "@utils/colors";
 
 /**
  * the theme id of the markup menu
@@ -8,6 +9,21 @@ export const MARKUP_USETHEME_ID = "markup";
  * size options for nodes and edges in the markup menu
  */
 export const MARKUP_SIZES = ["XS", "SM", "MD", "LG", "XL"] as const;
+
+export const DEFAULT_MARKUP_SIZE = "MD";
+
+/**
+ * color options for nodes and edges in the markup menu
+ */
+export const MARKUP_COLORS = [
+  colors.BLACK,
+  colors.BLUE_600,
+  colors.RED_600,
+  colors.GREEN_600,
+  colors.YELLOW_600,
+];
+
+export const DEFAULT_MARKUP_COLOR = colors.BLACK;
 
 /**
  * a union of all possible sizes for nodes and edges in the markup menu

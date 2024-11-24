@@ -295,6 +295,7 @@ export const useBaseGraph = (
     canvas,
 
     graphAtMousePosition,
+    updateGraphAtMousePosition,
     ...graphCursorControls,
   }
 }

@@ -17,10 +17,7 @@
 </script>
 
 <template>
-  <div
-    v-if="props.graph.focusedItemIds.value.size > 0"
-    class="flex flex-col gap-3"
-  >
+  <div class="flex flex-col gap-3">
     <div class="p-2 bg-gray-800 rounded-xl">
       <NodeEdgeColorInput
         :graph="props.graph"
