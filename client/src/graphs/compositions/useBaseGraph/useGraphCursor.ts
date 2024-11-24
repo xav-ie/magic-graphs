@@ -4,6 +4,9 @@ import type { SchemaItem } from "@graph/types";
 import type { GraphAtMousePosition, GraphMouseEvent } from "./types";
 import type { Subscriber } from "@graph/events";
 
+/**
+ * cursor types supported by the browser
+ */
 export type Cursor =
   | "auto"
   | "default"
@@ -42,6 +45,14 @@ export type Cursor =
   | "zoom-in"
   | "zoom-out"
 
+/**
+ * manages the cursor type when hovering over the graph
+ *
+ * @param subscribe - the event subscriber
+ * @param canvas - the canvas element
+ * @param graphAtMousePosition - the graph items at the mouse position
+ * @returns the cursor manager
+ */
 export const useGraphCursor = ({
   subscribe,
   canvas,
