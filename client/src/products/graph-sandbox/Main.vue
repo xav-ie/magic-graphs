@@ -4,12 +4,12 @@
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
+  import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
   import IslandMarkup from "./IslandMarkup.vue";
   import SimulationDropdown from "./SimulationDropdown.vue";
   import ExperienceDropdown from "./ExperienceDropdown.vue";
-  import AnnotationControls from "@playground/annotation/AnnotationControls.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {

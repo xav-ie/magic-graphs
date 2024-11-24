@@ -50,8 +50,8 @@ const DEFAULT_PREDICATE = () => true;
  * // selection resolved. do something with the selected item
  */
 export const selectFromGraph = (graph: Graph, {
-  predicate = DEFAULT_PREDICATE
-}: Partial<SelectFromGraphOptions>) => {
+  predicate = DEFAULT_PREDICATE,
+}: Partial<SelectFromGraphOptions> = {}) => {
   let resolver: (value: SchemaItem | PromiseLike<SchemaItem> | undefined) => void;
 
   const selectedItemPromise = new Promise<SchemaItem | undefined>((res) => resolver = res);
