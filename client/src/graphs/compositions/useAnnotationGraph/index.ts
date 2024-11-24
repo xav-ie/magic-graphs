@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import type { Ref } from "vue";
 import type { Aggregator, GraphOptions } from "@graph/types";
 import type { Coordinate, Shape } from "@shape/types";
@@ -6,7 +6,9 @@ import { shapes } from "@shapes";
 import { useMarqueeGraph } from "../useMarqueeGraph";
 import type { GraphMouseEvent } from "../useBaseGraph/types";
 import { BRUSH_WEIGHTS, COLORS } from "./types";
-import colors from "@utils/colors";
+import colors, { type Color } from "@utils/colors";
+import type { Scribble } from "@shape/scribble";
+import { generateId } from "@graph/helpers";
 
 export const useAnnotationGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -14,12 +16,13 @@ export const useAnnotationGraph = (
 ) => {
   const graph = useMarqueeGraph(canvas, options)
 
-  const selectedColor = ref(COLORS[0])
-  const selectedBrushWeight = ref(BRUSH_WEIGHTS[0])
+  const selectedColor = ref<Color>(COLORS.at(-1)!)
+  const selectedBrushWeight = ref(BRUSH_WEIGHTS.at(-1)!)
   const erasing = ref(false)
+  const erasedScribbleIds = ref(new Set<string>())
 
   const batch = ref<Coordinate[]>([])
-  const scribbles = ref<Shape[]>([])
+  const scribbles = ref<(Scribble & { id: string })[]>([])
   const isDrawing = ref(false)
   const lastPoint = ref<Coordinate>()
 
@@ -28,15 +31,6 @@ export const useAnnotationGraph = (
   const clear = () => {
     scribbles.value = []
   }
-
-  const erasedScribbles = computed(() => {
-    if (!erasing.value) return []
-    return scribbles.value.filter(scribble => {
-      return batch.value.some((coord) => {
-        return scribble.hitbox(coord)
-      })
-    })
-  })
 
   /**
    * starts drawing from the current mouse position
@@ -56,8 +50,22 @@ export const useAnnotationGraph = (
   const drawLine = ({ coords }: GraphMouseEvent) => {
     if (!isDrawing.value || !lastPoint.value) return;
 
+    if (erasing.value) {
+      const erasedScribble = scribbles.value.find(scribble => {
+        const shape = shapes.scribble(scribble)
+        return shape.hitbox(coords)
+      })
+
+      if (erasedScribble) {
+        erasedScribbleIds.value.add(erasedScribble.id)
+      }
+
+      return;
+    }
+
     lastPoint.value = coords;
     batch.value.push(coords);
+
   };
 
   const stopDrawing = () => {
@@ -70,29 +78,33 @@ export const useAnnotationGraph = (
 
     if (erasing.value) {
       scribbles.value = scribbles.value.filter(scribble => {
-        return erasedScribbles.value.some(erasedScribble => {
-          return erasedScribble.id === scribble.id
-        })
-      })
-    } else {
-      const scribbleShape = shapes.scribble({
-        type: 'draw',
-        points: batch.value,
-        color: selectedColor.value,
-        brushWeight: selectedBrushWeight.value,
+        return !erasedScribbleIds.value.has(scribble.id)
       })
 
-      scribbles.value.push(scribbleShape);
+      erasedScribbleIds.value.clear()
+      return;
     }
+
+    scribbles.value.push({
+      id: generateId(),
+      type: 'draw',
+      points: batch.value,
+      color: selectedColor.value,
+      brushWeight: selectedBrushWeight.value,
+    });
 
     batch.value = [];
   };
+
+  watch(erasing, () => {
+    if (!graph.canvas.value) return;
+    graph.canvas.value.style.cursor = erasing.value ? 'none' : 'crosshair';
+  })
 
   const addScribblesToAggregator = (aggregator: Aggregator) => {
     if (!isActive.value) return aggregator
 
     if (erasing.value) {
-      graph.canvas.value!.style.cursor = 'none';
       const circle = shapes.circle({
         at: graph.graphAtMousePosition.value.coords,
         radius: 10,
@@ -126,10 +138,14 @@ export const useAnnotationGraph = (
     }
 
     for (const scribble of scribbles.value) {
+      const isErased = erasedScribbleIds.value.has(scribble.id)
       aggregator.push({
         graphType: "annotation",
         id: scribble.id,
-        shape: scribble,
+        shape: shapes.scribble({
+          ...scribble,
+          color: scribble.color + (isErased ? '50' : ''),
+        }),
         priority: 5000,
       })
     }
@@ -159,6 +175,7 @@ export const useAnnotationGraph = (
     if (!graph.canvas.value) return;
 
     isActive.value = false;
+    erasing.value = false;
 
     graph.settings.value.userEditable = true;
     graph.settings.value.marquee = true;

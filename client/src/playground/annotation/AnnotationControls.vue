@@ -22,6 +22,11 @@
   } = toRefs(props.graph);
 
   const { clearAnnotations } = props.graph;
+
+  const selectColor = (color: string) => {
+    selectedColor.value = color;
+    erasing.value = false;
+  };
 </script>
 
 <template>
@@ -29,7 +34,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         v-for="color in COLORS"
-        @click="selectedColor = color"
+        @click="selectColor(color)"
         :active="selectedColor === color"
         :key="color"
         :color="color"
