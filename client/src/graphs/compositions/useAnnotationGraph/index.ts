@@ -70,6 +70,23 @@ export const useAnnotationGraph = (
 
   const addScribblesToAggregator = (aggregator: Aggregator) => {
     if (!isActive.value) return aggregator
+
+    if (batch.value.length > 0) {
+      const incompleteScribble = shapes.scribble({
+        type: 'draw',
+        points: batch.value,
+        color: selectedColor.value,
+        brushWeight: selectedBrushWeight.value,
+      })
+
+      aggregator.push({
+        graphType: "annotation",
+        id: incompleteScribble.id,
+        shape: incompleteScribble,
+        priority: 5000,
+      })
+    }
+
     for (const scribble of scribbles.value) {
       aggregator.push({
         graphType: "annotation",
