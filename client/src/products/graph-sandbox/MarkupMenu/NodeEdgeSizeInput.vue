@@ -34,28 +34,28 @@
     props.graph.updateEncapsulatedNodeBox();
   };
 
-  props.graph.subscribe('onNodeAdded', (node) => {
+  const sizeAddedItem = ({ id }: { id: string }) => {
     if (!activeSize.value) return;
-    props.sizeMap.set(node.id, activeSize.value);
-  });
+    props.sizeMap.set(id, activeSize.value);
+  };
 
-  props.graph.subscribe('onEdgeAdded', (edge) => {
-    if (!activeSize.value) return;
-    props.sizeMap.set(edge.id, activeSize.value);
-  });
-
-  props.graph.subscribe("onFocusChange", async (newFocusedItems) => {
-    if (newFocusedItems.size === 0) return;
+  const recalculateActiveSize = async () => {
+    if (props.graph.focusedItemIds.value.size === 0) return;
     /**
      * wait for the next tick to ensure that onNodeAdded and onEdgeAdded
      * have a chance to set the size of the just added node or edge
      */
     await new Promise((resolve) => setTimeout(resolve, 0));
     activeSize.value = getSize();
-  });
+  };
+
+  props.graph.subscribe('onNodeAdded', sizeAddedItem);
+  props.graph.subscribe('onEdgeAdded', sizeAddedItem);
+  props.graph.subscribe("onFocusChange", recalculateActiveSize);
 
   const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID);
-  setTheme('linkPreviewWidth', () => SIZE_TO_WIDTH[activeSize.value ?? DEFAULT_MARKUP_SIZE]);
+  const sizeLinkPreview = () => SIZE_TO_WIDTH[activeSize.value ?? DEFAULT_MARKUP_SIZE];
+  setTheme('linkPreviewWidth', sizeLinkPreview);
 </script>
 
 <template>

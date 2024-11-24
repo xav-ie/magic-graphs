@@ -33,28 +33,28 @@
     activeColor.value = value;
   };
 
-  props.graph.subscribe('onNodeAdded', (node) => {
+  const colorAddedItem = ({ id }: { id: string }) => {
     if (!activeColor.value) return;
-    props.colorMap.set(node.id, activeColor.value);
-  });
+    props.colorMap.set(id, activeColor.value);
+  };
 
-  props.graph.subscribe('onEdgeAdded', (edge) => {
-    if (!activeColor.value) return;
-    props.colorMap.set(edge.id, activeColor.value);
-  });
-
-  props.graph.subscribe("onFocusChange", async (newFocusedItems) => {
-    if (newFocusedItems.size === 0) return;
+  const recalculateActiveColor = async () => {
+    if (props.graph.focusedItemIds.value.size === 0) return;
+    await new Promise((resolve) => setTimeout(resolve, 0));
     /**
      * wait for the next tick to ensure that onNodeAdded and onEdgeAdded
      * have a chance to set the color of the just added node or edge
      */
-    await new Promise((resolve) => setTimeout(resolve, 0));
     activeColor.value = getColor();
-  });
+  }
+
+  props.graph.subscribe('onNodeAdded', colorAddedItem);
+  props.graph.subscribe('onEdgeAdded', colorAddedItem);
+  props.graph.subscribe("onFocusChange", recalculateActiveColor);
 
   const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID);
-  setTheme('linkPreviewColor', () => activeColor.value ?? DEFAULT_MARKUP_COLOR);
+  const colorLinkPreview = () => activeColor.value ?? DEFAULT_MARKUP_COLOR;
+  setTheme('linkPreviewColor', colorLinkPreview);
 </script>
 
 <template>
