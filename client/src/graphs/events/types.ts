@@ -176,6 +176,8 @@ export type MarqueeGraphEventMap = {
   onGroupDrop: (nodes: GNode[], endCoordinates: Coordinate) => void;
 }
 
+export type AnnotationGraphEventMap = {}
+
 export type UserEditableGraphEventMap = {}
 
 export type PersistentGraphEventMap = {}

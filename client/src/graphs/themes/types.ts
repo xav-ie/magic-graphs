@@ -71,6 +71,8 @@ export type MarqueeGraphTheme = {
   marqueeEncapsulatedNodeBoxBorderColor: string,
 }
 
+export type AnnotationGraphTheme = {}
+
 export type UserEditableGraphTheme = {}
 
 export type PersistentGraphTheme = {}

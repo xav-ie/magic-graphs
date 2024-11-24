@@ -9,7 +9,6 @@
   import IslandMarkup from "./IslandMarkup.vue";
   import SimulationDropdown from "./SimulationDropdown.vue";
   import ExperienceDropdown from "./ExperienceDropdown.vue";
-  import { useGraphAnnotation } from "@playground/annotation/useGraphAnnotation";
   import AnnotationControls from "@playground/annotation/AnnotationControls.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
@@ -18,7 +17,6 @@
   });
 
   const activeSimulation = ref<SimulationDeclaration>();
-  const annotationControls = useGraphAnnotation(graph);
 </script>
 
 <template>
@@ -31,10 +29,7 @@
     v-if="!activeSimulation"
     class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
   >
-    <IslandToolbar
-      :graph="graph"
-      :annotation-controls="annotationControls"
-    />
+    <IslandToolbar :graph="graph" />
   </div>
 
   <div
@@ -65,9 +60,9 @@
   </div>
 
   <div
-    v-else-if="annotationControls.isActive.value"
+    v-else-if="graph.annotationActive.value"
     class="absolute bottom-8 w-full flex justify-center items-center p-3"
   >
-    <AnnotationControls :controls="annotationControls" />
+    <AnnotationControls :graph="graph" />
   </div>
 </template>

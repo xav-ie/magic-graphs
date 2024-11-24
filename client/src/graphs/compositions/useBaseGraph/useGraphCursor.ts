@@ -1,8 +1,8 @@
 import { computed, ref, watch } from "vue";
 import type { Ref } from "vue";
 import type { SchemaItem } from "@graph/types";
-import type { GraphAtMousePosition, GraphMouseEvent } from "./types";
 import type { Subscriber } from "@graph/events";
+import type { GraphAtMousePosition, GraphMouseEvent } from "./types";
 
 /**
  * cursor types supported by the browser
@@ -84,7 +84,7 @@ export const useGraphCursor = ({
   }
 
   const getCursorType = (item: SchemaItem | undefined) => {
-    if (graphCursorDisabled.value || !item) return 'default'
+    if (!item) return 'default'
 
     if (inSelectMode.value) {
       const isSelectable = isItemSelectable.value?.(item) ?? false
@@ -98,7 +98,7 @@ export const useGraphCursor = ({
   }
 
   const changeCursorType = ({ items }: Pick<GraphMouseEvent, 'items'>) => {
-    if (!canvas.value) return
+    if (!canvas.value || graphCursorDisabled.value) return
     const topItem = items.at(-1)
     canvas.value.style.cursor = getCursorType(topItem)
   }
