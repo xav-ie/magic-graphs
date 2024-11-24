@@ -35,10 +35,16 @@ export const useSourceSinkControls = (graph: Graph) => {
     nodeRef: Ref<GNode | undefined>,
     cancelRef: Ref<SelectControls['cancelSelection'] | undefined>,
   ) => {
-    const { selectedItemPromise, cancelSelection } = selectFromGraph(graph, (item) => {
-      const isAlreadySourceOrSink = item.id === sourceNode.value?.id || item.id === sinkNode.value?.id;
-      return item.graphType === 'node' && !isAlreadySourceOrSink;
+    const { selectedItemPromise, cancelSelection } = selectFromGraph(graph, {
+      predicate: (item) => {
+        const alreadySource = item.id === sourceNode.value?.id
+        const alreadySink = item.id === sinkNode.value?.id
+        const isAlreadySourceOrSink = alreadySource || alreadySink;
+        if (isAlreadySourceOrSink) return false;
+        return item.graphType === 'node'
+      },
     });
+
     cancelRef.value = cancelSelection;
 
     const nodeSchema = await selectedItemPromise;

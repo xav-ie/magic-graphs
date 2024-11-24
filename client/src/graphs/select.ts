@@ -10,7 +10,6 @@ import type { Graph, SchemaItem } from "./types";
  */
 export const selectNode = (graph: Graph) => selectFromGraph(graph, {
   predicate: item => item.graphType === 'node',
-  cursorSelectModeGraphTypes: ['node'],
 });
 
 /**
@@ -22,7 +21,6 @@ export const selectNode = (graph: Graph) => selectFromGraph(graph, {
  */
 export const selectEdge = (graph: Graph) => selectFromGraph(graph, {
   predicate: item => item.graphType === 'edge',
-  cursorSelectModeGraphTypes: ['edge'],
 });
 
 export type SelectFromGraphOptions = {
@@ -32,12 +30,9 @@ export type SelectFromGraphOptions = {
    * @default () => true
    */
   predicate: (item: SchemaItem) => boolean;
-  /**
-   * the graph types that will be selectable in cursor select mode
-   * @default ['node', 'edge']
-   */
-  cursorSelectModeGraphTypes: SchemaItem['graphType'][];
 };
+
+const DEFAULT_PREDICATE = () => true;
 
 /**
  * waits for the user to click on an item in the graph and resolves to the selected item
@@ -52,9 +47,8 @@ export type SelectFromGraphOptions = {
  * // selection resolved. do something with the selected item
  */
 export const selectFromGraph = (graph: Graph, {
-  predicate = () => true,
-  cursorSelectModeGraphTypes = ['node', 'edge'],
-}: SelectFromGraphOptions) => {
+  predicate = DEFAULT_PREDICATE,
+}: Partial<SelectFromGraphOptions>) => {
   let resolver: (value: SchemaItem | PromiseLike<SchemaItem> | undefined) => void;
 
   const selectedItemPromise = new Promise<SchemaItem | undefined>((res) => resolver = res);
@@ -75,7 +69,8 @@ export const selectFromGraph = (graph: Graph, {
     graph.subscribe('onClick', onClick);
     graph.settings.value.userEditable = false;
     graph.settings.value.focusable = false;
-    graph.activateCursorSelectMode(cursorSelectModeGraphTypes);
+    const cursorPredicate = predicate === DEFAULT_PREDICATE ? ((item: SchemaItem) => !!item) : predicate;
+    graph.activateCursorSelectMode(cursorPredicate);
   }
 
   /**

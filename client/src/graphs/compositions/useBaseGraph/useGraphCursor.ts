@@ -61,23 +61,22 @@ export const useGraphCursor = ({
     'encapsulated-node-box': 'move',
   })
 
-  const selectModeGraphTypes = ref<SchemaItem['graphType'][] | undefined>()
+  const isItemSelectable = ref<(item: SchemaItem) => boolean>()
+  const inSelectMode = computed(() => !!isItemSelectable.value)
 
-  const inSelectMode = computed(() => !!selectModeGraphTypes.value)
-
-  const activateCursorSelectMode = (selectableTypes: SchemaItem['graphType'][]) => {
-    selectModeGraphTypes.value = selectableTypes
+  const activateCursorSelectMode = (predicate: (item: SchemaItem) => boolean) => {
+    isItemSelectable.value = predicate
   }
 
   const deactivateCursorSelectMode = () => {
-    selectModeGraphTypes.value = undefined
+    isItemSelectable.value = undefined
   }
 
   const getCursorType = (item: SchemaItem | undefined) => {
     if (graphCursorDisabled.value || !item) return 'default'
 
     if (inSelectMode.value) {
-      const isSelectable = selectModeGraphTypes.value?.includes(item.graphType)
+      const isSelectable = isItemSelectable.value?.(item) ?? false
       return isSelectable ? 'pointer' : 'default'
     }
 
