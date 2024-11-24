@@ -5,7 +5,7 @@ import type {
   GraphOptions
 } from "@graph/types"
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types"
-import { useMarqueeGraph } from '@graph/compositions/useMarqueeGraph'
+import { useAnnotationGraph } from '@graph/compositions/useAnnotationGraph'
 import type { HistoryRecord } from '../useHistoryGraph/types'
 import { useShortcutPressed } from './useShortcutPressed'
 import type { GraphMouseEvent } from '../useBaseGraph/types'
@@ -23,7 +23,7 @@ export const useUserEditableGraph = (
   options: Partial<GraphOptions> = {}
 ) => {
 
-  const graph = useMarqueeGraph(canvas, options)
+  const graph = useAnnotationGraph(canvas, options)
 
   const handleNodeCreation = ({ coords }: GraphMouseEvent) => {
     graph.addNode(coords)
