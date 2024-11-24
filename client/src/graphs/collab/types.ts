@@ -28,19 +28,7 @@ export type Collaborator = {
   productId: ProductInfo['productId']
 }
 
-/**
- * sends a collaborators mouse movement from the client to the server.
- * does not include the collaborators id, as the server knows this.
- */
-export type ToServerCollaboratorMove = {
-  x: number
-  y: number
-}
-
-/**
- * sends a collaborators mouse movement from the server to the client.
- */
-export type ToClientCollaboratorMove = {
+export type CollaboratorMove = {
   id: Collaborator['id']
   x: number
   y: number
@@ -59,10 +47,7 @@ export type GraphState = {
   edges: GEdge[]
 }
 
-/**
- * client-server + server-client events send via socket.io
- */
-export interface GraphEvents {
+export type GraphSocketEvents = {
   nodeAdded: (node: GNode) => void
   nodeRemoved: (nodeId: GNode['id']) => void
   nodeMoved: (node: GNode) => void
@@ -70,21 +55,18 @@ export interface GraphEvents {
   edgeAdded: (edge: GEdge) => void
   edgeRemoved: (edgeId: GEdge['id']) => void
   edgeLabelEdited: (edgeId: GEdge['id'], label: string) => void
+}
 
+export type CollabSocketEvents = {
   collaboratorJoined: (collaborator: Collaborator) => void
   collaboratorLeft: (collaboratorId: Collaborator['id']) => void
-
-  toServerCollaboratorMoved: (collaboratorMove: ToServerCollaboratorMove) => void
-  toClientCollaboratorMoved: (collaboratorMove: ToClientCollaboratorMove) => void
-
-  joinRoom: (
-    joinOptions: Collaborator & { roomId: string },
-    joinWithGraphState: GraphState | null,
-    mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
-  ) => void
-
-  leaveRoom: (confirmationCallback: () => void) => void
+  collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
 }
+
+/**
+ * client-server + server-client events send via socket.io
+ */
+export type SocketEvents = GraphSocketEvents & CollabSocketEvents
 
 /**
  * list of colors that may be assigned to collaborators
