@@ -33,7 +33,8 @@ import { useNodeEdgeMap } from './useNodeEdgeMap';
 import { useAggregator } from './useAggregator';
 import { useGraphCRUD } from './useGraphCRUD';
 import { getCtx } from '@utils/ctx';
-import type { GraphAtMousePosition, GraphMouseEvent } from './types';
+import type { GraphAtMousePosition } from './types';
+import { useGraphCursor } from './useGraphCursor';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -63,6 +64,12 @@ export const useBaseGraph = (
   const graphAtMousePosition = ref<GraphAtMousePosition>({
     coords: { x: 0, y: 0 },
     items: [],
+  })
+
+  const { graphToCursorMap } = useGraphCursor({
+    canvas,
+    subscribe,
+    graphAtMousePosition,
   })
 
   const updateGraphAtMousePosition = (ev: MouseEvent) => {
@@ -214,21 +221,6 @@ export const useBaseGraph = (
     return aggregator
   }
 
-  const changeCursorType = ({ items }: GraphMouseEvent) => {
-    if (!canvas.value) return
-    const topItem = items.at(-1)
-    if (!topItem) return canvas.value.style.cursor = 'default'
-    const GRAPH_TYPE_TO_CURSOR: Partial<Record<SchemaItem['graphType'], string>> = {
-      node: 'pointer',
-      edge: 'pointer',
-      "node-anchor": 'grab'
-    }
-    const cursor = GRAPH_TYPE_TO_CURSOR[topItem.graphType] ?? 'default'
-    canvas.value.style.cursor = cursor
-  }
-
-  subscribe('onMouseMove', changeCursorType)
-
   updateAggregator.push(liftHoveredNodeToTop)
 
   const reset = () => {
@@ -305,6 +297,7 @@ export const useBaseGraph = (
 
     canvas,
     graphAtMousePosition,
+    graphToCursorMap,
   }
 }
 
