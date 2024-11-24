@@ -1,8 +1,10 @@
+import colors from "@utils/colors";
 
-import type { Coordinate } from "@shape/types";
+export const COLORS = [
+  colors.RED_600,
+  colors.BLUE_600,
+  colors.GREEN_600,
+  colors.YELLOW_600,
+];
 
-export type Scribble = {
-  color: string;
-  brushWeight: number;
-  points: Coordinate[];
-}
+export const BRUSH_WEIGHTS = [1, 3, 5, 7];

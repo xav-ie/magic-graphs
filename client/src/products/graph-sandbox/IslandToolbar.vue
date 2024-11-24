@@ -6,15 +6,10 @@
   import ToolbarButtonGroup from "./ToolbarButtonGroup.vue";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
   import ToolbarHint from "./ToolbarHint.vue";
-  import type { AnnotationControls } from "@playground/annotation/useGraphAnnotation";
-  import { toRefs } from "vue";
 
   const props = defineProps<{
     graph: Graph;
-    annotationControls: AnnotationControls;
   }>();
-
-  const { isActive } = toRefs(props.annotationControls);
 
   const tutorial = useGraphTutorial(props.graph, [
     {
@@ -35,8 +30,13 @@
   };
 
   const toggleAnnotation = () => {
-    const { activate, deactivate } = props.annotationControls;
-    isActive.value ? deactivate() : activate();
+    const {
+      activateAnnotation: activate,
+      deactivateAnnotation: deactivate,
+      annotationActive: isActive,
+    } = props.graph;
+
+    isActive ? deactivate() : activate();
   };
 </script>
 
@@ -99,7 +99,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="eraseItems"
-        :disabled="graph.focusedItemIds.value.size === 0 || isActive"
+        :disabled="graph.focusedItemIds.value.size === 0 || graph.annotationActive.value"
       >
         mdi-eraser
       </ToolbarButton>
@@ -112,7 +112,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="toggleAnnotation"
-        :active="isActive"
+        :active="graph.annotationActive.value"
       >
         mdi-pencil
       </ToolbarButton>

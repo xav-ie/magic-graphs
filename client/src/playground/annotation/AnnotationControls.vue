@@ -6,13 +6,15 @@
   import ToolbarButtonDivider from "@product/graph-sandbox/ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "@product/graph-sandbox/ToolbarButtonGroup.vue";
   import { COLORS, BRUSH_WEIGHTS } from "./types";
-  import type { AnnotationControls } from "./useAnnotation";
+  import type { Graph } from "@graph/types";
 
   const props = defineProps<{
-    controls: Pick<AnnotationControls, "selectedColor" | "selectedBrushWeight" | "erasing" | "clear">;
+    graph: Graph;
   }>();
 
-  const { selectedColor, selectedBrushWeight, erasing } = toRefs(props.controls);
+  const { selectedColor, selectedBrushWeight, erasing } = toRefs(
+    props.controls
+  );
   const { clear } = props.controls;
 </script>
 
@@ -21,7 +23,7 @@
     <ToolbarButtonGroup>
       <ToolbarButton
         v-for="color in COLORS"
-        @click="selectedColor = color, erasing = false"
+        @click="(selectedColor = color), (erasing = false)"
         :active="selectedColor === color"
         :key="color"
         :color="color"

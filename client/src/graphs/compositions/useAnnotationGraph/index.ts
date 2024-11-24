@@ -5,12 +5,16 @@ import type { Coordinate, Shape } from "@shape/types";
 import { shapes } from "@shapes";
 import { useMarqueeGraph } from "../useMarqueeGraph";
 import type { GraphMouseEvent } from "../useBaseGraph/types";
+import { BRUSH_WEIGHTS, COLORS } from "./types";
 
 export const useAnnotationGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
 ) => {
   const graph = useMarqueeGraph(canvas, options)
+
+  const selectedColor = ref(COLORS[0])
+  const selectedBrushWeight = ref(BRUSH_WEIGHTS[0])
 
   const batch = ref<Coordinate[]>([])
   const scribbles = ref<Shape[]>([])
@@ -56,8 +60,8 @@ export const useAnnotationGraph = (
     const scribbleShape = shapes.scribble({
       type: 'draw',
       points: batch.value,
-      color: 'black',
-      brushWeight: 7,
+      color: selectedColor.value,
+      brushWeight: selectedBrushWeight.value,
     })
 
     scribbles.value.push(scribbleShape);
@@ -98,11 +102,11 @@ export const useAnnotationGraph = (
 
   return {
     ...graph,
-    scribbles,
-    isActive,
-    clear,
 
-    activate,
-    deactivate,
+    clearAnnotations: clear,
+    annotationActive: isActive,
+
+    activateAnnotation: activate,
+    deactivateAnnotation: deactivate,
   }
 }
