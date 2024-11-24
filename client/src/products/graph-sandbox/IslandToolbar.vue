@@ -6,6 +6,7 @@
   import ToolbarButtonGroup from "./ToolbarButtonGroup.vue";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
   import ToolbarHint from "./ToolbarHint.vue";
+import GraphInfoMenu from "./GraphInfoMenu.vue";
 
   const props = defineProps<{
     graph: Graph;
@@ -116,6 +117,10 @@
       >
         mdi-pencil
       </ToolbarButton>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonGroup>
+      <GraphInfoMenu :graph="graph" />
     </ToolbarButtonGroup>
   </Toolbar>
 
