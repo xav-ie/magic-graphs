@@ -2,7 +2,6 @@
   import type { Graph } from "@graph/types";
   import AdjacencyListDisplay from "./AdjacencyListDisplay.vue";
   import { useAdjacencyList } from "@graph/useAdjacencyList";
-  import { ref } from "vue";
 
   const props = defineProps<{
     graph: Graph;

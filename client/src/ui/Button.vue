@@ -11,6 +11,10 @@
      * The text color of the button.
      */
     textColor?: string;
+    /**
+     * Whether the button is disabled.
+     */
+    disabled?: boolean;
   }>();
 
   const propClasses = computed(() => {
@@ -65,7 +69,14 @@
 </script>
 
 <template>
-  <button :class="classList">
+  <button
+    :class="classList"
+    :style="{
+      pointerEvents: props.disabled ? 'none' : 'auto',
+      opacity: props.disabled ? 0.5 : 1,
+      cursor: props.disabled ? 'not-allowed' : 'pointer',
+    }"
+  >
     <slot></slot>
   </button>
 </template>
