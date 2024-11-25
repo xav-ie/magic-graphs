@@ -133,7 +133,7 @@ export const useAnnotationGraph = (
         graphType: "annotation",
         id: incompleteScribble.id,
         shape: incompleteScribble,
-        priority: 5000,
+        priority: 5001,
       })
     }
 
