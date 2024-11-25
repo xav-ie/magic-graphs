@@ -5,7 +5,6 @@
   import Button from "@ui/Button.vue";
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
   import colors from "@colors";
-  import CollabControls from "@playground/graph/CollabControls.vue";
   import { useSimulationRunner } from "./useSimulationRunner";
   import CostDisplay from "./CostDisplay.vue";
 
@@ -71,12 +70,5 @@
     class="absolute bottom-8 w-full flex justify-center items-center p-3"
   >
     <SimulationPlaybackControls :controls="simControls" />
-  </div>
-
-  <div
-    v-if="!simControls.isActive.value"
-    class="absolute right-0 p-3 h-14 flex gap-3 bottom-0"
-  >
-    <CollabControls :graph="graph" />
   </div>
 </template>

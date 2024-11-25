@@ -8,7 +8,6 @@
   import { useGraphBtns } from "@graph/buttons/useGraphBtns";
   import GraphBtns from "@graph/buttons/GraphBtns.vue";
   import Graph from "@graph/Graph.vue";
-  import CollabControls from "./CollabControls.vue";
   import ThemeControls from "./ThemeControls.vue";
   import type { GraphPlaygroundControls as Controls } from "./types";
   import GraphPlaygroundControls from "./GraphPlaygroundControls.vue";
@@ -34,7 +33,6 @@
     tutorial: true,
     theme: true,
     settings: true,
-    collab: true,
     buttons: true,
   });
 
@@ -65,13 +63,6 @@
       class="absolute flex gap-2 m-2 flex flex-wrap w-[85%]"
     >
       <GraphBtns :btns="btnArr" />
-    </div>
-
-    <div
-      v-if="controls.collab"
-      class="absolute bottom-0 right-0 flex gap-2 h-8 m-2"
-    >
-      <CollabControls :graph="graph" />
     </div>
 
     <div

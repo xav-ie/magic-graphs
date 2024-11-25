@@ -13,7 +13,6 @@ export const GRAPH_BUTTON_ID = {
   storageKey: 'storage-key',
   clearLocalStorage: 'clear-local-storage',
   persistentGraphClone: 'persistent-graph-clone',
-  testRoom: 'test-room',
   log: 'log',
   bfsColorize: 'toggle-bfs-colorize'
 } as const;

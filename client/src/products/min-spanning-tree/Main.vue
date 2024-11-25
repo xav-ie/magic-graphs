@@ -2,7 +2,6 @@
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
-  import CollabControls from "@playground/graph/CollabControls.vue";
   import { useMSTSimulation, MST_ALGORITHMS } from "./useSimulation";
   import type { MSTAlgorithm } from "./useSimulation";
   import SimulationControls from "./SimulationControls.vue";
@@ -50,12 +49,5 @@
     class="absolute bottom-8 w-full flex flex-col justify-center items-center p-3"
   >
     <SimulationControls :controls="simControls" />
-  </div>
-
-  <div
-    v-if="!simControls.isActive.value"
-    class="absolute right-0 p-3 h-14 flex gap-3 bottom-0"
-  >
-    <CollabControls :graph="graph" />
   </div>
 </template>

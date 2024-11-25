@@ -3,7 +3,6 @@
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
   import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
-  import CollabControls from "@playground/graph/CollabControls.vue";
   import { flowNodeLabelGetter, useSourceSinkControls } from "./useSourceSinkControls";
   import { useSourceSinkStyler } from "./useSourceSinkStyler";
   import SourceSinkControls from "./SourceSinkControls.vue";
@@ -57,13 +56,6 @@
       class="absolute bottom-8 w-full flex justify-center items-center p-3"
     >
       <SimulationPlaybackControls :controls="simControls" />
-    </div>
-
-    <div
-      v-if="!simControls.isActive.value"
-      class="absolute right-0 p-3 h-14 flex gap-3 bottom-0"
-    >
-      <CollabControls :graph="graph" />
     </div>
   </div>
 </template>
