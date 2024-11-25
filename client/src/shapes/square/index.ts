@@ -18,6 +18,7 @@ import { getFullTextArea } from "@shape/text";
 import { engageTextarea } from "@shape/textarea";
 
 export type Square = {
+  id?: string
   at: Coordinate
   size: number
   color?: string
@@ -60,7 +61,7 @@ export const square = (options: Square): Shape => {
   }
 
   return {
-    id: generateId(),
+    id: options.id ?? generateId(),
     name: 'square',
 
     draw,
