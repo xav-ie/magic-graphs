@@ -2,8 +2,8 @@ import type { Ref } from 'vue'
 import { THEMES } from '@graph/themes'
 import type { GraphOptions } from '@graph/types'
 import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
-import { useCollaborativeGraph } from '@graph/compositions/useCollaborativeGraph'
 import { clone } from '@utils/clone'
+import { usePersistentGraph } from './compositions/usePersistentGraph'
 
 /**
  * a package full of tools for creating and managing graphs
@@ -17,7 +17,7 @@ export const useGraph = (
   options: Partial<GraphOptions> = {},
 ) => {
   const overrideThemes = clone(options?.theme ?? {})
-  const graph = useCollaborativeGraph(canvas, options)
+  const graph = usePersistentGraph(canvas, options)
   useUserPreferredTheme(graph, overrideThemes)
   return graph
 }
@@ -25,7 +25,7 @@ export const useGraph = (
 export const useDarkGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
-) => useCollaborativeGraph(canvas, {
+) => usePersistentGraph(canvas, {
   theme: {
     ...options.theme,
     ...THEMES.dark,

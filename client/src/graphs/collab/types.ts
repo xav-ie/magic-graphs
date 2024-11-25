@@ -1,29 +1,41 @@
 import type { GEdge, GNode } from "@graph/types"
 import colors from "@colors"
+import type { ProductInfo } from "src/types"
 
 /**
- * a collaborators info
+ * data for a collaborator that is not connected to a single
+ * instance of collaboration or socket
+ */
+export type CollaboratorProfile = {
+  /**
+   * the display name of the collaborator
+   */
+  name: string
+  /**
+   * the display color of the collaborator
+   */
+  color: string
+}
+
+/**
+ * a person connected to a room
  */
 export type Collaborator = {
+  /**
+   * unique id for the collaborator, tied to their socket id
+   */
   id: string
-  name: string
-  color: string
+  /**
+   * the current mouse coordinates of the collaborator on the canvas
+   */
   mousePosition: { x: number, y: number }
-}
+  /**
+   * the id of the product that the collaborator is currently active on
+   */
+  productId: ProductInfo['productId']
+} & CollaboratorProfile
 
-/**
- * sends a collaborators mouse movement from the client to the server.
- * does not include the collaborators id, as the server knows this.
- */
-export type ToServerCollaboratorMove = {
-  x: number
-  y: number
-}
-
-/**
- * sends a collaborators mouse movement from the server to the client.
- */
-export type ToClientCollaboratorMove = {
+export type CollaboratorMove = {
   id: Collaborator['id']
   x: number
   y: number
@@ -42,10 +54,7 @@ export type GraphState = {
   edges: GEdge[]
 }
 
-/**
- * client-server + server-client events send via socket.io
- */
-export interface GraphEvents {
+export type GraphSocketEvents = {
   nodeAdded: (node: GNode) => void
   nodeRemoved: (nodeId: GNode['id']) => void
   nodeMoved: (node: GNode) => void
@@ -53,21 +62,31 @@ export interface GraphEvents {
   edgeAdded: (edge: GEdge) => void
   edgeRemoved: (edgeId: GEdge['id']) => void
   edgeLabelEdited: (edgeId: GEdge['id'], label: string) => void
+}
 
+export type CollabSocketEvents = {
   collaboratorJoined: (collaborator: Collaborator) => void
   collaboratorLeft: (collaboratorId: Collaborator['id']) => void
+  collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
+}
 
-  toServerCollaboratorMoved: (collaboratorMove: ToServerCollaboratorMove) => void
-  toClientCollaboratorMoved: (collaboratorMove: ToClientCollaboratorMove) => void
-
+export type ConnectionSocketEvents = {
   joinRoom: (
-    joinOptions: Collaborator & { roomId: string },
-    joinWithGraphState: GraphState | null,
+    joinOptions: {
+      roomId: string,
+      me: Collaborator,
+      graphState: GraphState
+    },
     mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
   ) => void
 
   leaveRoom: (confirmationCallback: () => void) => void
 }
+
+/**
+ * client-server + server-client events send via socket.io
+ */
+export type SocketEvents = GraphSocketEvents & CollabSocketEvents & ConnectionSocketEvents
 
 /**
  * list of colors that may be assigned to collaborators
@@ -83,20 +102,4 @@ export const COLLAB_COLORS = [
   colors.PINK_600,
   colors.PURPLE_600,
   colors.RED_600,
-]
-
-/**
- * list of default names for collaborators
- */
-export const COLLAB_NAMES = [
-  'Joud',
-  'Zavier',
-  'Thomas',
-  'Jaime',
-  'Dila',
-  'Bella',
-  'Julian',
-  'Adriana',
-  'Juliana',
-  'Yona'
 ]

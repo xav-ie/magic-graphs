@@ -3,8 +3,6 @@ import { getRandomInRange } from "@graph/helpers";
 import { GRAPH_BUTTON_ID } from "@graph/buttons/types";
 import type { GButton } from "@graph/buttons/types";
 import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
-import { getRandomElement } from "@utils/array";
-import { COLLAB_COLORS, COLLAB_NAMES } from "@graph/compositions/useCollaborativeGraph/types";
 
 /**
  * a one stop shop for the dials you need to control your graph
@@ -106,40 +104,9 @@ export const useGraphBtns = (graph: Graph) => {
     id: GRAPH_BUTTON_ID.persistentGraphClone,
   };
 
-  const toggleTestRoom: GButton = {
-    label: () => {
-      const {
-        collaborativeRoomId: room,
-        collaboratorCount: peopleInRoom,
-        inCollaborativeRoom: inRoom
-      } = graph
-      const inRoomText = `Leave ${room.value} Room (${peopleInRoom.value + 1} In Room)`;
-      const notInRoomText = 'Join Test Room';
-      return inRoom.value ? inRoomText : notInRoomText;
-    },
-    action: () => {
-      const name = getRandomElement(COLLAB_NAMES);
-      const color = getRandomElement(COLLAB_COLORS);
-      graph.meAsACollaborator.value.name = name;
-      graph.meAsACollaborator.value.color = color;
-      const {
-        joinCollaborativeRoom: joinRoom,
-        leaveCollaborativeRoom: leaveRoom,
-        inCollaborativeRoom: inRoom
-      } = graph;
-      inRoom.value ? leaveRoom() : joinRoom('Test');
-    },
-    color: () => graph.inCollaborativeRoom.value ? 'red' : 'green',
-    id: GRAPH_BUTTON_ID.testRoom,
-  };
-
   const log: GButton = {
     label: () => 'Log',
-    action: () => {
-      console.log(JSON.stringify(graph.collaborators.value, null, 2));
-      console.log(JSON.stringify(graph.collaboratorCount.value, null, 2));
-      console.log(JSON.stringify(graph.meAsACollaborator.value, null, 2));
-    },
+    action: () => {},
     color: () => 'blue',
     id: GRAPH_BUTTON_ID.log,
   };
@@ -180,9 +147,6 @@ export const useGraphBtns = (graph: Graph) => {
     // persistent
     changeStorageKey,
     persistentGraphClone,
-
-    // collaborative
-    toggleTestRoom,
 
     // search visualizer - product
     bfsColorize,

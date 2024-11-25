@@ -7,10 +7,22 @@
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
   import ToolbarHint from "./ToolbarHint.vue";
   import GraphInfoMenu from "./GraphInfoMenu.vue";
+  import { useCollab } from "@graph/collab";
+  import GraphSandboxProductInfo from "./info";
 
   const props = defineProps<{
     graph: Graph;
   }>();
+
+  const { connectToRoom, isConnected } = useCollab();
+
+  const join = () => {
+    connectToRoom({
+      roomId: 'sandbox',
+      productId: GraphSandboxProductInfo.productId,
+      graph: props.graph,
+    })
+  }
 
   const tutorial = useGraphTutorial(props.graph, [
     {
@@ -129,7 +141,10 @@
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
-      <ToolbarButton>mdi-account-group</ToolbarButton>
+      <ToolbarButton
+        @click="join"
+        :disabled="isConnected"
+      >mdi-account-group</ToolbarButton>
     </ToolbarButtonGroup>
   </Toolbar>
 

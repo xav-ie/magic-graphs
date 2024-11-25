@@ -13,26 +13,23 @@ const sockets = (httpServer) => {
      * a map of collaborator ids to their details and the room they are in
      */
     const collaboratorIdToCollaborator = {};
+    /**
+     * a map of collaborator ids to the room they are in
+     */
+    const collaboratorIdToRoomId = {};
     io.on('connection', (socket) => {
         const tracker = (0, trackGraphState_1.trackGraphState)();
-        socket.on('joinRoom', async (joinRoomDetails, initialGraphState, callback) => {
-            tracker.setRoomId(joinRoomDetails.roomId);
-            try {
-                var roomId = tracker.getRoomId();
-            }
-            catch (error) {
-                console.error('error getting room id', error);
-                return;
-            }
-            socket.join(roomId);
-            socket.broadcast.to(roomId).emit('collaboratorJoined', joinRoomDetails);
-            const graphState = tracker.getGraphState();
-            if (!graphState && initialGraphState)
-                tracker.setGraphState(initialGraphState);
-            else if (!graphState)
-                tracker.setGraphState({ nodes: [], edges: [] });
+        socket.on('joinRoom', async (joinRoomOptions, callback) => {
+            const { me, roomId: myRoomId, graphState: myGraphState } = joinRoomOptions;
+            tracker.setRoomId(myRoomId);
+            socket.join(myRoomId);
+            socket.broadcast.to(myRoomId).emit('collaboratorJoined', me);
+            const existingGraphState = tracker.getGraphState();
+            if (!existingGraphState)
+                tracker.setGraphState(myGraphState);
             callback(collaboratorIdToCollaborator, tracker.getGraphState());
-            collaboratorIdToCollaborator[socket.id] = joinRoomDetails;
+            collaboratorIdToCollaborator[socket.id] = me;
+            collaboratorIdToRoomId[socket.id] = myRoomId;
         });
         socket.on('leaveRoom', (confirmationCallback) => {
             socket.leave(tracker.getRoomId());
@@ -80,11 +77,11 @@ const sockets = (httpServer) => {
             tracker.updateEdge(edgeId, { label: newLabel });
             socket.broadcast.to(tracker.getRoomId()).emit('edgeLabelEdited', edgeId, newLabel);
         });
-        socket.on('toServerCollaboratorMoved', ({ x, y }) => {
-            const roomId = collaboratorIdToCollaborator[socket.id]?.roomId;
+        socket.on('collaboratorMoved', ({ x, y }) => {
+            const roomId = collaboratorIdToRoomId[socket.id];
             if (!roomId)
                 return;
-            socket.broadcast.to(roomId).emit('toClientCollaboratorMoved', { id: socket.id, x, y });
+            socket.broadcast.to(roomId).emit('collaboratorMoved', { id: socket.id, x, y });
         });
         socket.on('disconnect', () => {
             try {
