@@ -1,6 +1,201 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PROGRESS_DEFAULTS = exports.useMSTSimulation = exports.MST_ALGORITHMS = exports.useMarkupSizer = exports.useMarkupColorizer = exports.useDijkstra = exports.INF = exports.ANNOTATION_DEFAULTS = exports.TUTORIAL_THEME_ID = exports.DELAY_UNTIL_NEXT_STEP = exports.NON_COLOR_THEMES = exports.resolveThemeForEdge = exports.resolveThemeForNode = exports.THEMES = exports.getThemeResolver = exports.DEFAULT_GRAPH_SETTINGS = exports.getInitialEventBus = void 0;
+exports.PROGRESS_DEFAULTS = exports.triangle = exports.TRIANGLE_DEFAULTS = exports.scribble = exports.ERASER_BRUSH_WEIGHT = exports.SCRIBBLE_DEFAULTS = exports.useMSTSimulation = exports.MST_ALGORITHMS = exports.useMarkupSizer = exports.useMarkupColorizer = exports.dijkstras = exports.INF = exports.TUTORIAL_THEME_ID = exports.DELAY_UNTIL_NEXT_STEP = exports.NON_COLOR_THEMES = exports.resolveThemeForEdge = exports.resolveThemeForNode = exports.THEMES = exports.getThemeResolver = exports.DEFAULT_GRAPH_SETTINGS = exports.selectFromGraph = exports.getInitialEventBus = exports.useGraphCursor = void 0;
+// @ts-ignore
+// @ts-ignore
+/**
+// @ts-ignore
+ * manages the cursor type when hovering over the graph
+// @ts-ignore
+ *
+// @ts-ignore
+ * @param subscribe - the event subscriber
+// @ts-ignore
+ * @param canvas - the canvas element
+// @ts-ignore
+ * @param graphAtMousePosition - the graph items at the mouse position
+// @ts-ignore
+ * @returns the cursor manager
+// @ts-ignore
+ */
+// @ts-ignore
+const useGraphCursor = ({ 
+// @ts-ignore
+subscribe, 
+// @ts-ignore
+canvas, 
+// @ts-ignore
+graphAtMousePosition,
+// @ts-ignore
+ }) => {
+    // @ts-ignore
+    const isMouseDown = ref(false);
+    // @ts-ignore
+    const graphCursorDisabled = ref(false);
+    // @ts-ignore
+    // @ts-ignore
+    const graphToCursorMap = ref({
+        // @ts-ignore
+        'node': 'grab',
+        // @ts-ignore
+        'edge': 'pointer',
+        // @ts-ignore
+        'node-anchor': 'grab',
+        // @ts-ignore
+        'encapsulated-node-box': 'move',
+        // @ts-ignore
+    });
+    // @ts-ignore
+    // @ts-ignore
+    const isItemSelectable = ref();
+    // @ts-ignore
+    const inSelectMode = computed(() => !!isItemSelectable.value);
+    // @ts-ignore
+    // @ts-ignore
+    const activateCursorSelectMode = (predicate) => {
+        // @ts-ignore
+        isItemSelectable.value = predicate;
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    const deactivateCursorSelectMode = () => {
+        // @ts-ignore
+        isItemSelectable.value = undefined;
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    const getCursorType = (item) => {
+        // @ts-ignore
+        if (!item)
+            return 'default';
+        // @ts-ignore
+        // @ts-ignore
+        if (inSelectMode.value) {
+            // @ts-ignore
+            const isSelectable = isItemSelectable.value?.(item) ?? false;
+            // @ts-ignore
+            return isSelectable ? 'pointer' : 'default';
+            // @ts-ignore
+        }
+        // @ts-ignore
+        // @ts-ignore
+        const cursor = graphToCursorMap.value[item.graphType] ?? 'default';
+        // @ts-ignore
+        if (cursor === 'grab' && isMouseDown.value)
+            return 'grabbing';
+        // @ts-ignore
+        // @ts-ignore
+        return cursor;
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    const changeCursorType = ({ items }) => {
+        // @ts-ignore
+        if (!canvas.value || graphCursorDisabled.value)
+            return;
+        // @ts-ignore
+        const topItem = items.at(-1);
+        // @ts-ignore
+        canvas.value.style.cursor = getCursorType(topItem);
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    subscribe('onMouseDown', (ev) => {
+        // @ts-ignore
+        isMouseDown.value = true;
+        // @ts-ignore
+        changeCursorType(ev);
+        // @ts-ignore
+    });
+    // @ts-ignore
+    // @ts-ignore
+    subscribe('onMouseUp', (ev) => {
+        // @ts-ignore
+        isMouseDown.value = false;
+        // @ts-ignore
+        changeCursorType(ev);
+        // @ts-ignore
+    });
+    // @ts-ignore
+    // @ts-ignore
+    subscribe('onMouseMove', changeCursorType);
+    // @ts-ignore
+    // @ts-ignore
+    watch(graphToCursorMap, () => {
+        // @ts-ignore
+        changeCursorType({
+            // @ts-ignore
+            items: graphAtMousePosition.value.items
+            // @ts-ignore
+        });
+        // @ts-ignore
+    }, { deep: true });
+    // @ts-ignore
+    // @ts-ignore
+    return {
+        // @ts-ignore
+        /**
+    // @ts-ignore
+         * maps graph schema item types to browser cursor.
+    // @ts-ignore
+         * changing this mapping will change the cursor type when hovering over the graph.
+    // @ts-ignore
+         */
+        // @ts-ignore
+        graphToCursorMap,
+        // @ts-ignore
+        /**
+    // @ts-ignore
+         * activates a cursor select mode, where only the schema items that pass the
+    // @ts-ignore
+         * `predicate` will receive a pointer cursor.
+    // @ts-ignore
+         * everything else will receive the default cursor as long as this mode is active.
+    // @ts-ignore
+         * @param predicate - a predicate that determines, given a schema item, whether it is selectable.
+    // @ts-ignore
+         * @example activateCursorSelectMode((item) => item.graphType === 'node')
+    // @ts-ignore
+         * // in select mode
+    // @ts-ignore
+         * // only nodes will receive a pointer cursor
+    // @ts-ignore
+         */
+        // @ts-ignore
+        activateCursorSelectMode,
+        // @ts-ignore
+        /**
+    // @ts-ignore
+         * deactivates the cursor select mode. to be called after `activateCursorSelectMode`.
+    // @ts-ignore
+         * @example activateCursorSelectMode((item) => item.graphType === 'node')
+    // @ts-ignore
+         * // in select mode
+    // @ts-ignore
+         * deactivateCursorSelectMode()
+    // @ts-ignore
+         * // no longer in select mode
+    // @ts-ignore
+         */
+        // @ts-ignore
+        deactivateCursorSelectMode,
+        // @ts-ignore
+        /**
+    // @ts-ignore
+         * when the graph cursor is disabled, the cursor will always be the default cursor.
+    // @ts-ignore
+         */
+        // @ts-ignore
+        graphCursorDisabled,
+        // @ts-ignore
+    };
+    // @ts-ignore
+};
+exports.useGraphCursor = useGraphCursor;
 // @ts-ignore
 // @ts-ignore
 /**
@@ -138,6 +333,161 @@ const getInitialEventBus = () => {
     return eventBus;
 };
 exports.getInitialEventBus = getInitialEventBus;
+// @ts-ignore
+// @ts-ignore
+/**
+// @ts-ignore
+ * default predicate for `selectFromGraph`
+// @ts-ignore
+ */
+// @ts-ignore
+const DEFAULT_PREDICATE = () => true;
+// @ts-ignore
+// @ts-ignore
+/**
+// @ts-ignore
+ * waits for the user to click on an item in the graph and resolves to the selected item
+// @ts-ignore
+ * or undefined if the cancel handler is invoked
+// @ts-ignore
+ *
+// @ts-ignore
+ * @param graph the graph to select from
+// @ts-ignore
+ * @param options options for the selection process
+// @ts-ignore
+ * @returns a promise that resolves to the selected item or undefined if the selection was cancelled
+// @ts-ignore
+ * @example const { selectedItemPromise, cancelSelection } = selectFromGraph(graph);
+// @ts-ignore
+ * const selectedItem = await selectedItemPromise;
+// @ts-ignore
+ * if (!selectedItem) return; // selection was cancelled
+// @ts-ignore
+ * // selection resolved. do something with the selected item
+// @ts-ignore
+ */
+// @ts-ignore
+const selectFromGraph = (graph, { 
+// @ts-ignore
+predicate = DEFAULT_PREDICATE,
+// @ts-ignore
+ } = {}) => {
+    // @ts-ignore
+    let resolver;
+    // @ts-ignore
+    // @ts-ignore
+    const selectedItemPromise = new Promise((res) => resolver = res);
+    // @ts-ignore
+    // @ts-ignore
+    const onClick = ({ items }) => {
+        // @ts-ignore
+        const topItem = items.at(-1);
+        // @ts-ignore
+        if (!topItem || !predicate(topItem))
+            return;
+        // @ts-ignore
+        resolve(topItem);
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    const initialUserEditable = graph.settings.value.userEditable;
+    // @ts-ignore
+    const initialFocusable = graph.settings.value.focusable;
+    // @ts-ignore
+    // @ts-ignore
+    /**
+  // @ts-ignore
+     * initializes the selection process
+  // @ts-ignore
+     */
+    // @ts-ignore
+    const init = () => {
+        // @ts-ignore
+        graph.subscribe('onClick', onClick);
+        // @ts-ignore
+        graph.settings.value.userEditable = false;
+        // @ts-ignore
+        graph.settings.value.focusable = false;
+        // @ts-ignore
+        const cursorPredicate = predicate === DEFAULT_PREDICATE ? ((item) => !!item) : predicate;
+        // @ts-ignore
+        graph.activateCursorSelectMode(cursorPredicate);
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    /**
+  // @ts-ignore
+     * cleans up the selection process
+  // @ts-ignore
+     */
+    // @ts-ignore
+    const cleanup = () => {
+        // @ts-ignore
+        graph.unsubscribe('onClick', onClick);
+        // @ts-ignore
+        graph.settings.value.userEditable = initialUserEditable;
+        // @ts-ignore
+        graph.settings.value.focusable = initialFocusable;
+        // @ts-ignore
+        graph.deactivateCursorSelectMode();
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    /**
+  // @ts-ignore
+     * resolves the selection process and returns the selected item from the promise
+  // @ts-ignore
+     */
+    // @ts-ignore
+    const resolve = (item) => {
+        // @ts-ignore
+        cleanup();
+        // @ts-ignore
+        resolver(item);
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    /**
+  // @ts-ignore
+     * cancels the selection process and returns undefined from the promise (public)
+  // @ts-ignore
+     */
+    // @ts-ignore
+    const cancelSelection = () => {
+        // @ts-ignore
+        cleanup();
+        // @ts-ignore
+        resolver(undefined);
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    init();
+    // @ts-ignore
+    // @ts-ignore
+    return {
+        // @ts-ignore
+        /**
+    // @ts-ignore
+         * resolves to the selected item or undefined if the
+    // @ts-ignore
+         * selection was cancelled by calling the cancel handler
+    // @ts-ignore
+         */
+        // @ts-ignore
+        selectedItemPromise,
+        // @ts-ignore
+        cancelSelection,
+        // @ts-ignore
+    };
+    // @ts-ignore
+};
+exports.selectFromGraph = selectFromGraph;
 // @ts-ignore
 // @ts-ignore
 /**
@@ -333,17 +683,6 @@ exports.DELAY_UNTIL_NEXT_STEP = 1000;
 exports.TUTORIAL_THEME_ID = 'tutorial';
 // @ts-ignore
 // @ts-ignore
-exports.ANNOTATION_DEFAULTS = {
-    // @ts-ignore
-    color: "red",
-    // @ts-ignore
-    brushWeight: 3,
-    // @ts-ignore
-    eraserBrushWeight: 50,
-    // @ts-ignore
-};
-// @ts-ignore
-// @ts-ignore
 /**
 // @ts-ignore
  * serializable infinity value for node distance
@@ -353,8 +692,7 @@ exports.ANNOTATION_DEFAULTS = {
 exports.INF = 999999;
 // @ts-ignore
 // @ts-ignore
-const dijkstras = (graph) => (startingNodeId) => {
-    // @ts-ignore
+const dijkstras = (graph, startingNodeId) => {
     // @ts-ignore
     const distanceArr = graph.nodes.value.map(
     // @ts-ignore
@@ -524,57 +862,7 @@ const dijkstras = (graph) => (startingNodeId) => {
     return trace;
     // @ts-ignore
 };
-// @ts-ignore
-// @ts-ignore
-const useDijkstra = (graph) => {
-    // @ts-ignore
-    const trace = ref([]);
-    // @ts-ignore
-    const getDijkstrasTrace = dijkstras(graph);
-    // @ts-ignore
-    // @ts-ignore
-    // TODO - make this be a ref that a user can write to
-    // @ts-ignore
-    // const startingNodeId = ref<GNode['id'] | undefined>();
-    // @ts-ignore
-    const startingNodeId = computed(() => {
-        // @ts-ignore
-        const nodeLabelledA = graph.nodes.value.find((n) => n.label === "A");
-        // @ts-ignore
-        return nodeLabelledA?.id;
-        // @ts-ignore
-    });
-    // @ts-ignore
-    // @ts-ignore
-    const update = () => {
-        // @ts-ignore
-        if (!startingNodeId.value)
-            return;
-        // @ts-ignore
-        const startingNode = graph.getNode(startingNodeId.value);
-        // @ts-ignore
-        if (!startingNode)
-            return;
-        // @ts-ignore
-        trace.value = getDijkstrasTrace(startingNode.id);
-        // @ts-ignore
-    };
-    // @ts-ignore
-    // @ts-ignore
-    graph.subscribe("onStructureChange", update);
-    // @ts-ignore
-    graph.subscribe("onEdgeLabelChange", update);
-    // @ts-ignore
-    graph.subscribe("onGraphReset", update);
-    // @ts-ignore
-    // @ts-ignore
-    update();
-    // @ts-ignore
-    // @ts-ignore
-    return { trace };
-    // @ts-ignore
-};
-exports.useDijkstra = useDijkstra;
+exports.dijkstras = dijkstras;
 // @ts-ignore
 // @ts-ignore
 const useMarkupColorizer = (graph) => {
@@ -798,6 +1086,10 @@ currentAlgorithm
     // @ts-ignore
     const start = () => {
         // @ts-ignore
+        if (active.value)
+            return;
+        // @ts-ignore
+        // @ts-ignore
         paused.value = false;
         // @ts-ignore
         active.value = true;
@@ -895,6 +1187,164 @@ currentAlgorithm
     // @ts-ignore
 };
 exports.useMSTSimulation = useMSTSimulation;
+// @ts-ignore
+// @ts-ignore
+exports.SCRIBBLE_DEFAULTS = {
+    // @ts-ignore
+    color: "red",
+    // @ts-ignore
+    brushWeight: 3,
+    // @ts-ignore
+};
+// @ts-ignore
+// @ts-ignore
+exports.ERASER_BRUSH_WEIGHT = 50;
+// @ts-ignore
+// @ts-ignore
+const scribble = (options) => {
+    // @ts-ignore
+    // @ts-ignore
+    if (options.points.length < 1) {
+        // @ts-ignore
+        throw new Error('not enough points to draw scribble');
+        // @ts-ignore
+    }
+    // @ts-ignore
+    if (options.brushWeight && options.brushWeight < 1) {
+        // @ts-ignore
+        throw new Error('brushWeight must be at least "1"');
+        // @ts-ignore
+    }
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
+    const shapeHitbox = scribbleHitbox(options);
+    // @ts-ignore
+    const efficientHitbox = scribbleEfficientHitbox(options);
+    // @ts-ignore
+    const hitbox = (point) => {
+        // @ts-ignore
+        return shapeHitbox(point);
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    const getBoundingBox = getScribbleBoundingBox(options);
+    // @ts-ignore
+    // @ts-ignore
+    const drawShape = drawScribbleWithCtx(options);
+    // @ts-ignore
+    // @ts-ignore
+    const draw = (ctx) => {
+        // @ts-ignore
+        drawShape(ctx);
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
+    return {
+        // @ts-ignore
+        id: generateId(),
+        // @ts-ignore
+        name: 'scribble',
+        // @ts-ignore
+        // @ts-ignore
+        drawShape,
+        // @ts-ignore
+        draw,
+        // @ts-ignore
+        // @ts-ignore
+        hitbox,
+        // @ts-ignore
+        shapeHitbox,
+        // @ts-ignore
+        efficientHitbox,
+        // @ts-ignore
+        getBoundingBox,
+        // @ts-ignore
+    };
+};
+exports.scribble = scribble;
+// @ts-ignore
+// @ts-ignore
+exports.TRIANGLE_DEFAULTS = {
+    // @ts-ignore
+    color: "black",
+    // @ts-ignore
+};
+// @ts-ignore
+// @ts-ignore
+const triangle = (options) => {
+    // @ts-ignore
+    const drawShape = drawTriangleWithCtx(options);
+    // @ts-ignore
+    const shapeHitbox = triangleHitbox(options);
+    // @ts-ignore
+    const textHitbox = triangleTextHitbox(options);
+    // @ts-ignore
+    const efficientHitbox = triangleEfficientHitbox(options);
+    // @ts-ignore
+    const hitbox = (point) => {
+        // @ts-ignore
+        return shapeHitbox(point); // text not implemented yet
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    const getBoundingBox = getTriangleBoundingBox(options);
+    // @ts-ignore
+    // @ts-ignore
+    const drawTextArea = drawTextAreaOnTriangle(options);
+    // @ts-ignore
+    // @ts-ignore
+    const drawTextAreaMatte = drawTextAreaMatteOnTriangle(options);
+    // @ts-ignore
+    const drawText = drawTextOnTriangle(options);
+    // @ts-ignore
+    // @ts-ignore
+    const draw = (ctx) => {
+        // @ts-ignore
+        drawShape(ctx);
+        // @ts-ignore
+        drawTextArea?.(ctx);
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    return {
+        // @ts-ignore
+        id: generateId(),
+        // @ts-ignore
+        name: "triangle",
+        // @ts-ignore
+        // @ts-ignore
+        draw,
+        // @ts-ignore
+        drawShape,
+        // @ts-ignore
+        drawTextArea,
+        // @ts-ignore
+        drawTextAreaMatte,
+        // @ts-ignore
+        drawText,
+        // @ts-ignore
+        // @ts-ignore
+        hitbox,
+        // @ts-ignore
+        shapeHitbox,
+        // @ts-ignore
+        textHitbox,
+        // @ts-ignore
+        efficientHitbox,
+        // @ts-ignore
+        getBoundingBox,
+        // @ts-ignore
+    };
+    // @ts-ignore
+};
+exports.triangle = triangle;
 // @ts-ignore
 // @ts-ignore
 exports.PROGRESS_DEFAULTS = {

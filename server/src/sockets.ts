@@ -1,10 +1,10 @@
 import { Server } from 'socket.io'
-import type { Collaborator, GraphEvents } from './clientTypes'
+import type { Collaborator, SocketEvents } from './clientTypes'
 import { createServer } from 'http'
 import { trackGraphState } from './trackGraphState'
 
 export const sockets = (httpServer: ReturnType<typeof createServer>) => {
-  const io = new Server<GraphEvents, GraphEvents, {}, {}>(httpServer, {
+  const io = new Server<SocketEvents, SocketEvents, {}, {}>(httpServer, {
     cors: {
       origin: '*',
     },
@@ -13,33 +13,36 @@ export const sockets = (httpServer: ReturnType<typeof createServer>) => {
   /**
    * a map of collaborator ids to their details and the room they are in
    */
-  const collaboratorIdToCollaborator: Record<string, Collaborator & { roomId: string }> = {}
+  const collaboratorIdToCollaborator: Record<string, Collaborator> = {}
+
+  /**
+   * a map of collaborator ids to the room they are in
+   */
+  const collaboratorIdToRoomId: Record<string, string> = {}
 
   io.on('connection', (socket) => {
 
     const tracker = trackGraphState()
 
-    socket.on('joinRoom', async (joinRoomDetails, initialGraphState, callback) => {
+    socket.on('joinRoom', async (joinRoomOptions, callback) => {
+      const {
+        me,
+        roomId: myRoomId,
+        graphState: myGraphState
+      } = joinRoomOptions
 
-      tracker.setRoomId(joinRoomDetails.roomId)
+      tracker.setRoomId(myRoomId)
 
-      try {
-        var roomId = tracker.getRoomId()
-      } catch (error) {
-        console.error('error getting room id', error)
-        return
-      }
+      socket.join(myRoomId)
+      socket.broadcast.to(myRoomId).emit('collaboratorJoined', me)
 
-      socket.join(roomId)
-
-      socket.broadcast.to(roomId).emit('collaboratorJoined', joinRoomDetails)
-
-      const graphState = tracker.getGraphState()
-      if (!graphState && initialGraphState) tracker.setGraphState(initialGraphState)
-      else if (!graphState) tracker.setGraphState({ nodes: [], edges: [] })
+      const existingGraphState = tracker.getGraphState()
+      if (!existingGraphState) tracker.setGraphState(myGraphState)
 
       callback(collaboratorIdToCollaborator, tracker.getGraphState())
-      collaboratorIdToCollaborator[socket.id] = joinRoomDetails
+
+      collaboratorIdToCollaborator[socket.id] = me
+      collaboratorIdToRoomId[socket.id] = myRoomId
     })
 
     socket.on('leaveRoom', (confirmationCallback) => {

@@ -25,6 +25,176 @@ export type GButton = {
 }
 
 // @ts-ignore
+type SocketEmitOptions = {
+// @ts-ignore
+  graph: Graph
+}
+
+// @ts-ignore
+type ConnectOptions = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * graph instance for the collab system to write new nodes/edges to when received
+// @ts-ignore
+   * and to read from when sending new nodes/edges to other collaborators
+// @ts-ignore
+   */
+// @ts-ignore
+  graph: Graph,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * room id to connect to
+// @ts-ignore
+   */
+// @ts-ignore
+  roomId: string,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * product id that the graph belongs to
+// @ts-ignore
+   */
+// @ts-ignore
+  productId: ProductInfo['productId']
+}
+
+// @ts-ignore
+type SocketListenOptions = {
+// @ts-ignore
+  graph: Graph,
+// @ts-ignore
+  collaborators: Ref<CollaboratorMap>
+}
+
+// @ts-ignore
+export type CollaboratorProfile = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the display name of the collaborator
+// @ts-ignore
+   */
+// @ts-ignore
+  name: string
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the display color of the collaborator
+// @ts-ignore
+   */
+// @ts-ignore
+  color: string
+}
+
+// @ts-ignore
+export type Collaborator = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * unique id for the collaborator, tied to their socket id
+// @ts-ignore
+   */
+// @ts-ignore
+  id: string
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the current mouse coordinates of the collaborator on the canvas
+// @ts-ignore
+   */
+// @ts-ignore
+  mousePosition: { x: number, y: number }
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the id of the product that the collaborator is currently active on
+// @ts-ignore
+   */
+// @ts-ignore
+  productId: ProductInfo['productId']
+// @ts-ignore
+} & CollaboratorProfile
+// @ts-ignore
+
+// @ts-ignore
+export type CollaboratorMove = {
+// @ts-ignore
+  id: Collaborator['id']
+// @ts-ignore
+  x: number
+// @ts-ignore
+  y: number
+}
+
+// @ts-ignore
+export type CollaboratorMap = Record<Collaborator['id'], Collaborator>
+
+// @ts-ignore
+export type GraphState = {
+// @ts-ignore
+  nodes: GNode[],
+// @ts-ignore
+  edges: GEdge[]
+}
+
+// @ts-ignore
+export type GraphSocketEvents = {
+// @ts-ignore
+  nodeAdded: (node: GNode) => void
+// @ts-ignore
+  nodeRemoved: (nodeId: GNode['id']) => void
+// @ts-ignore
+  nodeMoved: (node: GNode) => void
+// @ts-ignore
+
+// @ts-ignore
+  edgeAdded: (edge: GEdge) => void
+// @ts-ignore
+  edgeRemoved: (edgeId: GEdge['id']) => void
+// @ts-ignore
+  edgeLabelEdited: (edgeId: GEdge['id'], label: string) => void
+}
+
+// @ts-ignore
+export type CollabSocketEvents = {
+// @ts-ignore
+  collaboratorJoined: (collaborator: Collaborator) => void
+// @ts-ignore
+  collaboratorLeft: (collaboratorId: Collaborator['id']) => void
+// @ts-ignore
+  collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
+}
+
+// @ts-ignore
+export type ConnectionSocketEvents = {
+// @ts-ignore
+  joinRoom: (
+// @ts-ignore
+    joinOptions: {
+// @ts-ignore
+      roomId: string,
+// @ts-ignore
+      me: Collaborator,
+// @ts-ignore
+      graphState: GraphState
+// @ts-ignore
+    },
+// @ts-ignore
+    mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
+// @ts-ignore
+  ) => void
+// @ts-ignore
+
+// @ts-ignore
+  leaveRoom: (confirmationCallback: () => void) => void
+}
+
+// @ts-ignore
+export type SocketEvents = GraphSocketEvents & CollabSocketEvents & ConnectionSocketEvents
+
+// @ts-ignore
 export type BaseGraph = ReturnType<typeof useBaseGraph>
 
 // @ts-ignore
@@ -79,6 +249,38 @@ export type RemoveEdgeOptions = BroadcastOption & HistoryOption
 export type MoveNodeOptions = BroadcastOption
 
 // @ts-ignore
+export type GraphAtMousePosition = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * coordinates translated to the graph's coordinate system
+// @ts-ignore
+   */
+// @ts-ignore
+  coords: Coordinate,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the schema items at the coordinates of the mouse
+// @ts-ignore
+   */
+// @ts-ignore
+  items: SchemaItem[],
+}
+
+// @ts-ignore
+export type GraphMouseEvent = DeepReadonly<GraphAtMousePosition> & {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the native browser event that triggered this graph event
+// @ts-ignore
+   */
+// @ts-ignore
+  event: MouseEvent,
+}
+
+// @ts-ignore
 export type UseAggregatorOptions = {
 // @ts-ignore
   canvas: Ref<HTMLCanvasElement | null | undefined>
@@ -103,6 +305,295 @@ type GraphCRUDOptions = {
 }
 
 // @ts-ignore
+export type Cursor =
+// @ts-ignore
+  | "auto"
+// @ts-ignore
+  | "default"
+// @ts-ignore
+  | "none"
+// @ts-ignore
+  | "context-menu"
+// @ts-ignore
+  | "help"
+// @ts-ignore
+  | "pointer"
+// @ts-ignore
+  | "progress"
+// @ts-ignore
+  | "wait"
+// @ts-ignore
+  | "cell"
+// @ts-ignore
+  | "crosshair"
+// @ts-ignore
+  | "text"
+// @ts-ignore
+  | "vertical-text"
+// @ts-ignore
+  | "alias"
+// @ts-ignore
+  | "copy"
+// @ts-ignore
+  | "move"
+// @ts-ignore
+  | "no-drop"
+// @ts-ignore
+  | "not-allowed"
+// @ts-ignore
+  | "grab"
+// @ts-ignore
+  | "grabbing"
+// @ts-ignore
+  | "e-resize"
+// @ts-ignore
+  | "n-resize"
+// @ts-ignore
+  | "ne-resize"
+// @ts-ignore
+  | "nw-resize"
+// @ts-ignore
+  | "s-resize"
+// @ts-ignore
+  | "se-resize"
+// @ts-ignore
+  | "sw-resize"
+// @ts-ignore
+  | "w-resize"
+// @ts-ignore
+  | "ew-resize"
+// @ts-ignore
+  | "ns-resize"
+// @ts-ignore
+  | "nesw-resize"
+// @ts-ignore
+  | "nwse-resize"
+// @ts-ignore
+  | "col-resize"
+// @ts-ignore
+  | "row-resize"
+// @ts-ignore
+  | "all-scroll"
+// @ts-ignore
+  | "zoom-in"
+// @ts-ignore
+  | "zoom-out"
+// @ts-ignore
+
+// @ts-ignore
+/**
+// @ts-ignore
+ * manages the cursor type when hovering over the graph
+// @ts-ignore
+ *
+// @ts-ignore
+ * @param subscribe - the event subscriber
+// @ts-ignore
+ * @param canvas - the canvas element
+// @ts-ignore
+ * @param graphAtMousePosition - the graph items at the mouse position
+// @ts-ignore
+ * @returns the cursor manager
+// @ts-ignore
+ */
+// @ts-ignore
+export const useGraphCursor = ({
+// @ts-ignore
+  subscribe,
+// @ts-ignore
+  canvas,
+// @ts-ignore
+  graphAtMousePosition,
+// @ts-ignore
+}: {
+// @ts-ignore
+  subscribe: Subscriber;
+// @ts-ignore
+  canvas: Ref<HTMLCanvasElement | null | undefined>;
+// @ts-ignore
+  graphAtMousePosition: Ref<GraphAtMousePosition>;
+// @ts-ignore
+}) => {
+// @ts-ignore
+  const isMouseDown = ref(false)
+// @ts-ignore
+  const graphCursorDisabled = ref(false)
+// @ts-ignore
+
+// @ts-ignore
+  const graphToCursorMap = ref<Partial<Record<SchemaItem['graphType'], Cursor>>>({
+// @ts-ignore
+    'node': 'grab',
+// @ts-ignore
+    'edge': 'pointer',
+// @ts-ignore
+    'node-anchor': 'grab',
+// @ts-ignore
+    'encapsulated-node-box': 'move',
+// @ts-ignore
+  })
+// @ts-ignore
+
+// @ts-ignore
+  const isItemSelectable = ref<(item: SchemaItem) => boolean>()
+// @ts-ignore
+  const inSelectMode = computed(() => !!isItemSelectable.value)
+// @ts-ignore
+
+// @ts-ignore
+  const activateCursorSelectMode = (predicate: (item: SchemaItem) => boolean) => {
+// @ts-ignore
+    isItemSelectable.value = predicate
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  const deactivateCursorSelectMode = () => {
+// @ts-ignore
+    isItemSelectable.value = undefined
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  const getCursorType = (item: SchemaItem | undefined) => {
+// @ts-ignore
+    if (!item) return 'default'
+// @ts-ignore
+
+// @ts-ignore
+    if (inSelectMode.value) {
+// @ts-ignore
+      const isSelectable = isItemSelectable.value?.(item) ?? false
+// @ts-ignore
+      return isSelectable ? 'pointer' : 'default'
+// @ts-ignore
+    }
+// @ts-ignore
+
+// @ts-ignore
+    const cursor = graphToCursorMap.value[item.graphType] ?? 'default'
+// @ts-ignore
+    if (cursor === 'grab' && isMouseDown.value) return 'grabbing'
+// @ts-ignore
+
+// @ts-ignore
+    return cursor
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  const changeCursorType = ({ items }: Pick<GraphMouseEvent, 'items'>) => {
+// @ts-ignore
+    if (!canvas.value || graphCursorDisabled.value) return
+// @ts-ignore
+    const topItem = items.at(-1)
+// @ts-ignore
+    canvas.value.style.cursor = getCursorType(topItem)
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  subscribe('onMouseDown', (ev) => {
+// @ts-ignore
+    isMouseDown.value = true
+// @ts-ignore
+    changeCursorType(ev)
+// @ts-ignore
+  })
+// @ts-ignore
+
+// @ts-ignore
+  subscribe('onMouseUp', (ev) => {
+// @ts-ignore
+    isMouseDown.value = false
+// @ts-ignore
+    changeCursorType(ev)
+// @ts-ignore
+  })
+// @ts-ignore
+
+// @ts-ignore
+  subscribe('onMouseMove', changeCursorType)
+// @ts-ignore
+
+// @ts-ignore
+  watch(graphToCursorMap, () => {
+// @ts-ignore
+    changeCursorType({
+// @ts-ignore
+      items: graphAtMousePosition.value.items
+// @ts-ignore
+    })
+// @ts-ignore
+  }, { deep: true })
+// @ts-ignore
+
+// @ts-ignore
+  return {
+// @ts-ignore
+    /**
+// @ts-ignore
+     * maps graph schema item types to browser cursor.
+// @ts-ignore
+     * changing this mapping will change the cursor type when hovering over the graph.
+// @ts-ignore
+     */
+// @ts-ignore
+    graphToCursorMap,
+// @ts-ignore
+    /**
+// @ts-ignore
+     * activates a cursor select mode, where only the schema items that pass the
+// @ts-ignore
+     * `predicate` will receive a pointer cursor.
+// @ts-ignore
+     * everything else will receive the default cursor as long as this mode is active.
+// @ts-ignore
+     * @param predicate - a predicate that determines, given a schema item, whether it is selectable.
+// @ts-ignore
+     * @example activateCursorSelectMode((item) => item.graphType === 'node')
+// @ts-ignore
+     * // in select mode
+// @ts-ignore
+     * // only nodes will receive a pointer cursor
+// @ts-ignore
+     */
+// @ts-ignore
+    activateCursorSelectMode,
+// @ts-ignore
+    /**
+// @ts-ignore
+     * deactivates the cursor select mode. to be called after `activateCursorSelectMode`.
+// @ts-ignore
+     * @example activateCursorSelectMode((item) => item.graphType === 'node')
+// @ts-ignore
+     * // in select mode
+// @ts-ignore
+     * deactivateCursorSelectMode()
+// @ts-ignore
+     * // no longer in select mode
+// @ts-ignore
+     */
+// @ts-ignore
+    deactivateCursorSelectMode,
+// @ts-ignore
+    /**
+// @ts-ignore
+     * when the graph cursor is disabled, the cursor will always be the default cursor.
+// @ts-ignore
+     */
+// @ts-ignore
+    graphCursorDisabled,
+// @ts-ignore
+  }
+// @ts-ignore
+};
+
+// @ts-ignore
 export type UseNodeEdgeMap = typeof useNodeEdgeMap
 // @ts-ignore
 export type NodeMap = ReturnType<UseNodeEdgeMap>['nodeIdToNodeMap']
@@ -110,98 +601,11 @@ export type NodeMap = ReturnType<UseNodeEdgeMap>['nodeIdToNodeMap']
 export type EdgeMap = ReturnType<UseNodeEdgeMap>['edgeIdToEdgeMap']
 
 // @ts-ignore
-export type Collaborator = {
-// @ts-ignore
-  id: string
-// @ts-ignore
-  name: string
-// @ts-ignore
-  color: string
-// @ts-ignore
-  mousePosition: { x: number, y: number }
-}
-
-// @ts-ignore
-export type ToServerCollaboratorMove = {
-// @ts-ignore
-  x: number
-// @ts-ignore
-  y: number
-}
-
-// @ts-ignore
-export type ToClientCollaboratorMove = {
-// @ts-ignore
-  id: Collaborator['id']
-// @ts-ignore
-  x: number
-// @ts-ignore
-  y: number
-}
-
-// @ts-ignore
-export type CollaboratorMap = Record<Collaborator['id'], Collaborator>
-
-// @ts-ignore
-export type GraphState = {
-// @ts-ignore
-  nodes: GNode[],
-// @ts-ignore
-  edges: GEdge[]
-}
-
-// @ts-ignore
-export interface GraphEvents {
-// @ts-ignore
-  nodeAdded: (node: GNode) => void
-// @ts-ignore
-  nodeRemoved: (nodeId: GNode['id']) => void
-// @ts-ignore
-  nodeMoved: (node: GNode) => void
-// @ts-ignore
-
-// @ts-ignore
-  edgeAdded: (edge: GEdge) => void
-// @ts-ignore
-  edgeRemoved: (edgeId: GEdge['id']) => void
-// @ts-ignore
-  edgeLabelEdited: (edgeId: GEdge['id'], label: string) => void
-// @ts-ignore
-
-// @ts-ignore
-  collaboratorJoined: (collaborator: Collaborator) => void
-// @ts-ignore
-  collaboratorLeft: (collaboratorId: Collaborator['id']) => void
-// @ts-ignore
-
-// @ts-ignore
-  toServerCollaboratorMoved: (collaboratorMove: ToServerCollaboratorMove) => void
-// @ts-ignore
-  toClientCollaboratorMoved: (collaboratorMove: ToClientCollaboratorMove) => void
-// @ts-ignore
-
-// @ts-ignore
-  joinRoom: (
-// @ts-ignore
-    joinOptions: Collaborator & { roomId: string },
-// @ts-ignore
-    joinWithGraphState: GraphState | null,
-// @ts-ignore
-    mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
-// @ts-ignore
-  ) => void
-// @ts-ignore
-
-// @ts-ignore
-  leaveRoom: (confirmationCallback: () => void) => void
-}
-
-// @ts-ignore
 export type ActiveDragNode = {
 // @ts-ignore
   node: GNode,
 // @ts-ignore
-  startingCoordinates: { x: number, y: number }
+  coords: Coordinate,
 }
 
 // @ts-ignore
@@ -653,7 +1057,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
    */
 // @ts-ignore
-  onClick: (ev: MouseEvent) => void;
+  onClick: (ev: GraphMouseEvent) => void;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -661,7 +1065,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
    */
 // @ts-ignore
-  onMouseDown: (ev: MouseEvent) => void;
+  onMouseDown: (ev: GraphMouseEvent) => void;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -669,7 +1073,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
    */
 // @ts-ignore
-  onMouseUp: (ev: MouseEvent) => void;
+  onMouseUp: (ev: GraphMouseEvent) => void;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -677,7 +1081,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
    */
 // @ts-ignore
-  onMouseMove: (ev: MouseEvent) => void;
+  onMouseMove: (ev: GraphMouseEvent) => void;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -685,7 +1089,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
    */
 // @ts-ignore
-  onDblClick: (ev: MouseEvent) => void;
+  onDblClick: (ev: GraphMouseEvent) => void;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -693,7 +1097,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
    */
 // @ts-ignore
-  onContextMenu: (ev: MouseEvent) => void;
+  onContextMenu: (ev: GraphMouseEvent) => void;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -821,10 +1225,33 @@ export type MarqueeGraphEventMap = {
 }
 
 // @ts-ignore
-export type UserEditableGraphEventMap = {}
+export type AnnotationGraphEventMap = {}
 
 // @ts-ignore
-export type CollaborativeGraphEventMap = {}
+export type PersistentGraphEventMap = {}
+
+// @ts-ignore
+export type GraphEventMap = (
+// @ts-ignore
+  BaseGraphEventMap &
+// @ts-ignore
+  HistoryGraphEventMap &
+// @ts-ignore
+  FocusGraphEventMap &
+// @ts-ignore
+  DraggableGraphEventMap &
+// @ts-ignore
+  NodeAnchorGraphEventMap &
+// @ts-ignore
+  MarqueeGraphEventMap &
+// @ts-ignore
+  UserEditableGraphEventMap &
+// @ts-ignore
+  PersistentGraphEventMap &
+// @ts-ignore
+  CollaborativeGraphEventMap
+// @ts-ignore
+)
 
 // @ts-ignore
 export type LabelledItem = { label: string };
@@ -834,6 +1261,188 @@ type PropsNeededFromGraph = 'edges' | 'getNode' | 'getEdge' | 'getTheme' | 'sett
 
 // @ts-ignore
 export type SupportedNodeShapes = 'circle' | 'square'
+
+// @ts-ignore
+export type SelectFromGraphOptions = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * only items that satisfy this predicate will be selectable.
+// @ts-ignore
+   * if left undefined, all items in the graph will be selectable
+// @ts-ignore
+   * @default () => true
+// @ts-ignore
+   */
+// @ts-ignore
+  predicate: (item: SchemaItem) => boolean;
+// @ts-ignore
+};
+// @ts-ignore
+
+// @ts-ignore
+/**
+// @ts-ignore
+ * default predicate for `selectFromGraph`
+// @ts-ignore
+ */
+// @ts-ignore
+const DEFAULT_PREDICATE = () => true;
+// @ts-ignore
+
+// @ts-ignore
+/**
+// @ts-ignore
+ * waits for the user to click on an item in the graph and resolves to the selected item
+// @ts-ignore
+ * or undefined if the cancel handler is invoked
+// @ts-ignore
+ *
+// @ts-ignore
+ * @param graph the graph to select from
+// @ts-ignore
+ * @param options options for the selection process
+// @ts-ignore
+ * @returns a promise that resolves to the selected item or undefined if the selection was cancelled
+// @ts-ignore
+ * @example const { selectedItemPromise, cancelSelection } = selectFromGraph(graph);
+// @ts-ignore
+ * const selectedItem = await selectedItemPromise;
+// @ts-ignore
+ * if (!selectedItem) return; // selection was cancelled
+// @ts-ignore
+ * // selection resolved. do something with the selected item
+// @ts-ignore
+ */
+// @ts-ignore
+export const selectFromGraph = (graph: Graph, {
+// @ts-ignore
+  predicate = DEFAULT_PREDICATE,
+// @ts-ignore
+}: Partial<SelectFromGraphOptions> = {}) => {
+// @ts-ignore
+  let resolver: (value: SchemaItem | PromiseLike<SchemaItem> | undefined) => void;
+// @ts-ignore
+
+// @ts-ignore
+  const selectedItemPromise = new Promise<SchemaItem | undefined>((res) => resolver = res);
+// @ts-ignore
+
+// @ts-ignore
+  const onClick = ({ items }: GraphMouseEvent) => {
+// @ts-ignore
+    const topItem = items.at(-1);
+// @ts-ignore
+    if (!topItem || !predicate(topItem)) return;
+// @ts-ignore
+    resolve(topItem);
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  const initialUserEditable = graph.settings.value.userEditable;
+// @ts-ignore
+  const initialFocusable = graph.settings.value.focusable;
+// @ts-ignore
+
+// @ts-ignore
+  /**
+// @ts-ignore
+   * initializes the selection process
+// @ts-ignore
+   */
+// @ts-ignore
+  const init = () => {
+// @ts-ignore
+    graph.subscribe('onClick', onClick);
+// @ts-ignore
+    graph.settings.value.userEditable = false;
+// @ts-ignore
+    graph.settings.value.focusable = false;
+// @ts-ignore
+    const cursorPredicate = predicate === DEFAULT_PREDICATE ? ((item: SchemaItem) => !!item) : predicate;
+// @ts-ignore
+    graph.activateCursorSelectMode(cursorPredicate);
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  /**
+// @ts-ignore
+   * cleans up the selection process
+// @ts-ignore
+   */
+// @ts-ignore
+  const cleanup = () => {
+// @ts-ignore
+    graph.unsubscribe('onClick', onClick);
+// @ts-ignore
+    graph.settings.value.userEditable = initialUserEditable;
+// @ts-ignore
+    graph.settings.value.focusable = initialFocusable;
+// @ts-ignore
+    graph.deactivateCursorSelectMode();
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  /**
+// @ts-ignore
+   * resolves the selection process and returns the selected item from the promise
+// @ts-ignore
+   */
+// @ts-ignore
+  const resolve = (item: SchemaItem) => {
+// @ts-ignore
+    cleanup();
+// @ts-ignore
+    resolver(item);
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  /**
+// @ts-ignore
+   * cancels the selection process and returns undefined from the promise (public)
+// @ts-ignore
+   */
+// @ts-ignore
+  const cancelSelection = () => {
+// @ts-ignore
+    cleanup();
+// @ts-ignore
+    resolver(undefined);
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  init();
+// @ts-ignore
+
+// @ts-ignore
+  return {
+// @ts-ignore
+    /**
+// @ts-ignore
+     * resolves to the selected item or undefined if the
+// @ts-ignore
+     * selection was cancelled by calling the cancel handler
+// @ts-ignore
+     */
+// @ts-ignore
+    selectedItemPromise,
+// @ts-ignore
+    cancelSelection,
+// @ts-ignore
+  };
+// @ts-ignore
+};
+// @ts-ignore
 
 // @ts-ignore
 export type SelectControls = ReturnType<typeof selectFromGraph>;
@@ -1416,13 +2025,52 @@ export type MarqueeGraphTheme = {
 }
 
 // @ts-ignore
-export type UserEditableGraphTheme = {}
+export type AnnotationGraphTheme = {}
 
 // @ts-ignore
-export type CollaborativeGraphTheme = {}
+export type PersistentGraphTheme = {}
 
+// @ts-ignore
+export type GraphTheme = (
+// @ts-ignore
+  UITheme &
+// @ts-ignore
+  BaseGraphTheme &
+// @ts-ignore
+  HistoryGraphTheme &
+// @ts-ignore
+  FocusGraphTheme &
+// @ts-ignore
+  DraggableGraphTheme &
+// @ts-ignore
+  NodeAnchorGraphTheme &
+// @ts-ignore
+  MarqueeGraphTheme &
+// @ts-ignore
+  UserEditableGraphTheme &
+// @ts-ignore
+  PersistentGraphTheme &
+// @ts-ignore
+  CollaborativeGraphTheme
+// @ts-ignore
+)
+// @ts-ignore
+
+// @ts-ignore
+/**
+// @ts-ignore
+ * decomposes MaybeGetter<T, K> such that it turns T into T | void
+// @ts-ignore
+ */
 // @ts-ignore
 export type MaybeGetterOrVoid<T> = MaybeGetter<UnwrapMaybeGetter<T> | void, MaybeGetterParams<T>>
+// @ts-ignore
+
+// @ts-ignore
+type WrapWithNodeGetter<T extends Record<string, any>> = {
+// @ts-ignore
+  [K in keyof T]: NodeGetterOrValue<T[K]>
+}
 
 // @ts-ignore
 type WrapWithEdgeGetter<T extends Record<string, any>> = {
@@ -1957,6 +2605,8 @@ type MarqueeGraphTypes = 'marquee-box' | 'encapsulated-node-box'
 // @ts-ignore
 type NodeAnchorGraphTypes = 'node-anchor' | 'link-preview'
 // @ts-ignore
+type AnnotationGraphTypes = 'annotation'
+// @ts-ignore
 
 // @ts-ignore
 /**
@@ -1981,7 +2631,7 @@ export type SchemaItem = {
 // @ts-ignore
    */
 // @ts-ignore
-  graphType: BaseGraphTypes | NodeAnchorGraphTypes | MarqueeGraphTypes,
+  graphType: BaseGraphTypes | NodeAnchorGraphTypes | MarqueeGraphTypes | AnnotationGraphTypes,
 // @ts-ignore
   /**
 // @ts-ignore
@@ -2013,43 +2663,6 @@ export type AdjacencyList = Record<string, string[]>;
 export type FullNodeAdjacencyList = Record<string, GNode[]>;
 
 // @ts-ignore
-export type AnnotationOptions = Partial<{
-// @ts-ignore
-  color: string;
-// @ts-ignore
-  brushWeight: number;
-// @ts-ignore
-  eraserBrushWeight: number;
-// @ts-ignore
-}>;
-// @ts-ignore
-
-// @ts-ignore
-export type Action = {
-// @ts-ignore
-  type: "draw" | "erase";
-// @ts-ignore
-  color: string;
-// @ts-ignore
-  brushWeight: number;
-// @ts-ignore
-  points: Coordinate[];
-// @ts-ignore
-};
-// @ts-ignore
-
-// @ts-ignore
-export const ANNOTATION_DEFAULTS = {
-// @ts-ignore
-  color: "red",
-// @ts-ignore
-  brushWeight: 3,
-// @ts-ignore
-  eraserBrushWeight: 50,
-// @ts-ignore
-};
-
-// @ts-ignore
 export type GraphPlaygroundControls = {
 // @ts-ignore
   theme: boolean,
@@ -2064,9 +2677,7 @@ export type GraphPlaygroundControls = {
 }
 
 // @ts-ignore
-export type DijkstrasAlgorithm = ReturnType<typeof dijkstras>;
-// @ts-ignore
-export type DijkstrasTrace = ReturnType<DijkstrasAlgorithm>;
+export type DijkstrasTrace = ReturnType<typeof dijkstras>;
 // @ts-ignore
 type TraceNodeDistance = { id: string; distance: number };
 // @ts-ignore
@@ -2084,9 +2695,7 @@ export const INF = 999999;
 // @ts-ignore
 
 // @ts-ignore
-const dijkstras = (graph: Graph) => (startingNodeId: GNode['id']) => {
-// @ts-ignore
-
+export const dijkstras = (graph: Graph, startingNodeId: GNode['id']) => {
 // @ts-ignore
   const distanceArr = graph.nodes.value.map(
 // @ts-ignore
@@ -2267,61 +2876,6 @@ const dijkstras = (graph: Graph) => (startingNodeId: GNode['id']) => {
   return trace;
 // @ts-ignore
 };
-// @ts-ignore
-
-// @ts-ignore
-export const useDijkstra = (graph: Graph) => {
-// @ts-ignore
-  const trace = ref<DijkstrasTrace>([]);
-// @ts-ignore
-  const getDijkstrasTrace = dijkstras(graph);
-// @ts-ignore
-
-// @ts-ignore
-  // TODO - make this be a ref that a user can write to
-// @ts-ignore
-  // const startingNodeId = ref<GNode['id'] | undefined>();
-// @ts-ignore
-  const startingNodeId = computed(() => {
-// @ts-ignore
-    const nodeLabelledA = graph.nodes.value.find((n) => n.label === "A");
-// @ts-ignore
-    return nodeLabelledA?.id;
-// @ts-ignore
-  })
-// @ts-ignore
-
-// @ts-ignore
-  const update = () => {
-// @ts-ignore
-    if (!startingNodeId.value) return
-// @ts-ignore
-    const startingNode = graph.getNode(startingNodeId.value);
-// @ts-ignore
-    if (!startingNode) return
-// @ts-ignore
-    trace.value = getDijkstrasTrace(startingNode.id);
-// @ts-ignore
-  }
-// @ts-ignore
-
-// @ts-ignore
-  graph.subscribe("onStructureChange", update);
-// @ts-ignore
-  graph.subscribe("onEdgeLabelChange", update);
-// @ts-ignore
-  graph.subscribe("onGraphReset", update);
-// @ts-ignore
-
-// @ts-ignore
-  update();
-// @ts-ignore
-
-// @ts-ignore
-  return { trace };
-// @ts-ignore
-};
-// @ts-ignore
 
 // @ts-ignore
 export type DijkstraSimulatorControls = SimulationControls<DijkstrasTrace>
@@ -2594,6 +3148,10 @@ export const useMSTSimulation = (
 // @ts-ignore
   const start = () => {
 // @ts-ignore
+    if (active.value) return;
+// @ts-ignore
+
+// @ts-ignore
     paused.value = false;
 // @ts-ignore
     active.value = true;
@@ -2799,6 +3357,112 @@ export type Rect = {
 }
 
 // @ts-ignore
+export type Scribble = {
+// @ts-ignore
+  type: "draw" | "erase";
+// @ts-ignore
+  color?: string;
+// @ts-ignore
+  brushWeight?: number;
+// @ts-ignore
+  points: Coordinate[];
+// @ts-ignore
+};
+// @ts-ignore
+
+// @ts-ignore
+export const SCRIBBLE_DEFAULTS = {
+// @ts-ignore
+  color: "red",
+// @ts-ignore
+  brushWeight: 3,
+// @ts-ignore
+} as const
+// @ts-ignore
+
+// @ts-ignore
+export const ERASER_BRUSH_WEIGHT = 50
+// @ts-ignore
+
+// @ts-ignore
+export const scribble = (options: Scribble): Shape => {
+// @ts-ignore
+
+// @ts-ignore
+  if (options.points.length < 1) {
+// @ts-ignore
+    throw new Error('not enough points to draw scribble')
+// @ts-ignore
+  }
+// @ts-ignore
+  if (options.brushWeight && options.brushWeight < 1) {
+// @ts-ignore
+    throw new Error('brushWeight must be at least "1"')
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  
+// @ts-ignore
+  const shapeHitbox = scribbleHitbox(options);
+// @ts-ignore
+  const efficientHitbox = scribbleEfficientHitbox(options)
+// @ts-ignore
+  const hitbox = (point: Coordinate) => {
+// @ts-ignore
+    return shapeHitbox(point)
+// @ts-ignore
+  }
+// @ts-ignore
+  
+// @ts-ignore
+  const getBoundingBox = getScribbleBoundingBox(options);
+// @ts-ignore
+  
+// @ts-ignore
+  const drawShape = drawScribbleWithCtx(options);
+// @ts-ignore
+
+// @ts-ignore
+  const draw = (ctx: CanvasRenderingContext2D) => {
+// @ts-ignore
+    drawShape(ctx);
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  
+// @ts-ignore
+
+// @ts-ignore
+  return {
+// @ts-ignore
+    id: generateId(),
+// @ts-ignore
+    name: 'scribble',
+// @ts-ignore
+
+// @ts-ignore
+    drawShape,
+// @ts-ignore
+    draw,
+// @ts-ignore
+
+// @ts-ignore
+    hitbox,
+// @ts-ignore
+    shapeHitbox,
+// @ts-ignore
+    efficientHitbox,
+// @ts-ignore
+    getBoundingBox,
+// @ts-ignore
+  }
+}
+
+// @ts-ignore
 export type Square = {
 // @ts-ignore
   at: Coordinate
@@ -2819,20 +3483,112 @@ export type Square = {
 // @ts-ignore
 export type Triangle = {
 // @ts-ignore
-  point1: Coordinate,
+  point1: Coordinate;
 // @ts-ignore
-  point2: Coordinate,
+  point2: Coordinate;
 // @ts-ignore
-  point3: Coordinate,
+  point3: Coordinate;
 // @ts-ignore
-  color?: string,
-}
+  color?: string;
+// @ts-ignore
+  stroke?: Stroke;
+// @ts-ignore
+  textArea?: TextAreaNoLocation;
+// @ts-ignore
+};
+// @ts-ignore
+
+// @ts-ignore
+export const TRIANGLE_DEFAULTS = {
+// @ts-ignore
+  color: "black",
+// @ts-ignore
+} as const;
+// @ts-ignore
+
+// @ts-ignore
+export const triangle = (options: Triangle): Shape => {
+// @ts-ignore
+  const drawShape = drawTriangleWithCtx(options);
+// @ts-ignore
+  const shapeHitbox = triangleHitbox(options);
+// @ts-ignore
+  const textHitbox = triangleTextHitbox(options);
+// @ts-ignore
+  const efficientHitbox = triangleEfficientHitbox(options);
+// @ts-ignore
+  const hitbox = (point: Coordinate) => {
+// @ts-ignore
+    return shapeHitbox(point); // text not implemented yet
+// @ts-ignore
+  };
+// @ts-ignore
+
+// @ts-ignore
+  const getBoundingBox = getTriangleBoundingBox(options);
+// @ts-ignore
+
+// @ts-ignore
+  const drawTextArea = drawTextAreaOnTriangle(options);
+// @ts-ignore
+
+// @ts-ignore
+  const drawTextAreaMatte = drawTextAreaMatteOnTriangle(options);
+// @ts-ignore
+  const drawText = drawTextOnTriangle(options);
+// @ts-ignore
+
+// @ts-ignore
+  const draw = (ctx: CanvasRenderingContext2D) => {
+// @ts-ignore
+    drawShape(ctx);
+// @ts-ignore
+    drawTextArea?.(ctx);
+// @ts-ignore
+  };
+// @ts-ignore
+
+// @ts-ignore
+  return {
+// @ts-ignore
+    id: generateId(),
+// @ts-ignore
+    name: "triangle",
+// @ts-ignore
+
+// @ts-ignore
+    draw,
+// @ts-ignore
+    drawShape,
+// @ts-ignore
+    drawTextArea,
+// @ts-ignore
+    drawTextAreaMatte,
+// @ts-ignore
+    drawText,
+// @ts-ignore
+
+// @ts-ignore
+    hitbox,
+// @ts-ignore
+    shapeHitbox,
+// @ts-ignore
+    textHitbox,
+// @ts-ignore
+    efficientHitbox,
+// @ts-ignore
+    getBoundingBox,
+// @ts-ignore
+  };
+// @ts-ignore
+};
+// @ts-ignore
 
 // @ts-ignore
 export type BoundingBox = Pick<Rect, 'at' | 'width' | 'height'>
 
 // @ts-ignore
-export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'arrow' | 'uturn' | 'cross'
+export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'arrow' | 'uturn' | 'cross' | 'scribble'
 
 // @ts-ignore
 export type Coordinate = {
@@ -3275,6 +4031,9 @@ export const PROGRESS_DEFAULTS = {
 
 // @ts-ignore
 export type Color = string;
+
+// @ts-ignore
+export type CanvasCoords = ReturnType<typeof useCanvasCoords>;
 
 // @ts-ignore
 export type DeepPartial<T> = {

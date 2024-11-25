@@ -3,13 +3,10 @@ import colors from "@colors"
 import type { ProductInfo } from "src/types"
 
 /**
- * a person connected to a room
+ * data for a collaborator that is not connected to a single
+ * instance of collaboration or socket
  */
-export type Collaborator = {
-  /**
-   * unique id for the collaborator, tied to their socket id
-   */
-  id: string
+export type CollaboratorProfile = {
   /**
    * the display name of the collaborator
    */
@@ -18,6 +15,16 @@ export type Collaborator = {
    * the display color of the collaborator
    */
   color: string
+}
+
+/**
+ * a person connected to a room
+ */
+export type Collaborator = {
+  /**
+   * unique id for the collaborator, tied to their socket id
+   */
+  id: string
   /**
    * the current mouse coordinates of the collaborator on the canvas
    */
@@ -26,7 +33,7 @@ export type Collaborator = {
    * the id of the product that the collaborator is currently active on
    */
   productId: ProductInfo['productId']
-}
+} & CollaboratorProfile
 
 export type CollaboratorMove = {
   id: Collaborator['id']
@@ -63,10 +70,23 @@ export type CollabSocketEvents = {
   collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
 }
 
+export type ConnectionSocketEvents = {
+  joinRoom: (
+    joinOptions: {
+      roomId: string,
+      me: Collaborator,
+      graphState: GraphState
+    },
+    mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
+  ) => void
+
+  leaveRoom: (confirmationCallback: () => void) => void
+}
+
 /**
  * client-server + server-client events send via socket.io
  */
-export type SocketEvents = GraphSocketEvents & CollabSocketEvents
+export type SocketEvents = GraphSocketEvents & CollabSocketEvents & ConnectionSocketEvents
 
 /**
  * list of colors that may be assigned to collaborators
