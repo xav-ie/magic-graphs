@@ -56,10 +56,8 @@ export const useAnnotationGraph = (
         return shape.hitbox(coords)
       })
 
-      if (erasedScribbles.length) {
-        for (const erasedScribble of erasedScribbles) {
-          erasedScribbleIds.value.add(erasedScribble.id)
-        }
+      for (const erasedScribble of erasedScribbles) {
+        erasedScribbleIds.value.add(erasedScribble.id)
       }
 
       return;
