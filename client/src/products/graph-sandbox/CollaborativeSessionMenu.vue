@@ -45,7 +45,7 @@
 
   const startCollaboration = async () => {
     startingRoom.value = true;
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     await connectToRoom({
       roomId: generateId(),
       productId: GraphSandboxProductInfo.productId,
@@ -101,7 +101,7 @@
 
         <div v-else>
           <div
-            class="group p-2 bg-gray-900 bg-opacity-50 hover:bg-opacity-100 text-gray-300 rounded-lg cursor-pointer flex justify-between"
+            class="group p-2 bg-gray-900 bg-opacity-50 hover:bg-opacity-100 text-gray-300 rounded-lg cursor-pointer flex justify-between items-center"
             @click="copyLink"
           >
             <span>
