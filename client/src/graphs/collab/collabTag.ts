@@ -1,7 +1,8 @@
-import type { Collaborator } from "@graph/collab/types";
+import type { Ref } from "vue";
+import type { Collaborator, CollaboratorMap } from "@graph/collab/types";
 import colors from "@colors";
-import type { Rect } from "@shape/rect";
-import type { Circle } from "@shape/circle";
+import { rect, type Rect } from "@shape/rect";
+import { circle, type Circle } from "@shape/circle";
 
 export const collabTagShapes = (collaborator: Collaborator) => {
   const {
@@ -48,5 +49,13 @@ export const collabTagShapes = (collaborator: Collaborator) => {
   return {
     tag,
     cursorPoint,
+  }
+}
+
+export const paintCollabTags = (collaborators: Ref<CollaboratorMap>) => (ctx: CanvasRenderingContext2D) => {
+  for (const collaborator of Object.values(collaborators.value)) {
+    const { tag, cursorPoint } = collabTagShapes(collaborator)
+    rect(tag).draw(ctx)
+    circle(cursorPoint).draw(ctx)
   }
 }

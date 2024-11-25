@@ -60,7 +60,7 @@
 
 <template>
   <InputSize
-    :model-value="activeSize"
     @update:model-value="setActiveSize"
+    :model-value="activeSize"
   />
 </template>
