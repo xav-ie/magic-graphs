@@ -18,6 +18,7 @@ import { getFullTextArea } from "@shape/text";
 import { engageTextarea } from "@shape/textarea";
 
 export type Rect = {
+  id?: string
   at: Coordinate
   width: number
   height: number
@@ -69,7 +70,7 @@ export const rect = (options: Rect): Shape => {
   }
 
   return {
-    id: generateId(),
+    id: options.id ?? generateId(),
     name: 'rect',
 
     draw,

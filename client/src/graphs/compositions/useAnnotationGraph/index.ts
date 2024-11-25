@@ -51,12 +51,12 @@ export const useAnnotationGraph = (
     if (!isDrawing.value || !lastPoint.value) return;
 
     if (erasing.value) {
-      const erasedScribble = scribbles.value.find(scribble => {
+      const erasedScribbles = scribbles.value.filter(scribble => {
         const shape = shapes.scribble(scribble)
         return shape.hitbox(coords)
       })
 
-      if (erasedScribble) {
+      for (const erasedScribble of erasedScribbles) {
         erasedScribbleIds.value.add(erasedScribble.id)
       }
 
@@ -133,7 +133,7 @@ export const useAnnotationGraph = (
         graphType: "annotation",
         id: incompleteScribble.id,
         shape: incompleteScribble,
-        priority: 5000,
+        priority: 5001,
       })
     }
 
