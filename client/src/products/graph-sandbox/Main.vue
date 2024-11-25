@@ -49,7 +49,7 @@
   </div>
 
   <div
-    v-if="!activeSimulation"
+    v-if="!activeSimulation && !graph.annotationActive.value"
     class="absolute top-0 w-0 h-full flex items-center"
   >
     <div class="ml-4">

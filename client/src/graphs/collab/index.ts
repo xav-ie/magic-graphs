@@ -12,7 +12,7 @@ import { paintCollabTags } from "./collabTag";
 import { useRoute } from "vue-router";
 
 export const myCollaboratorProfile = useLocalStorage<CollaboratorProfile>('collab-profile', {
-  name: 'Dila',
+  name: '',
   color: getRandomElement(COLLAB_COLORS),
 })
 
