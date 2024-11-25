@@ -11,13 +11,17 @@
      * The text color of the button.
      */
     textColor?: string;
+    /**
+     * Whether the button is disabled.
+     */
+    disabled?: boolean;
   }>();
 
   const propClasses = computed(() => {
     const classes = [];
     if (props.color) {
-      classes.push(`bg-[${props.color}]`);
-      classes.push(`dark:bg-[${props.color}]`);
+      classes.push(`!bg-[${props.color}]`);
+      classes.push(`dark:!bg-[${props.color}]`);
 
       const adjustedColor = darkenHex(props.color, 30);
       classes.push(`hover:!bg-[${adjustedColor}]`);
@@ -25,8 +29,8 @@
     }
 
     if (props.textColor) {
-      classes.push(`text-[${props.textColor}]`);
-      classes.push(`dark:text-[${props.textColor}]`);
+      classes.push(`!text-[${props.textColor}]`);
+      classes.push(`dark:!text-[${props.textColor}]`);
     }
 
     return classes
@@ -65,7 +69,14 @@
 </script>
 
 <template>
-  <button :class="classList">
+  <button
+    :class="classList"
+    :style="{
+      pointerEvents: props.disabled ? 'none' : 'auto',
+      opacity: props.disabled ? 0.5 : 1,
+      cursor: props.disabled ? 'not-allowed' : 'pointer',
+    }"
+  >
     <slot></slot>
   </button>
 </template>

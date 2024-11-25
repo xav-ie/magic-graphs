@@ -9,6 +9,7 @@ import { useLocalStorage } from "@vueuse/core";
 import { getRandomElement } from "@utils/array";
 import { startListening } from "./listen";
 import { paintCollabTags } from "./collabTag";
+import { useRoute } from "vue-router";
 
 export const myCollaboratorProfile = useLocalStorage<CollaboratorProfile>('collab-profile', {
   name: 'Dila',
@@ -118,7 +119,7 @@ const connectToRoom = async (options: ConnectOptions) => {
       collaborators.value = collabMap
       options.graph.nodes.value = graphState.nodes
       options.graph.edges.value = graphState.edges
-
+      options.graph.emit('onStructureChange', graphState.nodes, graphState.edges)
       res()
     })
   })
@@ -155,4 +156,5 @@ export const useCollab = () => ({
   switchProduct,
 
   isConnected: computed(() => !!socket.value),
+  collaboratorCount: computed(() => Object.keys(collaborators.value).length + 1),
 })

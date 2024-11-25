@@ -87,6 +87,8 @@ export const useUserEditableGraph = (
   const { isPressed } = useShortcutPressed()
 
   const handleKeyboardEvents = () => {
+    if (graph.settings.value.userEditable === false) return
+    if (graph.canvasFocused.value === false) return
     const userKeyBindings = KEY_BINDINGS[USER_PLATFORM]
     for (const key in userKeyBindings) {
       if (isPressed(key)) userKeyBindings[key as keyof typeof userKeyBindings]()

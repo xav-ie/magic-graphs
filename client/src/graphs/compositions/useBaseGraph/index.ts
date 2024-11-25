@@ -36,6 +36,7 @@ import { getCtx } from '@utils/ctx';
 import type { GraphAtMousePosition } from './types';
 import { useGraphCursor } from './useGraphCursor';
 import { getCanvasCoords } from '@utils/components/useCanvasCoord';
+import { onClickOutside } from '@vueuse/core';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -58,6 +59,16 @@ export const useBaseGraph = (
   const eventBus = getInitialEventBus()
 
   const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
+
+  const canvasFocused = ref(true)
+
+  onClickOutside(canvas, () => {
+    canvasFocused.value = false
+  })
+
+  subscribe('onMouseDown', () => {
+    canvasFocused.value = true
+  })
 
   const nodes = ref<GNode[]>([])
   const edges = ref<GEdge[]>([])
@@ -293,6 +304,10 @@ export const useBaseGraph = (
     reset,
 
     canvas,
+    /**
+     * whether the canvas is currently focused in the browser
+     */
+    canvasFocused,
 
     graphAtMousePosition,
     updateGraphAtMousePosition,

@@ -20,10 +20,19 @@ export const graphEmitters = (
     if (!broadcast) return
     socket.emit('nodeRemoved', node.id)
   },
-  onBulkNodeRemoved: (nodes, _, { broadcast }) => {
+  onBulkNodeRemoved: (nodes, edges, { broadcast }) => {
     if (!broadcast) return
     for (const node of nodes) {
       socket.emit('nodeRemoved', node.id)
+    }
+    for (const edge of edges) {
+      socket.emit('edgeRemoved', edge.id)
+    }
+  },
+  onBulkEdgeRemoved: (edges, { broadcast }) => {
+    if (!broadcast) return
+    for (const edge of edges) {
+      socket.emit('edgeRemoved', edge.id)
     }
   },
   onNodeMoved: (node, { broadcast }) => {

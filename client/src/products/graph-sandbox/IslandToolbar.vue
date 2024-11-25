@@ -9,20 +9,11 @@
   import GraphInfoMenu from "./GraphInfoMenu.vue";
   import { useCollab } from "@graph/collab";
   import GraphSandboxProductInfo from "./info";
+  import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
 
   const props = defineProps<{
     graph: Graph;
   }>();
-
-  const { connectToRoom, isConnected } = useCollab();
-
-  const join = () => {
-    connectToRoom({
-      roomId: 'sandbox',
-      productId: GraphSandboxProductInfo.productId,
-      graph: props.graph,
-    })
-  }
 
   const tutorial = useGraphTutorial(props.graph, [
     {
@@ -141,10 +132,14 @@
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
-      <ToolbarButton
-        @click="join"
-        :disabled="isConnected"
-      >mdi-account-group</ToolbarButton>
+      <CollaborativeSessionMenu
+        :graph="graph"
+        v-slot="{ isActive }"
+      >
+        <ToolbarButton
+          :active="isActive"
+        >mdi-account-group</ToolbarButton>
+      </CollaborativeSessionMenu>
     </ToolbarButtonGroup>
   </Toolbar>
 
