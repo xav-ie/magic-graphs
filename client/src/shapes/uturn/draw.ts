@@ -54,16 +54,16 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     y: arrowHeadBaseCenterPoint.y - arrowHeadHeight * Math.sin(rotation),
   };
 
-  // 2 is to overlap
+  // +0.01 to overlap 
   const trianglePt2 = {
-    x: arrowHeadBaseCenterPoint.x - (perpLineLength + 2) * Math.cos(rotation + Math.PI / 2),
-    y: arrowHeadBaseCenterPoint.y - perpLineLength * Math.sin(rotation + Math.PI / 2),
+    x: arrowHeadBaseCenterPoint.x - perpLineLength * Math.cos(rotation + Math.PI / 2 + 0.01),
+    y: arrowHeadBaseCenterPoint.y - perpLineLength * Math.sin(rotation + Math.PI / 2 + 0.01),
   };
 
-  // 2 is to overlap
+  // -0.01 to overlap 
   const trianglePt3 = {
-    x: arrowHeadBaseCenterPoint.x + (perpLineLength - 2) * Math.cos(rotation + Math.PI / 2),
-    y: arrowHeadBaseCenterPoint.y + perpLineLength * Math.sin(rotation + Math.PI / 2),
+    x: arrowHeadBaseCenterPoint.x + perpLineLength * Math.cos(rotation + Math.PI / 2 - 0.01),
+    y: arrowHeadBaseCenterPoint.y + perpLineLength * Math.sin(rotation + Math.PI / 2 - 0.01),
   };
 
   const drawHead = drawTriangleWithCtx({
@@ -94,8 +94,8 @@ export const drawUTurnWithCtx = (options: UTurn) => {
 
     // draw the part that uturns
     ctx.beginPath();
-    // +0.05 to overlap
-    ctx.arc(arcAt.x, arcAt.y, spacing, Math.PI / 2 + rotation + 0.05, -Math.PI / 2 + rotation - 0.05, true);
+    // +0.01, -0.01 to overlap
+    ctx.arc(arcAt.x, arcAt.y, spacing, Math.PI / 2 + rotation + 0.01, -Math.PI / 2 + rotation - 0.01, true);
     ctx.strokeStyle = color;
     ctx.stroke();
     ctx.closePath();
