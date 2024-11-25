@@ -8,7 +8,7 @@ import { LINE_DEFAULTS } from "@shape/line"
 import { generateId } from "@graph/helpers"
 
 export type Cross = {
-  id: string,
+  id?: string,
   at: Coordinate
   size: number
   rotation?: number
