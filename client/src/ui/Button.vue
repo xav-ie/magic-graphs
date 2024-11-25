@@ -20,8 +20,8 @@
   const propClasses = computed(() => {
     const classes = [];
     if (props.color) {
-      classes.push(`bg-[${props.color}]`);
-      classes.push(`dark:bg-[${props.color}]`);
+      classes.push(`!bg-[${props.color}]`);
+      classes.push(`dark:!bg-[${props.color}]`);
 
       const adjustedColor = darkenHex(props.color, 30);
       classes.push(`hover:!bg-[${adjustedColor}]`);
@@ -29,8 +29,8 @@
     }
 
     if (props.textColor) {
-      classes.push(`text-[${props.textColor}]`);
-      classes.push(`dark:text-[${props.textColor}]`);
+      classes.push(`!text-[${props.textColor}]`);
+      classes.push(`dark:!text-[${props.textColor}]`);
     }
 
     return classes

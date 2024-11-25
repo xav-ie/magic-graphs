@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref } from "vue";
+  import { onMounted, ref } from "vue";
   import type { SimulationDeclaration } from "src/types";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
@@ -10,11 +10,27 @@
   import IslandMarkup from "./IslandMarkup.vue";
   import SimulationDropdown from "./SimulationDropdown.vue";
   import ExperienceDropdown from "./ExperienceDropdown.vue";
+  import { useRoute } from "vue-router";
+  import { useCollab } from "@graph/collab";
+  import GraphSandboxProduct from './info'
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: SANDBOX_GRAPH_SETTINGS,
   });
+
+  const route = useRoute();
+  const { connectToRoom } = useCollab();
+
+  onMounted(() => {
+    if (!route.query.rid) return;
+    if (typeof route.query.rid !== "string") return;
+    connectToRoom({
+      graph,
+      roomId: route.query.rid,
+      productId: GraphSandboxProduct.productId,
+    })
+  })
 
   const activeSimulation = ref<SimulationDeclaration>();
 </script>

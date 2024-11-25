@@ -5,13 +5,22 @@
   import Button from "@ui/Button.vue";
   import GraphSandboxProductInfo from "./info";
   import type { Graph } from "@graph/types";
-import { generateId } from "@graph/helpers";
+  import { generateId } from "@graph/helpers";
+  import colors from "@utils/colors";
 
   const props = defineProps<{
     graph: Graph;
   }>();
 
-  const { connectToRoom, isConnected, connectedRoomId } = useCollab();
+  const {
+    connectToRoom,
+    isConnected,
+    connectedRoomId,
+    disconnectFromRoom,
+    collaborators,
+    collaboratorCount,
+    meAsACollaborator,
+  } = useCollab();
 
   const link = computed(() => {
     return `${window.location.origin}?rid=${connectedRoomId.value}`;
@@ -64,9 +73,9 @@ import { generateId } from "@graph/helpers";
       <div class="rounded-lg mb-2">
         <input
           v-model="myCollaboratorProfile.name"
-          :disabled="isConnected"
+          :disabled="isConnected || startingRoom"
           type="text"
-          class="bg-gray-700 text-white w-full p-2 rounded-lg outline-none"
+          class="bg-gray-700 text-white w-full p-2 rounded-lg outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           placeholder="The name you want others to see"
         />
       </div>
@@ -110,6 +119,38 @@ import { generateId } from "@graph/helpers";
             >
               mdi-check-underline
             </v-icon>
+          </div>
+        </div>
+      </div>
+
+      <div
+        v-if="isConnected"
+        class="mt-4 w-full"
+      >
+        <Button
+          @click="disconnectFromRoom"
+          :color="colors.RED_600"
+          :text-color="colors.WHITE"
+          class="w-full"
+        >
+          Disconnect
+        </Button>
+      </div>
+
+      <div v-if="isConnected && meAsACollaborator">
+        <h2 class="text-xl font-bold text-gray-200 mt-4 mb-2">
+          Collaborators ({{ collaboratorCount }})
+        </h2>
+        <div class="flex flex-wrap items-center gap-2">
+          <div :class="`text-gray-300 bg-[${meAsACollaborator.color}] font-bold rounded-md px-3 py-1`">
+            {{ meAsACollaborator.name }}
+          </div>
+          <div
+            v-for="collaborator in collaborators"
+            :key="collaborator.id"
+            :class="`text-gray-300 bg-[${collaborator.color}] font-bold rounded-md px-3 py-1`"
+          >
+            {{ collaborator.name }}
           </div>
         </div>
       </div>

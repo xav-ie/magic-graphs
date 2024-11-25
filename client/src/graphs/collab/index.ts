@@ -9,6 +9,7 @@ import { useLocalStorage } from "@vueuse/core";
 import { getRandomElement } from "@utils/array";
 import { startListening } from "./listen";
 import { paintCollabTags } from "./collabTag";
+import { useRoute } from "vue-router";
 
 export const myCollaboratorProfile = useLocalStorage<CollaboratorProfile>('collab-profile', {
   name: 'Dila',
@@ -155,4 +156,5 @@ export const useCollab = () => ({
   switchProduct,
 
   isConnected: computed(() => !!socket.value),
+  collaboratorCount: computed(() => Object.keys(collaborators.value).length + 1),
 })
