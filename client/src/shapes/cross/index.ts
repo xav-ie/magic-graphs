@@ -8,6 +8,7 @@ import { LINE_DEFAULTS } from "@shape/line"
 import { generateId } from "@graph/helpers"
 
 export type Cross = {
+  id: string,
   at: Coordinate
   size: number
   rotation?: number
@@ -43,7 +44,7 @@ export const cross = (options: Cross): Shape => {
   }
 
   return {
-    id: generateId(),
+    id: options.id ?? generateId(),
     name: 'cross',
 
     draw,

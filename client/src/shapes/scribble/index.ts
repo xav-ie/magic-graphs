@@ -7,6 +7,7 @@ import { scribbleHitbox, scribbleEfficientHitbox, getScribbleBoundingBox } from 
 import { generateId } from "@graph/helpers";
 
 export type Scribble = {
+  id?: string;
   type: "draw" | "erase";
   color?: string;
   brushWeight?: number;
@@ -47,7 +48,7 @@ export const scribble = (options: Scribble): Shape => {
   
 
   return {
-    id: generateId(),
+    id: options.id ?? generateId(),
     name: 'scribble',
 
     drawShape,

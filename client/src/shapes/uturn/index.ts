@@ -17,8 +17,9 @@ import { getFullTextArea } from "@shape/text"
 import { engageTextarea } from "@shape/textarea"
 
 export type UTurn = {
-  spacing: number,
+  id?: string,
   at: Coordinate,
+  spacing: number,
   upDistance: number,
   downDistance: number,
   rotation: number,
@@ -70,7 +71,7 @@ export const uturn = (options: UTurn): Shape => {
   }
 
   return {
-    id: generateId(),
+    id: options.id ?? generateId(),
     name: 'uturn',
 
     draw,

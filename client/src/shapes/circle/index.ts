@@ -18,6 +18,7 @@ import { getFullTextArea } from "@shape/text";
 import { engageTextarea } from "@shape/textarea";
 
 export type Circle = {
+  id?: string,
   at: Coordinate,
   radius: number,
   color?: string,

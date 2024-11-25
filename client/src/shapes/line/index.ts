@@ -17,6 +17,7 @@ import { getFullTextArea } from "@shape/text";
 import { engageTextarea } from "@shape/textarea";
 
 export type Line = {
+  id?: string,
   start: Coordinate,
   end: Coordinate,
   width?: number,
@@ -71,7 +72,7 @@ export const line = (options: Line): Shape => {
   }
 
   return {
-    id: generateId(),
+    id: options.id ?? generateId(),
     name: 'line',
 
     draw,

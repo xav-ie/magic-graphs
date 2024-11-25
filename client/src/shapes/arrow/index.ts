@@ -53,7 +53,7 @@ export const arrow = (options: Arrow): Shape => {
   }
 
   return {
-    id: generateId(),
+    id: options.id ?? generateId(),
     name: 'arrow',
 
     draw,
