@@ -1,6 +1,7 @@
 import type { Coordinate, BoundingBox } from "@shape/types";
 import type { Scribble } from ".";
 import { rectEfficientHitbox, rectHitbox } from "@shape/rect/hitbox";
+import { lineEfficientHitbox } from "@shape/line/hitbox";
 
 
 /**
@@ -8,7 +9,13 @@ import { rectEfficientHitbox, rectHitbox } from "@shape/rect/hitbox";
  * @returns a function that checks if the point is in the scribble bounding box
 */
 export const scribbleHitbox = (scribble: Scribble) => (point: Coordinate) => {
-  if (scribble.type === 'erase') return false
+
+  const {
+    type,
+    points
+  } = scribble
+
+  if (type === 'erase') return false
 
   const { topLeft, bottomRight } = getScribbleBoundingBox(scribble)()
 
@@ -24,7 +31,25 @@ export const scribbleHitbox = (scribble: Scribble) => (point: Coordinate) => {
     height
   });
 
-  return isInRectHitbox(point)
+  if (!isInRectHitbox(point)) return false
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const scribbleSegment = {
+      start: points[i],
+      end: points[i + 1],
+    }
+
+    const isInLineEfficientHitbox = lineEfficientHitbox(scribbleSegment)({
+      at: point,
+      width: 1,
+      height: 1,
+    })
+
+    if (isInLineEfficientHitbox) return true
+  }
+
+  return false
+
 };
 
 export const getScribbleBoundingBox = (scribble: Scribble) => () => {
