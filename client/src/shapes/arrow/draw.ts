@@ -18,12 +18,12 @@ export const drawArrowWithCtx = (options: Arrow) => {
   const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
 
   const arrowHeadHeight = width * 2.5;
+  const perpLineLength = arrowHeadHeight / 1.75;
+  
   const shaftEnd = {
     x: lineEnd.x - arrowHeadHeight * Math.cos(angle),
     y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
   }
-
-  const perpLineLength = arrowHeadHeight / 1.75;
 
   const trianglePt1 = lineEnd;
 
