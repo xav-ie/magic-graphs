@@ -77,11 +77,11 @@ const sockets = (httpServer) => {
             tracker.updateEdge(edgeId, { label: newLabel });
             socket.broadcast.to(tracker.getRoomId()).emit('edgeLabelEdited', edgeId, newLabel);
         });
-        socket.on('toServerCollaboratorMoved', ({ x, y }) => {
-            const roomId = collaboratorIdToCollaborator[socket.id]?.roomId;
+        socket.on('collaboratorMoved', ({ x, y }) => {
+            const roomId = collaboratorIdToRoomId[socket.id];
             if (!roomId)
                 return;
-            socket.broadcast.to(roomId).emit('toClientCollaboratorMoved', { id: socket.id, x, y });
+            socket.broadcast.to(roomId).emit('collaboratorMoved', { id: socket.id, x, y });
         });
         socket.on('disconnect', () => {
             try {

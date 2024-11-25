@@ -1,4 +1,4 @@
-import type { Collaborator } from "@graph/compositions/useCollaborativeGraph/types";
+import type { Collaborator } from "@graph/collab/types";
 import colors from "@colors";
 import type { Rect } from "@shape/rect";
 import type { Circle } from "@shape/circle";

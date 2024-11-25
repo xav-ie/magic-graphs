@@ -1,4 +1,3 @@
-import { clone } from '@utils/clone';
 import type { GraphEventMap as ImportedGraphEventMap } from './types'
 
 /**

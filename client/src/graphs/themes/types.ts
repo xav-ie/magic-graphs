@@ -77,8 +77,6 @@ export type UserEditableGraphTheme = {}
 
 export type PersistentGraphTheme = {}
 
-export type CollaborativeGraphTheme = {}
-
 export type GraphTheme = (
   UITheme &
   BaseGraphTheme &
@@ -88,8 +86,7 @@ export type GraphTheme = (
   NodeAnchorGraphTheme &
   MarqueeGraphTheme &
   UserEditableGraphTheme &
-  PersistentGraphTheme &
-  CollaborativeGraphTheme
+  PersistentGraphTheme
 )
 
 /**

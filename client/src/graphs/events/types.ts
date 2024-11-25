@@ -182,8 +182,6 @@ export type UserEditableGraphEventMap = {}
 
 export type PersistentGraphEventMap = {}
 
-export type CollaborativeGraphEventMap = {}
-
 export type GraphEventMap = (
   BaseGraphEventMap &
   HistoryGraphEventMap &
@@ -192,6 +190,5 @@ export type GraphEventMap = (
   NodeAnchorGraphEventMap &
   MarqueeGraphEventMap &
   UserEditableGraphEventMap &
-  PersistentGraphEventMap &
-  CollaborativeGraphEventMap
+  PersistentGraphEventMap
 )
