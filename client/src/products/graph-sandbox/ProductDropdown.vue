@@ -14,7 +14,7 @@
 
 <template>
   <v-menu :offset="[10, 0]">
-    <template v-slot:activator="{ props }">
+    <template #activator="{ props }">
       <button
         v-bind="props"
         class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 text-xl font-bold rounded-lg"

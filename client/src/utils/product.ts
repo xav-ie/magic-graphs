@@ -27,8 +27,8 @@ export const routeToProduct = products.reduce<RouteToProduct>((acc, product) => 
  * @returns handlers for routing between products
  */
 export const useProductRouting = () => {
-  const router = useRouter();
   const route = useRoute();
+  const router = useRouter();
 
   const productLink = (productRoute: string) => {
     const roomId = route.query.rid;

@@ -8,7 +8,7 @@
   import { generateId } from "@graph/helpers";
   import colors from "@utils/colors";
   import { useRouter } from "vue-router";
-  import { productIdToProduct } from "@utils/product";
+  import { productIdToProduct, useProductRouting } from "@utils/product";
   import { darkenHex } from "@utils/colors";
 
   const props = defineProps<{
@@ -16,6 +16,7 @@
   }>();
 
   const router = useRouter();
+  const { navigate } = useProductRouting();
 
   const {
     connectToRoom,
@@ -168,6 +169,7 @@
           </div>
           <button
             v-for="collaborator in collaborators"
+            @click="navigate(productIdToProduct[collaborator.productId])"
             :key="collaborator.id"
             :class="`
               text-gray-300
