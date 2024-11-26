@@ -11,7 +11,13 @@ export const getCanvasCoords = (ev: MouseEvent, ctx: CanvasRenderingContext2D) =
   return {
     x: invertedTransform.a * offsetX + invertedTransform.c * offsetY + invertedTransform.e,
     y: invertedTransform.b * offsetX + invertedTransform.d * offsetY + invertedTransform.f,
+    scale: transform.a,
   }
+}
+
+export const getCanvasScale = (ctx: CanvasRenderingContext2D) => {
+  const transform = ctx.getTransform();
+  return transform.a;
 }
 
 /**
