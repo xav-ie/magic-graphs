@@ -108,7 +108,8 @@ const useCollab = () => {
     meAsACollaborator.value = {
       id: socket.value.id,
       name: myCollaboratorProfile.value.name,
-      color: myCollaboratorProfile.value.color,
+      // color: myCollaboratorProfile.value.color,
+      color: getRandomElement(COLLAB_COLORS),
       mousePosition: { x: 0, y: 0 },
       productId: options.productId,
     }

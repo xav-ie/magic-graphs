@@ -1,8 +1,7 @@
 <script setup lang="ts">
   import type { ProductInfo } from "src/types";
   import { products } from "@utils/product";
-  import { useRoute, useRouter } from "vue-router";
-  import { collabControls } from "@graph/collab";
+  import { useProductRouting } from "@utils/product";
 
   type ProductInfoWithMenu = ProductInfo & Required<Pick<ProductInfo, "menu">>;
 
@@ -10,26 +9,7 @@
     (info) => info?.menu
   ) as ProductInfoWithMenu[];
 
-  const router = useRouter();
-  const route = useRoute();
-
-  const productLink = (productRoute: string) => {
-    console.log("productRoute", productRoute);
-    const roomId = route.query.rid;
-    const roomIdValid = typeof roomId === "string" && roomId.length > 0;
-    return roomIdValid ? `${productRoute}?rid=${roomId}` : productRoute;
-  };
-
-  const navigate = (product: ProductInfoWithMenu) => {
-    const redirectLink = product.route?.redirect?.toString();
-    const goingExternal = redirectLink?.startsWith("http");
-
-    if (redirectLink && goingExternal) {
-      return window.open(redirectLink, "_blank");
-    }
-
-    router.push(productLink(product.route.path));
-  };
+  const { navigate } = useProductRouting();
 </script>
 
 <template>

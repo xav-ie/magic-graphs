@@ -1,6 +1,5 @@
 import colors from "@utils/colors"
 
-
 const IS_PROD = window.location.hostname !== 'localhost'
 
 const LOCAL_SOCKET_URL = 'http://localhost:3000'
@@ -17,7 +16,6 @@ export const COLLAB_COLORS = [
   colors.CYAN_600,
   colors.GREEN_600,
   colors.INDIGO_600,
-  colors.LIME_600,
   colors.ORANGE_600,
   colors.PINK_600,
   colors.PURPLE_600,

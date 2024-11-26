@@ -9,6 +9,7 @@
   import colors from "@utils/colors";
   import { useRouter } from "vue-router";
   import { productIdToProduct } from "@utils/product";
+  import { darkenHex } from "@utils/colors";
 
   const props = defineProps<{
     graph: Graph;
@@ -153,28 +154,40 @@
           Collaborators ({{ collaboratorCount }})
         </h2>
         <div class="flex flex-wrap items-center gap-2">
-          <div :class="`text-gray-300 bg-[${meAsACollaborator.color}] font-bold rounded-md px-3 py-1`">
+          <div
+            :class="`text-gray-300 bg-[${meAsACollaborator.color}] font-bold rounded-md px-3 py-1`"
+          >
             {{ meAsACollaborator.name }} (You)
             <v-tooltip
               activator="parent"
               location="bottom"
             >
-              You are in {{ productIdToProduct[meAsACollaborator.productId].name }}
+              You are in
+              {{ productIdToProduct[meAsACollaborator.productId].name }}
             </v-tooltip>
           </div>
-          <div
+          <button
             v-for="collaborator in collaborators"
             :key="collaborator.id"
-            :class="`text-gray-300 bg-[${collaborator.color}] font-bold rounded-md px-3 py-1`"
+            :class="`
+              text-gray-300
+              bg-[${collaborator.color}]
+              font-bold
+              rounded-md
+              px-3
+              py-1
+              hover:bg-[${darkenHex(collaborator.color, 20)}]
+            `"
           >
             {{ collaborator.name }}
             <v-tooltip
               activator="parent"
               location="bottom"
             >
-              {{ collaborator.name }} is in {{ productIdToProduct[collaborator.productId].name }}
+              {{ collaborator.name }} is in
+              {{ productIdToProduct[collaborator.productId].name }}
             </v-tooltip>
-          </div>
+          </button>
         </div>
       </div>
     </div>
