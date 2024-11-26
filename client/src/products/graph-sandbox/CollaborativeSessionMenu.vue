@@ -48,11 +48,13 @@
 
   const startCollaboration = async () => {
     startingRoom.value = true;
+
     await connectToRoom({
       roomId: generateId(),
       productId: GraphSandboxProductInfo.productId,
       graph: props.graph,
     });
+
     router.push({ query: { rid: connectedRoomId.value } });
     startingRoom.value = false;
   };

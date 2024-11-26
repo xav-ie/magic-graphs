@@ -1,6 +1,12 @@
 import type { Ref } from "vue"
 import type { Graph } from "@graph/types"
-import type { CollaboratorMap, GraphSocketEvents, CollabSocketEvents, SocketEvents } from "./types"
+import type {
+  CollaboratorMap,
+  GraphSocketEvents,
+  CollabSocketEvents,
+  SocketEvents,
+  GraphSocket,
+} from "./types"
 import type { Socket } from "socket.io-client"
 
 type SocketListenOptions = {
@@ -51,7 +57,7 @@ const listeners = (options: SocketListenOptions) => ({
 })
 
 export const startListening = (
-  socket: Socket<SocketEvents, SocketEvents>,
+  socket: GraphSocket,
   options: SocketListenOptions
 ) => {
   const eventHandlers = listeners(options)

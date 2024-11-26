@@ -1,15 +1,20 @@
 import { computed, readonly, ref } from "vue";
-import { COLLAB_COLORS, type Collaborator, type CollaboratorMap, type CollaboratorProfile, type SocketEvents } from "./types";
-import { SOCKET_URL } from "./constants";
-import { io, type Socket } from "socket.io-client";
+import type {
+  CollaboratorProfile,
+  Collaborator,
+  CollaboratorMap,
+  SocketEvents,
+  GraphSocket,
+} from "./types";
+import { SOCKET_URL, COLLAB_COLORS } from "./constants";
+import { io } from "socket.io-client";
 import type { Graph } from "@graph/types";
 import { useSocketEmitters } from "./emit";
 import type { ProductInfo } from "src/types";
 import { useLocalStorage } from "@vueuse/core";
 import { getRandomElement } from "@utils/array";
 import { startListening } from "./listen";
-import { paintCollabTags } from "./collabTag";
-import { useRoute, useRouter } from "vue-router";
+import { usePaintCollabTags } from "./collabTag";
 
 export const myCollaboratorProfile = useLocalStorage<CollaboratorProfile>('collab-profile', {
   name: '',
@@ -34,12 +39,12 @@ type ConnectOptions = {
 
 const useCollab = () => {
   const meAsACollaborator = ref<Collaborator | undefined>();
-  const socket = ref<Socket<SocketEvents, SocketEvents> | undefined>();
+  const socket = ref<GraphSocket | undefined>();
   const collaborators = ref<CollaboratorMap>({});
   const connectedRoomId = ref<string | undefined>();
   const graph = ref<Graph | undefined>();
 
-  const collabTagPainter = paintCollabTags(collaborators)
+  const paintCollabTag = usePaintCollabTags(collaborators)
 
   useSocketEmitters(socket, graph)
 
@@ -47,7 +52,7 @@ const useCollab = () => {
     meAsACollaborator.value = undefined;
     connectedRoomId.value = undefined;
     collaborators.value = {};
-    graph.value?.unsubscribe('onRepaint', collabTagPainter)
+    graph.value?.unsubscribe('onRepaint', paintCollabTag)
     if (socket.value) {
       socket.value.disconnect();
       socket.value = undefined;
@@ -58,7 +63,7 @@ const useCollab = () => {
    * connects the user to the socket server.
    * @returns a promise that resolves with the socket instance when connected
    */
-  const connectSocket = async () => new Promise<Socket<SocketEvents, SocketEvents>>((res, rej) => {
+  const connectSocket = async () => new Promise<GraphSocket>((res, rej) => {
     if (socket.value) return res(socket.value);
 
     const socketInstance = io(SOCKET_URL)
@@ -121,7 +126,7 @@ const useCollab = () => {
         }
       }
 
-      options.graph.subscribe('onRepaint', collabTagPainter)
+      options.graph.subscribe('onRepaint', paintCollabTag)
       startListening(socket.value, { graph: options.graph, collaborators })
 
       socket.value.emit('joinRoom', joinOptions, (collabMap, graphState) => {

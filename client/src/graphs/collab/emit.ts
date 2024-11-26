@@ -1,11 +1,12 @@
+import { ref, watch } from "vue";
+import type { Ref } from "vue";
 import type { Socket } from "socket.io-client";
-import type { SocketEvents } from "./types";
 import type { GraphEventMap } from "@graph/events";
 import type { Graph } from "@graph/types";
-import { ref, watch, type Ref } from "vue";
+import type { GraphSocket, SocketEvents } from "./types";
 
 export const graphEmitters = (
-  socket: Socket<SocketEvents, SocketEvents>
+  socket: GraphSocket,
 ): Partial<GraphEventMap> => ({
   onNodeAdded: (node, { broadcast }) => {
     if (!broadcast) return
@@ -63,7 +64,7 @@ export const graphEmitters = (
  * to the socket server to be broadcasted to other collaborators
  */
 export const useSocketEmitters = (
-  socket: Ref<Socket<SocketEvents, SocketEvents> | undefined>,
+  socket: Ref<GraphSocket | undefined>,
   graph: Ref<Graph | undefined>
 ) => {
   const eventHandlers = ref<Partial<GraphEventMap>>({})
