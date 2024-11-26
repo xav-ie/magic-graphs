@@ -14,7 +14,9 @@ export type ProductMap = Record<ProductInfo['productId'], ProductInfo>
 export const productIdToProduct = products.reduce<ProductMap>((acc, product) => {
   acc[product.productId] = product
   return acc
-}, {})
+}, {});
+
+export type ProductInfoWithMenu = ProductInfo & Required<Pick<ProductInfo, "menu">>;
 
 export type RouteToProduct = Record<string, ProductInfo>
 
