@@ -27,8 +27,8 @@ export const scribbleHitbox = (scribble: Scribble) => (point: Coordinate) => {
       x: topLeft.x,
       y: topLeft.y
     },
-    width,
-    height
+    width: Math.max(width, 10), // To prevent dots from not having a hitbox: due to drawing with ctx.lineCap = "round"
+    height: Math.max(height, 10) // To prevent dots from not having a hitbox: due to drawing with ctx.lineCap = "round"
   });
 
   if (!isInRectHitbox(point)) return false
