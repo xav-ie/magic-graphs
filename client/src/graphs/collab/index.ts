@@ -9,7 +9,7 @@ import { useLocalStorage } from "@vueuse/core";
 import { getRandomElement } from "@utils/array";
 import { startListening } from "./listen";
 import { paintCollabTags } from "./collabTag";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 export const myCollaboratorProfile = useLocalStorage<CollaboratorProfile>('collab-profile', {
   name: '',
@@ -42,8 +42,6 @@ const useCollab = () => {
   const collabTagPainter = paintCollabTags(collaborators)
 
   useSocketEmitters(socket, graph)
-
-  graph.value?.settings.value.persistentStorageKey
 
   const resetCollabState = () => {
     meAsACollaborator.value = undefined;

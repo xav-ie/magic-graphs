@@ -2,12 +2,21 @@
   import type { ProductInfo } from "src/types";
   import colors from "@utils/colors";
   import { products } from "@utils/product";
+  import { useRoute } from "vue-router";
 
   type ProductInfoWithMenu = ProductInfo & Required<Pick<ProductInfo, 'menu'>>;
 
   const productsWithMenuConfigured = products.filter(
     (info) => info?.menu
   ) as ProductInfoWithMenu[];
+
+  const route = useRoute();
+
+  const productLink = (productRoute: string) => {
+    const roomId = route.query.rid;
+    const roomIdValid = typeof roomId === "string" && roomId.length > 0;
+    return roomIdValid ? `${productRoute}?rid=${roomId}` : productRoute;
+  }
 </script>
 
 <template>
@@ -26,7 +35,7 @@
     <div class="bg-gray-800 flex flex-col text-white p-2 w-[400px] h-[700px] overflow-auto rounded-lg">
       <router-link
         v-for="product in productsWithMenuConfigured"
-        :to="product.route.path"
+        :to="productLink(product.route.path)"
         class="hover:bg-gray-900 p-2 rounded-md cursor-pointer rounded-lg text-left flex gap-4"
       >
         <img

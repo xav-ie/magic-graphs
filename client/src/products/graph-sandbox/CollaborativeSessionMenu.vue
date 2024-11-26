@@ -7,10 +7,13 @@
   import type { Graph } from "@graph/types";
   import { generateId } from "@graph/helpers";
   import colors from "@utils/colors";
+  import { useRouter } from "vue-router";
 
   const props = defineProps<{
     graph: Graph;
   }>();
+
+  const router = useRouter();
 
   const {
     connectToRoom,
@@ -50,7 +53,13 @@
       productId: GraphSandboxProductInfo.productId,
       graph: props.graph,
     });
+    router.push({ query: { rid: connectedRoomId.value } });
     startingRoom.value = false;
+  };
+
+  const stopCollaboration = () => {
+    disconnectFromRoom();
+    router.push({ query: { rid: undefined } });
   };
 </script>
 
@@ -127,7 +136,7 @@
         class="mt-4 w-full"
       >
         <Button
-          @click="disconnectFromRoom"
+          @click="stopCollaboration"
           :color="colors.RED_600"
           :text-color="colors.WHITE"
           class="w-full"

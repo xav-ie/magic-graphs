@@ -1,5 +1,5 @@
 import type { Graph } from "@graph/types";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { onMounted } from "vue";
 import { collabControls } from "@graph/collab";
 import { routeToProduct } from "./product";
@@ -7,6 +7,7 @@ import type { ProductInfo } from "src/types";
 
 export const useGraphProductBoot = (graph: Graph, product?: ProductInfo) => {
   const route = useRoute();
+  const router = useRouter();
 
   if (!product) {
     const productForCurrentRoute = routeToProduct[route.path];
@@ -28,6 +29,10 @@ export const useGraphProductBoot = (graph: Graph, product?: ProductInfo) => {
       graph,
       roomId,
       productId,
+    })
+
+    router.replace({
+      query: { rid: roomId }
     })
   })
 }
