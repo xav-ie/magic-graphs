@@ -3,9 +3,7 @@ import type { Coordinate } from "@shape/types";
 /**
  *
  * @param {number} frameRate in frames per second
- *
  * @param {number} duration in miliseconds
- *
  * @returns {number} number of steps
  */
 
@@ -28,6 +26,7 @@ type EasingFunction =
    */
   | ((progress: number) => number);
 
+  
 /**
  *
  * @param {number} progress the current progress
@@ -60,10 +59,10 @@ export const easeFunction = (progress: number, ease: EasingFunction) => {
  * @param {number} steps the number of steps to get from `startPosition` to `endPosition`
  * @param {EasingFunction} easing the easing function
  * @returns {Coordinate[]} list of coordinates following the `easing` function between `startPosition` and `endPosition`
- * 
+ *
  * @example
  * pointInterpolation({ x: 0, y: 0 }, { x: 100, y: 50 }, 5, 'linear')
- * // returns 
+ * // returns
  * // {x: 20, y: 10}
  * // {x: 40, y: 20}
  * // {x: 60, y: 30}
