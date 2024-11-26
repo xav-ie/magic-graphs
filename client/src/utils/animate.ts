@@ -15,7 +15,7 @@ export const calculateSteps = (
   return Math.floor(frameRate * seconds);
 };
 
-type EasingFunction =
+export type EasingFunction =
   | "linear"
   | "in-out"
   | "in"
@@ -26,7 +26,7 @@ type EasingFunction =
    */
   | ((progress: number) => number);
 
-  
+
 /**
  *
  * @param {number} progress the current progress
