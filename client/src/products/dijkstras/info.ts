@@ -22,7 +22,7 @@ const info: ProductInfo = {
     path: '/dijkstras',
     component: () => import('./Main.vue'),
   },
-  name: 'Dijkstras Algorithm',
+  name: 'Dijkstras',
   description: 'Visualize Dijkstras Algorithm',
   productId: 'dijkstras',
   menu: {

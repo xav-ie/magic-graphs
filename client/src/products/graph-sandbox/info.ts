@@ -5,8 +5,8 @@ export const info: ProductInfo = {
     path: "/graph-sandbox",
     component: () => import("./Main.vue"),
   },
-  name: "",
-  description: "",
+  name: "Graph Sandbox",
+  description: "Build a graph and run algorithms on it",
   productId: "graph-sandbox",
   menu: {
     name: "Graph Sandbox",

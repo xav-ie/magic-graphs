@@ -7,7 +7,8 @@
   import SimulationControls from "./SimulationControls.vue";
   import { MST_GRAPH_SETTINGS } from "./settings";
   import TopRightToolbar from "./TopRightToolbar.vue";
-  import TopLeftToolbar from "./TopLeftToolbar.vue";
+  import { useGraphProductBoot } from "@utils/productBoot";
+  import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -22,6 +23,8 @@
     currentAlgorithm.value = algorithm;
     simControls.start();
   };
+
+  useGraphProductBoot(graph);
 </script>
 
 <template>
@@ -32,16 +35,16 @@
     />
   </div>
 
-  <div class="absolute top-0 p-3 flex gap-3">
-    <TopLeftToolbar
+  <div class="absolute top-6 left-6">
+    <ProductDropdown />
+  </div>
+
+  <div class="absolute top-0 right-0 p-3 flex gap-3">
+    <TopRightToolbar
       :graph="graph"
       :simControls="simControls"
       :startSimulation="startSimulation"
     />
-  </div>
-
-  <div class="absolute top-0 right-0 p-3 flex gap-3">
-    <TopRightToolbar :graph="graph" />
   </div>
 
   <div

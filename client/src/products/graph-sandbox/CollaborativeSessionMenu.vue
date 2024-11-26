@@ -7,10 +7,16 @@
   import type { Graph } from "@graph/types";
   import { generateId } from "@graph/helpers";
   import colors from "@utils/colors";
+  import { useRouter } from "vue-router";
+  import { productIdToProduct, useProductRouting } from "@utils/product";
+  import { darkenHex } from "@utils/colors";
 
   const props = defineProps<{
     graph: Graph;
   }>();
+
+  const router = useRouter();
+  const { navigate } = useProductRouting();
 
   const {
     connectToRoom,
@@ -45,13 +51,20 @@
 
   const startCollaboration = async () => {
     startingRoom.value = true;
-    await new Promise((resolve) => setTimeout(resolve, 500));
+
     await connectToRoom({
       roomId: generateId(),
       productId: GraphSandboxProductInfo.productId,
       graph: props.graph,
     });
+
+    router.push({ query: { rid: connectedRoomId.value } });
     startingRoom.value = false;
+  };
+
+  const stopCollaboration = () => {
+    disconnectFromRoom();
+    router.push({ query: { rid: undefined } });
   };
 </script>
 
@@ -128,7 +141,7 @@
         class="mt-4 w-full"
       >
         <Button
-          @click="disconnectFromRoom"
+          @click="stopCollaboration"
           :color="colors.RED_600"
           :text-color="colors.WHITE"
           class="w-full"
@@ -142,16 +155,41 @@
           Collaborators ({{ collaboratorCount }})
         </h2>
         <div class="flex flex-wrap items-center gap-2">
-          <div :class="`text-gray-300 bg-[${meAsACollaborator.color}] font-bold rounded-md px-3 py-1`">
-            {{ meAsACollaborator.name }}
-          </div>
           <div
+            :class="`text-gray-300 bg-[${meAsACollaborator.color}] font-bold rounded-md px-3 py-1`"
+          >
+            {{ meAsACollaborator.name }} (You)
+            <v-tooltip
+              activator="parent"
+              location="bottom"
+            >
+              You are in
+              {{ productIdToProduct[meAsACollaborator.productId].name }}
+            </v-tooltip>
+          </div>
+          <button
             v-for="collaborator in collaborators"
+            @click="navigate(productIdToProduct[collaborator.productId])"
             :key="collaborator.id"
-            :class="`text-gray-300 bg-[${collaborator.color}] font-bold rounded-md px-3 py-1`"
+            :class="`
+              text-gray-300
+              bg-[${collaborator.color}]
+              font-bold
+              rounded-md
+              px-3
+              py-1
+              hover:bg-[${darkenHex(collaborator.color, 20)}]
+            `"
           >
             {{ collaborator.name }}
-          </div>
+            <v-tooltip
+              activator="parent"
+              location="bottom"
+            >
+              {{ collaborator.name }} is in
+              {{ productIdToProduct[collaborator.productId].name }}
+            </v-tooltip>
+          </button>
         </div>
       </div>
     </div>

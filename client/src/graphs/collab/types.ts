@@ -1,6 +1,6 @@
 import type { GEdge, GNode } from "@graph/types"
-import colors from "@colors"
 import type { ProductInfo } from "src/types"
+import type { Socket } from "socket.io-client"
 
 /**
  * data for a collaborator that is not connected to a single
@@ -89,17 +89,6 @@ export type ConnectionSocketEvents = {
 export type SocketEvents = GraphSocketEvents & CollabSocketEvents & ConnectionSocketEvents
 
 /**
- * list of colors that may be assigned to collaborators
+ * a socket that can send and receive events
  */
-export const COLLAB_COLORS = [
-  colors.AMBER_600,
-  colors.BLUE_600,
-  colors.CYAN_600,
-  colors.GREEN_600,
-  colors.INDIGO_600,
-  colors.LIME_600,
-  colors.ORANGE_600,
-  colors.PINK_600,
-  colors.PURPLE_600,
-  colors.RED_600,
-]
+export type GraphSocket = Socket<SocketEvents, SocketEvents>

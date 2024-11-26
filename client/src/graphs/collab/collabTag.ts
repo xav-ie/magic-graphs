@@ -52,7 +52,7 @@ export const collabTagShapes = (collaborator: Collaborator) => {
   }
 }
 
-export const paintCollabTags = (collaborators: Ref<CollaboratorMap>) => (ctx: CanvasRenderingContext2D) => {
+export const usePaintCollabTags = (collaborators: Ref<CollaboratorMap>) => (ctx: CanvasRenderingContext2D) => {
   for (const collaborator of Object.values(collaborators.value)) {
     const { tag, cursorPoint } = collabTagShapes(collaborator)
     rect(tag).draw(ctx)

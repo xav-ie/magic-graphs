@@ -2,7 +2,7 @@
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
-  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
+  import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import { flowNodeLabelGetter, useSourceSinkControls } from "./useSourceSinkControls";
   import { useSourceSinkStyler } from "./useSourceSinkStyler";
   import SourceSinkControls from "./SourceSinkControls.vue";
@@ -11,6 +11,7 @@
   import { useFlowSimulation } from "./useFlowSimulation";
   import FlowProperties from "./FlowProperties.vue";
   import { useFlowProperties } from "./useFlowProperties";
+import { useGraphProductBoot } from "@utils/productBoot";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -18,7 +19,6 @@
   });
 
   graph.settings.value.newNodeLabelGetter = flowNodeLabelGetter(graph);
-
 
   const sourceSinkControls = useSourceSinkControls(graph);
   const flowProps = useFlowProperties(graph, sourceSinkControls);
@@ -29,6 +29,8 @@
 
   activateEdgeThickener();
   activateFlowColorizer();
+
+  useGraphProductBoot(graph)
 </script>
 
 <template>
