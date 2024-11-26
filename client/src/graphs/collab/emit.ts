@@ -69,7 +69,6 @@ export const useSocketEmitters = (
   const eventHandlers = ref<Partial<GraphEventMap>>({})
 
   const startEmitting = () => {
-    console.log('subscribing to graph events')
     for (const [event, handler] of Object.entries(eventHandlers.value)) {
       // @ts-ignore ts cant handle Object.entries return type
       graph.value?.subscribe(event, handler)
@@ -77,7 +76,6 @@ export const useSocketEmitters = (
   }
 
   const stopEmitting = () => {
-    console.log('unsubscribing from graph events')
     for (const [event, handler] of Object.entries(eventHandlers.value)) {
       // @ts-ignore ts cant handle Object.entries return type
       graph.value?.unsubscribe(event, handler)

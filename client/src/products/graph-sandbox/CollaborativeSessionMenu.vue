@@ -45,7 +45,6 @@
 
   const startCollaboration = async () => {
     startingRoom.value = true;
-    await new Promise((resolve) => setTimeout(resolve, 500));
     await connectToRoom({
       roomId: generateId(),
       productId: GraphSandboxProductInfo.productId,
@@ -143,7 +142,7 @@
         </h2>
         <div class="flex flex-wrap items-center gap-2">
           <div :class="`text-gray-300 bg-[${meAsACollaborator.color}] font-bold rounded-md px-3 py-1`">
-            {{ meAsACollaborator.name }}
+            {{ meAsACollaborator.name }} (You)
           </div>
           <div
             v-for="collaborator in collaborators"

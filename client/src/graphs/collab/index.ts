@@ -78,7 +78,6 @@ const useCollab = () => {
 
     socketInstance.on('disconnect', () => {
       resetCollabState()
-      console.log('disconnected from socket')
     })
   })
 

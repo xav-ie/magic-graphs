@@ -1,17 +1,13 @@
 <script setup lang="ts">
   import type { ProductInfo } from "src/types";
   import colors from "@utils/colors";
+  import { products } from "@utils/product";
 
-  const infoModules = import.meta.glob<{
-    default: ProductInfo;
-  }>("/src/**/info.ts", { eager: true });
+  type ProductInfoWithMenu = ProductInfo & Required<Pick<ProductInfo, 'menu'>>;
 
-  const productInfos = Object.values(infoModules).map((m) => m.default);
-
-  // pull all products we can display on the main menu
-  const products = productInfos.filter(
+  const productsWithMenuConfigured = products.filter(
     (info) => info?.menu
-  ) as Required<ProductInfo>[];
+  ) as ProductInfoWithMenu[];
 </script>
 
 <template>
@@ -29,7 +25,7 @@
 
     <div class="bg-gray-800 flex flex-col text-white p-2 w-[400px] h-[700px] overflow-auto rounded-lg">
       <router-link
-        v-for="product in products"
+        v-for="product in productsWithMenuConfigured"
         :to="product.route.path"
         class="hover:bg-gray-900 p-2 rounded-md cursor-pointer rounded-lg text-left flex gap-4"
       >
