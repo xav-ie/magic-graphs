@@ -20,15 +20,16 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
     fontWeight,
   } = text
 
-  const SIZE = fontSize * 2;
+  const inputWidth = Math.max(fontSize * 2, fontSize * 0.6 * content.length)
+  const inputHeight = fontSize * 2;
 
   const input = document.createElement('textarea');
 
   input.style.position = 'absolute';
   input.style.left = `${x}px`;
   input.style.top = `${y}px`;
-  input.style.width = `${SIZE}px`;
-  input.style.height = `${SIZE}px`;
+  input.style.width = `${(inputWidth)}px`;
+  input.style.height = `${inputHeight}px`;
   input.style.zIndex = '1000';
 
   input.style.resize = 'none';
@@ -52,13 +53,18 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
   // no text wrapping
   input.style.whiteSpace = 'nowrap';
 
+  const adjustSize = () => {
+    input.style.width = `${Math.max(fontSize * 2, fontSize * 0.6 * input.value.length)}px`;
+  };
+
+  input.onfocus = adjustSize
 
   input.value = content;
 
   const removeInput = () => {
-    input.onblur = null;
-    handler(input.value);
-    input.remove();
+      input.onblur = null;
+      handler(input.value);
+      input.remove();
   }
 
   input.onblur = removeInput;
