@@ -7,8 +7,6 @@
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
   import ToolbarHint from "./ToolbarHint.vue";
   import GraphInfoMenu from "./GraphInfoMenu.vue";
-  import { useCollab } from "@graph/collab";
-  import GraphSandboxProductInfo from "./info";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
 
   const props = defineProps<{
