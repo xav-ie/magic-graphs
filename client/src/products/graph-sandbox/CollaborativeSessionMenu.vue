@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { computed, ref } from "vue";
-  import { useCollab, myCollaboratorProfile } from "@graph/collab";
+  import { collabControls, myCollaboratorProfile } from "@graph/collab";
   import { debounce } from "@utils/debounce";
   import Button from "@ui/Button.vue";
   import GraphSandboxProductInfo from "./info";
@@ -20,7 +20,7 @@
     collaborators,
     collaboratorCount,
     meAsACollaborator,
-  } = useCollab();
+  } = collabControls;
 
   const link = computed(() => {
     return `${window.location.origin}?rid=${connectedRoomId.value}`;

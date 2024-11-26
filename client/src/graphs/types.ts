@@ -61,7 +61,7 @@ export type GEdge = {
    */
   from: string,
   /**
-   * the text label that appears on the edge - NOT IMPLEMENTED
+   * the text label that appears on the edge
    */
   label: string,
 }

@@ -1,28 +1,29 @@
 import type { SchemaItem } from "@graph/types";
 import { fractionToDecimal } from "@utils/fracDecConverter/fracDec";
+import type { GNode, GEdge } from "@graph/types";
 
 /**
  * BASE GRAPH SETTINGS
  */
 export type BaseGraphSettings = {
   /**
-   * whether to display edge labels
+   * whether to display {@link GEdge.label | edge labels}
    * @default true
    */
   displayEdgeLabels: boolean;
   /**
-   * whether edge labels should be editable
+   * whether {@link GEdge.label | edge labels} should be editable
    * @default true
    */
   edgeLabelsEditable: boolean;
   /**
-   * a setter for edge labels - takes the user inputted string and returns a string that will
+   * a setter for {@link GEdge.label | edge labels} - takes the user inputted string and returns a string that will
    * be set as the edge label or returns undefined if the edge label should not be set
    * @default function tries converting the user input to a number
    */
   edgeInputToLabel: (input: string) => string | undefined;
   /**
-   * a function that returns a new label for a node when a new node is created.
+   * a function that returns the {@link GNode.label | label} for a node when a new node is created.
    * if null, new nodes will be generated alphabetically: A, B, C, ... Z, AA, AB, ...
    * @default null
    */
@@ -55,12 +56,12 @@ export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
  */
 export type FocusGraphSettings = {
   /**
-   * if false, no items on the graph can be focused
+   * if false, no {@link SchemaItem | item} on the graph can be focused
    * @default true
    */
   focusable: boolean;
   /**
-   * a list of item ids that cannot be focused
+   * a list of {@link SchemaItem.id | item ids} that cannot be focused
    * @default []
    */
   focusBlacklist: string[];
@@ -76,7 +77,7 @@ export const DEFAULT_FOCUS_SETTINGS: FocusGraphSettings = {
  */
 export type DraggableGraphSettings = {
   /**
-   * whether the graph is draggable
+   * whether the nodes on the graph are draggable
    * @default true
    */
   draggable: boolean;
@@ -91,7 +92,8 @@ export const DEFAULT_DRAGGABLE_SETTINGS: DraggableGraphSettings = {
  */
 export type NodeAnchorGraphSettings = {
   /**
-   * whether node anchors are enabled
+   * whether node anchors are enabled, if true, anchors will spawn around nodes while hovered
+   * enabling edge creation
    * @default true
    */
   nodeAnchors: boolean
@@ -132,7 +134,7 @@ export type UserEditableGraphSettings = {
    */
   userEditable: boolean;
   /**
-   * the default label assigned to edges when created using the UI
+   * the default {@link GEdge.label | label} assigned to edges when created using the UI
    * @default 1
    */
   userAddedEdgeLabel: string,
@@ -162,12 +164,12 @@ export const DEFAULT_USER_EDITABLE_SETTINGS: UserEditableGraphSettings = {
  */
 export type PersistentGraphSettings = {
   /**
-   * whether the graph is persistent
+   * whether the nodes and edges of the graph will be saved in {@link localStorage | local storage}
    * @default true
    */
   persistent: boolean;
   /**
-   * the key to use for storing the graph in local storage
+   * the key used for saving the graph in {@link localStorage | local storage}
    * @default "graph"
    */
   persistentStorageKey: string,

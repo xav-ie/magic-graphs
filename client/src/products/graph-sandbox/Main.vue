@@ -11,7 +11,7 @@
   import SimulationDropdown from "./SimulationDropdown.vue";
   import ExperienceDropdown from "./ExperienceDropdown.vue";
   import { useRoute } from "vue-router";
-  import { useCollab } from "@graph/collab";
+  import { collabControls } from "@graph/collab";
   import GraphSandboxProduct from './info'
 
   const graphEl = ref<HTMLCanvasElement>();
@@ -20,7 +20,7 @@
   });
 
   const route = useRoute();
-  const { connectToRoom } = useCollab();
+  const { connectToRoom } = collabControls;
 
   onMounted(() => {
     if (!route.query.rid) return;

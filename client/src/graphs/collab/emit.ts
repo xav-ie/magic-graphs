@@ -2,6 +2,7 @@ import type { Socket } from "socket.io-client";
 import type { SocketEvents } from "./types";
 import type { GraphEventMap } from "@graph/events";
 import type { Graph } from "@graph/types";
+import { ref, watch, type Ref } from "vue";
 
 export const graphEmitters = (
   socket: Socket<SocketEvents, SocketEvents>
@@ -56,28 +57,40 @@ export const graphEmitters = (
   },
 })
 
-type SocketEmitOptions = {
-  graph: Graph
-}
-
-export const startEmitting = (
-  socket: Socket<SocketEvents, SocketEvents>,
-  { graph }: SocketEmitOptions
+/**
+ * takes events triggered from client, ie graph events for
+ * when the user adds a node, moves a node, etc, and emits them
+ * to the socket server to be broadcasted to other collaborators
+ */
+export const useSocketEmitters = (
+  socket: Ref<Socket<SocketEvents, SocketEvents> | undefined>,
+  graph: Ref<Graph | undefined>
 ) => {
-  const eventHandlers = graphEmitters(socket)
-  for (const [event, handler] of Object.entries(eventHandlers)) {
-    // @ts-ignore ts cant handle Object.entries return type
-    graph.subscribe(event, handler)
-  }
-}
+  const eventHandlers = ref<Partial<GraphEventMap>>({})
 
-export const stopEmitting = (
-  socket: Socket<SocketEvents, SocketEvents>,
-  { graph }: SocketEmitOptions
-) => {
-  const eventHandlers = graphEmitters(socket)
-  for (const [event, handler] of Object.entries(eventHandlers)) {
-    // @ts-ignore ts cant handle Object.entries return type
-    graph.unsubscribe(event, handler)
+  const startEmitting = () => {
+    console.log('subscribing to graph events')
+    for (const [event, handler] of Object.entries(eventHandlers.value)) {
+      // @ts-ignore ts cant handle Object.entries return type
+      graph.value?.subscribe(event, handler)
+    }
   }
+
+  const stopEmitting = () => {
+    console.log('unsubscribing from graph events')
+    for (const [event, handler] of Object.entries(eventHandlers.value)) {
+      // @ts-ignore ts cant handle Object.entries return type
+      graph.value?.unsubscribe(event, handler)
+    }
+  }
+
+  const handleStateChange = () => {
+    stopEmitting()
+    if (socket.value) {
+      eventHandlers.value = graphEmitters(socket.value)
+      startEmitting()
+    }
+  }
+
+  watch([socket], handleStateChange, { immediate: true })
 }
