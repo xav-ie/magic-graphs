@@ -64,7 +64,7 @@ export type SimulationDeclarationGetter = (graph: Graph) => SimulationDeclaratio
 
 /**
  * interface for exposing a product to global resources
- * like the main page, router, and other products
+ * like menus, router, and other products
  */
 export type ProductInfo = {
   /**

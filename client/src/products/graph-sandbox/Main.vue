@@ -10,29 +10,16 @@
   import IslandMarkup from "./IslandMarkup.vue";
   import SimulationDropdown from "./SimulationDropdown.vue";
   import ExperienceDropdown from "./ExperienceDropdown.vue";
-  import { useRoute } from "vue-router";
-  import { collabControls } from "@graph/collab";
-  import GraphSandboxProduct from './info'
+  import { useGraphProductBoot } from "@utils/productBoot";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: SANDBOX_GRAPH_SETTINGS,
   });
 
-  const route = useRoute();
-  const { connectToRoom } = collabControls;
-
-  onMounted(() => {
-    if (!route.query.rid) return;
-    if (typeof route.query.rid !== "string") return;
-    connectToRoom({
-      graph,
-      roomId: route.query.rid,
-      productId: GraphSandboxProduct.productId,
-    })
-  })
-
   const activeSimulation = ref<SimulationDeclaration>();
+
+  useGraphProductBoot(graph);
 </script>
 
 <template>

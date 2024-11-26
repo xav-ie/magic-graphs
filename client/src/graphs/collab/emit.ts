@@ -92,5 +92,5 @@ export const useSocketEmitters = (
     }
   }
 
-  watch([socket], handleStateChange, { immediate: true })
+  watch(socket, handleStateChange)
 }
