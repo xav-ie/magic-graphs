@@ -3,12 +3,13 @@
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
   import Button from "@ui/Button.vue";
-  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
+  import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import colors from "@colors";
   import { useSimulationRunner } from "./useSimulationRunner";
   import CostDisplay from "./CostDisplay.vue";
   import { DIJKSTRAS_GRAPH_SETTINGS } from "./settings";
   import { useGraphProductBoot } from "@utils/productBoot";
+  import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -33,7 +34,11 @@
     />
   </div>
 
-  <div class="absolute top-0 p-3 flex gap-3">
+  <div class="absolute top-6 left-6">
+    <ProductDropdown />
+  </div>
+
+  <div class="absolute top-0 right-0 p-3 flex gap-3">
     <Button
       v-if="!simRunning"
       @click="startSim"

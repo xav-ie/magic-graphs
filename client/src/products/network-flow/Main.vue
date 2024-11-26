@@ -2,7 +2,7 @@
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
-  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
+  import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import { flowNodeLabelGetter, useSourceSinkControls } from "./useSourceSinkControls";
   import { useSourceSinkStyler } from "./useSourceSinkStyler";
   import SourceSinkControls from "./SourceSinkControls.vue";

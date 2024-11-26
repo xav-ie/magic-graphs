@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import colors from '@utils/colors';
-import Progressbar from '@ui/sim/Progressbar.vue';
-import SimulationPlaybackControls from '@ui/sim/SimulationPlaybackControls.vue';
+import Progressbar from '@ui/product/sim/Progressbar.vue';
+import SimulationPlaybackControls from '@ui/product/sim/SimulationPlaybackControls.vue';
 import type { MSTSimulationControls } from './useSimulation';
 
 defineProps<{

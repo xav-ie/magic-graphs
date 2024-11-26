@@ -25,7 +25,7 @@ export const useGraphProductBoot = (graph: Graph, product?: ProductInfo) => {
   const roomId = route.query.rid;
 
   const { productId, name } = product;
-  document.title = name;
+  document.title = `${name} - Magic Algorithms`;
 
   onMounted(() => {
     if (!roomId) return;

@@ -3,7 +3,7 @@ import type { Ref } from "vue"
 import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
-import type { SimulationControls } from "@ui/sim/types";
+import type { SimulationControls } from "@ui/product/sim/types";
 import { useDijkstra } from "./useDijkstra";
 import { INF } from "./dijkstra";
 import type { DijkstrasTrace } from "./dijkstra";

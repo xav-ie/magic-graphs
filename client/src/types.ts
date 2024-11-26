@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from "vue-router"
 import type { Graph } from "@graph/types"
-import type { SimulationControls } from "@ui/sim/types"
+import type { SimulationControls } from "@ui/product/sim/types"
 
 /**
  * options for exposing a product to the main page

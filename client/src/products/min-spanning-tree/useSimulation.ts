@@ -1,6 +1,6 @@
 import { computed, ref, type Ref } from "vue";
 import type { Graph, GEdge } from "@graph/types";
-import type { SimulationControls } from "@ui/sim/types";
+import type { SimulationControls } from "@ui/product/sim/types";
 import { useKruskal } from "./useKruskal";
 import { usePrim } from "./usePrim";
 import { useMSTColorizer } from "./useMSTColorizer";

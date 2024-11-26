@@ -3,13 +3,13 @@
   import type { SimulationDeclaration } from "src/types";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
-  import SimulationPlaybackControls from "@ui/sim/SimulationPlaybackControls.vue";
+  import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
   import IslandMarkup from "./IslandMarkup.vue";
   import SimulationDropdown from "./SimulationDropdown.vue";
-  import ExperienceDropdown from "./ProductDropdown.vue";
+  import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
   import { useGraphProductBoot } from "@utils/productBoot";
 
   const graphEl = ref<HTMLCanvasElement>();
@@ -45,7 +45,7 @@
   </div>
 
   <div class="absolute top-6 left-6">
-    <ExperienceDropdown />
+    <ProductDropdown />
   </div>
 
   <div class="absolute top-6 right-6">
