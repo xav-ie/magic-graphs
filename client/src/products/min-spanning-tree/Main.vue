@@ -8,6 +8,7 @@
   import { MST_GRAPH_SETTINGS } from "./settings";
   import TopRightToolbar from "./TopRightToolbar.vue";
   import TopLeftToolbar from "./TopLeftToolbar.vue";
+  import { useGraphProductBoot } from "@utils/productBoot";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -22,6 +23,8 @@
     currentAlgorithm.value = algorithm;
     simControls.start();
   };
+
+  useGraphProductBoot(graph);
 </script>
 
 <template>

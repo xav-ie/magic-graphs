@@ -11,6 +11,7 @@
   import { useFlowSimulation } from "./useFlowSimulation";
   import FlowProperties from "./FlowProperties.vue";
   import { useFlowProperties } from "./useFlowProperties";
+import { useGraphProductBoot } from "@utils/productBoot";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -18,7 +19,6 @@
   });
 
   graph.settings.value.newNodeLabelGetter = flowNodeLabelGetter(graph);
-
 
   const sourceSinkControls = useSourceSinkControls(graph);
   const flowProps = useFlowProperties(graph, sourceSinkControls);
@@ -29,6 +29,8 @@
 
   activateEdgeThickener();
   activateFlowColorizer();
+
+  useGraphProductBoot(graph)
 </script>
 
 <template>
