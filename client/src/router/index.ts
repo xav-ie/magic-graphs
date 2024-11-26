@@ -24,7 +24,9 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(() => {
+router.beforeEach((to, from) => {
+  // prevents route from changing if only the query params are different
+  if (to.path === from.path) return
   collabControls.disconnectFromRoom()
 })
 
