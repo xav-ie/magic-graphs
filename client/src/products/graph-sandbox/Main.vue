@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { onMounted, ref } from "vue";
+  import { ref } from "vue";
   import type { SimulationDeclaration } from "src/types";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
@@ -9,7 +9,7 @@
   import IslandToolbar from "./IslandToolbar.vue";
   import IslandMarkup from "./IslandMarkup.vue";
   import SimulationDropdown from "./SimulationDropdown.vue";
-  import ExperienceDropdown from "./ExperienceDropdown.vue";
+  import ExperienceDropdown from "./ProductDropdown.vue";
   import { useGraphProductBoot } from "@utils/productBoot";
 
   const graphEl = ref<HTMLCanvasElement>();

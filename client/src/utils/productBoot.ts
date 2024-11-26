@@ -1,13 +1,19 @@
-import type { Graph } from "@graph/types";
-import { useRoute, useRouter } from "vue-router";
 import { onMounted } from "vue";
+import { useRoute } from "vue-router";
+import type { Graph } from "@graph/types";
 import { collabControls } from "@graph/collab";
 import { routeToProduct } from "./product";
 import type { ProductInfo } from "src/types";
 
+/**
+ * bootstraps a graph centric product, connecting to a room if a room id is provided in the query
+ * and performing various other configuration tasks such as setting the document title
+ *
+ * @param graph the graph instance of the product
+ * @param product the product info for the product (inferred from the route if not provided)
+ */
 export const useGraphProductBoot = (graph: Graph, product?: ProductInfo) => {
   const route = useRoute();
-  const router = useRouter();
 
   if (!product) {
     const productForCurrentRoute = routeToProduct[route.path];
@@ -29,10 +35,6 @@ export const useGraphProductBoot = (graph: Graph, product?: ProductInfo) => {
       graph,
       roomId,
       productId,
-    })
-
-    router.replace({
-      query: { rid: roomId }
     })
   })
 }

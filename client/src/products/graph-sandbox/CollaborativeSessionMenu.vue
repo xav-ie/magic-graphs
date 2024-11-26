@@ -8,6 +8,7 @@
   import { generateId } from "@graph/helpers";
   import colors from "@utils/colors";
   import { useRouter } from "vue-router";
+  import { productIdToProduct } from "@utils/product";
 
   const props = defineProps<{
     graph: Graph;
@@ -154,6 +155,12 @@
         <div class="flex flex-wrap items-center gap-2">
           <div :class="`text-gray-300 bg-[${meAsACollaborator.color}] font-bold rounded-md px-3 py-1`">
             {{ meAsACollaborator.name }} (You)
+            <v-tooltip
+              activator="parent"
+              location="bottom"
+            >
+              You are in {{ productIdToProduct[meAsACollaborator.productId].name }}
+            </v-tooltip>
           </div>
           <div
             v-for="collaborator in collaborators"
@@ -161,6 +168,12 @@
             :class="`text-gray-300 bg-[${collaborator.color}] font-bold rounded-md px-3 py-1`"
           >
             {{ collaborator.name }}
+            <v-tooltip
+              activator="parent"
+              location="bottom"
+            >
+              {{ collaborator.name }} is in {{ productIdToProduct[collaborator.productId].name }}
+            </v-tooltip>
           </div>
         </div>
       </div>

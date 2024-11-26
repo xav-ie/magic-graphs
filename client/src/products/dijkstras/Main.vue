@@ -7,29 +7,22 @@
   import colors from "@colors";
   import { useSimulationRunner } from "./useSimulationRunner";
   import CostDisplay from "./CostDisplay.vue";
+  import { DIJKSTRAS_GRAPH_SETTINGS } from "./settings";
+  import { useGraphProductBoot } from "@utils/productBoot";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
-    settings: {
-      persistentStorageKey: "dijkstras",
-      userAddedEdgeRuleNoSelfLoops: true,
-      userAddedEdgeRuleOneEdgePerPath: true,
-      edgeInputToLabel: (input) => {
-        const number = parseInt(input);
-        if (isNaN(number)) return;
-        const isNegative = number < 0;
-        if (isNegative) return;
-        return number.toString();
-      },
-    },
+    settings: DIJKSTRAS_GRAPH_SETTINGS,
   });
 
   const {
     start: startSim,
     stop: stopSim,
     running: simRunning,
-    simControls
+    simControls,
   } = useSimulationRunner(graph);
+
+  useGraphProductBoot(graph);
 </script>
 
 <template>

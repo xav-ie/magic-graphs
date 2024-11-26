@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter } from 'vue-router'
 import type { ProductInfo } from 'src/types'
 import GraphSandboxInfo from '@product/graph-sandbox/info'
+import { collabControls } from '@graph/collab'
 
 // import all route.ts files dynamically
 const infoModules = import.meta.glob<{
@@ -23,10 +24,8 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, _, next) => {
-  const goingExternal = to.path.includes('https')
-  if (goingExternal) window.location.replace(to.path.slice(1))
-  next()
+router.beforeEach(() => {
+  collabControls.disconnectFromRoom()
 })
 
 export default router
