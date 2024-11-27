@@ -1,29 +1,32 @@
 <script setup lang="ts">
-  import colors from "@utils/colors";
   import type { SimulationDeclaration } from "src/types";
+  import StartSimButton from "@ui/product/StartSimButton.vue";
 
   defineProps<{
     simulations: SimulationDeclaration[];
-    startSimulation: (simulation: SimulationDeclaration) => void;
   }>();
+
+  const activeSimulation = defineModel<SimulationDeclaration>();
+
+  const startSimulation = async (simulation: SimulationDeclaration) => {
+    const { runner } = simulation;
+    activeSimulation.value = simulation;
+
+    await runner.start();
+  };
 </script>
 
 <template>
   <v-menu :offset="[10, 0]">
-    <template v-slot:activator="{ props }">
-      <v-btn
-        v-bind="props"
-        icon="mdi-play"
-        size="large"
-        :color="colors.GRAY_800"
-      ></v-btn>
+    <template #activator="{ props }">
+      <StartSimButton v-bind="props" />
     </template>
 
     <div class="bg-gray-800 flex flex-col text-white p-2 w-[400px] rounded-lg">
       <button
         v-for="simulation in simulations"
-        :key="simulation.name"
         @click="startSimulation(simulation)"
+        :key="simulation.name"
         class="hover:bg-gray-900 p-2 rounded-md cursor-pointer rounded-lg text-left flex gap-4"
       >
         <img

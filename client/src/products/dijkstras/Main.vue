@@ -29,22 +29,6 @@
 
     <template #center-left></template>
 
-    <template #top-right>
-      <Button @click="simRunner.start">
-        Start Simulation
-      </Button>
-    </template>
-
-    <template #top-right-sim>
-      <Button
-        @click="simRunner.stop"
-        :color="colors.RED_600"
-        :text-color="colors.WHITE"
-      >
-        Stop Simulation
-      </Button>
-    </template>
-
     <template #center-right-sim>
       <div class="bg-gray-800 bg-opacity-80 p-2 rounded-xl h-full overflow-auto">
         <CostDisplay :graph="graph" />

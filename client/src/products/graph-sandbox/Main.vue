@@ -1,9 +1,6 @@
 <script setup lang="ts">
   import { computed, ref } from "vue";
-  import type {
-    SimulationDeclaration,
-    SimulationDeclarationGetter,
-  } from "src/types";
+  import type { SimulationDeclaration } from "src/types";
   import { useGraph } from "@graph/useGraph";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
@@ -11,8 +8,7 @@
   import { useMarkupColorizer } from "./useMarkupColorizer";
   import { useMarkupSizer } from "./useMarkupSizer";
   import GraphProduct from "@ui/product/GraphProduct.vue";
-  import SimulationStarter from "./SimulationStarter.vue";
-  import SimulationStopper from "./SimulationStopper.vue";
+  import StartSimulation from "./StartSimulation.vue";
   import { getSimulationDeclarations } from "@utils/product";
 
   const graphEl = ref<HTMLCanvasElement>();
@@ -20,6 +16,7 @@
     settings: SANDBOX_GRAPH_SETTINGS,
   });
 
+  const simulations = getSimulationDeclarations(graph);
   const activeSimulation = ref<SimulationDeclaration>();
 
   const { colorize, colorMap } = useMarkupColorizer(graph);
@@ -29,8 +26,6 @@
   size();
 
   const runner = computed(() => activeSimulation.value?.runner);
-
-  const simulations = getSimulationDeclarations(graph)
 </script>
 
 <template>
@@ -53,14 +48,10 @@
     </template>
 
     <template #top-right>
-      <SimulationStarter
+      <StartSimulation
         v-model="activeSimulation"
         :simulations="simulations"
       />
-    </template>
-
-    <template #top-right-sim>
-      <SimulationStopper v-model="activeSimulation" />
     </template>
   </GraphProduct>
 </template>
