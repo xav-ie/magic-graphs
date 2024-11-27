@@ -58,10 +58,17 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
   input.style.whiteSpace = 'nowrap';
 
   const adjustSize = () => {
-    input.style.width = `${Math.max(fontSize * 2, fontSize * 0.6 * input.value.length) * scale}px`;
+    const currentWidth = parseFloat(input.style.width);
+    const newWidth = Math.max(input.scrollWidth, fontSize * 2);
+
+    const deltaWidth = newWidth - currentWidth;
+    input.style.left = `${parseFloat(input.style.left) - deltaWidth / 2}px`;
+
+    input.style.width = `${newWidth}px`
   };
 
   input.onfocus = adjustSize
+  input.oninput = adjustSize
 
   input.value = content;
 
