@@ -1,14 +1,19 @@
 <script setup lang="ts">
-  import { ref } from "vue";
-  import type { SimulationDeclaration } from "src/types";
+  import { computed, ref } from "vue";
+  import type {
+    SimulationDeclaration,
+    SimulationDeclarationGetter,
+  } from "src/types";
   import { useGraph } from "@graph/useGraph";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
   import IslandMarkup from "./IslandMarkup.vue";
-  import SimulationDropdown from "./SimulationDropdown.vue";
   import { useMarkupColorizer } from "./useMarkupColorizer";
   import { useMarkupSizer } from "./useMarkupSizer";
   import GraphProduct from "@ui/product/GraphProduct.vue";
+  import SimulationStarter from "./SimulationStarter.vue";
+  import SimulationStopper from "./SimulationStopper.vue";
+  import { getSimulationDeclarations } from "@utils/product";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -22,14 +27,17 @@
 
   const { size, sizeMap } = useMarkupSizer(graph);
   size();
+
+  const runner = computed(() => activeSimulation.value?.runner);
+
+  const simulations = getSimulationDeclarations(graph)
 </script>
 
 <template>
   <GraphProduct
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
-    :simulation="activeSimulation?.controls"
-    :in-simulation-mode="!!activeSimulation"
+    :simulation-runner="runner"
   >
     <template #top-center>
       <IslandToolbar :graph="graph" />
@@ -45,17 +53,14 @@
     </template>
 
     <template #top-right>
-      <SimulationDropdown
+      <SimulationStarter
         v-model="activeSimulation"
-        :graph="graph"
+        :simulations="simulations"
       />
     </template>
 
-    <!-- <template #top-right-sim>
-      <SimulationDropdown
-        v-model="activeSimulation"
-        :graph="graph"
-      />
-    </template> -->
+    <template #top-right-sim>
+      <SimulationStopper v-model="activeSimulation" />
+    </template>
   </GraphProduct>
 </template>

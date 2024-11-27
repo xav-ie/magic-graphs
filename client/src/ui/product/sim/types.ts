@@ -79,11 +79,11 @@ export type SimulationRunner<T extends any[] = any[]> = {
   /**
    * Start the simulation
    */
-  start: () => void
+  start: () => Promise<void> | void
   /**
    * Stop the simulation
    */
-  stop: () => void
+  stop: () => Promise<void> | void
   /**
    * Whether the simulation is currently running or in start up
    * ie user is selecting the starting node

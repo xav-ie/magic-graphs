@@ -9,6 +9,7 @@ export const useDijkstra = (graph: Graph, startingNode: Ref<GNode | undefined>) 
 
   const update = () => {
     if (!startingNode.value) return
+    console.log('updating dijkstra')
     trace.value = dijkstras(graph, startingNode.value.id)
   }
 

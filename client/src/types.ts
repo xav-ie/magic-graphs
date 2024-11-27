@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from "vue-router"
 import type { Graph } from "@graph/types"
-import type { SimulationControls } from "@ui/product/sim/types"
+import type { SimulationControls, SimulationRunner } from "@ui/product/sim/types"
 
 /**
  * options for exposing a product to the main page
@@ -43,21 +43,9 @@ export type SimulationDeclaration = {
    */
   canRun?: () => true | string,
   /**
-   * the controls for the simulation returned by your products useSimulation instance
+   * the runner for the simulation
    */
-  controls: SimulationControls,
-  /**
-   * runs when the simulation is opened or started by the user.
-   * use this to prepare the simulation experience by activating colorizers, prompting
-   * user for starting nodes, etc.
-   */
-  onInit?: () => Promise<void> | void,
-  /**
-   * runs when the simulation is closed or stopped by the user.
-   * use this to deactivate colorizers or other visual effects that were activated
-   * in `onInit` or during the runtime of the simulation.
-   */
-  onDismiss?: () => Promise<void> | void,
+  runner: SimulationRunner,
 }
 
 export type SimulationDeclarationGetter = (graph: Graph) => SimulationDeclaration[]

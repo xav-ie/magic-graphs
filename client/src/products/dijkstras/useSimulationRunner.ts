@@ -9,6 +9,7 @@ import type { DijkstrasTrace } from "./dijkstra";
 export type DijkstraSimulationRunner = SimulationRunner<DijkstrasTrace>;
 
 export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
+  console.log("useSimulationRunner", JSON.stringify(graph.nodes.value));
   const startingNode = ref<GNode>();
   const running = ref(false);
   const simControls = useDijkstraSimulation(graph, startingNode);
@@ -35,7 +36,6 @@ export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
 
     startingNode.value = node;
     simControls.start();
-
     hideText();
   };
 

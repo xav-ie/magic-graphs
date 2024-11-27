@@ -1,7 +1,8 @@
-import type { ProductInfo } from "src/types"
 import { useRoute, useRouter } from "vue-router"
+import type { Graph } from "@graph/types"
+import type { ProductInfo, SimulationDeclarationGetter } from "src/types"
 
-// import all route.ts files dynamically
+// imports all route.ts files dynamically
 const infoModules = import.meta.glob<{
   default: ProductInfo
 }>('/src/**/info.ts', { eager: true })
@@ -24,6 +25,22 @@ export const routeToProduct = products.reduce<RouteToProduct>((acc, product) => 
   acc[product.route.path] = product
   return acc
 }, {})
+
+/**
+ * initializes the simulation declarations for all products with the context of the
+ * provided graph
+ */
+export const getSimulationDeclarations = (graph: Graph) => {
+  const simulationDeclarationGetters = products
+    .map((info) => info.simulations)
+    .filter(Boolean) as SimulationDeclarationGetter[];
+
+  const simulations = simulationDeclarationGetters
+    .map((getter) => getter(graph))
+    .flat();
+
+  return simulations;
+}
 
 /**
  * @returns handlers for routing between products
