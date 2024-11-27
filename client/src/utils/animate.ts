@@ -75,6 +75,9 @@ export const pointInterpolation = (
   steps: number,
   easing: EasingFunction = "linear"
 ) => {
+  if (steps < 1) throw new Error('Steps must be greater than 0')
+  if (steps % 1 !== 0) throw new Error('Step must be integer')
+
   const result: Coordinate[] = [];
 
   for (let i = 1; i <= steps; i++) {
