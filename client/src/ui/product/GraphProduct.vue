@@ -44,9 +44,7 @@
     :graph="graph"
   />
 
-  <div
-    class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
-  >
+  <div class="absolute top-6 w-full flex flex-col justify-center items-center gap-2">
     <template v-if="inSimulationMode">
       <slot name="top-center-sim"></slot>
     </template>

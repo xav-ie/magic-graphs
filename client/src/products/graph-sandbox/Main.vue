@@ -29,12 +29,10 @@
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
     :simulation="activeSimulation?.controls"
+    :in-simulation-mode="!!activeSimulation"
   >
     <template #top-center>
-      <IslandToolbar
-        v-show="!activeSimulation"
-        :graph="graph"
-      />
+      <IslandToolbar :graph="graph" />
     </template>
 
     <template #center-left>
@@ -52,5 +50,12 @@
         :graph="graph"
       />
     </template>
+
+    <!-- <template #top-right-sim>
+      <SimulationDropdown
+        v-model="activeSimulation"
+        :graph="graph"
+      />
+    </template> -->
   </GraphProduct>
 </template>

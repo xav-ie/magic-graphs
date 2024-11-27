@@ -2,6 +2,7 @@ import type { ComputedRef, Ref } from "vue";
 
 /**
  * used as a standard for all simulation experiences across all products
+ *
  * @template T the type of the trace that the simulation is running on
  */
 export type SimulationControls<T extends any[] = any[]> = {
@@ -65,4 +66,31 @@ export type SimulationControls<T extends any[] = any[]> = {
    * true when the step is greater than -1
    */
   hasBegun: ComputedRef<boolean>
+}
+
+/**
+ * wraps around simulation controls to provide a standard interface for
+ * the work of setting up and running of simulations, ie prompting the user to select a starting node,
+ * source/sink nodes, etc.
+ *
+ * @template T the type of the trace that the simulation is running on
+ */
+export type SimulationRunner<T extends any[] = any[]> = {
+  /**
+   * Start the simulation
+   */
+  start: () => void
+  /**
+   * Stop the simulation
+   */
+  stop: () => void
+  /**
+   * Whether the simulation is currently running or in start up
+   * ie user is selecting the starting node
+   */
+  running: ComputedRef<boolean>
+  /**
+   * The controls for the simulation
+   */
+  simControls: SimulationControls<T>
 }
