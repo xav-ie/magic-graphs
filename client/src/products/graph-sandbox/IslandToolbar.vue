@@ -5,7 +5,6 @@
   import ToolbarButtonDivider from "./ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "./ToolbarButtonGroup.vue";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
-  import ToolbarHint from "./ToolbarHint.vue";
   import GraphInfoMenu from "./GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
 
@@ -120,8 +119,8 @@
 
     <ToolbarButtonGroup>
       <GraphInfoMenu
-        :graph="graph"
         v-slot="{ isActive }"
+        :graph="graph"
       >
         <ToolbarButton :active="isActive">
           mdi-information-outline
@@ -131,8 +130,8 @@
 
     <ToolbarButtonGroup>
       <CollaborativeSessionMenu
-        :graph="graph"
         v-slot="{ isActive }"
+        :graph="graph"
       >
         <ToolbarButton :active="isActive">mdi-account-group</ToolbarButton>
       </CollaborativeSessionMenu>

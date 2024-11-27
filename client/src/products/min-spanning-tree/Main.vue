@@ -4,11 +4,12 @@
   import Graph from "@graph/Graph.vue";
   import { useMSTSimulation, MST_ALGORITHMS } from "./useSimulation";
   import type { MSTAlgorithm } from "./useSimulation";
-  import SimulationControls from "./SimulationControls.vue";
   import { MST_GRAPH_SETTINGS } from "./settings";
   import TopRightToolbar from "./TopRightToolbar.vue";
   import { useGraphProductBoot } from "@utils/productBoot";
   import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
+
+  import GraphProduct from "@ui/product/GraphProduct.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -28,6 +29,17 @@
 </script>
 
 <template>
+  <GraphProduct
+    @graph-ref="(el) => (graphEl = el)"
+    :graph="graph"
+    :simulation="simControls"
+  >
+    <template #top-center></template>
+
+    <template #center-left></template>
+
+    <template #top-right></template>
+  </GraphProduct>
   <div class="w-full h-full relative">
     <Graph
       @graph-ref="(el) => (graphEl = el)"

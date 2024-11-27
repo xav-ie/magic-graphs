@@ -39,7 +39,7 @@
 
     <template #center-left>
       <IslandMarkup
-        v-show="!activeSimulation"
+        v-show="!graph.annotationActive.value"
         :graph="graph"
         :sizeMap="sizeMap"
         :colorMap="colorMap"

@@ -10,10 +10,23 @@
 
   const props = defineProps<{
     graph: Graph;
+    /**
+     * simulation controls for the graph
+     */
     simulation?: SimulationControls | undefined;
+    /**
+     * simulation mode hides ui elements that are not needed during simulation.
+     * if not provided, defaults to {@link SimulationControls.isActive | simulation.isActive}
+     */
+    inSimulationMode?: boolean;
   }>();
 
-  const simulationActive = computed(() => props.simulation?.isActive ?? false);
+  const inSimulationMode = computed(
+    () => props.inSimulationMode ?? props.simulation?.isActive ?? false
+  );
+  const simulationActive = computed(
+    () => props.simulation?.isActive.value ?? false
+  );
 
   const emit = defineEmits<{
     (e: "graph-ref", value: HTMLCanvasElement | undefined): void;
@@ -34,20 +47,24 @@
     :graph="graph"
   />
 
-  <div
-    v-show="!simulationActive"
-    class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
-  >
-    <slot name="top-center"></slot>
+  <div class="absolute top-6 w-full flex flex-col justify-center items-center gap-2">
+    <template v-if="inSimulationMode">
+      <slot name="top-center-sim"></slot>
+    </template>
+
+    <template v-else>
+      <slot name="top-center"></slot>
+    </template>
   </div>
 
-  <div
-    v-show="!simulationActive"
-    class="absolute top-0 w-0 h-full flex items-center"
-  >
-    <div class="ml-4">
+  <div class="absolute left-4 top-0 w-0 h-full flex items-center">
+    <template v-if="inSimulationMode">
+      <slot name="center-left-sim"></slot>
+    </template>
+
+    <template v-else>
       <slot name="center-left"></slot>
-    </div>
+    </template>
   </div>
 
   <div class="absolute top-6 left-6">
@@ -55,20 +72,22 @@
   </div>
 
   <div class="absolute top-6 right-6">
-    <slot name="top-right"></slot>
+    <template v-if="inSimulationMode">
+      <slot name="top-right-sim"></slot>
+    </template>
+
+    <template v-else>
+      <slot name="top-right"></slot>
+    </template>
   </div>
 
-  <div
-    v-if="simulation && simulationActive"
-    class="absolute bottom-8 w-full flex justify-center items-center p-3"
-  >
-    <SimulationPlaybackControls :controls="simulation" />
-  </div>
+  <div class="absolute bottom-8 w-full flex flex-col justify-center items-center">
+    <div v-if="simulation">
+      <SimulationPlaybackControls :controls="simulation" />
+    </div>
 
-  <div
-    v-show="graph.annotationActive.value"
-    class="absolute bottom-8 w-full flex justify-center items-center p-3"
-  >
-    <AnnotationControls :graph="graph" />
+    <div v-show="graph.annotationActive.value" >
+      <AnnotationControls :graph="graph" />
+    </div>
   </div>
 </template>
