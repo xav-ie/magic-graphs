@@ -5,6 +5,7 @@ import { useTextTip } from "@ui/useTextTip";
 import { useDijkstraSimulation } from "./useSimulation";
 import type { SimulationRunner } from "@ui/product/sim/types";
 import type { DijkstrasTrace } from "./dijkstra";
+import { useSimulationTheme } from "./useSimulationTheme";
 
 export type DijkstraSimulationRunner = SimulationRunner<DijkstrasTrace>;
 
@@ -12,6 +13,7 @@ export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
   const startingNode = ref<GNode>();
   const running = ref(false);
   const simControls = useDijkstraSimulation(graph, startingNode);
+  const { activate: activateTheme, deactivate: deactivateTheme } = useSimulationTheme(graph, simControls);
   const { showText, hideText } = useTextTip("select the starting node");
 
   /**
@@ -35,6 +37,7 @@ export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
 
     startingNode.value = node;
     simControls.start();
+    activateTheme();
     hideText();
   };
 
@@ -44,6 +47,7 @@ export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
 
     cancelNodeSelectionHandler();
     simControls.stop();
+    deactivateTheme();
     hideText();
   };
 

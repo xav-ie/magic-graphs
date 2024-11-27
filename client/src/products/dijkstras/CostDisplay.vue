@@ -1,15 +1,18 @@
 <script setup lang="ts">
   import type { GNode, Graph } from "@graph/types";
   import colors from "@colors";
-  import { SIM_COLORS } from "./useSimulation";
+  import { SIM_COLORS, INF_STR } from "./useSimulationTheme";
 
   const props = defineProps<{
     graph: Graph;
   }>();
 
-  const getNodeCosts = (node: GNode) => props.graph.getTheme("nodeText", node);
+  const { getTheme, isFocused } = props.graph;
+
+  const getNodeCosts = (node: GNode) => getTheme("nodeText", node);
+
   const costToColor = (strCost: string) => {
-    if (strCost === "Inf") return colors.RED_800;
+    if (strCost === INF_STR) return colors.RED_800;
     const cost = Number(strCost);
     if (cost === Infinity || isNaN(cost)) return colors.GRAY_500;
     if (cost === 0) return colors.GREEN_700;
@@ -20,18 +23,15 @@
     return colors.RED_600;
   };
 
-  const isExplored = (node: GNode) =>
-    props.graph.getTheme("nodeBorderColor", node) === SIM_COLORS.EXPLORED;
-  const isExploring = (node: GNode) =>
-    props.graph.getTheme("nodeBorderColor", node) === SIM_COLORS.EXPLORING;
-  const isSource = (node: GNode) =>
-    props.graph.getTheme("nodeBorderColor", node) === SIM_COLORS.SOURCE;
+  const isExplored = (node: GNode) => getTheme("nodeBorderColor", node) === SIM_COLORS.EXPLORED;
+  const isExploring = (node: GNode) => getTheme("nodeBorderColor", node) === SIM_COLORS.EXPLORING;
+  const isSource = (node: GNode) => getTheme("nodeBorderColor", node) === SIM_COLORS.SOURCE;
 
   const exploreStateColor = (node: GNode) => {
     if (isExplored(node)) return SIM_COLORS.EXPLORED;
     if (isExploring(node)) return SIM_COLORS.EXPLORING;
     if (isSource(node)) return SIM_COLORS.SOURCE;
-    if (props.graph.isFocused(node.id)) return props.graph.getTheme("nodeBorderColor", node);
+    if (props.graph.isFocused(node.id)) return getTheme("nodeBorderColor", node);
     return colors.GRAY_600;
   };
 
@@ -39,7 +39,7 @@
     if (isExplored(node)) return "Explored";
     if (isExploring(node)) return "Exploring";
     if (isSource(node)) return "Source";
-    if (props.graph.isFocused(node.id)) return "Highlighted";
+    if (isFocused(node.id)) return "Highlighted";
     return "Unexplored";
   };
 </script>

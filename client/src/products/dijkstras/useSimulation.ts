@@ -1,18 +1,10 @@
 import { computed, ref } from "vue"
 import type { Ref } from "vue"
 import type { GNode, Graph } from "@graph/types";
-import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
 import type { SimulationControls } from "@ui/product/sim/types";
 import { useDijkstra } from "./useDijkstra";
-import { INF } from "./dijkstra";
 import type { DijkstrasTrace } from "./dijkstra";
-
-export const SIM_COLORS = {
-  SOURCE: colors.AMBER_600,
-  EXPLORED: colors.BLUE_500,
-  EXPLORING: colors.CYAN_500,
-} as const
 
 export type DijkstraSimulatorControls = SimulationControls<DijkstrasTrace>
 
@@ -21,7 +13,6 @@ export const useDijkstraSimulation = (
   startingNode: Ref<GNode | undefined>
 ): DijkstraSimulatorControls => {
   const { trace } = useDijkstra(graph, startingNode)
-  const { setTheme } = useTheme(graph, 'dijkstra');
 
   const step = ref(0);
   const paused = ref(true);
@@ -30,23 +21,6 @@ export const useDijkstraSimulation = (
   const interval = ref<NodeJS.Timeout | undefined>()
   const isOver = computed(() => step.value === trace.value.length - 1)
   const hasBegun = computed(() => step.value > 0)
-
-  const traceAtStep = computed(() => trace.value[step.value])
-
-  const exploredNodeAtStep = computed(() => {
-    const seenNodeIds = new Set<string>()
-    return trace.value?.reduce<Set<string>[]>((acc, traceStep) => {
-      const nodeIdsAtStep = new Set<string>()
-      const thisStepsNodeIds = traceStep.exploredNodes.map((i) => i.id)
-      for (const nodeId of thisStepsNodeIds) {
-        if (seenNodeIds.has(nodeId)) continue
-        seenNodeIds.add(nodeId)
-        nodeIdsAtStep.add(nodeId)
-      }
-      acc.push(nodeIdsAtStep)
-      return acc
-    }, [])
-  })
 
   const start = () => {
     if (active.value) return
@@ -80,36 +54,6 @@ export const useDijkstraSimulation = (
     if (newStep < -1 || newStep > trace.value.length) return
     step.value = newStep
   }
-
-  const colorBorders = (node: GNode) => {
-    if (!active.value) return
-    if (graph.isFocused(node.id)) return
-
-    if (!traceAtStep.value) return
-    if (traceAtStep.value.source.id === node.id) return SIM_COLORS.SOURCE
-
-    if (!exploredNodeAtStep.value) return;
-
-    const idsInCurrStep = exploredNodeAtStep.value[step.value]
-    if (idsInCurrStep.has(node.id)) return SIM_COLORS.EXPLORING
-
-    const hasExplored = exploredNodeAtStep.value.slice(0, step.value).some((ids) => ids.has(node.id))
-    if (hasExplored) return SIM_COLORS.EXPLORED
-  }
-
-  const nodeDistanceText = (node: GNode) => {
-    if (!active.value) return
-    if (!traceAtStep.value) return
-    const { distances } = traceAtStep.value
-    const nodeDist = distances.find((dist) => dist.id === node.id)
-    if (!nodeDist) return '?'
-    if (nodeDist.distance === INF) return 'Inf'
-    return nodeDist.distance.toString()
-  }
-
-  setTheme('nodeBorderColor', colorBorders)
-  setTheme('nodeAnchorColor', colorBorders)
-  setTheme('nodeText', nodeDistanceText)
 
   return {
     nextStep,

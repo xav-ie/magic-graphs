@@ -17,6 +17,7 @@
 
   const simRunner = toRef(props, "simulationRunner");
   const running = toRef(simRunner.value, "running");
+  const isActive = toRef(simRunner.value.simControls, "isActive");
 
   const emit = defineEmits<{
     (e: "graph-ref", value: HTMLCanvasElement | undefined): void;
@@ -94,7 +95,7 @@
   <div
     class="absolute bottom-8 gap-4 w-full flex flex-col justify-center items-center"
   >
-    <div v-if="simRunner.simControls.isActive.value">
+    <div v-if="isActive">
       <SimulationPlaybackControls :controls="{ value: simRunner.simControls }" />
     </div>
 
