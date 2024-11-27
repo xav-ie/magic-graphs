@@ -73,15 +73,18 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
   input.value = content;
 
   const removeInput = () => {
-      input.onblur = null;
-      handler(input.value);
+    input.onblur = null;
+    handler(input.value);
+    setTimeout(() => {
       input.remove();
+    }, 50)
   }
 
   input.onblur = removeInput;
 
   input.onkeydown = (ev) => {
     if (ev.key === 'Enter') {
+      ev.preventDefault();
       removeInput();
     }
   }
