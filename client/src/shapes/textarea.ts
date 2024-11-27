@@ -12,6 +12,7 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
   const scale = getCanvasScale(ctx)
   const transform = ctx.getTransform();
 
+  // apply canvas transforms onto textArea.at
   const transformedX = transform.a * at.x + transform.c * at.y + transform.e;
   const transformedY = transform.b * at.x + transform.d * at.y + transform.f;
 
@@ -22,8 +23,8 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
     fontWeight,
   } = text
 
-  const topPadding = scale === 1 ? 4 : Math.round(scale * 5)
-
+  // prevent text jumping after click as much as possible (sometimes jumps 1 pixel)
+  const topPadding = scale === 1 ? 5 : Math.round(scale * 5)
 
   const inputWidth = Math.max(fontSize * 2, fontSize * 0.6 * content.length) * scale
   const inputHeight = fontSize * 2 * scale;
