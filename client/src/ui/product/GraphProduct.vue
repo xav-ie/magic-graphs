@@ -44,7 +44,9 @@
     :graph="graph"
   />
 
-  <div class="absolute top-6 w-full flex flex-col justify-center items-center gap-2">
+  <div
+    class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
+  >
     <template v-if="inSimulationMode">
       <slot name="top-center-sim"></slot>
     </template>
@@ -54,19 +56,20 @@
     </template>
   </div>
 
-  <div class="absolute left-4 top-0 h-full flex items-center">
-    <template v-if="inSimulationMode">
-      <slot name="center-left-sim"></slot>
-    </template>
+  <div class="absolute grid place-items-center left-4 top-0 h-full max-w-96">
+    <div class="relative h-[90%] w-full grid place-items-center overflow-auto">
+      <template v-if="inSimulationMode">
+        <slot name="center-left-sim"></slot>
+      </template>
 
-    <template v-else>
-      <slot name="center-left"></slot>
-    </template>
+      <template v-else>
+        <slot name="center-left"></slot>
+      </template>
+    </div>
   </div>
 
-  <div class="absolute grid place-items-center right-4 top-0 h-full max-w-96 overflow-auto">
+  <div class="absolute grid place-items-center right-4 top-0 h-full max-w-96">
     <div class="relative h-[90%] w-full grid place-items-center overflow-auto">
-      <!-- <div class="bg-green-400 bg-opacity-50 h-[900px] w-[50px]"></div> -->
       <template v-if="inSimulationMode">
         <slot name="center-right-sim"></slot>
       </template>
@@ -91,12 +94,14 @@
     </template>
   </div>
 
-  <div class="absolute bottom-8 gap-4 w-full flex flex-col justify-center items-center">
+  <div
+    class="absolute bottom-8 gap-4 w-full flex flex-col justify-center items-center"
+  >
     <div v-if="simulation && simulation.isActive">
       <SimulationPlaybackControls :controls="simulation" />
     </div>
 
-    <div v-show="graph.annotationActive.value" >
+    <div v-show="graph.annotationActive.value">
       <AnnotationControls :graph="graph" />
     </div>
   </div>
