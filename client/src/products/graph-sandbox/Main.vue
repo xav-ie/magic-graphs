@@ -31,11 +31,15 @@
     :simulation="activeSimulation?.controls"
   >
     <template #top-center>
-      <IslandToolbar :graph="graph" />
+      <IslandToolbar
+        v-show="!activeSimulation"
+        :graph="graph"
+      />
     </template>
 
     <template #center-left>
       <IslandMarkup
+        v-show="!activeSimulation"
         :graph="graph"
         :sizeMap="sizeMap"
         :colorMap="colorMap"
