@@ -5,25 +5,19 @@
   import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
   import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
   import { useGraphProductBoot } from "@utils/productBoot";
-  import type { SimulationControls } from "./sim/types";
+  import type { SimulationControls, SimulationRunner } from "./sim/types";
   import type { Graph } from "@graph/types";
 
   const props = defineProps<{
     graph: Graph;
-    /**
-     * simulation controls for the graph
-     */
-    simulation?: SimulationControls | undefined;
-    /**
-     * simulation mode hides ui elements that are not needed during simulation.
-     * if not provided, defaults to {@link SimulationControls.isActive | simulation.isActive}
-     */
-    inSimulationMode?: boolean;
+    simulationRunner?: SimulationRunner | undefined;
   }>();
 
   const inSimulationMode = computed(
-    () => props.inSimulationMode ?? props.simulation?.isActive ?? false
+    () => props.simulationRunner?.running.value ?? false
   );
+
+  const simulation = computed(() => props.simulationRunner?.simControls);
 
   const emit = defineEmits<{
     (e: "graph-ref", value: HTMLCanvasElement | undefined): void;
@@ -44,7 +38,9 @@
     :graph="graph"
   />
 
-  <div class="absolute top-6 w-full flex flex-col justify-center items-center gap-2">
+  <div
+    class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
+  >
     <template v-if="inSimulationMode">
       <slot name="top-center-sim"></slot>
     </template>
@@ -55,7 +51,7 @@
   </div>
 
   <div class="absolute grid place-items-center left-4 top-0 h-full max-w-96">
-    <div class="relative h-[90%] w-full grid place-items-center overflow-auto">
+    <div class="relative h-3/4 w-full grid place-items-center overflow-auto">
       <template v-if="inSimulationMode">
         <slot name="center-left-sim"></slot>
       </template>
@@ -67,7 +63,7 @@
   </div>
 
   <div class="absolute grid place-items-center right-4 top-0 h-full max-w-96">
-    <div class="relative h-[90%] w-full grid place-items-center overflow-auto">
+    <div class="relative h-3/4 w-full grid place-items-center overflow-auto">
       <template v-if="inSimulationMode">
         <slot name="center-right-sim"></slot>
       </template>

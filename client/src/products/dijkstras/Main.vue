@@ -14,12 +14,7 @@
     settings: DIJKSTRAS_GRAPH_SETTINGS,
   });
 
-  const {
-    start: startSim,
-    stop: stopSim,
-    running: simRunning,
-    simControls,
-  } = useSimulationRunner(graph);
+  const simRunner = useSimulationRunner(graph);
 
   useGraphProductBoot(graph);
 </script>
@@ -28,24 +23,21 @@
   <GraphProduct
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
-    :simulation="simControls"
-    :in-simulation-mode="simRunning"
+    :simulation-runner="simRunner"
   >
     <template #top-center></template>
 
     <template #center-left></template>
 
     <template #top-right>
-      <Button
-        v-if="!simRunning"
-        @click="startSim"
-      >
+      <Button @click="simRunner.start">
         Start Simulation
       </Button>
+    </template>
 
+    <template #top-right-sim>
       <Button
-        v-else
-        @click="stopSim"
+        @click="simRunner.stop"
         :color="colors.RED_600"
         :text-color="colors.WHITE"
       >
