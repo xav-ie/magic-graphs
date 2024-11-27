@@ -66,28 +66,3 @@ export type SimulationControls<T extends any[] = any[]> = {
    */
   hasBegun: ComputedRef<boolean>
 }
-
-
-type ProgressThemeOptions = {
-  backgroundColor: string;
-  progressColor: string;
-  easeTime: number;
-  borderRadius: number;
-  progressEasing: "linear" | "ease-in-out";
-}
-
-export type ProgressOptions = {
-  theme?: Partial<ProgressThemeOptions>;
-  startProgress: number;
-  currentProgress: number;
-  endProgress: number;
-  setProgress: (progress: number) => void
-};
-
-export const PROGRESS_DEFAULTS = {
-  backgroundColor: "white",
-  progressColor: "green",
-  easeTime: 250,
-  progressEasing: "ease-in-out",
-  borderRadius: 0,
-};

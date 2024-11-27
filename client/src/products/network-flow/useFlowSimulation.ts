@@ -104,7 +104,7 @@ export const useFlowSimulation = (graph: Graph, { source, sink }: {
   return {
     nextStep,
     prevStep,
-    setStep: () => { throw 'setStep not implemented' },
+    setStep: () => { console.warn('setStep not implemented in useFlowSimulation') },
 
     trace: computed(() => trace.value),
     step: computed(() => step.value),

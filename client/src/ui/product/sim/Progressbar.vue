@@ -1,69 +1,50 @@
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
-import type { ProgressOptions } from "./types";
-import { PROGRESS_DEFAULTS } from "./types";
-import { debounce } from "@utils/debounce";
+  import { computed } from "vue";
+  import { PROGRESS_DEFAULTS } from "./progressTypes";
+  import type { ProgressOptions } from "./progressTypes";
 
-const props = defineProps<ProgressOptions>();
+  const props = withDefaults(defineProps<ProgressOptions>(), PROGRESS_DEFAULTS);
 
-const backgroundColor = props.theme?.backgroundColor || PROGRESS_DEFAULTS.backgroundColor;
+  const range = computed(() => {
+    const [start, end] = props.range;
+    return end - start;
+  });
 
-const progressColor = props.theme?.progressColor || PROGRESS_DEFAULTS.progressColor;
+  const progressPercentage = computed(() => {
+    const [start] = props.range;
+    const curr = props.progress;
 
-const easeTime = props.theme?.easeTime || PROGRESS_DEFAULTS.easeTime;
+    const progress = Math.min(Math.max(curr - start, 0), range.value);
+    return (progress / range.value) * 100;
+  });
 
-const progressEasing = props.theme?.progressEasing || PROGRESS_DEFAULTS.progressEasing;
+  const updateProgressFromClick = (event: MouseEvent) => {
+    const progressBar = event.currentTarget;
+    if (!(progressBar instanceof HTMLElement)) return;
 
-const borderRadius = props.theme?.borderRadius || PROGRESS_DEFAULTS.borderRadius;
+    const clickPosition = event.offsetX;
+    const progressBarWidth = progressBar.offsetWidth;
 
-const animatedProgress = ref(0);
+    const clickPercentage = clickPosition / progressBarWidth;
 
-const progressPercentage = computed(() => {
-  const range = props.endProgress - props.startProgress;
-  const clampedProgress = Math.min(
-    Math.max(props.currentProgress - props.startProgress, 0),
-    range
-  );
-  return (clampedProgress / range) * 100;
-});
+    const [start] = props.range;
+    const newProgress = start + clickPercentage * range.value;
 
-const updateProgressFromClick = (event: MouseEvent) => {
-  const progressBar = event.currentTarget as HTMLElement;
-  const clickPosition = event.offsetX; 
-  const progressBarWidth = progressBar.offsetWidth;
-  const clickPercentage = clickPosition / progressBarWidth;
-
-  const range = props.endProgress - props.startProgress;
-  const newProgress = props.startProgress + clickPercentage * range;
-
-  props.setProgress(Math.round(newProgress))
-}
-
-watch(
-  () => progressPercentage.value,
-  (newProgress) => {
-    animatedProgress.value = newProgress;
-  },
-  { immediate: true }
-);
+    const newStep = Math.round(newProgress);
+    props.onProgressSet?.(newStep);
+  };
 </script>
-
 
 <template>
   <div
     @click="updateProgressFromClick"
-    class="relative overflow-hidden h-[25px] w-full"
-    :style="{
-      backgroundColor,
-      borderRadius: `${borderRadius}px`,
-    }"
+    class="relative overflow-hidden h-4 w-full"
   >
     <div
-      class="absolute top-0 left-0 h-[25px] w-full"
+      :class="`absolute top-0 left-0 h-full cursor-pointer bg-[${props.color}]`"
       :style="{
-        width: `${animatedProgress}%`,
-        backgroundColor: progressColor,
-        transition: `width ${easeTime}ms ${progressEasing}`,
+        width: `${progressPercentage}%`,
+        transition: `width ${props.transitionTimeMs}ms ${props.transitionEasing}`,
       }"
     ></div>
   </div>
