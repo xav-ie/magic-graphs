@@ -1,42 +1,48 @@
 <script setup lang="ts">
-  import { ref } from "vue";
-  import { useGraph } from "@graph/useGraph";
-  import Graph from "@graph/Graph.vue";
+  import { computed, onMounted, ref } from "vue";
+  import GraphCanvas from "@graph/Graph.vue";
   import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
   import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
   import { useGraphProductBoot } from "@utils/productBoot";
-  import type { GraphSettings } from "@graph/settings";
   import type { SimulationControls } from "./sim/types";
+  import type { Graph } from "@graph/types";
 
   const props = defineProps<{
-    settings: Partial<GraphSettings>;
-    simulation: SimulationControls;
+    graph: Graph;
+    simulation?: SimulationControls | undefined;
+  }>();
+
+  const simulationActive = computed(() => props.simulation?.isActive ?? false);
+
+  const emit = defineEmits<{
+    (e: "graph-ref", value: HTMLCanvasElement | undefined): void;
   }>();
 
   const graphEl = ref<HTMLCanvasElement>();
-  const graph = useGraph(graphEl, {
-    settings: props.settings,
-  });
 
-  useGraphProductBoot(graph);
+  useGraphProductBoot(props.graph);
+
+  onMounted(() => {
+    emit("graph-ref", graphEl.value);
+  });
 </script>
 
 <template>
-  <Graph
+  <GraphCanvas
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
   />
 
   <div
-    v-show="!props.simulation.isActive"
+    v-show="!simulationActive"
     class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
   >
     <slot name="top-center"></slot>
   </div>
 
   <div
-    v-show="!props.simulation.isActive"
+    v-show="!simulationActive"
     class="absolute top-0 w-0 h-full flex items-center"
   >
     <div class="ml-4">
@@ -53,7 +59,7 @@
   </div>
 
   <div
-    v-show="props.simulation.isActive"
+    v-if="simulation && simulationActive"
     class="absolute bottom-8 w-full flex justify-center items-center p-3"
   >
     <SimulationPlaybackControls :controls="simulation" />
