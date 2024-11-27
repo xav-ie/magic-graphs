@@ -9,8 +9,6 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
     activeColor: bgColor,
   } = textArea;
 
-  console.log(textArea)
-
   const {
     x,
     y
@@ -23,11 +21,10 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
     fontWeight,
   } = text
 
-  // const scale = getCanvasScale(ctx)
-  // console.log(scale)
+  const scale = getCanvasScale(ctx)
 
-  const inputWidth = Math.max(fontSize * 2, fontSize * 0.6 * content.length)
-  const inputHeight = fontSize * 2;
+  const inputWidth = Math.max(fontSize * 2 * scale, fontSize * 0.6 * content.length * scale)
+  const inputHeight = fontSize * 2 * scale;
 
   const input = document.createElement('textarea');
 
@@ -48,7 +45,7 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
   input.style.paddingTop = '4px';
 
   input.style.margin = '0';
-  input.style.fontSize = `${fontSize}px`;
+  input.style.fontSize = `${fontSize * scale}px`;
   input.style.color = textColor;
   input.style.backgroundColor = bgColor;
   input.style.fontFamily = 'Arial';
@@ -60,7 +57,7 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
   input.style.whiteSpace = 'nowrap';
 
   const adjustSize = () => {
-    input.style.width = `${Math.max(fontSize * 2, fontSize * 0.6 * input.value.length)}px`;
+    input.style.width = `${Math.max(fontSize * 2, fontSize * 0.6 * input.value.length) * scale}px`;
   };
 
   input.onfocus = adjustSize
