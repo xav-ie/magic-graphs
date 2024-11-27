@@ -15,6 +15,7 @@ export const useMarkupColorizer = (graph: Graph) => {
 
   const colorMap = useLocalStorage('markup-color-map', new Map<ColorMapKey, ColorMapValue>());
 
+  // TODO
   // go through all keys in the colorMap and remove inactive nodes/edges
   // for (const key of colorMap.value.keys()) {
   //   if (!graph.nodes.value[key] && !graph.edges.value[key]) {
@@ -57,6 +58,7 @@ export const useMarkupColorizer = (graph: Graph) => {
   }
 
   const decolorize = () => {
+    console.log('decolorize');
     removeAllThemes();
   }
 

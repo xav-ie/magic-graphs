@@ -1,31 +1,23 @@
 <script setup lang="ts">
   import { ref } from "vue";
-  import type { SimulationDeclaration } from "src/types";
   import { useGraph } from "@graph/useGraph";
   import Graph from "@graph/Graph.vue";
   import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
-  import { SANDBOX_GRAPH_SETTINGS } from "./settings";
-  import IslandToolbar from "./IslandToolbar.vue";
-  import IslandMarkup from "./IslandMarkup.vue";
-  import SimulationDropdown from "./SimulationDropdown.vue";
   import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
   import { useGraphProductBoot } from "@utils/productBoot";
-  import { useMarkupColorizer } from "./useMarkupColorizer";
-  import { useMarkupSizer } from "./useMarkupSizer";
+  import type { GraphSettings } from "@graph/settings";
+  import type { SimulationControls } from "./sim/types";
+
+  const props = defineProps<{
+    settings: Partial<GraphSettings>;
+    simulation: SimulationControls;
+  }>();
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
-    settings: SANDBOX_GRAPH_SETTINGS,
+    settings: props.settings,
   });
-
-  const activeSimulation = ref<SimulationDeclaration>();
-
-  const { colorize, colorMap } = useMarkupColorizer(graph);
-  colorize();
-
-  const { size, sizeMap } = useMarkupSizer(graph);
-  size();
 
   useGraphProductBoot(graph);
 </script>
@@ -37,22 +29,18 @@
   />
 
   <div
-    v-if="!activeSimulation"
+    v-show="!props.simulation.isActive"
     class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
   >
-    <IslandToolbar :graph="graph" />
+    <slot name="top-center"></slot>
   </div>
 
   <div
-    v-show="!activeSimulation && !graph.annotationActive.value"
+    v-show="!props.simulation.isActive"
     class="absolute top-0 w-0 h-full flex items-center"
   >
     <div class="ml-4">
-      <IslandMarkup
-        :graph="graph"
-        :sizeMap="sizeMap"
-        :colorMap="colorMap"
-      />
+      <slot name="center-left"></slot>
     </div>
   </div>
 
@@ -61,21 +49,18 @@
   </div>
 
   <div class="absolute top-6 right-6">
-    <SimulationDropdown
-      v-model="activeSimulation"
-      :graph="graph"
-    />
+    <slot name="top-right"></slot>
   </div>
 
   <div
-    v-if="activeSimulation?.controls.isActive"
+    v-show="props.simulation.isActive"
     class="absolute bottom-8 w-full flex justify-center items-center p-3"
   >
-    <SimulationPlaybackControls :controls="activeSimulation.controls" />
+    <SimulationPlaybackControls :controls="simulation" />
   </div>
 
   <div
-    v-else-if="graph.annotationActive.value"
+    v-show="graph.annotationActive.value"
     class="absolute bottom-8 w-full flex justify-center items-center p-3"
   >
     <AnnotationControls :graph="graph" />
