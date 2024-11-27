@@ -1,5 +1,5 @@
 import type { TextArea } from '@shape/types'
-import { getCanvasCoords, getCanvasScale } from '@utils/components/useCanvasCoord';
+import { getCanvasScale } from '@utils/components/useCanvasCoord';
 import type { DeepRequired } from '@utils/types';
 
 export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequired<TextArea>, handler: (str: string) => void) => {
@@ -22,8 +22,10 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
     fontWeight,
   } = text
 
+  const topPadding = scale === 1 ? 4 : Math.round(scale * 5)
 
-  const inputWidth = Math.max(fontSize * 2 * scale, fontSize * 0.6 * content.length * scale)
+
+  const inputWidth = Math.max(fontSize * 2, fontSize * 0.6 * content.length) * scale
   const inputHeight = fontSize * 2 * scale;
 
   const input = document.createElement('textarea');
@@ -41,7 +43,7 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
   input.style.border = 'none';
   input.style.padding = '0';
 
-  input.style.paddingTop = `${Math.round(5 * scale)}px`;
+  input.style.paddingTop = `${topPadding}px`;
 
   input.style.margin = '0';
   input.style.fontSize = `${fontSize * scale}px`;
