@@ -6,14 +6,9 @@
     simulations: SimulationDeclaration[];
   }>();
 
-  const activeSimulation = defineModel<SimulationDeclaration>();
-
-  const startSimulation = async (simulation: SimulationDeclaration) => {
-    const { runner } = simulation;
-    activeSimulation.value = simulation;
-
-    await runner.start();
-  };
+  const emits = defineEmits<{
+    (e: "simulation-selected", simulation: SimulationDeclaration): void;
+  }>();
 </script>
 
 <template>
@@ -25,7 +20,7 @@
     <div class="bg-gray-800 flex flex-col text-white p-2 w-[400px] rounded-lg">
       <button
         v-for="simulation in simulations"
-        @click="startSimulation(simulation)"
+        @click="emits('simulation-selected', simulation)"
         :key="simulation.name"
         class="hover:bg-gray-900 p-2 rounded-md cursor-pointer rounded-lg text-left flex gap-4"
       >

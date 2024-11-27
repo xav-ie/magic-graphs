@@ -52,7 +52,7 @@
   props.graph.subscribe('onEdgeAdded', colorAddedItem);
   props.graph.subscribe("onFocusChange", recalculateActiveColor);
 
-  const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID);
+  const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID + '-preview');
   const colorLinkPreview = () => activeColor.value ?? DEFAULT_MARKUP_COLOR;
   setTheme('linkPreviewColor', colorLinkPreview);
 </script>

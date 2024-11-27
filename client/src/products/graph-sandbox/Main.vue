@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue";
+  import { ref } from "vue";
   import type { SimulationDeclaration } from "src/types";
   import { useGraph } from "@graph/useGraph";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
@@ -8,8 +8,9 @@
   import { useMarkupColorizer } from "./useMarkupColorizer";
   import { useMarkupSizer } from "./useMarkupSizer";
   import GraphProduct from "@ui/product/GraphProduct.vue";
-  import StartSimulation from "./StartSimulation.vue";
+  import SelectSimulation from "./SelectSimulation.vue";
   import { getSimulationDeclarations } from "@utils/product";
+  import type { SimulationRunner } from "@ui/product/sim/types";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -17,7 +18,7 @@
   });
 
   const simulations = getSimulationDeclarations(graph);
-  const activeSimulation = ref<SimulationDeclaration>();
+  const activeSimulation = ref<SimulationDeclaration>(simulations[0]);
 
   const { colorize, colorMap } = useMarkupColorizer(graph);
   colorize();
@@ -25,14 +26,18 @@
   const { size, sizeMap } = useMarkupSizer(graph);
   size();
 
-  const runner = computed(() => activeSimulation.value?.runner);
+  const setActiveSimulation = (simulation: SimulationDeclaration) => {
+    const { runner } = simulation;
+    activeSimulation.value = simulation;
+    runner.start();
+  };
 </script>
 
 <template>
   <GraphProduct
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
-    :simulation-runner="runner"
+    :simulation-runner="(activeSimulation.runner as SimulationRunner)"
   >
     <template #top-center>
       <IslandToolbar :graph="graph" />
@@ -48,8 +53,8 @@
     </template>
 
     <template #top-right>
-      <StartSimulation
-        v-model="activeSimulation"
+      <SelectSimulation
+        @simulation-selected="setActiveSimulation"
         :simulations="simulations"
       />
     </template>

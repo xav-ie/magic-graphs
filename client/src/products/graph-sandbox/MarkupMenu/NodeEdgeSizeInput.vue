@@ -53,7 +53,7 @@
   props.graph.subscribe('onEdgeAdded', sizeAddedItem);
   props.graph.subscribe("onFocusChange", recalculateActiveSize);
 
-  const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID);
+  const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID + '-preview');
   const sizeLinkPreview = () => SIZE_TO_WIDTH[activeSize.value ?? DEFAULT_MARKUP_SIZE];
   setTheme('linkPreviewWidth', sizeLinkPreview);
 </script>

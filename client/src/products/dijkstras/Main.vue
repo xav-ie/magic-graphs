@@ -1,8 +1,6 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
-  import Button from "@ui/Button.vue";
-  import colors from "@colors";
   import { useSimulationRunner } from "./useSimulationRunner";
   import CostDisplay from "./CostDisplay.vue";
   import { DIJKSTRAS_GRAPH_SETTINGS } from "./settings";
@@ -15,7 +13,6 @@
   });
 
   const simRunner = useSimulationRunner(graph);
-
   useGraphProductBoot(graph);
 </script>
 
@@ -30,7 +27,10 @@
     <template #center-left></template>
 
     <template #center-right-sim>
-      <div class="bg-gray-800 bg-opacity-80 p-2 rounded-xl h-full overflow-auto">
+      <div
+        v-show="simRunner.simControls.isActive.value"
+        class="bg-gray-800 bg-opacity-80 p-2 rounded-xl h-full overflow-auto"
+      >
         <CostDisplay :graph="graph" />
       </div>
     </template>

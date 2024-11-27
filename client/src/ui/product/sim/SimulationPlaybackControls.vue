@@ -5,11 +5,11 @@
   import PlaybackButton from "./PlaybackButton.vue";
 
   const props = defineProps<{
-    controls: SimulationControls;
+    controls: { value: SimulationControls };
   }>();
 
-  const { isOver, paused, step, trace } = toRefs(props.controls);
-  const { nextStep, prevStep, setStep, start, stop } = props.controls;
+  const { isOver, paused, step, trace } = toRefs(props.controls.value);
+  const { nextStep, prevStep, setStep, start, stop } = props.controls.value;
 
   const goPrevStep = () => {
     prevStep();
