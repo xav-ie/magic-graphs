@@ -52,12 +52,11 @@
         Stop Simulation
       </Button>
     </template>
-  </GraphProduct>
 
-  <!-- <div
-    v-show="simControls.isActive.value && graph.nodes.value.length > 0"
-    class="absolute p-3 my-3 top-12 right-0 overflow-auto bg-gray-800 bg-opacity-80 rounded-l-xl max-h-[calc(100%-1.5rem)] overflow-auto"
-  >
-    <CostDisplay :graph="graph" />
-  </div> -->
+    <template #center-right-sim>
+      <div class="bg-gray-800 bg-opacity-80 p-2 rounded-xl h-full overflow-auto">
+        <CostDisplay :graph="graph" />
+      </div>
+    </template>
+  </GraphProduct>
 </template>

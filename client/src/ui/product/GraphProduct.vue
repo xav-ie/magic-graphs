@@ -24,9 +24,6 @@
   const inSimulationMode = computed(
     () => props.inSimulationMode ?? props.simulation?.isActive ?? false
   );
-  const simulationActive = computed(
-    () => props.simulation?.isActive.value ?? false
-  );
 
   const emit = defineEmits<{
     (e: "graph-ref", value: HTMLCanvasElement | undefined): void;
@@ -57,7 +54,7 @@
     </template>
   </div>
 
-  <div class="absolute left-4 top-0 w-0 h-full flex items-center">
+  <div class="absolute left-4 top-0 h-full flex items-center">
     <template v-if="inSimulationMode">
       <slot name="center-left-sim"></slot>
     </template>
@@ -65,6 +62,19 @@
     <template v-else>
       <slot name="center-left"></slot>
     </template>
+  </div>
+
+  <div class="absolute grid place-items-center right-4 top-0 h-full max-w-96 overflow-auto">
+    <div class="relative h-[90%] w-full grid place-items-center overflow-auto">
+      <!-- <div class="bg-green-400 bg-opacity-50 h-[900px] w-[50px]"></div> -->
+      <template v-if="inSimulationMode">
+        <slot name="center-right-sim"></slot>
+      </template>
+
+      <template v-else>
+        <slot name="center-right"></slot>
+      </template>
+    </div>
   </div>
 
   <div class="absolute top-6 left-6">
@@ -81,8 +91,8 @@
     </template>
   </div>
 
-  <div class="absolute bottom-8 w-full flex flex-col justify-center items-center">
-    <div v-if="simulation">
+  <div class="absolute bottom-8 gap-4 w-full flex flex-col justify-center items-center">
+    <div v-if="simulation && simulation.isActive">
       <SimulationPlaybackControls :controls="simulation" />
     </div>
 
