@@ -76,6 +76,7 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
     input.onblur = null;
     handler(input.value);
     setTimeout(() => {
+      // setTimeout to allow canvas time to update
       input.remove();
     }, 50)
   }
