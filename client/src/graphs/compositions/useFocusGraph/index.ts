@@ -85,7 +85,10 @@ export const useFocusGraph = (
       topItem.graphType === 'edge'
     )
 
-    if (canEdit) return handleTextArea(topItem)
+    if (canEdit) {
+      resetFocus()
+      return handleTextArea(topItem)
+    }
 
     const canFocus = FOCUSABLE_GRAPH_TYPES.some(type => type === topItem.graphType)
     if (!canFocus) return
