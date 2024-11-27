@@ -57,11 +57,11 @@ export const circle = (options: Circle): Shape => {
     drawTextArea?.(ctx);
   }
 
-  const activateTextArea = (handler: (str: string) => void) => {
+  const activateTextArea = (ctx: CanvasRenderingContext2D, handler: (str: string) => void) => {
     if (!options.textArea) return;
     const location = getTextAreaLocationOnCircle(options);
     const fullTextArea = getFullTextArea(options.textArea, location);
-    engageTextarea(fullTextArea, handler);
+    engageTextarea(ctx, fullTextArea, handler);
   }
 
   return {

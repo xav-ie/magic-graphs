@@ -53,11 +53,11 @@ export const square = (options: Square): Shape => {
     drawTextArea?.(ctx);
   }
 
-  const activateTextArea = (handler: (str: string) => void) => {
+  const activateTextArea = (ctx: CanvasRenderingContext2D, handler: (str: string) => void) => {
     if (!options.textArea) return;
     const location = getTextAreaLocationOnSquare(options);
     const fullTextArea = getFullTextArea(options.textArea, location);
-    engageTextarea(fullTextArea, handler);
+    engageTextarea(ctx, fullTextArea, handler);
   }
 
   return {
