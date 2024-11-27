@@ -1,5 +1,5 @@
 import type { TextArea } from '@shape/types'
-import { getCanvasScale } from '@utils/components/useCanvasCoord';
+import { getCanvasCoords, getCanvasScale } from '@utils/components/useCanvasCoord';
 import type { DeepRequired } from '@utils/types';
 
 export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequired<TextArea>, handler: (str: string) => void) => {
@@ -9,10 +9,11 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
     activeColor: bgColor,
   } = textArea;
 
-  const {
-    x,
-    y
-  } = at;
+  const scale = getCanvasScale(ctx)
+  const transform = ctx.getTransform();
+
+  const transformedX = transform.a * at.x + transform.c * at.y + transform.e;
+  const transformedY = transform.b * at.x + transform.d * at.y + transform.f;
 
   const {
     color: textColor,
@@ -21,7 +22,6 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
     fontWeight,
   } = text
 
-  const scale = getCanvasScale(ctx)
 
   const inputWidth = Math.max(fontSize * 2 * scale, fontSize * 0.6 * content.length * scale)
   const inputHeight = fontSize * 2 * scale;
@@ -29,8 +29,8 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
   const input = document.createElement('textarea');
 
   input.style.position = 'absolute';
-  input.style.left = `${x}px`;
-  input.style.top = `${y}px`;
+  input.style.left = `${transformedX}px`;
+  input.style.top = `${transformedY}px`;
   input.style.width = `${(inputWidth)}px`;
   input.style.height = `${inputHeight}px`;
   input.style.zIndex = '1000';
@@ -41,8 +41,7 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
   input.style.border = 'none';
   input.style.padding = '0';
 
-  // TODO remove hard coding, but i need to figure out how text area works
-  input.style.paddingTop = '4px';
+  input.style.paddingTop = `${Math.round(5 * scale)}px`;
 
   input.style.margin = '0';
   input.style.fontSize = `${fontSize * scale}px`;
