@@ -78,7 +78,7 @@ export type Shape = {
   /**
    * activates the text area of the shape
    */
-  activateTextArea?: (handler: (str: string) => void) => void,
+  activateTextArea?: (ctx: CanvasRenderingContext2D, handler: (str: string) => void) => void,
 }
 
 export type Coordinate = {

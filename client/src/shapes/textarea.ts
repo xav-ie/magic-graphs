@@ -1,12 +1,15 @@
 import type { TextArea } from '@shape/types'
+import { getCanvasScale } from '@utils/components/useCanvasCoord';
 import type { DeepRequired } from '@utils/types';
 
-export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: string) => void) => {
+export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequired<TextArea>, handler: (str: string) => void) => {
   const {
     at,
     text,
     activeColor: bgColor,
   } = textArea;
+
+  console.log(textArea)
 
   const {
     x,
@@ -19,6 +22,9 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
     fontSize,
     fontWeight,
   } = text
+
+  // const scale = getCanvasScale(ctx)
+  // console.log(scale)
 
   const inputWidth = Math.max(fontSize * 2, fontSize * 0.6 * content.length)
   const inputHeight = fontSize * 2;

@@ -14,6 +14,7 @@ import { useTheme } from "@graph/themes/useTheme";
 import { useHistoryGraph } from "@graph/compositions/useHistoryGraph";
 import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "@graph/compositions/useFocusGraph/types";
 import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../useBaseGraph/types";
+import { getCtx } from "@utils/ctx";
 
 export const useFocusGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -54,7 +55,8 @@ export const useFocusGraph = (
   }
 
   const handleTextArea = (schemaItem: SchemaItem) => {
-    schemaItem.shape.activateTextArea?.((str: string) => {
+    const ctx = getCtx(graph.canvas)
+    schemaItem.shape.activateTextArea?.(ctx, (str: string) => {
       const edge = graph.getEdge(schemaItem.id)
       if (!edge) throw new Error('textarea only implemented for edges')
       const newLabel = graph.settings.value.edgeInputToLabel(str)
