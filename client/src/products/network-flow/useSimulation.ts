@@ -11,13 +11,13 @@ import { FLOW_USETHEME_ID } from "./constants"
 
 export type FlowSimulationControls = SimulationControls<FlowTrace>
 
-export const useFlowSimulation = (graph: Graph, { source, sink }: {
+export const useSimulation = (graph: Graph, { source, sink }: {
   source: Ref<GNode | undefined>,
   sink: Ref<GNode | undefined>
 }): FlowSimulationControls => {
 
   const { setTheme } = useTheme(graph, FLOW_USETHEME_ID)
-  const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
+
   const { trace } = useFordFulkerson(graph, { source, sink })
 
   const active = ref(false)
@@ -44,12 +44,10 @@ export const useFlowSimulation = (graph: Graph, { source, sink }: {
     graph.settings.value.focusable = false
     active.value = true
     paused.value = false
-    createResidualEdges()
     simulationInterval.value = setInterval(onSimulationInterval, playbackSpeed.value)
   }
 
   const stop = () => {
-    cleanupResidualEdges()
     graph.settings.value.userEditable = true
     graph.settings.value.focusable = true
     activeEdgeIds.value = []

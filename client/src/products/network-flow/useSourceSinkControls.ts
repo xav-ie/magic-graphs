@@ -2,7 +2,7 @@ import { ref } from "vue";
 import type { Ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { LETTERS, graphLabelGetter } from "@graph/labels";
-import { selectFromGraph, selectNode } from "@graph/select";
+import { selectFromGraph } from "@graph/select";
 import type { SelectControls } from "@graph/select";
 import { SINK_LABEL, SOURCE_LABEL } from "./constants";
 
