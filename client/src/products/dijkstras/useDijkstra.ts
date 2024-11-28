@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import type { Ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { dijkstras } from "./dijkstra";
@@ -20,5 +20,5 @@ export const useDijkstra = (graph: Graph, startingNode: Ref<GNode | undefined>) 
 
   update();
 
-  return { trace };
+  return computed(() => trace.value)
 };

@@ -1,28 +1,25 @@
 <script setup lang="ts">
-  import {
-    mdiPlay,
-    mdiPause,
-    mdiRestart,
-    mdiChevronLeft,
-    mdiChevronRight,
-  } from "@mdi/js";
-  import Button from "@ui/Button.vue";
-  import type { SimulationControls } from "./types";
   import { toRefs } from "vue";
+  import type { SimulationControls } from "./types";
+  import ProgressBar from "./ProgressBar.vue";
+  import PlaybackButton from "./PlaybackButton.vue";
 
   const props = defineProps<{
-    controls: SimulationControls;
+    controls: { value: SimulationControls };
   }>();
 
-  const { isOver, paused } = toRefs(props.controls);
+  const { isOver, paused, step, trace, hasBegun } = toRefs(
+    props.controls.value
+  );
+  const { nextStep, prevStep, setStep, start, stop } = props.controls.value;
 
-  const prevStep = () => {
-    props.controls.prevStep();
+  const goPrevStep = () => {
+    prevStep();
     paused.value = true;
   };
 
-  const nextStep = () => {
-    props.controls.nextStep();
+  const goNextStep = () => {
+    nextStep();
     paused.value = true;
   };
 
@@ -31,67 +28,48 @@
   };
 
   const restart = () => {
-    props.controls.stop();
-    props.controls.start();
+    stop();
+    start();
   };
-
-  const btnSize = 24;
 </script>
 
 <template>
-  <div class="flex gap-[60px] fill-white dark:fill-black">
-    <Button
-      @click="prevStep"
-      style="border-radius: 100px; transform: scale(2)"
-    >
-      <svg
-        :width="btnSize"
-        :height="btnSize"
-        :viewBox="`0 0 ${btnSize} ${btnSize}`"
-      >
-        <path :d="mdiChevronLeft"  />
-      </svg>
-    </Button>
+  <div class="flex flex-col gap-5 items-center justify-center">
+    <ProgressBar
+      :range="[-1, trace.length]"
+      :progress="step"
+      :on-progress-set="setStep"
+      class="w-full border-gray-200 border-2 rounded-lg"
+    />
 
-    <Button
-      v-if="isOver"
-      style="border-radius: 100px; transform: scale(2)"
-      @click="restart"
-    >
-      <svg
-        :width="btnSize"
-        :height="btnSize"
-        :viewBox="`0 0 ${btnSize} ${btnSize}`"
+    <div class="flex gap-4 fill-white dark:fill-black">
+      <PlaybackButton
+        @click="goPrevStep"
+        :disabled="!hasBegun"
       >
-        <path :d="mdiRestart" />
-      </svg>
-    </Button>
+        mdi-chevron-left
+      </PlaybackButton>
 
-    <Button
-      style="border-radius: 100px; transform: scale(2)"
-      v-else
-      @click="togglePause"
-    >
-      <svg
-        :width="btnSize"
-        :height="btnSize"
-        :viewBox="`0 0 ${btnSize} ${btnSize}`"
+      <PlaybackButton
+        v-if="isOver"
+        @click="restart"
       >
-        <path :d="paused ? mdiPlay : mdiPause" />
-      </svg>
-    </Button>
+        mdi-restart
+      </PlaybackButton>
 
-    <Button
-      style="border-radius: 100px; transform: scale(2)"
-      @click="nextStep"
-    >
-      <svg
-        :width="btnSize"
-        :height="btnSize"
-        :viewBox="`0 0 ${btnSize} ${btnSize}`"
+      <PlaybackButton
+        v-else
+        @click="togglePause"
       >
-        <path :d="mdiChevronRight" />
-      </svg>
-    </Button>
+        {{ paused ? "mdi-play" : "mdi-pause" }}
+      </PlaybackButton>
+
+      <PlaybackButton
+        @click="goNextStep"
+        :disabled="isOver"
+      >
+        mdi-chevron-right
+      </PlaybackButton>
+    </div>
   </div>
 </template>

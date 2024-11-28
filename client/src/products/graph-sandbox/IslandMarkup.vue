@@ -1,19 +1,15 @@
 <script setup lang="ts">
   import type { Graph } from "@graph/types";
-  import { useMarkupColorizer } from "./useMarkupColorizer";
-  import { useMarkupSizer } from "./useMarkupSizer";
+  import { useMarkupColorizer, type ColorMap } from "./useMarkupColorizer";
+  import { useMarkupSizer, type SizeMap } from "./useMarkupSizer";
   import NodeEdgeColorInput from "./MarkupMenu/NodeEdgeColorInput.vue";
   import NodeEdgeSizeInput from "./MarkupMenu/NodeEdgeSizeInput.vue";
 
   const props = defineProps<{
     graph: Graph;
+    sizeMap: SizeMap;
+    colorMap: ColorMap;
   }>();
-
-  const { colorize, colorMap } = useMarkupColorizer(props.graph);
-  colorize();
-
-  const { size, sizeMap } = useMarkupSizer(props.graph);
-  size();
 </script>
 
 <template>

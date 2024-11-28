@@ -2,70 +2,61 @@
   import { ref } from "vue";
   import type { SimulationDeclaration } from "src/types";
   import { useGraph } from "@graph/useGraph";
-  import Graph from "@graph/Graph.vue";
-  import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
-  import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
   import IslandMarkup from "./IslandMarkup.vue";
-  import SimulationDropdown from "./SimulationDropdown.vue";
-  import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
-  import { useGraphProductBoot } from "@utils/productBoot";
+  import { useMarkupColorizer } from "./useMarkupColorizer";
+  import { useMarkupSizer } from "./useMarkupSizer";
+  import GraphProduct from "@ui/product/GraphProduct.vue";
+  import SelectSimulation from "./SelectSimulation.vue";
+  import { getSimulationDeclarations } from "@utils/product";
+  import type { SimulationRunner } from "@ui/product/sim/types";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: SANDBOX_GRAPH_SETTINGS,
   });
 
-  const activeSimulation = ref<SimulationDeclaration>();
+  const simulations = getSimulationDeclarations(graph);
+  const activeSimulation = ref<SimulationDeclaration>(simulations[1]);
 
-  useGraphProductBoot(graph);
+  const { colorize, colorMap } = useMarkupColorizer(graph);
+  colorize();
+
+  const { size, sizeMap } = useMarkupSizer(graph);
+  size();
+
+  const setActiveSimulation = (simulation: SimulationDeclaration) => {
+    const { runner } = simulation;
+    activeSimulation.value = simulation;
+    runner.start();
+  };
 </script>
 
 <template>
-  <Graph
+  <GraphProduct
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
-  />
-
-  <div
-    v-if="!activeSimulation"
-    class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
+    :simulation-runner="{ value: activeSimulation.runner as SimulationRunner }"
   >
-    <IslandToolbar :graph="graph" />
-  </div>
+    <template #top-center>
+      <IslandToolbar :graph="graph" />
+    </template>
 
-  <div
-    v-if="!activeSimulation && !graph.annotationActive.value"
-    class="absolute top-0 w-0 h-full flex items-center"
-  >
-    <div class="ml-4">
-      <IslandMarkup :graph="graph" />
-    </div>
-  </div>
+    <template #center-left>
+      <IslandMarkup
+        v-show="!graph.annotationActive.value"
+        :graph="graph"
+        :sizeMap="sizeMap"
+        :colorMap="colorMap"
+      />
+    </template>
 
-  <div class="absolute top-6 left-6">
-    <ProductDropdown />
-  </div>
-
-  <div class="absolute top-6 right-6">
-    <SimulationDropdown
-      v-model="activeSimulation"
-      :graph="graph"
-    />
-  </div>
-
-  <div
-    v-if="activeSimulation?.controls.isActive"
-    class="absolute bottom-8 w-full flex justify-center items-center p-3"
-  >
-    <SimulationPlaybackControls :controls="activeSimulation.controls" />
-  </div>
-
-  <div
-    v-else-if="graph.annotationActive.value"
-    class="absolute bottom-8 w-full flex justify-center items-center p-3"
-  >
-    <AnnotationControls :graph="graph" />
-  </div>
+    <template #top-right>
+      <SelectSimulation
+        @simulation-selected="setActiveSimulation"
+        :simulations="simulations"
+      />
+    </template>
+  </GraphProduct>
 </template>

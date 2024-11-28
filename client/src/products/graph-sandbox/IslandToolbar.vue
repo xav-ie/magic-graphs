@@ -5,7 +5,6 @@
   import ToolbarButtonDivider from "./ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "./ToolbarButtonGroup.vue";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
-  import ToolbarHint from "./ToolbarHint.vue";
   import GraphInfoMenu from "./GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
 
@@ -13,7 +12,7 @@
     graph: Graph;
   }>();
 
-  const tutorial = useGraphTutorial(props.graph, [
+  const hint = useGraphTutorial(props.graph, [
     {
       dismiss: "onNodeAdded",
       hint: "Double click on the canvas to add a node.",
@@ -24,7 +23,7 @@
     },
   ]);
 
-  tutorial.start();
+  hint.start();
 
   const eraseItems = () => {
     props.graph.bulkRemoveNode([...props.graph.focusedItemIds.value]);
@@ -43,7 +42,7 @@
 </script>
 
 <template>
-  <Toolbar>
+  <Toolbar :hint="hint">
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="graph.settings.value.displayEdgeLabels = true"
@@ -120,26 +119,22 @@
 
     <ToolbarButtonGroup>
       <GraphInfoMenu
-        :graph="graph"
         v-slot="{ isActive }"
+        :graph="graph"
       >
-        <ToolbarButton
-          :active="isActive"
-        >mdi-information-outline</ToolbarButton>
+        <ToolbarButton :active="isActive">
+          mdi-information-outline
+        </ToolbarButton>
       </GraphInfoMenu>
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
       <CollaborativeSessionMenu
-        :graph="graph"
         v-slot="{ isActive }"
+        :graph="graph"
       >
-        <ToolbarButton
-          :active="isActive"
-        >mdi-account-group</ToolbarButton>
+        <ToolbarButton :active="isActive">mdi-account-group</ToolbarButton>
       </CollaborativeSessionMenu>
     </ToolbarButtonGroup>
   </Toolbar>
-
-  <ToolbarHint :tutorial="tutorial" />
 </template>

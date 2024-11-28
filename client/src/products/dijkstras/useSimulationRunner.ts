@@ -1,13 +1,21 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { selectNode } from "@graph/select";
 import { useTextTip } from "@ui/useTextTip";
-import { useDijkstraSimulation } from "./useSimulation";
+import type { SimulationRunner } from "@ui/product/sim/types";
+import type { DijkstrasTrace } from "./dijkstra";
+import { useSimulationTheme } from "./useSimulationTheme";
+import { useDijkstra } from "./useDijkstra";
+import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 
-export const useSimulationRunner = (graph: Graph) => {
+export type DijkstraSimulationRunner = SimulationRunner<DijkstrasTrace>;
+
+export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
   const startingNode = ref<GNode>();
   const running = ref(false);
-  const simControls = useDijkstraSimulation(graph, startingNode);
+  const trace = useDijkstra(graph, startingNode);
+  const simControls = useSimulationControls(trace);
+  const { activate: activateTheme, deactivate: deactivateTheme } = useSimulationTheme(graph, simControls);
   const { showText, hideText } = useTextTip("select the starting node");
 
   /**
@@ -31,7 +39,7 @@ export const useSimulationRunner = (graph: Graph) => {
 
     startingNode.value = node;
     simControls.start();
-
+    activateTheme();
     hideText();
   };
 
@@ -41,26 +49,16 @@ export const useSimulationRunner = (graph: Graph) => {
 
     cancelNodeSelectionHandler();
     simControls.stop();
+    deactivateTheme();
     hideText();
   };
 
   return {
-    /**
-     * Start the simulation
-     */
     start,
-    /**
-     * Stop the simulation
-     */
     stop,
-    /**
-     * Whether the simulation is currently running or in start up
-     * ie user is selecting the starting node
-     */
-    running,
-    /**
-     * Controls for the simulation returned by useDijkstraSimulation
-     */
+
+    running: computed(() => running.value),
+
     simControls,
   };
 }

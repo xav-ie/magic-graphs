@@ -1,72 +1,40 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
-  import Graph from "@graph/Graph.vue";
-  import Button from "@ui/Button.vue";
-  import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
-  import colors from "@colors";
   import { useSimulationRunner } from "./useSimulationRunner";
   import CostDisplay from "./CostDisplay.vue";
   import { DIJKSTRAS_GRAPH_SETTINGS } from "./settings";
   import { useGraphProductBoot } from "@utils/productBoot";
-  import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
+  import GraphProduct from "@ui/product/GraphProduct.vue";
+  import type { SimulationRunner } from "@ui/product/sim/types";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: DIJKSTRAS_GRAPH_SETTINGS,
   });
 
-  const {
-    start: startSim,
-    stop: stopSim,
-    running: simRunning,
-    simControls,
-  } = useSimulationRunner(graph);
-
+  const simRunnerRaw = useSimulationRunner(graph);
+  const simRunner = ref<SimulationRunner>(simRunnerRaw);
   useGraphProductBoot(graph);
 </script>
 
 <template>
-  <div class="w-full h-full relative">
-    <Graph
-      @graph-ref="(el) => (graphEl = el)"
-      :graph="graph"
-    />
-  </div>
-
-  <div class="absolute top-6 left-6">
-    <ProductDropdown />
-  </div>
-
-  <div class="absolute top-0 right-0 p-3 flex gap-3">
-    <Button
-      v-if="!simRunning"
-      @click="startSim"
-    >
-      Start Simulation
-    </Button>
-
-    <Button
-      v-else
-      @click="stopSim"
-      :color="colors.RED_600"
-      :text-color="colors.WHITE"
-    >
-      Stop Simulation
-    </Button>
-  </div>
-
-  <div
-    v-if="simControls.isActive.value && graph.nodes.value.length > 0"
-    class="absolute p-3 my-3 top-12 right-0 overflow-auto bg-gray-800 bg-opacity-80 rounded-l-xl max-h-[calc(100%-1.5rem)] overflow-auto"
+  <GraphProduct
+    @graph-ref="(el) => (graphEl = el)"
+    :graph="graph"
+    :simulation-runner="{ value: simRunner as SimulationRunner }"
   >
-    <CostDisplay :graph="graph" />
-  </div>
+    <template #top-center></template>
 
-  <div
-    v-if="simControls.isActive.value"
-    class="absolute bottom-8 w-full flex justify-center items-center p-3"
-  >
-    <SimulationPlaybackControls :controls="simControls" />
-  </div>
+    <template #center-left></template>
+
+    <template #center-right-sim>
+      <div
+        v-if="simRunner.simControls.isActive"
+        class="bg-gray-800 bg-opacity-80 p-2 rounded-xl overflow-auto"
+      >
+        <CostDisplay :graph="graph" />
+      </div>
+    </template>
+  </GraphProduct>
 </template>

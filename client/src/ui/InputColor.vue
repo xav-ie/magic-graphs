@@ -38,7 +38,6 @@ const colorValueWithoutAlpha = computed(() => {
  */
 const handleUpdate = (e: Event) => {
   if (!(e.target instanceof HTMLInputElement)) return
-  console.log('e.target.value', e.target.value, 'colorAlpha.value', colorAlpha.value)
   colorValue.value = e.target.value + colorAlpha.value
 }
 </script>

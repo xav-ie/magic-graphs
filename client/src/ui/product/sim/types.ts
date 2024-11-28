@@ -2,6 +2,7 @@ import type { ComputedRef, Ref } from "vue";
 
 /**
  * used as a standard for all simulation experiences across all products
+ *
  * @template T the type of the trace that the simulation is running on
  */
 export type SimulationControls<T extends any[] = any[]> = {
@@ -67,27 +68,29 @@ export type SimulationControls<T extends any[] = any[]> = {
   hasBegun: ComputedRef<boolean>
 }
 
-
-type ProgressThemeOptions = {
-  backgroundColor: string;
-  progressColor: string;
-  easeTime: number;
-  borderRadius: number;
-  progressEasing: "linear" | "ease-in-out";
+/**
+ * wraps around simulation controls to provide a standard interface for
+ * the work of setting up and running of simulations, ie prompting the user to select a starting node,
+ * source/sink nodes, etc.
+ *
+ * @template T the type of the trace that the simulation is running on
+ */
+export type SimulationRunner<T extends any[] = any[]> = {
+  /**
+   * Start the simulation
+   */
+  start: () => Promise<void> | void
+  /**
+   * Stop the simulation
+   */
+  stop: () => Promise<void> | void
+  /**
+   * Whether the simulation is currently running or in start up
+   * ie user is selecting the starting node
+   */
+  running: ComputedRef<boolean>
+  /**
+   * The controls for the simulation
+   */
+  simControls: SimulationControls<T>
 }
-
-export type ProgressOptions = {
-  theme?: Partial<ProgressThemeOptions>;
-  startProgress: number;
-  currentProgress: number;
-  endProgress: number;
-  setProgress: (progress: number) => void
-};
-
-export const PROGRESS_DEFAULTS = {
-  backgroundColor: "white",
-  progressColor: "green",
-  easeTime: 250,
-  progressEasing: "ease-in-out",
-  borderRadius: 0,
-};

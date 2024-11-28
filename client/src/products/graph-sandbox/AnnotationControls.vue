@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { toRefs } from "vue";
+  import { toRef } from "vue";
   import colors from "@utils/colors";
   import Toolbar from "@product/graph-sandbox/Toolbar.vue";
   import ToolbarButton from "@product/graph-sandbox/ToolbarButton.vue";
@@ -15,11 +15,9 @@
     graph: Graph;
   }>();
 
-  const {
-    annotationColor: selectedColor,
-    annotationBrushWeight: selectedBrushWeight,
-    annotationErasing: erasing,
-  } = toRefs(props.graph);
+  const selectedColor = toRef(props.graph, "annotationColor");
+  const selectedBrushWeight = toRef(props.graph, "annotationBrushWeight");
+  const erasing = toRef(props.graph, "annotationErasing");
 
   const { clearAnnotations } = props.graph;
 
