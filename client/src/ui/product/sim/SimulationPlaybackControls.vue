@@ -23,6 +23,11 @@
     paused.value = true;
   };
 
+  const goToStep = (newStep: number) => {
+    setStep(newStep);
+    paused.value = true;
+  };
+
   const togglePause = () => {
     paused.value = !paused.value;
   };
@@ -38,7 +43,7 @@
     <ProgressBar
       :range="[-1, trace.length]"
       :progress="step"
-      :on-progress-set="setStep"
+      :on-progress-set="goToStep"
       class="w-full border-gray-200 border-2 rounded-lg"
     />
 

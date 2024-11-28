@@ -2,13 +2,14 @@ import { computed, ref } from "vue";
 import type { Graph } from "@graph/types";
 import type { SimulationRunner } from "@ui/product/sim/types";
 import { useSourceSinkControls } from "./useSourceSinkControls";
-import { useSimulation } from "./useSimulation";
 import type { FlowTrace } from "./fordFulkerson"
 import { useTextTip } from "@ui/useTextTip";
 import { useSourceSinkStyler } from "./useSourceSinkStyler";
 import { useEdgeThickener } from "./useEdgeThickener";
 import { useResidualEdges } from "./useResidualEdges";
 import { useSimulationTheme } from "./useSimulationTheme";
+import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
+import { useFordFulkerson } from "./useFordFulkerson";
 
 export type FlowSimulationRunner = SimulationRunner<FlowTrace>
 
@@ -29,10 +30,13 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
 
 
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
-  const simControls = useSimulation(graph, {
+
+  const { trace } = useFordFulkerson(graph, {
     source: srcSink.source,
     sink: srcSink.sink
-  });
+  })
+
+  const simControls = useSimulationControls(trace)
 
   const { activate: activateTheme, deactivate: deactivateTheme } = useSimulationTheme(graph, simControls)
 
