@@ -89,8 +89,8 @@ export const scribbleEfficientHitbox = (scribble: Scribble) => {
       x: topLeft.x,
       y: topLeft.y
     },
-    width,
-    height
+    width: Math.max(width, 10), // To prevent dots from not having a hitbox: due to drawing with ctx.lineCap = "round"
+    height: Math.max(height, 10) // To prevent dots from not having a hitbox: due to drawing with ctx.lineCap = "round"
   });
 
   return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
