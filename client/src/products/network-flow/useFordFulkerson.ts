@@ -44,7 +44,7 @@ export const useFordFulkerson = (graph: Graph, nodes: {
 
   return {
     maxFlow,
-    trace: computed(() => trace.value),
+    trace: computed(() => [{}, ...trace.value]),
     update,
   }
 }

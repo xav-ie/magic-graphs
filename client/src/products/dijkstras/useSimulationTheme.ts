@@ -35,18 +35,15 @@ export const useSimulationTheme = (
         nodeIdsAtStep.add(nodeId)
       }
 
-      acc.push(nodeIdsAtStep)
       return acc
     }, [])
 
-    res.push(res.at(-1) ?? new Set())
+    res.push(new Set<string>())
     return res
   })
 
   const colorBorders = (node: GNode) => {
     if (graph.isFocused(node.id)) return
-
-    if (step.value === -1) return
 
     if (traceAtStep.value?.source.id === node.id) return SIM_COLORS.SOURCE
 
@@ -58,8 +55,6 @@ export const useSimulationTheme = (
   }
 
   const nodeDistanceText = (node: GNode) => {
-    if (!traceAtStep.value && step.value === -1) return INF_STR
-
     const { distances } = traceAtStep.value ?? trace.value.at(-1)
     const nodeDist = distances.find((dist) => dist.id === node.id)
 

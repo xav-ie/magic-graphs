@@ -8,12 +8,14 @@ import colors from "@utils/colors";
 import { getValue } from "@graph/helpers";
 import { isResidual } from "./useResidualEdges";
 
+type WeightMap = Map<GEdge['id'], number>
+
 export const useSimulationTheme = (graph: Graph, sim: SimulationControls<FlowTrace>) => {
   const { setTheme, removeTheme } = useTheme(graph, FLOW_USETHEME_ID)
 
   const getActiveEdgeIdsAtStep = (step: number) => {
+    if (step === sim.trace.value.length) return []
     const traceAtStep =  sim.trace.value[step]
-    if (!traceAtStep) return []
     const edgeIdsAtStep = Object.keys(traceAtStep)
     return edgeIdsAtStep
   }
@@ -21,17 +23,9 @@ export const useSimulationTheme = (graph: Graph, sim: SimulationControls<FlowTra
   const activeEdgeIdsAtStep = computed(() => getActiveEdgeIdsAtStep(sim.step.value))
 
   const edgeWeightMapAtStep = computed(() => {
-    const maps = []
-    const currentMap: Map<GEdge['id'], number> = new Map()
+    const currentMap: WeightMap = new Map()
 
-    for (let i = -1; i <= sim.trace.value.length; i++) {
-      const traceAtStep = sim.trace.value[i]
-
-      if (!traceAtStep) {
-        maps.push(new Map(currentMap))
-        continue
-      }
-
+    const weightMap = sim.trace.value.reduce<WeightMap[]>((maps, traceAtStep) => {
       for (const edgeId in traceAtStep) {
         const edge = graph.getEdge(edgeId)
         if (!edge) throw 'edge not found'
@@ -40,12 +34,14 @@ export const useSimulationTheme = (graph: Graph, sim: SimulationControls<FlowTra
       }
 
       maps.push(new Map(currentMap))
-    }
+      return maps
+    }, [])
 
-    return maps
+    weightMap.push(new Map(currentMap))
+    return weightMap
   })
 
-  const weightMapAtStep = computed(() => edgeWeightMapAtStep.value[sim.step.value + 1])
+  const weightMapAtStep = computed(() => edgeWeightMapAtStep.value[sim.step.value])
 
   const colorActiveEdges = (edge: GEdge) => {
     const isActive = activeEdgeIdsAtStep.value.includes(edge.id)

@@ -41,7 +41,7 @@
 <template>
   <div class="flex flex-col gap-5 items-center justify-center">
     <ProgressBar
-      :range="[-1, trace.length]"
+      :range="[0, trace.length]"
       :progress="step"
       :on-progress-set="goToStep"
       class="w-full border-gray-200 border-2 rounded-lg"
