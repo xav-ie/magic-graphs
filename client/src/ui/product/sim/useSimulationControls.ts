@@ -1,18 +1,8 @@
 import { computed, ref } from "vue"
-import type { Ref } from "vue"
-import type { GNode, Graph } from "@graph/types";
+import type { ComputedRef } from "vue"
 import type { SimulationControls } from "@ui/product/sim/types";
-import { useDijkstra } from "./useDijkstra";
-import type { DijkstrasTrace } from "./dijkstra";
 
-export type DijkstraSimulatorControls = SimulationControls<DijkstrasTrace>
-
-export const useDijkstraSimulation = (
-  graph: Graph,
-  startingNode: Ref<GNode | undefined>
-): DijkstraSimulatorControls => {
-  const { trace } = useDijkstra(graph, startingNode)
-
+export const useSimulationControls = <T extends any[]>(trace: ComputedRef<T>): SimulationControls<T> => {
   const step = ref(-1);
   const paused = ref(true);
   const playbackSpeed = ref(1_500);
@@ -58,7 +48,7 @@ export const useDijkstraSimulation = (
     prevStep,
     setStep,
 
-    trace: computed(() => trace.value),
+    trace,
     step: computed(() => step.value),
 
     start,

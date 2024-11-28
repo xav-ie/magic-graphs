@@ -1,7 +1,7 @@
 import { computed } from "vue";
 import type { GNode, Graph } from "@graph/types";
-import type { DijkstraSimulatorControls } from "./useSimulation";
-import { INF } from "./dijkstra";
+import type { SimulationControls } from "@ui/product/sim/types";
+import { INF, type DijkstrasTrace } from "./dijkstra";
 import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
 
@@ -13,7 +13,10 @@ export const SIM_COLORS = {
 
 export const INF_STR = 'Inf'
 
-export const useSimulationTheme = (graph: Graph, sim: DijkstraSimulatorControls) => {
+export const useSimulationTheme = (
+  graph: Graph,
+  sim: SimulationControls<DijkstrasTrace>
+) => {
   const { trace, step } = sim;
   const { setTheme, removeAllThemes } = useTheme(graph, 'dijkstra');
 

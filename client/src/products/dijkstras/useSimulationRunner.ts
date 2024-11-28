@@ -2,17 +2,19 @@ import { computed, ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { selectNode } from "@graph/select";
 import { useTextTip } from "@ui/useTextTip";
-import { useDijkstraSimulation } from "./useSimulation";
 import type { SimulationRunner } from "@ui/product/sim/types";
 import type { DijkstrasTrace } from "./dijkstra";
 import { useSimulationTheme } from "./useSimulationTheme";
+import { useDijkstra } from "./useDijkstra";
+import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 
 export type DijkstraSimulationRunner = SimulationRunner<DijkstrasTrace>;
 
 export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
   const startingNode = ref<GNode>();
   const running = ref(false);
-  const simControls = useDijkstraSimulation(graph, startingNode);
+  const trace = useDijkstra(graph, startingNode);
+  const simControls = useSimulationControls(trace);
   const { activate: activateTheme, deactivate: deactivateTheme } = useSimulationTheme(graph, simControls);
   const { showText, hideText } = useTextTip("select the starting node");
 
