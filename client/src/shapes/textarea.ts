@@ -1,17 +1,20 @@
 import type { TextArea } from '@shape/types'
+import { getCanvasScale } from '@utils/components/useCanvasCoord';
 import type { DeepRequired } from '@utils/types';
 
-export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: string) => void) => {
+export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequired<TextArea>, handler: (str: string) => void) => {
   const {
     at,
     text,
     activeColor: bgColor,
   } = textArea;
 
-  const {
-    x,
-    y
-  } = at;
+  const scale = getCanvasScale(ctx)
+  const transform = ctx.getTransform();
+
+  // apply canvas transforms onto textArea.at
+  const transformedX = transform.a * at.x + transform.c * at.y + transform.e;
+  const transformedY = transform.b * at.x + transform.d * at.y + transform.f;
 
   const {
     color: textColor,
@@ -20,14 +23,17 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
     fontWeight,
   } = text
 
-  const inputWidth = Math.max(fontSize * 2, fontSize * 0.6 * content.length)
-  const inputHeight = fontSize * 2;
+  // prevent text jumping after click as much as possible (sometimes jumps 1 pixel)
+  const topPadding = scale === 1 ? 5 : Math.round(scale * 5)
+
+  const inputWidth = Math.max(fontSize * 2, fontSize * 0.6 * content.length) * scale
+  const inputHeight = fontSize * 2 * scale;
 
   const input = document.createElement('textarea');
 
   input.style.position = 'absolute';
-  input.style.left = `${x}px`;
-  input.style.top = `${y}px`;
+  input.style.left = `${transformedX}px`;
+  input.style.top = `${transformedY}px`;
   input.style.width = `${(inputWidth)}px`;
   input.style.height = `${inputHeight}px`;
   input.style.zIndex = '1000';
@@ -38,11 +44,10 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
   input.style.border = 'none';
   input.style.padding = '0';
 
-  // TODO remove hard coding, but i need to figure out how text area works
-  input.style.paddingTop = '4px';
+  input.style.paddingTop = `${topPadding}px`;
 
   input.style.margin = '0';
-  input.style.fontSize = `${fontSize}px`;
+  input.style.fontSize = `${fontSize * scale}px`;
   input.style.color = textColor;
   input.style.backgroundColor = bgColor;
   input.style.fontFamily = 'Arial';
@@ -54,23 +59,34 @@ export const engageTextarea = (textArea: DeepRequired<TextArea>, handler: (str: 
   input.style.whiteSpace = 'nowrap';
 
   const adjustSize = () => {
-    input.style.width = `${Math.max(fontSize * 2, fontSize * 0.6 * input.value.length)}px`;
+    const currentWidth = parseFloat(input.style.width);
+    const newWidth = Math.max(input.scrollWidth, fontSize * 2);
+
+    const deltaWidth = newWidth - currentWidth;
+    input.style.left = `${parseFloat(input.style.left) - deltaWidth / 2}px`;
+
+    input.style.width = `${newWidth}px`
   };
 
   input.onfocus = adjustSize
+  input.oninput = adjustSize
 
   input.value = content;
 
   const removeInput = () => {
-      input.onblur = null;
-      handler(input.value);
+    input.onblur = null;
+    handler(input.value);
+    setTimeout(() => {
+      // setTimeout to allow canvas time to update
       input.remove();
+    }, 50)
   }
 
   input.onblur = removeInput;
 
   input.onkeydown = (ev) => {
     if (ev.key === 'Enter') {
+      ev.preventDefault();
       removeInput();
     }
   }

@@ -4,6 +4,7 @@
   import { useHeatmap } from "@playground/shape/useHeatmap";
   import Button from "@ui/Button.vue";
   import InputRange from "@ui/InputRange.vue";
+import { getCtx } from "@utils/ctx";
 
   const props = defineProps<{
     canvas: HTMLCanvasElement | undefined;
@@ -27,7 +28,8 @@
   );
 
   const fn = () => {
-    items.value[2].activateTextArea?.((str) => {
+    const ctx = getCtx(canvas)
+    items.value[2].activateTextArea?.(ctx, (str) => {
       console.log('value', str)
     })
   }
