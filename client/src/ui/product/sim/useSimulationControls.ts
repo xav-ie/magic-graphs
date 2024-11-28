@@ -12,7 +12,6 @@ export const useSimulationControls = <T extends any[]>(trace: ComputedRef<T>): S
   const hasBegun = computed(() => step.value > -1)
 
   const start = () => {
-    console.log('start')
     if (active.value) return
 
     paused.value = false

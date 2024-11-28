@@ -26,7 +26,7 @@ export const useMSTSimulationRunner = (
       deactivate();
       simControls.stop();
     },
-    running: simControls.isActive,
+    running: computed(() => simControls.isActive.value),
   }
 }
 

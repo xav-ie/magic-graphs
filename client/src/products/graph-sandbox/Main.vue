@@ -18,7 +18,7 @@
   });
 
   const simulations = getSimulationDeclarations(graph);
-  const activeSimulation = ref<SimulationDeclaration>(simulations[0]);
+  const activeSimulation = ref<SimulationDeclaration>(simulations[1]);
 
   const { colorize, colorMap } = useMarkupColorizer(graph);
   colorize();
@@ -37,7 +37,7 @@
   <GraphProduct
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
-    :simulation-runner="(activeSimulation.runner as SimulationRunner)"
+    :simulation-runner="{ value: activeSimulation.runner as SimulationRunner }"
   >
     <template #top-center>
       <IslandToolbar :graph="graph" />

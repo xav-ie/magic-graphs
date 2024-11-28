@@ -58,7 +58,6 @@ export const useMarkupColorizer = (graph: Graph) => {
   }
 
   const decolorize = () => {
-    console.log('decolorize');
     removeAllThemes();
   }
 

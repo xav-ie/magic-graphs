@@ -1,23 +1,24 @@
 <script setup lang="ts">
-  import { onMounted, ref, toRef } from "vue";
+  import { computed, onMounted, ref } from "vue";
   import GraphCanvas from "@graph/Graph.vue";
   import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
   import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
   import { useGraphProductBoot } from "@utils/productBoot";
-  import { type SimulationRunner } from "./sim/types";
+  import type { SimulationRunner } from "./sim/types";
   import type { Graph } from "@graph/types";
   import StartSimButton from "./StartSimButton.vue";
   import StopSimButton from "./StopSimButton.vue";
 
   const props = defineProps<{
     graph: Graph;
-    simulationRunner: SimulationRunner;
+    simulationRunner: { value: SimulationRunner };
   }>();
 
-  const simRunner = toRef(props, "simulationRunner");
-  const running = toRef(simRunner.value, "running");
-  const isActive = toRef(simRunner.value.simControls, "isActive");
+  const simRunner = computed(() => props.simulationRunner.value);
+  const simControls = computed(() => simRunner.value.simControls);
+  const running = computed(() => simRunner.value.running);
+  const isActive = computed(() => simControls.value.isActive);
 
   const emit = defineEmits<{
     (e: "graph-ref", value: HTMLCanvasElement | undefined): void;
@@ -96,7 +97,7 @@
     class="absolute bottom-8 gap-4 w-full flex flex-col justify-center items-center"
   >
     <div v-if="isActive">
-      <SimulationPlaybackControls :controls="{ value: simRunner.simControls }" />
+      <SimulationPlaybackControls :controls="{ value: simControls }" />
     </div>
 
     <div v-show="graph.annotationActive.value">
