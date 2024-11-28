@@ -1,9 +1,9 @@
-import { ref, onUnmounted } from 'vue'
-import { getAdjacencyList } from './useAdjacencyList';
-import type { Graph, GEdge } from '@graph/types';
-import { getEdgesAlongPath } from './helpers';
+import { ref, onUnmounted } from "vue";
+import { getAdjacencyList } from "./useAdjacencyList";
+import type { Graph, GEdge } from "@graph/types";
+import { getEdgesAlongPath } from "./helpers";
 
-export type TransitionMatrix = number[][]
+export type TransitionMatrix = number[][];
 
 /**
  * Generates a transition matrix for a directed or undirected graph, incorporating edge weights.
@@ -16,12 +16,17 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
   const nodeCount = nodes.length;
   const adjacencyList = getAdjacencyList(graph);
 
-  const nodeIndexMap = nodes.reduce<Record<string, number>>((acc, node, index) => {
-    acc[node.id] = index;
-    return acc;
-  }, {});
+  const nodeIndexMap = nodes.reduce<Record<string, number>>(
+    (acc, node, index) => {
+      acc[node.id] = index;
+      return acc;
+    },
+    {}
+  );
 
-  const matrix = Array.from({ length: nodeCount }, () => Array(nodeCount).fill(0));
+  const matrix = Array.from({ length: nodeCount }, () =>
+    Array(nodeCount).fill(0)
+  );
 
   for (const [nodeId, neighbors] of Object.entries(adjacencyList)) {
     const rowIndex = nodeIndexMap[nodeId];
@@ -29,7 +34,10 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
     const totalEdgeWeight = neighbors.reduce((totalWeight, neighborId) => {
       const edges = getEdgesAlongPath(nodeId, neighborId, graph);
       if (edges.length > 0) {
-        const weight = edges.reduce((sum, edge) => sum + getEdgeWeight(edge), 0);
+        const weight = edges.reduce(
+          (sum, edge) => sum + getEdgeWeight(edge),
+          0
+        );
         return totalWeight + weight;
       }
       return totalWeight;
@@ -37,12 +45,15 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
 
     if (totalEdgeWeight === 0) continue;
 
-    neighbors.forEach(neighborId => {
+    neighbors.forEach((neighborId) => {
       const edges = getEdgesAlongPath(nodeId, neighborId, graph);
       const colIndex = nodeIndexMap[neighborId];
 
       if (edges.length > 0) {
-        const weight = edges.reduce((sum, edge) => sum + getEdgeWeight(edge), 0);
+        const weight = edges.reduce(
+          (sum, edge) => sum + getEdgeWeight(edge),
+          0
+        );
         const normalizedWeight = weight / totalEdgeWeight;
         matrix[rowIndex][colIndex] = normalizedWeight;
       }
@@ -51,7 +62,6 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
 
   return matrix;
 };
-
 
 const getEdgeWeight = (edge: GEdge): number => {
   const weight = parseFloat(edge.label);
@@ -65,12 +75,12 @@ export const useTransitionMatrix = (graph: Graph) => {
     transitionMatrix.value = getTransitionMatrix(graph);
   };
 
-  graph.subscribe('onStructureChange', update);
-  graph.subscribe('onEdgeLabelChange', update);
+  graph.subscribe("onStructureChange", update);
+  graph.subscribe("onEdgeLabelChange", update);
 
   onUnmounted(() => {
-    graph.unsubscribe('onStructureChange', update);
-    graph.unsubscribe('onEdgeLabelChange', update);
+    graph.unsubscribe("onStructureChange", update);
+    graph.unsubscribe("onEdgeLabelChange", update);
   });
 
   update();

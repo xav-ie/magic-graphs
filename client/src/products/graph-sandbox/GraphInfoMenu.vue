@@ -31,9 +31,7 @@ const { transitionMatrix } = useTransitionMatrix(props.graph);
         <AdjacencyListDisplay :adjacencyList="labelAdjacencyList" />
       </div>
       <h2 class="text-xl font-bold text-gray-200 mb-2">Transition Matrix</h2>
-      <div
-        class="bg-gray-700 p-4 rounded-lg max-h-[300px] overflow-auto p-0 m-0"
-      >
+      <div class="bg-gray-700 p-4 rounded-lg max-h-[300px] overflow-auto">
         <TransitionMatrixDisplay :transitionMatrix="transitionMatrix" />
       </div>
     </div>

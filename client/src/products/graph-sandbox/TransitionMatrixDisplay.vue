@@ -13,9 +13,9 @@ const brackets = `
 </script>
 
 <template>
-  <div class="flex py-6 justify-center items-center">
+  <div class="flex py-6 items-center">
     <div class="text-xl font-bold px-5 text-nowrap">T =</div>
-    <div class="p-4" :style="brackets">
+    <div class="p-4 rounded" :style="brackets">
       <div
         v-for="(row, rowIndex) in transitionMatrix"
         :key="'row-' + rowIndex"
@@ -25,10 +25,12 @@ const brackets = `
           v-for="(col, colIndex) in row"
           :key="'col-' + colIndex"
           class="text-gray-300 text-sm font-bold text-center flex items-center justify-center w-12 h-12"
+          style="overflow: hidden"
         >
-          {{ col }}
+          {{ col.toPrecision(2) }}
         </div>
       </div>
     </div>
+    <div class="text-gray-700">block</div>
   </div>
 </template>
