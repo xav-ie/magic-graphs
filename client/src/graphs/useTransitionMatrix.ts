@@ -1,7 +1,9 @@
 import { ref, onUnmounted } from 'vue'
 import { getAdjacencyList } from './useAdjacencyList';
-import type { Graph, GEdge, GNode } from '@graph/types';
+import type { Graph, GEdge } from '@graph/types';
 import { getEdgesAlongPath } from './helpers';
+
+export type TransitionMatrix = number[][]
 
 /**
  * Generates a transition matrix for a directed or undirected graph, incorporating edge weights.
@@ -9,7 +11,7 @@ import { getEdgesAlongPath } from './helpers';
  * @param graph - The graph instance
  * @returns A 2D array (matrix) where matrix[i][j] represents the weight or probability of transitioning from node i to node j
  */
-export const getTransitionMatrix = (graph: Graph): number[][] => {
+export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
   const nodes = graph.nodes.value;
   const nodeCount = nodes.length;
   const adjacencyList = getAdjacencyList(graph);
@@ -57,7 +59,7 @@ const getEdgeWeight = (edge: GEdge): number => {
 };
 
 export const useTransitionMatrix = (graph: Graph) => {
-  const transitionMatrix = ref<number[][]>([]);
+  const transitionMatrix = ref<TransitionMatrix>([]);
 
   const update = () => {
     transitionMatrix.value = getTransitionMatrix(graph);
