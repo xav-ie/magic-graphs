@@ -3,13 +3,6 @@ import type { Coordinate, TextArea, TextAreaNoLocation } from "@shape/types";
 import type { DeepRequired } from "@utils/types";
 import { rect } from "./rect";
 
-// export const getCenteredTextLocation = (textArea: DeepRequired<TextArea>, canvasScale: number = 1) => {
-//   // this function is needed to be able to scale text with zoom
-//   const { at, text } = textArea;
-//   const { width } = getTextAreaDimension(textArea);
-//   return { x: at.x - width / 2 + text.fontSize * canvasScale, y: at.y }
-// }
-
 export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({
   width: Math.max(
     textArea.text.fontSize * 0.6 * textArea.text.content.length,
