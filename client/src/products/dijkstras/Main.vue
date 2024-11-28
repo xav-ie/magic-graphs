@@ -28,8 +28,8 @@
 
     <template #center-right-sim>
       <div
-        v-show="simRunner.simControls.isActive.value"
-        class="bg-gray-800 bg-opacity-80 p-2 rounded-xl h-full overflow-auto"
+        v-if="simRunner.simControls.isActive.value"
+        class="bg-gray-800 bg-opacity-80 p-2 rounded-xl overflow-auto"
       >
         <CostDisplay :graph="graph" />
       </div>

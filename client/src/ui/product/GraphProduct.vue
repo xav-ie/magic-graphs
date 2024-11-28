@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref, toRef } from "vue";
+  import { onMounted, ref, toRef } from "vue";
   import GraphCanvas from "@graph/Graph.vue";
   import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
@@ -51,7 +51,7 @@
   </div>
 
   <div class="absolute grid place-items-center left-4 top-0 h-full max-w-96">
-    <div class="relative h-3/4 w-full grid place-items-center overflow-auto">
+    <div class="relative max-h-3/4 w-full grid place-items-center overflow-auto">
       <template v-if="running">
         <slot name="center-left-sim"></slot>
       </template>
@@ -63,7 +63,7 @@
   </div>
 
   <div class="absolute grid place-items-center right-4 top-0 h-full max-w-96">
-    <div class="relative h-3/4 w-full grid place-items-center overflow-auto">
+    <div class="relative max-h-3/4 w-full grid place-items-center overflow-auto">
       <template v-if="running">
         <slot name="center-right-sim"></slot>
       </template>

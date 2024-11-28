@@ -22,7 +22,7 @@ export const useSimulationTheme = (graph: Graph, sim: DijkstraSimulatorControls)
   const exploredNodeAtStep = computed(() => {
     const seenNodeIds = new Set<string>()
 
-    return trace.value?.reduce<Set<string>[]>((acc, traceStep) => {
+    const res = trace.value.reduce<Set<string>[]>((acc, traceStep) => {
       const nodeIdsAtStep = new Set<string>()
       const thisStepsNodeIds = traceStep.exploredNodes.map((i) => i.id)
 
@@ -35,15 +35,17 @@ export const useSimulationTheme = (graph: Graph, sim: DijkstraSimulatorControls)
       acc.push(nodeIdsAtStep)
       return acc
     }, [])
+
+    res.push(res.at(-1) ?? new Set())
+    return res
   })
 
   const colorBorders = (node: GNode) => {
     if (graph.isFocused(node.id)) return
 
-    if (!traceAtStep.value) return
-    if (traceAtStep.value.source.id === node.id) return SIM_COLORS.SOURCE
+    if (step.value === -1) return
 
-    if (!exploredNodeAtStep.value) return;
+    if (traceAtStep.value?.source.id === node.id) return SIM_COLORS.SOURCE
 
     const idsInCurrStep = exploredNodeAtStep.value[step.value]
     if (idsInCurrStep.has(node.id)) return SIM_COLORS.EXPLORING
@@ -53,11 +55,14 @@ export const useSimulationTheme = (graph: Graph, sim: DijkstraSimulatorControls)
   }
 
   const nodeDistanceText = (node: GNode) => {
-    if (!traceAtStep.value) return
-    const { distances } = traceAtStep.value
+    if (!traceAtStep.value && step.value === -1) return INF_STR
+
+    const { distances } = traceAtStep.value ?? trace.value.at(-1)
     const nodeDist = distances.find((dist) => dist.id === node.id)
+
     if (!nodeDist) return '?'
     if (nodeDist.distance === INF) return INF_STR
+
     return nodeDist.distance.toString()
   }
 

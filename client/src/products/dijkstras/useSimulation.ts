@@ -1,7 +1,6 @@
 import { computed, ref } from "vue"
 import type { Ref } from "vue"
 import type { GNode, Graph } from "@graph/types";
-import colors from "@utils/colors";
 import type { SimulationControls } from "@ui/product/sim/types";
 import { useDijkstra } from "./useDijkstra";
 import type { DijkstrasTrace } from "./dijkstra";
@@ -14,20 +13,20 @@ export const useDijkstraSimulation = (
 ): DijkstraSimulatorControls => {
   const { trace } = useDijkstra(graph, startingNode)
 
-  const step = ref(0);
+  const step = ref(-1);
   const paused = ref(true);
   const playbackSpeed = ref(1_500);
   const active = ref(false);
   const interval = ref<NodeJS.Timeout | undefined>()
-  const isOver = computed(() => step.value === trace.value.length - 1)
-  const hasBegun = computed(() => step.value > 0)
+  const isOver = computed(() => step.value === trace.value.length)
+  const hasBegun = computed(() => step.value > -1)
 
   const start = () => {
     if (active.value) return
 
     paused.value = false
     active.value = true
-    step.value = 0
+    step.value = -1
     interval.value = setInterval(() => {
       if (isOver.value || paused.value) return
       nextStep()
@@ -40,13 +39,12 @@ export const useDijkstraSimulation = (
   }
 
   const nextStep = () => {
-    if (!trace.value) return
-    if (step.value === trace.value.length - 1) return
+    if (step.value === trace.value.length) return
     step.value++
   }
 
   const prevStep = () => {
-    if (step.value === 0) return
+    if (step.value === -1) return
     step.value--
   }
 
