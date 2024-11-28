@@ -8,7 +8,9 @@
     controls: { value: SimulationControls };
   }>();
 
-  const { isOver, paused, step, trace } = toRefs(props.controls.value);
+  const { isOver, paused, step, trace, hasBegun } = toRefs(
+    props.controls.value
+  );
   const { nextStep, prevStep, setStep, start, stop } = props.controls.value;
 
   const goPrevStep = () => {
@@ -41,7 +43,12 @@
     />
 
     <div class="flex gap-4 fill-white dark:fill-black">
-      <PlaybackButton @click="goPrevStep">mdi-chevron-left</PlaybackButton>
+      <PlaybackButton
+        @click="goPrevStep"
+        :disabled="!hasBegun"
+      >
+        mdi-chevron-left
+      </PlaybackButton>
 
       <PlaybackButton
         v-if="isOver"
@@ -57,7 +64,12 @@
         {{ paused ? "mdi-play" : "mdi-pause" }}
       </PlaybackButton>
 
-      <PlaybackButton @click="goNextStep">mdi-chevron-right</PlaybackButton>
+      <PlaybackButton
+        @click="goNextStep"
+        :disabled="isOver"
+      >
+        mdi-chevron-right
+      </PlaybackButton>
     </div>
   </div>
 </template>
