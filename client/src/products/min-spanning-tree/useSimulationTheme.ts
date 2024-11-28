@@ -1,7 +1,8 @@
 import type { GEdge, Graph } from "@graph/types";
+import type { MSTTrace } from "./useSimulationRunner";
+import type { SimulationControls } from "@ui/product/sim/types";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
-import type { Ref } from "vue";
 
 /**
  * dims the color of the edge if it is not in the MST to ${DIM_FACTOR}%
@@ -10,8 +11,12 @@ const DIM_FACTOR = 20;
 
 export const MST_USETHEME_ID = "mst";
 
-export const useMSTColorizer = (graph: Graph, mst: Ref<GEdge[]>) => {
+export const useSimulationTheme = (
+  graph: Graph,
+  sim: SimulationControls<MSTTrace>
+) => {
   const { setTheme, removeAllThemes } = useTheme(graph, MST_USETHEME_ID);
+  const mst = sim.trace;
 
   const colorEdge = (edge: GEdge) => {
     if (graph.isFocused(edge.id)) return;
@@ -29,14 +34,18 @@ export const useMSTColorizer = (graph: Graph, mst: Ref<GEdge[]>) => {
     else return regularColor + DIM_FACTOR;
   }
 
-  const colorize = () => {
+  const activate = () => {
+    console.log('activate')
     setTheme("edgeColor", colorEdge);
     setTheme("edgeTextColor", colorEdgeText);
   }
 
-  const decolorize = () => {
+  const deactivate = () => {
     removeAllThemes();
   }
 
-  return { colorize, decolorize };
-};
+  return {
+    activate,
+    deactivate,
+  }
+}

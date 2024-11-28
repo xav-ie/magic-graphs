@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { Graph, GEdge } from "@graph/types";
 import { clone } from "@utils/clone";
 
@@ -58,5 +58,5 @@ export const usePrim = (graph: Graph) => {
   graph.subscribe("onEdgeLabelChange", update);
   graph.subscribe("onGraphReset", update);
 
-  return trace;
+  return computed(() => trace.value);
 };
