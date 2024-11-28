@@ -1,13 +1,8 @@
 import { computed, ref, type Ref } from "vue"
-import type { GEdge, GNode, Graph } from "@graph/types"
-import { useTheme } from "@graph/themes/useTheme"
-import { getValue } from "@graph/helpers"
-import colors from "@utils/colors"
+import type { GNode, Graph } from "@graph/types"
 import type { SimulationControls } from "@ui/product/sim/types"
-import { RESIDUAL_ID, useResidualEdges } from "./useResidualEdges"
 import { useFordFulkerson } from "./useFordFulkerson"
 import type { FlowTrace } from "./fordFulkerson"
-import { FLOW_USETHEME_ID } from "./constants"
 
 export type FlowSimulationControls = SimulationControls<FlowTrace>
 
@@ -15,9 +10,6 @@ export const useSimulation = (graph: Graph, { source, sink }: {
   source: Ref<GNode | undefined>,
   sink: Ref<GNode | undefined>
 }): FlowSimulationControls => {
-
-  const { setTheme } = useTheme(graph, FLOW_USETHEME_ID)
-
   const { trace } = useFordFulkerson(graph, { source, sink })
 
   const active = ref(false)
@@ -59,21 +51,6 @@ export const useSimulation = (graph: Graph, { source, sink }: {
   const nextStep = () => {
     if (step.value === trace.value.length) return
     step.value++
-
-    if (step.value === trace.value.length) {
-      activeEdgeIds.value = []
-      return
-    }
-
-    const trackerAtStep = trace.value[step.value]
-    activeEdgeIds.value = Object.keys(trackerAtStep)
-    const [edge1Id, edge2Id] = activeEdgeIds.value
-    const edge1 = graph.getEdge(edge1Id)
-    const edge2 = graph.getEdge(edge2Id)
-
-    if (!edge1 || !edge2) throw 'this is all wrong!'
-    edge1.label = trackerAtStep[edge1Id].toString()
-    edge2.label = trackerAtStep[edge2Id].toString()
   }
 
   const prevStep = () => {
@@ -90,14 +67,6 @@ export const useSimulation = (graph: Graph, { source, sink }: {
     start()
     for (let i = 0; i < goToStep + 1; i++) nextStep()
   }
-
-  const colorActiveEdges = (edge: GEdge) => {
-    const isActive = activeEdgeIds.value.includes(edge.id)
-    if (isActive) return getValue(graph.theme.value.edgeFocusColor, edge)
-    else if (edge.id.startsWith(RESIDUAL_ID)) return colors.ORANGE_400
-  }
-
-  setTheme('edgeColor', colorActiveEdges)
 
   return {
     nextStep,

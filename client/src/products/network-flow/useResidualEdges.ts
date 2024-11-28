@@ -5,16 +5,16 @@ import type { Graph } from "@graph/types";
  */
 export const RESIDUAL_ID = 'residual'
 
-export const useResidualEdges = (graph: Graph) => {
+export const isResidual = (edgeId: string) => edgeId.startsWith(RESIDUAL_ID)
+export const extractEdgeIdFromResidual = (residualId: string) => residualId.split('-')[1]
+export const createResidualId = (edgeId: string) => `${RESIDUAL_ID}-${edgeId}`
 
-  const isResidual = (edgeId: string) => edgeId.startsWith(RESIDUAL_ID)
-  const getIdFromResidual = (residualId: string) => residualId.split('-')[1]
-  const getResidualId = (edgeId: string) => `${RESIDUAL_ID}-${edgeId}`
+export const useResidualEdges = (graph: Graph) => {
 
   const cleanupResidualEdges = () => {
     for (const edge of graph.edges.value) {
       if (!isResidual(edge.id)) continue
-      const residualId = getIdFromResidual(edge.id)
+      const residualId = extractEdgeIdFromResidual(edge.id)
       const correspondingEdge = graph.getEdge(residualId)
       if (!correspondingEdge) throw 'big oopsie'
       const corrEdgeWeight = Number(correspondingEdge.label)
@@ -35,7 +35,7 @@ export const useResidualEdges = (graph: Graph) => {
       to: e.from,
       from: e.to,
       label: '0',
-      id: getResidualId(e.id)
+      id: createResidualId(e.id)
     }))
 
     graph.edges.value.push(...residualEdges)
@@ -45,7 +45,7 @@ export const useResidualEdges = (graph: Graph) => {
     cleanupResidualEdges,
     createResidualEdges,
     isResidual,
-    getIdFromResidual,
-    getResidualId,
+    getIdFromResidual: extractEdgeIdFromResidual,
+    getResidualId: createResidualId,
   }
 }

@@ -8,6 +8,7 @@ import { useTextTip } from "@ui/useTextTip";
 import { useSourceSinkStyler } from "./useSourceSinkStyler";
 import { useEdgeThickener } from "./useEdgeThickener";
 import { useResidualEdges } from "./useResidualEdges";
+import { useSimulationTheme } from "./useSimulationTheme";
 
 export type FlowSimulationRunner = SimulationRunner<FlowTrace>
 
@@ -26,11 +27,14 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
     destylize: deactivateFlowColorizer
   } = useSourceSinkStyler(graph, srcSink)
 
+
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
   const simControls = useSimulation(graph, {
     source: srcSink.source,
     sink: srcSink.sink
   });
+
+  const { activate: activateTheme, deactivate: deactivateTheme } = useSimulationTheme(graph, simControls)
 
   const running = ref(false);
 
@@ -47,6 +51,7 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
     text.value = undefined
 
     createResidualEdges()
+    activateTheme()
     simControls.start()
   }
 
@@ -58,6 +63,7 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
 
     simControls.stop()
     cleanupResidualEdges()
+    deactivateTheme()
 
     deactivateFlowColorizer()
     deactivateEdgeThickener()
