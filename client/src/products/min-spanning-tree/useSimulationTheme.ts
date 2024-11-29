@@ -1,9 +1,9 @@
+import { computed } from "vue";
 import type { GEdge, Graph } from "@graph/types";
 import type { MSTTrace } from "./useSimulationRunner";
 import type { SimulationControls } from "@ui/product/sim/types";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
-import { computed } from "vue";
 
 /**
  * dims the color of the edge if it is not in the MST to ${DIM_FACTOR}%
@@ -23,7 +23,6 @@ export const useSimulationTheme = (
     if (graph.isFocused(edge.id)) return;
 
     const regularColor = getValue(graph.theme.value.edgeColor, edge);
-    if (sim.step.value === -1) return regularColor + DIM_FACTOR;
 
     const inMST = mstAtStep.value.some((e) => e.id === edge.id);
     if (inMST) return regularColor;
@@ -34,7 +33,6 @@ export const useSimulationTheme = (
     if (graph.isFocused(edge.id)) return;
 
     const regularColor = getValue(graph.theme.value.edgeTextColor, edge);
-    if (sim.step.value === -1) return regularColor + DIM_FACTOR;
 
     const inMST = mstAtStep.value.some((e) => e.id === edge.id);
     if (inMST) return regularColor;

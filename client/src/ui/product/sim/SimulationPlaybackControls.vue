@@ -23,6 +23,7 @@
     paused.value = true;
   };
 
+
   const goToStep = (step: number) => {
     setStep(step);
     paused.value = true;
@@ -52,7 +53,7 @@
   <div class="flex flex-col gap-5 items-center justify-center">
     <ProgressBar
       @mouseleave="onProgressMouseLeave"
-      :range="[-1, trace.length]"
+      :range="[0, trace.length]"
       :progress="step"
       :on-progress-set="goToStep"
       :preview-progress="previewedProgress"

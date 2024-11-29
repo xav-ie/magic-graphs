@@ -1,22 +1,36 @@
 <script setup lang="ts">
-  import type { AdjacencyList } from "@graph/useAdjacencyList";
+  import { useAdjacencyList } from "@graph/useAdjacencyList";
   import GraphNode from "@ui/graph/GraphNode.vue";
+  import { globalGraph } from "@graph/global";
+  import { computed, onMounted, ref } from "vue";
+  import type { GraphSettings } from "@graph/settings";
 
-  defineProps<{
-    adjacencyList: AdjacencyList;
-  }>();
+  const { weightedAdjacencyList } = useAdjacencyList(globalGraph.value);
+
+  const isDirected = ref(globalGraph.value.settings.value.isGraphDirected);
+
+  const changeDirected = (diff: Partial<GraphSettings>) => {
+    console.log('diff', diff);
+    isDirected.value = diff?.isGraphDirected ?? isDirected.value;
+  };
+
+  globalGraph.value.subscribe("onSettingsChange", changeDirected);
+
+  onMounted(() => {
+    console.log('mounted')
+  })
 </script>
 
 <template>
   <div class="flex flex-col gap-4">
     <div
-      v-for="(value, key) in adjacencyList"
+      v-for="(value, key) in weightedAdjacencyList"
       :key="key"
       class="flex items-center"
     >
       <div>
         <GraphNode class="bg-gray-600">
-          {{ key }}
+          {{ globalGraph.value.getNode(key)?.label }}
         </GraphNode>
       </div>
 
@@ -27,8 +41,16 @@
       <div class="overflow-auto">
         <div class="flex flex-row gap-4">
           <div v-for="node in value">
-            <GraphNode class="bg-gray-600">
-              {{ node }}
+            <GraphNode class="bg-gray-600 relative flex flex-col">
+              <span class="leading-[15px]">
+                {{ node.label }}
+              </span>
+              <span
+                v-if="isDirected"
+                class="leading-[15px] text-[8px]"
+              >
+                Cost {{ node.weight }}
+              </span>
             </GraphNode>
           </div>
           <h2

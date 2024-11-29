@@ -1,21 +1,15 @@
 <script setup lang="ts">
-import type { Graph } from "@graph/types";
-import AdjacencyListDisplay from "./AdjacencyListDisplay.vue";
-import { useAdjacencyList } from "@graph/useAdjacencyList";
-import TransitionMatrixDisplay from "./TransitionMatrixDisplay.vue";
-import { useTransitionMatrix } from "@graph/useTransitionMatrix";
+  import type { Graph } from "@graph/types";
+  import AdjacencyListDisplay from "./AdjacencyListDisplay.vue";
 
-const props = defineProps<{
-  graph: Graph;
-}>();
-
-const { labelAdjacencyList } = useAdjacencyList(props.graph);
-const { transitionMatrix } = useTransitionMatrix(props.graph);
+  const props = defineProps<{
+    graph: Graph;
+  }>();
 </script>
 
 <template>
   <v-menu :offset="[10, 0]">
-    <template v-slot:activator="{ props, isActive }">
+    <template #activator="{ props, isActive }">
       <div v-bind="props">
         <slot :isActive="isActive"></slot>
       </div>
@@ -28,7 +22,7 @@ const { transitionMatrix } = useTransitionMatrix(props.graph);
 
       <h2 class="text-xl font-bold text-gray-200 mb-2">Adjacency List</h2>
       <div class="bg-gray-700 p-4 rounded-lg max-h-[200px] overflow-auto">
-        <AdjacencyListDisplay :adjacencyList="labelAdjacencyList" />
+        <AdjacencyListDisplay :graph="graph" />
       </div>
       <!-- Not completed yet -->
       <!-- <h2 class="text-xl font-bold text-gray-200 mb-2">Transition Matrix</h2>

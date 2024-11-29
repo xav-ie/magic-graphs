@@ -3,7 +3,7 @@ import { useKruskal } from "./useKruskal";
 import { usePrim } from "./usePrim";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 import type { SimulationControls, SimulationRunner } from "@ui/product/sim/types";
-import { computed, watch } from "vue";
+import { computed } from "vue";
 import { useSimulationTheme } from "./useSimulationTheme";
 
 export type MSTTrace = GEdge[];
