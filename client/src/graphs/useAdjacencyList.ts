@@ -1,6 +1,6 @@
 import { onUnmounted, ref } from 'vue';
 import type { GNode, Graph } from '@graph/types';
-import { getDirectedOutboundEdges, getEdgesAlongPath, getOutboundEdges, getUndirectedOutboundEdges } from './helpers';
+import { getDirectedOutboundEdges, getEdgesAlongPath, getOutboundEdges, getUndirectedOutboundEdges, getWeightBetweenNodes } from './helpers';
 import type { DeepPartial } from '@utils/types';
 import type { GraphSettings } from './settings';
 
@@ -91,12 +91,12 @@ export const getFullNodeAdjacencyList = (graph: Graph) => {
 }
 
 /**
- * a mapping of nodes to their neighbors and the cost of the edge
- * that connects them
+ * a mapping of nodes to their neighbors where neighbors are the full node objects
+ * along with the weight of the edge connecting them to the key node
  */
 export type WeightedAdjacencyList = Record<GNode['id'], (GNode & {
   /**
-   * the weight/cost of the edge that connects the two nodes
+   * the weight of the edge that connects the key node to the neighbor node
    */
   weight: number
 })[]>;
@@ -106,31 +106,24 @@ export type WeightedAdjacencyList = Record<GNode['id'], (GNode & {
  * represents the weight of the edge connecting them
  *
  * @param graph the graph instance
- * @param nonParsableEdgeWeight the weight between two adjacent nodes if the label of the edge connecting them
+ * @param fallbackWeight the weight between two adjacent nodes if the label of the edge connecting them
  * cannot be parsed as a number. defaults to 1
  * @returns an adjacency list using ids of nodes as keys and the full node objects with weights as values
  * @example getWeightedAdjacencyList(graph)
  * // {
- * // 'abc123': [{ id: 'def456', label: 'B', weight: 1, x: 0, y: 0 }],
- * // 'def456': [{ id: 'abc123', label: 'A', weight: 1, x: 100, y: 100 }]
+ * //   'abc123': [{ id: 'def456', label: 'B', weight: 1, x: 0, y: 0 }],
+ * //   'def456': [{ id: 'abc123', label: 'A', weight: 1, x: 100, y: 100 }]
  * // }
  */
-export const getWeightedAdjacencyList = (graph: Graph, nonParsableEdgeWeight = 1) => {
+export const getWeightedAdjacencyList = (graph: Graph, fallbackWeight = 1) => {
   const adjList = getAdjacencyList(graph);
   const adjListEntries = Object.entries(adjList);
 
   return adjListEntries.reduce<WeightedAdjacencyList>((acc, [keyNodeId, toNodeIds]) => {
-    acc[keyNodeId] = toNodeIds.map(toNodeId => {
-      const connectingEdge = getOutboundEdges(keyNodeId, graph).find(e => e.to === toNodeId)
-      if (!connectingEdge) throw new Error('connecting edge not found')
-      const { label } = connectingEdge
-      const parsedWeight = Number(label)
-      const weight = isNaN(parsedWeight) ? nonParsableEdgeWeight : parsedWeight
-      return {
-        ...graph.getNode(toNodeId)!,
-        weight,
-      }
-    });
+    acc[keyNodeId] = toNodeIds.map(toNodeId => ({
+      ...graph.getNode(toNodeId)!,
+      weight: getWeightBetweenNodes(keyNodeId, toNodeId, graph, fallbackWeight)
+    }))
     return acc;
   }, {});
 }
@@ -140,23 +133,29 @@ export const getWeightedAdjacencyList = (graph: Graph, nonParsableEdgeWeight = 1
  *
  * @param graph - the graph instance
  * @returns all forms of adjacency lists including standard (ids), labels, and full node
- * @example const { adjacencyList, labelAdjacencyList, fullNodeAdjacencyList } = useAdjacencyList(graph)
- * // adjacencyList.value = { 'abc123': ['def456'], 'def456': ['abc123'] }
- * // labelAdjacencyList.value = { 'A': ['B'], 'B': ['A'] }
- * // fullNodeAdjacencyList.value = {
- * //   'abc123': [{ id: 'def456', label: 'B' }],
- * //   'def456': [{ id: 'abc123', label: 'A' }]
- * // }
+ * @example const lists = useAdjacencyList(graph)
+ * lists.adjacencyList.value = { 'abc123': ['def456'], 'def456': ['abc123'] }
+ * lists.labelAdjacencyList.value = { 'A': ['B'], 'B': ['A'] }
+ * lists.fullNodeAdjacencyList.value = {
+ *    'abc123': [{ id: 'def456', label: 'B', x: 0, y: 0 }],
+ *    'def456': [{ id: 'abc123', label: 'A', x: 100, y: 100 }]
+ * }
+ * lists.weightedAdjacencyList.value = {
+ *    'abc123': [{ id: 'def456', label: 'B', weight: 5, x: 0, y: 0 }],
+ *    'def456': [{ id: 'abc123', label: 'A', weight: 10, x: 100, y: 100 }]
+ * }
  */
 export const useAdjacencyList = (graph: Graph) => {
   const adjacencyList = ref<AdjacencyList>({});
   const labelAdjacencyList = ref<AdjacencyList>({});
   const fullNodeAdjacencyList = ref<FullNodeAdjacencyList>({});
+  const weightedAdjacencyList = ref<WeightedAdjacencyList>({});
 
   const update = () => {
     adjacencyList.value = getAdjacencyList(graph);
     labelAdjacencyList.value = getLabelAdjacencyList(graph);
     fullNodeAdjacencyList.value = getFullNodeAdjacencyList(graph);
+    weightedAdjacencyList.value = getWeightedAdjacencyList(graph);
   }
 
   update();
@@ -186,5 +185,9 @@ export const useAdjacencyList = (graph: Graph) => {
      * the adjacency list using node ids as keys and full node objects as values
      */
     fullNodeAdjacencyList,
+    /**
+     * the adjacency list using node ids as keys and full node objects along with weights as values
+     */
+    weightedAdjacencyList,
   };
 };
