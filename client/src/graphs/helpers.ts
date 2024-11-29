@@ -158,7 +158,7 @@ export const getUndirectedOutboundEdges = (nodeId: string, edges: GEdge[]) => {
  * @example getOutboundEdges('abc123', graph)
  * // [{ from: 'abc123', to: 'def456' }]
  */
-export const getOutboundEdges = (nodeId: string, graph: Graph) => {
+export const getOutboundEdges = (nodeId: string, graph: Pick<Graph, 'settings' | 'edges'>) => {
   const fn = graph.settings.value.isGraphDirected ? getDirectedOutboundEdges : getUndirectedOutboundEdges
   return fn(nodeId, graph.edges.value)
 }
@@ -233,4 +233,37 @@ export const getEdgesAlongPath = (
   }
 
   return graph.edges.value.filter(isConnecting)
+}
+
+/**
+ * takes an edge label and returns the weight of the edge
+ *
+ * @param label the label of the edge
+ * @param fallbackWeight the weight to return if the label cannot be parsed as a number. defaults to 1
+ * @returns the weight of the edge
+ */
+const edgeLabelToWeight = (label: GEdge['label'], fallbackWeight = 1) => {
+  const weight = Number(label)
+  return isNaN(weight) ? fallbackWeight : weight
+}
+
+/**
+ * takes two node ids of two adjacent nodes and returns the weight of the edge connecting them
+ *
+ * @param fromNodeId the id of the first node
+ * @param toNodeId the id of the second node
+ * @param graph the graph instance
+ * @param fallbackWeight the weight to return if the label cannot be parsed as a number. defaults to 1
+ * @returns the weight of the edge connecting the two nodes
+ * @throws an error if the nodes are not adjacent
+ */
+export const getWeightBetweenNodes = (
+  fromNodeId: GNode['id'],
+  toNodeId: GNode['id'],
+  graph: Pick<Graph, 'settings' | 'edges'>,
+  fallbackWeight = 1
+) => {
+  const connectingEdge = getOutboundEdges(fromNodeId, graph).find(e => e.to === toNodeId)
+  if (!connectingEdge) throw new Error('nodes are not adjacent')
+  return edgeLabelToWeight(connectingEdge.label, fallbackWeight)
 }
