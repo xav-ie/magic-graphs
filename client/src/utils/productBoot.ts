@@ -2,8 +2,9 @@ import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import type { Graph } from "@graph/types";
 import { collabControls } from "@graph/collab";
-import { routeToProduct } from "./product";
+import { globalGraph } from "@graph/global";
 import type { ProductInfo } from "src/types";
+import { routeToProduct } from "./product";
 
 /**
  * bootstraps a graph centric product, connecting to a room if a room id is provided in the query
@@ -26,6 +27,8 @@ export const useGraphProductBoot = (graph: Graph, product?: ProductInfo) => {
 
   const { productId, name } = product;
   document.title = `${name} - Magic Algorithms`;
+
+  globalGraph.value = graph;
 
   onMounted(() => {
     if (!roomId) return;
