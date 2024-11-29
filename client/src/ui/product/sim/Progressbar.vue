@@ -55,12 +55,19 @@ const handleClick = () => {
 </script>
 
 <template>
-  <div @mousemove="updateProgressFromMouseMove" @mouseleave="clearHoverPreview" @click="handleClick"
-    class="relative overflow-hidden h-4 w-full z-1">
-    <div :class="`absolute top-0 left-0 h-full z-0`" :style="{
-      backgroundColor: props.color,
-      width: `${progressPercentage}%`,
-      transition: `width ${props.transitionTimeMs}ms ${props.transitionEasing}`,
-    }"></div>
+  <div
+    @mousemove="updateProgressFromMouseMove"
+    @mouseleave="clearHoverPreview"
+    @click="handleClick"
+    class="relative overflow-hidden h-4 w-full z-1"
+  >
+    <div
+      :class="`absolute top-0 left-0 h-full z-0`"
+      :style="{
+        backgroundColor: props.color,
+        width: `${progressPercentage}%`,
+        transition: `width ${props.transitionTimeMs}ms ${props.transitionEasing}`,
+      }"
+    ></div>
   </div>
 </template>
