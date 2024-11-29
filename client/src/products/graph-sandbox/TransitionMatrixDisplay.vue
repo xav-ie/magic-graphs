@@ -27,7 +27,7 @@ const brackets = `
           class="text-gray-300 text-sm font-bold text-center flex items-center justify-center w-12 h-12"
           style="overflow: hidden"
         >
-          {{ col.toPrecision(2) }}
+          {{ Math.round(col * 10) / 10 }}
         </div>
       </div>
     </div>
