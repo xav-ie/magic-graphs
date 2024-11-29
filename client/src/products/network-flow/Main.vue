@@ -57,7 +57,7 @@ import { useGraphProductBoot } from "@utils/productBoot";
       v-if="simControls.isActive.value"
       class="absolute bottom-8 w-full flex justify-center items-center p-3"
     >
-      <SimulationPlaybackControls :controls="simControls" />
+      <SimulationPlaybackControls :controls="{ value: simControls }" />
     </div>
   </div>
 </template>

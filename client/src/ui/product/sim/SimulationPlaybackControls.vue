@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import { toRefs } from "vue";
   import type { SimulationControls } from "./types";
-  import ProgressBar from "./ProgressBar.vue";
   import PlaybackButton from "./PlaybackButton.vue";
+  import ProgressBar from "./Progressbar.vue";
 
   const props = defineProps<{
     controls: { value: SimulationControls };
