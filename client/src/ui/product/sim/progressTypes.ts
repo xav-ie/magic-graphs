@@ -15,6 +15,10 @@ export type ProgressOptions = {
    */
   progress: number;
   /**
+   *
+   */
+  previewProgress?: number;
+  /**
    * the time it takes, in milliseconds, for the progress bar
    * to visually adjust to the new progress value.
    * @default 250
@@ -35,10 +39,11 @@ export type ProgressOptions = {
    * @param progress the new progress value.
    */
   onProgressSet?: (progress: number) => void
+  onHover?: (progress: number) => void
 };
 
 export const PROGRESS_DEFAULTS = {
   transitionTimeMs: 250,
   transitionEasing: "ease-in-out",
-  color: colors.GRAY_200
+  color: colors.GRAY_200,
 } as const;

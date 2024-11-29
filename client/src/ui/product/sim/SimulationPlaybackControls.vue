@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import { toRefs } from "vue";
+  import { ref, toRefs } from "vue";
   import type { SimulationControls } from "./types";
-  import ProgressBar from "./ProgressBar.vue";
   import PlaybackButton from "./PlaybackButton.vue";
+  import ProgressBar from "./Progressbar.vue";
 
   const props = defineProps<{
     controls: { value: SimulationControls };
@@ -23,8 +23,9 @@
     paused.value = true;
   };
 
-  const goToStep = (newStep: number) => {
-    setStep(newStep);
+
+  const goToStep = (step: number) => {
+    setStep(step);
     paused.value = true;
   };
 
@@ -36,14 +37,27 @@
     stop();
     start();
   };
+
+  const previewedProgress = ref(-1);
+
+  const onProgressBarHover = (prog: number) => {
+    previewedProgress.value = prog;
+  };
+
+  const onProgressMouseLeave = () => {
+    previewedProgress.value = -1;
+  }
 </script>
 
 <template>
   <div class="flex flex-col gap-5 items-center justify-center">
     <ProgressBar
+      @mouseleave="onProgressMouseLeave"
       :range="[0, trace.length]"
       :progress="step"
       :on-progress-set="goToStep"
+      :preview-progress="previewedProgress"
+      :on-hover="onProgressBarHover"
       class="w-full border-gray-200 border-2 rounded-lg"
     />
 
