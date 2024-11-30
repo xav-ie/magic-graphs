@@ -39,7 +39,7 @@
     :simulation-runner="activeSimulation.runner"
   >
     <template #top-center>
-      <IslandToolbar :graph="graph" />
+      <IslandToolbar />
     </template>
 
     <template #center-left>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { Graph } from "@graph/types";
+  import { graph } from "@graph/global"
   import Toolbar from "./Toolbar.vue";
   import ToolbarButton from "./ToolbarButton.vue";
   import ToolbarButtonDivider from "./ToolbarButtonDivider.vue";
@@ -8,11 +8,7 @@
   import GraphInfoMenu from "./GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
 
-  const props = defineProps<{
-    graph: Graph;
-  }>();
-
-  const hint = useGraphTutorial(props.graph, [
+  const hint = useGraphTutorial(graph.value, [
     {
       dismiss: "onNodeAdded",
       hint: "Double click on the canvas to add a node.",
@@ -26,8 +22,9 @@
   hint.start();
 
   const eraseItems = () => {
-    props.graph.bulkRemoveNode([...props.graph.focusedItemIds.value]);
-    props.graph.bulkRemoveEdge([...props.graph.focusedItemIds.value]);
+    const ids = [...graph.value.focusedItemIds.value];
+    graph.value.bulkRemoveNode(ids);
+    graph.value.bulkRemoveEdge(ids);
   };
 
   const toggleAnnotation = () => {
@@ -35,7 +32,7 @@
       activateAnnotation: activate,
       deactivateAnnotation: deactivate,
       annotationActive: isActive,
-    } = props.graph;
+    } = graph.value;
 
     isActive.value ? deactivate() : activate();
   };
