@@ -8,34 +8,24 @@
   import { useMarkupColorizer } from "./useMarkupColorizer";
   import { useMarkupSizer } from "./useMarkupSizer";
   import GraphProduct from "@ui/product/GraphProduct.vue";
-  import { getSimulationDeclarations } from "@utils/product";
+
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
     settings: SANDBOX_GRAPH_SETTINGS,
   });
 
-  const simulations = getSimulationDeclarations(graph);
-  const activeSimulation = ref(simulations[0]);
-
   const { colorize, colorMap } = useMarkupColorizer(graph);
   colorize();
 
   const { size, sizeMap } = useMarkupSizer(graph);
   size();
-
-  const setActiveSimulation = (simulation: SimulationDeclaration) => {
-    const { runner } = simulation;
-    activeSimulation.value = simulation;
-    runner.start();
-  };
 </script>
 
 <template>
   <GraphProduct
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
-    :simulations="simulations"
   >
     <template #top-center>
       <IslandToolbar />

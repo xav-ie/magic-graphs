@@ -10,13 +10,15 @@
   import StartSimButton from "./StartSimButton.vue";
   import StopSimButton from "./StopSimButton.vue";
   import type { SimulationDeclaration } from "src/types";
+  import { getSimulationDeclarationsForProduct } from "@utils/product";
 
   const props = defineProps<{
     graph: Graph;
-    simulations: SimulationDeclaration[];
   }>();
 
-  const activeSimulation = ref(props.simulations[0]);
+  const simulations = getSimulationDeclarationsForProduct(props.graph);
+
+  const activeSimulation = ref(simulations[0]);
 
   const setActiveSimulation = (simulation: SimulationDeclaration) => {
     const { runner } = simulation;
