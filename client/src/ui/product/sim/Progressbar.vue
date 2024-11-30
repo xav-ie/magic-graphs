@@ -61,7 +61,7 @@
     <div
       :class="`absolute top-0 left-0 h-full z-10`"
       :style="{
-        backgroundColor: colors.GRAY_600 + '50',
+        backgroundColor: colors.GRAY_400 + '90',
         width: `${progressPercentage(previewProgress ?? props.range[0])}%`,
         transition: `width ${props.transitionTimeMs}ms ${props.transitionEasing}`,
       }"
