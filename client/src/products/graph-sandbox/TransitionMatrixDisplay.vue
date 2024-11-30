@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { TransitionMatrix } from "@graph/useTransitionMatrix";
 import colors from "@colors";
+import { globalGraph } from "@graph/global";
+import { useTransitionMatrix } from "@graph/useTransitionMatrix";
 
-defineProps<{
-  transitionMatrix: TransitionMatrix;
-}>();
+const { transitionMatrix } = useTransitionMatrix(globalGraph.value);
 
 const brackets = `
   background: linear-gradient(${colors.GRAY_700}, ${colors.GRAY_700}) 50% 50%/calc(100% - 10px) calc(100% - 10px) no-repeat,
