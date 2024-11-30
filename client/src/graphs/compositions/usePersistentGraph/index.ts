@@ -1,12 +1,8 @@
-import type { Ref } from 'vue'
-import type {
-  GNode,
-  GEdge,
-  GraphOptions
-} from '@graph/types'
-import { useUserEditableGraph } from '@graph/compositions/useUserEditableGraph'
-import type { GraphTheme } from '@graph/themes'
-import type { GraphEvent } from '@graph/events'
+import type { Ref } from "vue";
+import type { GNode, GEdge, GraphOptions } from "@graph/types";
+import { useUserEditableGraph } from "@graph/compositions/useUserEditableGraph";
+import type { GraphTheme } from "@graph/themes";
+import type { GraphEvent } from "@graph/events";
 
 /**
  * extends the useGraph interface to include capabilities for storing and retrieving a graph from local storage.
@@ -23,93 +19,112 @@ export const usePersistentGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {}
 ) => {
-
-  const graph = useUserEditableGraph(canvas, options)
+  const graph = useUserEditableGraph(canvas, options);
 
   const nodeStorage = {
-    get: () => JSON.parse(localStorage.getItem(graph.settings.value.persistentStorageKey + '-nodes') ?? '[]'),
+    get: () =>
+      JSON.parse(
+        localStorage.getItem(
+          graph.settings.value.persistentStorageKey + "-nodes"
+        ) ?? "[]"
+      ),
     set: (nodes: GNode[]) => {
-      const nodesToAdd = nodes.filter(node => !graph.settings.value.persistentBlacklist.has(node.id))
+      const nodesToAdd = nodes.filter(
+        (node) => !graph.settings.value.persistentBlacklist.has(node.id)
+      );
       localStorage.setItem(
-        graph.settings.value.persistentStorageKey + '-nodes',
+        graph.settings.value.persistentStorageKey + "-nodes",
         JSON.stringify(nodesToAdd)
-      )
-    }
-  }
+      );
+    },
+  };
 
   const edgeStorage = {
-    get: () => JSON.parse(localStorage.getItem(graph.settings.value.persistentStorageKey + '-edges') ?? '[]'),
+    get: () =>
+      JSON.parse(
+        localStorage.getItem(
+          graph.settings.value.persistentStorageKey + "-edges"
+        ) ?? "[]"
+      ),
     set: (edges: GEdge[]) => {
-      const edgesToAdd = edges.filter(edge => !graph.settings.value.persistentBlacklist.has(edge.id))
+      const edgesToAdd = edges.filter(
+        (edge) => !graph.settings.value.persistentBlacklist.has(edge.id)
+      );
       localStorage.setItem(
-        graph.settings.value.persistentStorageKey + '-edges',
+        graph.settings.value.persistentStorageKey + "-edges",
         JSON.stringify(edgesToAdd)
-      )
-    }
-  }
+      );
+    },
+  };
 
   const trackGraphState = async () => {
     // lets all callbacks run before saving to storage
-    await new Promise(resolve => setTimeout(resolve, 10))
-    nodeStorage.set(graph.nodes.value)
-    edgeStorage.set(graph.edges.value)
-  }
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    nodeStorage.set(graph.nodes.value);
+    edgeStorage.set(graph.edges.value);
+  };
 
   const load = () => {
-    graph.nodes.value = nodeStorage.get()
-    graph.edges.value = edgeStorage.get()
+    graph.nodes.value = nodeStorage.get();
+    graph.edges.value = edgeStorage.get();
 
     // wait for the next microtask to ensure caller of useGraph has a chance to sub to onStructureChange
-    queueMicrotask(() => graph.emit('onStructureChange', graph.nodes.value, graph.edges.value))
-  }
+    queueMicrotask(() =>
+      graph.emit("onStructureChange", graph.nodes.value, graph.edges.value)
+    );
+  };
 
   const trackChangeEvents: GraphEvent[] = [
-    'onStructureChange',
-    'onNodeDrop',
-    'onGroupDrop',
-    'onGraphReset',
-    'onEdgeLabelChange',
-  ]
+    "onStructureChange",
+    "onNodeDrop",
+    "onGroupDrop",
+    "onGraphReset",
+    "onEdgeLabelChange",
+  ];
 
   const listenForGraphStateEvents = () => {
-    trackChangeEvents.forEach(event => graph.subscribe(event, trackGraphState))
-  }
+    trackChangeEvents.forEach((event) =>
+      graph.subscribe(event, trackGraphState)
+    );
+  };
 
   const stopListeningForGraphStateEvents = () => {
-    trackChangeEvents.forEach(event => graph.unsubscribe(event, trackGraphState))
-  }
+    trackChangeEvents.forEach((event) =>
+      graph.unsubscribe(event, trackGraphState)
+    );
+  };
 
   const stopListeningForEvents = () => {
-    stopListeningForGraphStateEvents()
-  }
+    stopListeningForGraphStateEvents();
+  };
 
-  graph.subscribe('onSettingsChange', (diff) => {
-    stopListeningForEvents()
+  graph.subscribe("onSettingsChange", (diff) => {
+    stopListeningForEvents();
 
     // persistent was true, but now it is false
-    const persistenceTurnedOff = 'persistent' in diff && !diff.persistent
-    if (persistenceTurnedOff) return
+    const persistenceTurnedOff = "persistent" in diff && !diff.persistent;
+    if (persistenceTurnedOff) return;
 
     // persistent was false, but now it is true
-    const persistenceTurnedOn = 'persistent' in diff && diff.persistent
+    const persistenceTurnedOn = "persistent" in diff && diff.persistent;
     if (persistenceTurnedOn) {
-      load()
-      listenForGraphStateEvents()
+      load();
+      listenForGraphStateEvents();
 
-      return
+      return;
     }
 
     // from here on out, persistent was true, but it was not in the diff
-    if ('persistentStorageKey' in diff) {
-      load()
+    if ("persistentStorageKey" in diff) {
+      load();
     }
 
-    listenForGraphStateEvents()
-  })
+    listenForGraphStateEvents();
+  });
 
   if (graph.settings.value.persistent) {
-    load()
-    listenForGraphStateEvents()
+    load();
+    listenForGraphStateEvents();
   }
 
   return {
@@ -119,5 +134,5 @@ export const usePersistentGraph = (
      * track the graph state on local storage
      */
     trackGraphState,
-  }
-}
+  };
+};
