@@ -1,19 +1,15 @@
 <script setup lang="ts">
   import { computed, ref } from "vue";
+  import { useRouter } from "vue-router";
+  import { graph } from "@graph/global";
   import { collabControls, myCollaboratorProfile } from "@graph/collab";
   import { debounce } from "@utils/debounce";
   import Button from "@ui/Button.vue";
-  import GraphSandboxProductInfo from "./info";
-  import type { Graph } from "@graph/types";
   import { generateId } from "@graph/helpers";
   import colors from "@utils/colors";
-  import { useRouter } from "vue-router";
   import { productIdToProduct, useProductRouting } from "@utils/product";
   import { darkenHex } from "@utils/colors";
-
-  const props = defineProps<{
-    graph: Graph;
-  }>();
+  import GraphSandboxProductInfo from "./info";
 
   const router = useRouter();
   const { navigate } = useProductRouting();
@@ -55,7 +51,7 @@
     await connectToRoom({
       roomId: generateId(),
       productId: GraphSandboxProductInfo.productId,
-      graph: props.graph,
+      graph: graph.value,
     });
 
     router.push({ query: { rid: connectedRoomId.value } });

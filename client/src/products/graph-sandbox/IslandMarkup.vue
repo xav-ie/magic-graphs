@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import type { Graph } from "@graph/types";
-  import { useMarkupColorizer, type ColorMap } from "./useMarkupColorizer";
-  import { useMarkupSizer, type SizeMap } from "./useMarkupSizer";
+  import type { ColorMap } from "./useMarkupColorizer";
+  import type { SizeMap } from "./useMarkupSizer";
   import NodeEdgeColorInput from "./MarkupMenu/NodeEdgeColorInput.vue";
   import NodeEdgeSizeInput from "./MarkupMenu/NodeEdgeSizeInput.vue";
 

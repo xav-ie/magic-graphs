@@ -1,11 +1,5 @@
 <script setup lang="ts">
-  import type { Graph } from "@graph/types";
   import AdjacencyListDisplay from "./AdjacencyListDisplay.vue";
-  import { onMounted, toRefs, watch } from "vue";
-
-  const props = defineProps<{
-    graph: Graph;
-  }>();
 </script>
 
 <template>

@@ -8,7 +8,6 @@
   import { useMarkupColorizer } from "./useMarkupColorizer";
   import { useMarkupSizer } from "./useMarkupSizer";
   import GraphProduct from "@ui/product/GraphProduct.vue";
-  import SelectSimulation from "./SelectSimulation.vue";
   import { getSimulationDeclarations } from "@utils/product";
 
   const graphEl = ref<HTMLCanvasElement>();
@@ -36,7 +35,7 @@
   <GraphProduct
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
-    :simulation-runner="activeSimulation.runner"
+    :simulations="simulations"
   >
     <template #top-center>
       <IslandToolbar />
@@ -48,13 +47,6 @@
         :graph="graph"
         :sizeMap="sizeMap"
         :colorMap="colorMap"
-      />
-    </template>
-
-    <template #top-right>
-      <SelectSimulation
-        @simulation-selected="setActiveSimulation"
-        :simulations="simulations"
       />
     </template>
   </GraphProduct>

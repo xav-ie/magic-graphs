@@ -3,7 +3,7 @@
   import type { UnwrapRef } from "vue";
   import type { SimulationControls } from "./types";
   import PlaybackButton from "./PlaybackButton.vue";
-  import ProgressBar from "./Progressbar.vue";
+  import ProgressBar from "./ProgressBar.vue";
 
   const props = defineProps<{
     controls: UnwrapRef<SimulationControls>;

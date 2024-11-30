@@ -1,22 +1,30 @@
 <script setup lang="ts">
   import { computed, onMounted, ref } from "vue";
-  import type { UnwrapRef } from "vue";
   import GraphCanvas from "@graph/Graph.vue";
   import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
   import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
+  import SelectSimulation from "@ui/product/sim/SelectSimulation.vue";
   import { useGraphProductBoot } from "@utils/productBoot";
-  import type { SimulationRunner } from "./sim/types";
   import type { Graph } from "@graph/types";
   import StartSimButton from "./StartSimButton.vue";
   import StopSimButton from "./StopSimButton.vue";
+  import type { SimulationDeclaration } from "src/types";
 
   const props = defineProps<{
     graph: Graph;
-    simulationRunner: UnwrapRef<SimulationRunner>;
+    simulations: SimulationDeclaration[];
   }>();
 
-  const simRunner = computed(() => props.simulationRunner);
+  const activeSimulation = ref(props.simulations[0]);
+
+  const setActiveSimulation = (simulation: SimulationDeclaration) => {
+    const { runner } = simulation;
+    activeSimulation.value = simulation;
+    runner.start();
+  };
+
+  const simRunner = computed(() => activeSimulation.value.runner);
   const simControls = computed(() => simRunner.value.simControls);
   const running = computed(() => simRunner.value.running);
   const isActive = computed(() => simControls.value.isActive);
@@ -40,7 +48,9 @@
     :graph="graph"
   />
 
-  <div class="absolute top-6 w-full flex flex-col justify-center items-center gap-2">
+  <div
+    class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
+  >
     <template v-if="running">
       <slot name="top-center-sim"></slot>
     </template>
@@ -51,7 +61,9 @@
   </div>
 
   <div class="absolute grid place-items-center left-4 top-0 h-full max-w-96">
-    <div class="relative max-h-3/4 w-full grid place-items-center overflow-auto">
+    <div
+      class="relative max-h-3/4 w-full grid place-items-center overflow-auto"
+    >
       <template v-if="running">
         <slot name="center-left-sim"></slot>
       </template>
@@ -63,7 +75,9 @@
   </div>
 
   <div class="absolute grid place-items-center right-4 top-0 h-full max-w-96">
-    <div class="relative max-h-3/4 w-full grid place-items-center overflow-auto">
+    <div
+      class="relative max-h-3/4 w-full grid place-items-center overflow-auto"
+    >
       <template v-if="running">
         <slot name="center-right-sim"></slot>
       </template>
@@ -87,7 +101,15 @@
 
     <template v-else>
       <slot name="top-right">
-        <StartSimButton @click="simRunner.start" />
+        <template v-if="simulations.length > 1">
+          <SelectSimulation
+            @simulation-selected="setActiveSimulation"
+            :simulations="simulations"
+          />
+        </template>
+        <template v-else>
+          <StartSimButton @click="simRunner.start" />
+        </template>
       </slot>
     </template>
   </div>
