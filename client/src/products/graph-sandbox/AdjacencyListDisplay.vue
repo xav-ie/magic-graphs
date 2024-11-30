@@ -1,24 +1,18 @@
 <script setup lang="ts">
   import { useAdjacencyList } from "@graph/useAdjacencyList";
   import GraphNode from "@ui/graph/GraphNode.vue";
+  import type { Graph } from "@graph/types";
   import { globalGraph } from "@graph/global";
-  import { computed, onMounted, ref } from "vue";
-  import type { GraphSettings } from "@graph/settings";
+
+  const props = defineProps<{
+    graph: Graph,
+  }>();
 
   const { weightedAdjacencyList } = useAdjacencyList(globalGraph.value);
 
-  const isDirected = ref(globalGraph.value.settings.value.isGraphDirected);
-
-  const changeDirected = (diff: Partial<GraphSettings>) => {
-    console.log('diff', diff);
-    isDirected.value = diff?.isGraphDirected ?? isDirected.value;
+  const getLabel = (nodeId: string) => {
+    return props.graph.getNode(nodeId)?.label;
   };
-
-  globalGraph.value.subscribe("onSettingsChange", changeDirected);
-
-  onMounted(() => {
-    console.log('mounted')
-  })
 </script>
 
 <template>
@@ -30,7 +24,7 @@
     >
       <div>
         <GraphNode class="bg-gray-600">
-          {{ globalGraph.value.getNode(key)?.label }}
+          {{ getLabel(key) }}
         </GraphNode>
       </div>
 
@@ -46,7 +40,7 @@
                 {{ node.label }}
               </span>
               <span
-                v-if="isDirected"
+                v-if="props.graph.settings.value.displayEdgeLabels"
                 class="leading-[15px] text-[8px]"
               >
                 Cost {{ node.weight }}

@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { computed, onMounted, ref } from "vue";
+  import type { UnwrapRef } from "vue";
   import GraphCanvas from "@graph/Graph.vue";
   import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
@@ -12,7 +13,7 @@
 
   const props = defineProps<{
     graph: Graph;
-    simulationRunner: { value: SimulationRunner };
+    simulationRunner: { value: UnwrapRef<SimulationRunner> };
   }>();
 
   const simRunner = computed(() => props.simulationRunner.value);

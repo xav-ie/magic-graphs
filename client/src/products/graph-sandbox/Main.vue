@@ -37,7 +37,7 @@
   <GraphProduct
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
-    :simulation-runner="{ value: activeSimulation.runner as SimulationRunner }"
+    :simulation-runner="{ value: activeSimulation.runner }"
   >
     <template #top-center>
       <IslandToolbar :graph="graph" />

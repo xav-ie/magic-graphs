@@ -1,8 +1,14 @@
-import { shallowRef } from "vue";
+import { shallowRef, ref } from "vue";
 import { useGraph } from "./useGraph";
 import type { Graph } from "./types";
+import { defineStore } from "pinia";
 
-/**
- * the global active graph instance set by product boot (@utils/productBoot)
- */
-export const globalGraph: { value: Graph } = { value: {} as Graph };
+export const globalGraph = shallowRef({} as Graph);
+
+export const useGraphStore = defineStore('graph', () => {
+  const graph = ref(useGraph(shallowRef()))
+
+  return {
+    graph,
+  }
+})
