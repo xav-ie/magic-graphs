@@ -1,14 +1,12 @@
 <script setup lang="ts">
   import { ref } from "vue";
-  import type { SimulationDeclaration } from "src/types";
   import { useGraph } from "@graph/useGraph";
+  import GraphProduct from "@ui/product/GraphProduct.vue";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
   import IslandToolbar from "./IslandToolbar.vue";
   import IslandMarkup from "./IslandMarkup.vue";
   import { useMarkupColorizer } from "./useMarkupColorizer";
   import { useMarkupSizer } from "./useMarkupSizer";
-  import GraphProduct from "@ui/product/GraphProduct.vue";
-
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {

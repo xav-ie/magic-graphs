@@ -1,12 +1,12 @@
 <script setup lang="ts">
   import { computed, onMounted, ref } from "vue";
   import GraphCanvas from "@graph/Graph.vue";
+  import type { Graph } from "@graph/types";
   import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
   import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
   import SelectSimulation from "@ui/product/sim/SelectSimulation.vue";
   import { useGraphProductBoot } from "@utils/productBoot";
-  import type { Graph } from "@graph/types";
   import StartSimButton from "./StartSimButton.vue";
   import StopSimButton from "./StopSimButton.vue";
   import type { SimulationDeclaration } from "src/types";
