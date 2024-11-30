@@ -5,7 +5,6 @@ import type {
   GraphOptions
 } from '@graph/types'
 import { useUserEditableGraph } from '@graph/compositions/useUserEditableGraph'
-// import type { GraphSettings } from '@graph/settings'
 import type { GraphTheme } from '@graph/themes'
 import type { GraphEvent } from '@graph/events'
 
@@ -27,16 +26,13 @@ export const usePersistentGraph = (
 
   const graph = useUserEditableGraph(canvas, options)
 
-  const nodeBlacklist = new Set<GNode>
-  const edgeBlacklist = new Set<GEdge>
-
   const nodeStorage = {
     get: () => JSON.parse(localStorage.getItem(graph.settings.value.persistentStorageKey + '-nodes') ?? '[]'),
     set: (nodes: GNode[]) => {
-      const nodesWithoutBlacklist = nodes.filter(node => !nodeBlacklist.has(node))
+      const nodesToAdd = nodes.filter(node => !graph.settings.value.persistentBlacklist.has(node.id))
       localStorage.setItem(
         graph.settings.value.persistentStorageKey + '-nodes',
-        JSON.stringify(nodesWithoutBlacklist)
+        JSON.stringify(nodesToAdd)
       )
     }
   }
@@ -44,10 +40,10 @@ export const usePersistentGraph = (
   const edgeStorage = {
     get: () => JSON.parse(localStorage.getItem(graph.settings.value.persistentStorageKey + '-edges') ?? '[]'),
     set: (edges: GEdge[]) => {
-      const edgesWithoutBlacklist = edges.filter(edge => !edgeBlacklist.has(edge))
+      const edgesToAdd = edges.filter(edge => !graph.settings.value.persistentBlacklist.has(edge.id))
       localStorage.setItem(
         graph.settings.value.persistentStorageKey + '-edges',
-        JSON.stringify(edgesWithoutBlacklist)
+        JSON.stringify(edgesToAdd)
       )
     }
   }

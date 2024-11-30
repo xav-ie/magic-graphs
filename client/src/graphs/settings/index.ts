@@ -174,22 +174,16 @@ export type PersistentGraphSettings = {
    */
   persistentStorageKey: string,
   /**
-   * whether to track theme changes
-   * @default false
+   * Set of node or edge ids that will not be saved through graph persistence
+   * @default new Set()
    */
-  persistentTrackTheme: boolean,
-  /**
-   * whether to track settings changes
-   * @default false
-   */
-  persistentTrackSettings: boolean,
+  persistentBlacklist: Set<GNode['id'] | GEdge['id']>
 }
 
 export const DEFAULT_PERSISTENT_SETTINGS: PersistentGraphSettings = {
   persistent: true,
   persistentStorageKey: 'graph',
-  persistentTrackTheme: false,
-  persistentTrackSettings: false,
+  persistentBlacklist: new Set()
 }
 
 /**
