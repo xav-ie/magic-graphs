@@ -48,26 +48,6 @@ export const usePersistentGraph = (
     }
   }
 
-  // const themeStorage = {
-  //   get: () => JSON.parse(localStorage.getItem(graph.settings.value.persistentStorageKey + '-theme') ?? '{}'),
-  //   set: (graphThemes: GraphTheme) => {
-  //     localStorage.setItem(
-  //       graph.settings.value.persistentStorageKey + '-theme',
-  //       JSON.stringify(graphThemes)
-  //     )
-  //   }
-  // }
-
-  // const settingsStorage = {
-  //   get: () => JSON.parse(localStorage.getItem(graph.settings.value.persistentStorageKey + '-settings') ?? '{}'),
-  //   set: (graphSettings: GraphSettings) => {
-  //     localStorage.setItem(
-  //       graph.settings.value.persistentStorageKey + '-settings',
-  //       JSON.stringify(graphSettings)
-  //     )
-  //   }
-  // }
-
   const trackGraphState = async () => {
     // lets all callbacks run before saving to storage
     await new Promise(resolve => setTimeout(resolve, 10))
@@ -75,42 +55,9 @@ export const usePersistentGraph = (
     edgeStorage.set(graph.edges.value)
   }
 
-  // let previousKey = graph.settings.value.persistentStorageKey
-  // const trackOptions = async () => {
-  //   const currentKey = graph.settings.value.persistentStorageKey
-
-  //   // trackOptions was triggered by a change in the storage key, so we cannot update storage
-  //   if (previousKey !== currentKey) {
-  //     previousKey = currentKey
-  //     return
-  //   }
-
-  //   // lets all callbacks run before saving to storage
-  //   await new Promise(resolve => setTimeout(resolve, 10))
-
-  //   // if (graph.settings.value.persistentTrackTheme) {
-  //   //   themeStorage.set(graph.theme.value)
-  //   // }
-
-  //   // if (graph.settings.value.persistentTrackSettings) {
-  //   //   settingsStorage.set(graph.settings.value)
-  //   // }
-
-  //   previousKey = currentKey
-  // }
-
   const load = () => {
     graph.nodes.value = nodeStorage.get()
     graph.edges.value = edgeStorage.get()
-
-
-    // if (graph.settings.value.persistentTrackTheme) {
-    //   graph.theme.value = Object.assign(graph.theme.value, themeStorage.get())
-    // }
-
-    // if (graph.settings.value.persistentTrackSettings) {
-    //   graph.settings.value = Object.assign(graph.settings.value, settingsStorage.get())
-    // }
 
     // wait for the next microtask to ensure caller of useGraph has a chance to sub to onStructureChange
     queueMicrotask(() => graph.emit('onStructureChange', graph.nodes.value, graph.edges.value))
@@ -124,19 +71,6 @@ export const usePersistentGraph = (
     'onEdgeLabelChange',
   ]
 
-  // const trackOptionsEvents: GraphEvent[] = [
-  //   'onThemeChange',
-  //   'onSettingsChange',
-  // ]
-
-  // const listenForOptionsEvents = () => {
-  //   trackOptionsEvents.forEach(event => graph.subscribe(event, trackOptions))
-  // }
-
-  // const stopListeningForOptionsEvents = () => {
-  //   trackOptionsEvents.forEach(event => graph.unsubscribe(event, trackOptions))
-  // }
-
   const listenForGraphStateEvents = () => {
     trackChangeEvents.forEach(event => graph.subscribe(event, trackGraphState))
   }
@@ -146,7 +80,6 @@ export const usePersistentGraph = (
   }
 
   const stopListeningForEvents = () => {
-    // stopListeningForOptionsEvents()
     stopListeningForGraphStateEvents()
   }
 
@@ -162,32 +95,21 @@ export const usePersistentGraph = (
     if (persistenceTurnedOn) {
       load()
       listenForGraphStateEvents()
-      // if (graph.settings.value.persistentTrackSettings || graph.settings.value.persistentTrackTheme) {
-      //   listenForOptionsEvents()
-      // }
 
       return
     }
 
     // from here on out, persistent was true, but it was not in the diff
-
     if ('persistentStorageKey' in diff) {
       load()
     }
 
     listenForGraphStateEvents()
-
-    // if (graph.settings.value.persistentTrackSettings || graph.settings.value.persistentTrackTheme) {
-    //   listenForOptionsEvents()
-    // }
   })
 
   if (graph.settings.value.persistent) {
     load()
     listenForGraphStateEvents()
-    // if (graph.settings.value.persistentTrackSettings || graph.settings.value.persistentTrackTheme) {
-    //   listenForOptionsEvents()
-    // }
   }
 
   return {
@@ -197,9 +119,5 @@ export const usePersistentGraph = (
      * track the graph state on local storage
      */
     trackGraphState,
-    /**
-     * track the graph options on local storage
-     */
-    // trackOptions,
   }
 }
