@@ -1,7 +1,14 @@
 import { computed, ref } from "vue";
 import type { Graph } from "@graph/types";
-import type { SimulationRunner } from "@ui/product/sim/types";
-import { useSourceSinkControls } from "./useSourceSinkControls";
+import type { SimulationControls, SimulationRunner } from "@ui/product/sim/types";
+import {
+  sourceNode,
+  sinkNode,
+  setSourceNode,
+  setSinkNode,
+  cancelSetSourceNode,
+  cancelSetSinkNode,
+} from "./useSourceSinkControls";
 import type { FlowTrace } from "./fordFulkerson"
 import { useTextTip } from "@ui/useTextTip";
 import { useSourceSinkStyler } from "./useSourceSinkStyler";
@@ -11,11 +18,10 @@ import { useSimulationTheme } from "./useSimulationTheme";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 import { useFordFulkerson } from "./useFordFulkerson";
 
+export type FlowSimulationControls = SimulationControls<FlowTrace>
 export type FlowSimulationRunner = SimulationRunner<FlowTrace>
 
 export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
-  const srcSink = useSourceSinkControls(graph);
-
   const { text } = useTextTip();
 
   const {
@@ -26,14 +32,13 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
   const {
     stylize: activateFlowColorizer,
     destylize: deactivateFlowColorizer
-  } = useSourceSinkStyler(graph, srcSink)
-
+  } = useSourceSinkStyler(graph)
 
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
 
   const { trace } = useFordFulkerson(graph, {
-    source: srcSink.source,
-    sink: srcSink.sink
+    source: sourceNode,
+    sink: sinkNode,
   })
 
   const simControls = useSimulationControls(trace)
@@ -49,9 +54,9 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
     activateFlowColorizer()
     activeEdgeThickener()
     text.value = 'Select a source node'
-    await srcSink.setSourceNode()
+    await setSourceNode()
     text.value = 'Select a sink node'
-    await srcSink.setSinkNode()
+    await setSinkNode()
     text.value = undefined
 
     createResidualEdges()
@@ -62,8 +67,8 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
   const stop = () => {
     if (!running.value) return
 
-    srcSink.cancelSetSourceNode.value?.()
-    srcSink.cancelSetSinkNode.value?.()
+    cancelSetSinkNode.value?.()
+    cancelSetSourceNode.value?.()
 
     simControls.stop()
     cleanupResidualEdges()
@@ -71,10 +76,8 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
 
     deactivateFlowColorizer()
     deactivateEdgeThickener()
-    srcSink.source.value = undefined
-    srcSink.sink.value = undefined
-    text.value = undefined
 
+    text.value = undefined
     running.value = false
   }
 
