@@ -3,7 +3,7 @@ import { useGraph } from "./useGraph";
 import type { Graph } from "./types";
 import { defineStore } from "pinia";
 
-export const globalGraph = shallowRef({} as Graph);
+export const graph = shallowRef({} as Graph);
 
 export const useGraphStore = defineStore('graph', () => {
   const graph = ref(useGraph(shallowRef()))

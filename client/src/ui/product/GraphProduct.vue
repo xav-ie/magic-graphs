@@ -13,10 +13,10 @@
 
   const props = defineProps<{
     graph: Graph;
-    simulationRunner: { value: UnwrapRef<SimulationRunner> };
+    simulationRunner: UnwrapRef<SimulationRunner>;
   }>();
 
-  const simRunner = computed(() => props.simulationRunner.value);
+  const simRunner = computed(() => props.simulationRunner);
   const simControls = computed(() => simRunner.value.simControls);
   const running = computed(() => simRunner.value.running);
   const isActive = computed(() => simControls.value.isActive);
@@ -40,9 +40,7 @@
     :graph="graph"
   />
 
-  <div
-    class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
-  >
+  <div class="absolute top-6 w-full flex flex-col justify-center items-center gap-2">
     <template v-if="running">
       <slot name="top-center-sim"></slot>
     </template>
@@ -98,7 +96,7 @@
     class="absolute bottom-8 gap-4 w-full flex flex-col justify-center items-center"
   >
     <div v-if="isActive">
-      <SimulationPlaybackControls :controls="{ value: simControls }" />
+      <SimulationPlaybackControls :controls="simControls" />
     </div>
 
     <div v-show="graph.annotationActive.value">

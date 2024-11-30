@@ -26,7 +26,7 @@
 
       <h2 class="text-xl font-bold text-gray-200 mb-2">Adjacency List</h2>
       <div class="bg-gray-700 p-4 rounded-lg max-h-[200px] overflow-auto">
-        <AdjacencyListDisplay :graph="props.graph" />
+        <AdjacencyListDisplay />
       </div>
       <!-- Not completed yet -->
       <!-- <h2 class="text-xl font-bold text-gray-200 mb-2">Transition Matrix</h2>

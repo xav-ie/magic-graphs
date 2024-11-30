@@ -4,7 +4,7 @@ import type { Graph } from "@graph/types";
 import { collabControls } from "@graph/collab";
 import type { ProductInfo } from "src/types";
 import { routeToProduct } from "./product";
-import { globalGraph } from "@graph/global";
+import { graph as globalGraph } from "@graph/global";
 
 /**
  * bootstraps a graph centric product, connecting to a room if a room id is provided in the query

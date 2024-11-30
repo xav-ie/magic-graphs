@@ -1,18 +1,18 @@
 <script setup lang="ts">
+  import { computed } from "vue";
   import { useAdjacencyList } from "@graph/useAdjacencyList";
   import GraphNode from "@ui/graph/GraphNode.vue";
-  import type { Graph } from "@graph/types";
-  import { globalGraph } from "@graph/global";
+  import { graph } from "@graph/global";
 
-  const props = defineProps<{
-    graph: Graph,
-  }>();
-
-  const { weightedAdjacencyList } = useAdjacencyList(globalGraph.value);
+  const { weightedAdjacencyList } = useAdjacencyList(graph.value);
 
   const getLabel = (nodeId: string) => {
-    return props.graph.getNode(nodeId)?.label;
+    return graph.value.getNode(nodeId)?.label;
   };
+
+  const isWeighted = computed(
+    () => graph.value.settings.value.displayEdgeLabels
+  );
 </script>
 
 <template>
@@ -40,7 +40,7 @@
                 {{ node.label }}
               </span>
               <span
-                v-if="props.graph.settings.value.displayEdgeLabels"
+                v-if="isWeighted"
                 class="leading-[15px] text-[8px]"
               >
                 Cost {{ node.weight }}

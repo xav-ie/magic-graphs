@@ -10,7 +10,6 @@
   import GraphProduct from "@ui/product/GraphProduct.vue";
   import SelectSimulation from "./SelectSimulation.vue";
   import { getSimulationDeclarations } from "@utils/product";
-  import type { SimulationRunner } from "@ui/product/sim/types";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -18,7 +17,7 @@
   });
 
   const simulations = getSimulationDeclarations(graph);
-  const activeSimulation = ref<SimulationDeclaration>(simulations[1]);
+  const activeSimulation = ref(simulations[0]);
 
   const { colorize, colorMap } = useMarkupColorizer(graph);
   colorize();
@@ -37,7 +36,7 @@
   <GraphProduct
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
-    :simulation-runner="{ value: activeSimulation.runner }"
+    :simulation-runner="activeSimulation.runner"
   >
     <template #top-center>
       <IslandToolbar :graph="graph" />
