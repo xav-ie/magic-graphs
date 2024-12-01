@@ -1,13 +1,10 @@
 <script setup lang="ts">
-  import type { GNode, Graph } from "@graph/types";
+  import type { GNode } from "@graph/types";
+  import { graph } from "@graph/global";
   import colors from "@colors";
-  import { SIM_COLORS, INF_STR } from "./useSimulationTheme";
+  import { SIM_COLORS, INF_STR } from "../sim/theme";
 
-  const props = defineProps<{
-    graph: Graph;
-  }>();
-
-  const { getTheme, isFocused } = props.graph;
+  const { getTheme, isFocused } = graph.value;
 
   const getNodeCosts = (node: GNode) => getTheme("nodeText", node);
 
@@ -31,7 +28,7 @@
     if (isExplored(node)) return SIM_COLORS.EXPLORED;
     if (isExploring(node)) return SIM_COLORS.EXPLORING;
     if (isSource(node)) return SIM_COLORS.SOURCE;
-    if (props.graph.isFocused(node.id)) return getTheme("nodeBorderColor", node);
+    if (isFocused(node.id)) return getTheme("nodeBorderColor", node);
     return colors.GRAY_600;
   };
 

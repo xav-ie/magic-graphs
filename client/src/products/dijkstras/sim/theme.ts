@@ -1,9 +1,9 @@
 import { computed } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import type { SimulationControls } from "@ui/product/sim/types";
-import { INF, type DijkstrasTrace } from "./dijkstra";
 import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
+import { INF, type DijkstrasTrace } from "../algo/dijkstra";
 
 export const SIM_COLORS = {
   SOURCE: colors.AMBER_600,
