@@ -4,10 +4,7 @@
 </script>
 
 <template>
-  <v-menu
-    :offset="[10, 0]"
-    :persistent="true"
-  >
+  <v-menu :offset="[10, 0]">
     <template #activator="{ props, isActive }">
       <div v-bind="props">
         <slot :isActive="isActive"></slot>

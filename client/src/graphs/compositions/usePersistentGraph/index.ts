@@ -120,7 +120,6 @@ export const usePersistentGraph = (
     'onNodeDrop',
     'onGroupDrop',
     'onGraphReset',
-    'onEdgeLabelChange',
   ]
 
   const trackOptionsEvents: GraphEvent[] = [

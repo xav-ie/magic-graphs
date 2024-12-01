@@ -1,6 +1,7 @@
 <script setup lang="ts">
-  import { ref, toRefs } from "vue";
+  import { onUnmounted, ref, toRefs } from "vue";
   import type { UnwrapRef } from "vue";
+  import { graph } from "@graph/global";
   import type { SimulationControls } from "./types";
   import PlaybackButton from "./PlaybackButton.vue";
   import ProgressBar from "./ProgressBar.vue";
@@ -49,6 +50,16 @@
   const onProgressMouseLeave = () => {
     previewedProgress.value = -1;
   }
+
+  const pause = () => {
+    paused.value = true;
+  };
+
+  graph.value.subscribe('onStructureChange', pause);
+
+  onUnmounted(() => {
+    graph.value.unsubscribe('onStructureChange', pause);
+  });
 </script>
 
 <template>

@@ -12,15 +12,14 @@ import type {
 } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 import { useHistoryGraph } from "@graph/compositions/useHistoryGraph";
-import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "@graph/compositions/useFocusGraph/types";
-import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../useBaseGraph/types";
 import { getCtx } from "@utils/ctx";
+import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "./constants";
+import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../useBaseGraph/types";
 
 export const useFocusGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
 ) => {
-
   const graph = useHistoryGraph(canvas, options);
 
   const { setTheme } = useTheme(graph, FOCUS_THEME_ID)
@@ -63,6 +62,7 @@ export const useFocusGraph = (
       if (newLabel === undefined || edge.label === newLabel) return
       edge.label = newLabel
       graph.emit('onEdgeLabelChange', edge)
+      graph.emit('onStructureChange', graph.nodes.value, graph.edges.value)
     })
   }
 

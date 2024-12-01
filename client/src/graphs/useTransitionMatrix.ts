@@ -3,13 +3,17 @@ import type { Graph } from "@graph/types";
 import { getAdjacencyList } from "./useAdjacencyList";
 import { getEdgesAlongPath, getEdgeWeight } from "./helpers";
 
+/**
+ * a 2D array (matrix) where matrix[i][j] represents the absolute weight of
+ * transitioning from node i to node j
+ */
 export type TransitionMatrix = number[][];
 
 /**
- * Generates a transition matrix for a directed or undirected graph
+ * generates a transition matrix for a directed or undirected graph
  *
  * @param graph - The graph instance
- * @returns A 2D array (matrix) where matrix[i][j] represents the
+ * @returns a 2D array (matrix) where matrix[i][j] represents the
  * absolute weight of transitioning from node i to node j
  */
 export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
@@ -59,11 +63,9 @@ export const useTransitionMatrix = (graph: Graph) => {
   };
 
   graph.subscribe("onStructureChange", update);
-  graph.subscribe("onEdgeLabelChange", update);
 
   onUnmounted(() => {
     graph.unsubscribe("onStructureChange", update);
-    graph.unsubscribe("onEdgeLabelChange", update);
   });
 
   update();
