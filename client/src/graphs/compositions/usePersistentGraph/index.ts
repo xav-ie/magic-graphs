@@ -7,10 +7,6 @@ import type { GraphEvent } from "@graph/events";
 /**
  * extends the useGraph interface to include capabilities for storing and retrieving a graph from local storage.
  *
- * LIMITATION: the graph is stored in local storage as a JSON string. This means that functions and
- * other non-serializable
- * properties will not be stored. This is especially important for graph themes.
- *
  * @param canvas
  * @param options
  * @returns the graph interface with additional persistent graph functionality
@@ -29,9 +25,10 @@ export const usePersistentGraph = (
         ) ?? "[]"
       ),
     set: (nodes: GNode[]) => {
-      const nodesToAdd = nodes.filter(
-        (node) => !graph.settings.value.persistentBlacklist.has(node.id)
-      );
+      const nodesToAdd = nodes.filter((node) => {
+        const nodeInBlacklist = graph.settings.value.persistentBlacklist.has(node.id)
+        return !nodeInBlacklist
+      });
       localStorage.setItem(
         graph.settings.value.persistentStorageKey + "-nodes",
         JSON.stringify(nodesToAdd)
@@ -47,9 +44,10 @@ export const usePersistentGraph = (
         ) ?? "[]"
       ),
     set: (edges: GEdge[]) => {
-      const edgesToAdd = edges.filter(
-        (edge) => !graph.settings.value.persistentBlacklist.has(edge.id)
-      );
+      const edgesToAdd = edges.filter((edge) => {
+        const edgeInBlacklist = graph.settings.value.persistentBlacklist.has(edge.id)
+        return !edgeInBlacklist
+    });
       localStorage.setItem(
         graph.settings.value.persistentStorageKey + "-edges",
         JSON.stringify(edgesToAdd)
