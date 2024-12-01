@@ -1,14 +1,6 @@
-import { computed, ref } from "vue";
 import type { Graph } from "@graph/types";
 import type { SimulationControls, SimulationRunner } from "@ui/product/sim/types";
-import {
-  sourceNode,
-  sinkNode,
-  setSourceNode,
-  setSinkNode,
-  cancelSetSourceNode,
-  cancelSetSinkNode,
-} from "./useSourceSinkControls";
+import state from "./state";
 import type { FlowTrace } from "./fordFulkerson"
 import { useTextTip } from "@ui/useTextTip";
 import { useSourceSinkStyler } from "./useSourceSinkStyler";
@@ -36,39 +28,42 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
 
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
 
-  const { trace } = useFordFulkerson(graph, {
-    source: sourceNode,
-    sink: sinkNode,
-  })
-
+  const { sourceNode, sinkNode } = state
+  const { trace } = useFordFulkerson(graph)
   const simControls = useSimulationControls(trace)
 
   const { activate: activateTheme, deactivate: deactivateTheme } = useSimulationTheme(graph, simControls)
 
-  const running = ref(false);
+  let cancelled = false;
 
   const start = async () => {
-    if (running.value) return
-    running.value = true
+    graph.settings.value.persistent = false;
 
     activateFlowColorizer()
     activeEdgeThickener()
+
     text.value = 'Select a source node'
-    await setSourceNode()
+    await state.setNode(graph, sourceNode)
+
+    if (cancelled) return
+
     text.value = 'Select a sink node'
-    await setSinkNode()
+    await state.setNode(graph, sinkNode)
+
     text.value = undefined
+
+    if (cancelled) return
 
     createResidualEdges()
     activateTheme()
+
     simControls.start()
   }
 
-  const stop = () => {
-    if (!running.value) return
+  const stop = async () => {
+    cancelled = true
 
-    cancelSetSinkNode.value?.()
-    cancelSetSourceNode.value?.()
+    state.cancelNodeSelection.value?.()
 
     simControls.stop()
     cleanupResidualEdges()
@@ -78,13 +73,14 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
     deactivateEdgeThickener()
 
     text.value = undefined
-    running.value = false
+    graph.settings.value.persistent = true
+
+    setTimeout(() => cancelled = false, 0)
   }
 
   return {
     start,
     stop,
-    running: computed(() => running.value),
     simControls,
   }
 }

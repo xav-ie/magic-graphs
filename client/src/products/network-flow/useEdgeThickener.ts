@@ -19,7 +19,7 @@ export const useEdgeThickener = (graph: Graph) => {
   const { setTheme, removeTheme } = useTheme(graph, FLOW_USETHEME_ID);
 
   const thickener = (edge: GEdge) => {
-    const edgeWeight = Number(edge.label);
+    const edgeWeight = Number(graph.getTheme('edgeText', edge));
     if (isNaN(edgeWeight)) return;
     if (edgeWeight === 0) return ZERO_THICKNESS;
     const adjustedWeight = edgeWeight * 2

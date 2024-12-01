@@ -2,13 +2,14 @@ import { useTheme } from "@graph/themes/useTheme";
 import type { GNode, Graph } from "@graph/types";
 import colors from "@utils/colors";
 import { FLOW_USETHEME_ID, SINK_LABEL, SOURCE_LABEL } from "./constants";
-import { sourceNode, sinkNode } from "./useSourceSinkControls";
+import state from "./state";
 
 /**
  * hooks into the graph with useTheme to color and label the source and sink nodes
  */
 export const useSourceSinkStyler = (graph: Graph) => {
   const { setTheme, removeTheme } = useTheme(graph, FLOW_USETHEME_ID);
+  const { sourceNode, sinkNode } = state
 
   const colorSourceSink = (node: GNode) => {
     if (graph.isFocused(node.id)) return

@@ -85,11 +85,6 @@ export type SimulationRunner<T extends any[] = any[]> = {
    */
   stop: () => Promise<void> | void
   /**
-   * Whether the simulation is currently running or in start up
-   * ie user is selecting the starting node
-   */
-  running: ComputedRef<boolean>
-  /**
    * The controls for the simulation
    */
   simControls: SimulationControls<T>

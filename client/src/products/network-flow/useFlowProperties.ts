@@ -1,6 +1,5 @@
 import { readonly } from "vue";
 import type { Graph } from "@graph/types";
-import { sourceNode, sinkNode } from "./useSourceSinkControls";
 import { useFordFulkerson } from "./useFordFulkerson";
 
 /**
@@ -9,10 +8,7 @@ import { useFordFulkerson } from "./useFordFulkerson";
  */
 export const useFlowProperties = (graph: Graph) => {
 
-  const { maxFlow } = useFordFulkerson(graph, {
-    source: sourceNode,
-    sink: sinkNode,
-  });
+  const { maxFlow } = useFordFulkerson(graph);
 
   return {
     maxFlow: readonly(maxFlow),
