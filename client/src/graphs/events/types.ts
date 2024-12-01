@@ -20,7 +20,10 @@ import type { GraphMouseEvent } from "@graph/compositions/useBaseGraph/types";
 
 export type BaseGraphEventMap = {
   /**
-   * when a node or edge is added or removed from the graph
+   * when one of the following occurs:
+   * - a node is added or removed
+   * - an edge is added or removed
+   * - an edge label is changed (usually indicating a change to the weight of the edge)
    */
   onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
   /**

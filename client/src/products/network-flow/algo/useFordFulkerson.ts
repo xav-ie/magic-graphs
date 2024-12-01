@@ -31,7 +31,6 @@ export const useFordFulkerson = (graph: Graph) => {
     cleanupResidualEdges()
   }
 
-  graph.subscribe('onEdgeLabelChange', update)
   graph.subscribe('onStructureChange', update)
   graph.subscribe('onGraphReset', update)
 

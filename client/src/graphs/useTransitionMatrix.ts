@@ -63,11 +63,9 @@ export const useTransitionMatrix = (graph: Graph) => {
   };
 
   graph.subscribe("onStructureChange", update);
-  graph.subscribe("onEdgeLabelChange", update);
 
   onUnmounted(() => {
     graph.unsubscribe("onStructureChange", update);
-    graph.unsubscribe("onEdgeLabelChange", update);
   });
 
   update();
