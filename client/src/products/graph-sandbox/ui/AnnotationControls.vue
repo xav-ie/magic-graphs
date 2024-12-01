@@ -1,34 +1,38 @@
 <script setup lang="ts">
-  import { toRef } from "vue";
-  import colors from "@utils/colors";
-  import Toolbar from "@product/graph-sandbox/Toolbar.vue";
-  import ToolbarButton from "@product/graph-sandbox/ToolbarButton.vue";
-  import ToolbarButtonDivider from "@product/graph-sandbox/ToolbarButtonDivider.vue";
-  import ToolbarButtonGroup from "@product/graph-sandbox/ToolbarButtonGroup.vue";
   import {
     COLORS,
     BRUSH_WEIGHTS,
   } from "@graph/compositions/useAnnotationGraph/types";
-  import type { Graph } from "@graph/types";
+  import { graph } from "@graph/global";
+  import colors, { type Color } from "@utils/colors";
+  import Toolbar from "./toolbar/Toolbar.vue";
+  import ToolbarButton from "./toolbar/ToolbarButton.vue";
+  import ToolbarButtonDivider from "./toolbar/ToolbarButtonDivider.vue";
+  import ToolbarButtonGroup from "./toolbar/ToolbarButtonGroup.vue";
 
-  const props = defineProps<{
-    graph: Graph;
-  }>();
-
-  const selectedColor = toRef(props.graph, "annotationColor");
-  const selectedBrushWeight = toRef(props.graph, "annotationBrushWeight");
-  const erasing = toRef(props.graph, "annotationErasing");
-
-  const { clearAnnotations } = props.graph;
+  const { clearAnnotations } = graph.value;
 
   const selectColor = (color: string) => {
-    selectedColor.value = color;
-    erasing.value = false;
+    graph.value.annotationColor.value = color;
+    graph.value.annotationErasing.value = false;
   };
 
   const selectBrushWeight = (brushWeight: number) => {
-    selectedBrushWeight.value = brushWeight;
-    erasing.value = false;
+    graph.value.annotationBrushWeight.value = brushWeight;
+  };
+
+  const isColorActive = (color: Color) => {
+    const erasing = graph.value.annotationErasing.value;
+    if (erasing) return false;
+    return graph.value.annotationColor.value === color;
+  }
+
+  const isBrushWeightActive = (brushWeight: number) => {
+    return graph.value.annotationBrushWeight.value === brushWeight;
+  }
+
+  const toggleErasing = () => {
+    graph.value.annotationErasing.value = !graph.value.annotationErasing.value;
   }
 </script>
 
@@ -38,7 +42,7 @@
       <ToolbarButton
         v-for="color in COLORS"
         @click="selectColor(color)"
-        :active="selectedColor === color && !erasing"
+        :active="isColorActive(color)"
         :key="color"
         :color="color"
       >
@@ -54,7 +58,7 @@
       <ToolbarButton
         v-for="(weight, index) in BRUSH_WEIGHTS"
         @click="selectBrushWeight(weight)"
-        :active="selectedBrushWeight === weight"
+        :active="isBrushWeightActive(weight)"
         :key="weight"
         :color="colors.TRANSPARENT"
       >
@@ -73,9 +77,11 @@
 
     <ToolbarButtonGroup class="gap-1">
       <ToolbarButton
-        @click="erasing = !erasing"
-        :active="erasing"
-      >mdi-eraser</ToolbarButton>
+        @click="toggleErasing"
+        :active="graph.annotationErasing.value"
+      >
+        mdi-eraser
+      </ToolbarButton>
 
       <ToolbarButton @click="clearAnnotations">
         mdi-delete-outline

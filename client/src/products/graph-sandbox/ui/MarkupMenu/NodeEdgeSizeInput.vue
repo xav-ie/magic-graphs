@@ -1,11 +1,15 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import type { Graph } from "@graph/types";
-  import type { MarkupSize } from "../types";
-  import InputSize from "./InputSize.vue";
-  import type { SizeMap } from "../useMarkupSizer";
-  import { DEFAULT_MARKUP_SIZE, MARKUP_USETHEME_ID, SIZE_TO_WIDTH } from "../types";
   import { useTheme } from "@graph/themes/useTheme";
+  import type { MarkupSize } from "@product/graph-sandbox/types";
+  import {
+    DEFAULT_MARKUP_SIZE,
+    MARKUP_USETHEME_ID,
+    SIZE_TO_WIDTH,
+  } from "@product/graph-sandbox/constants";
+  import type { SizeMap } from "@product/graph-sandbox/theme/useMarkupSizer";
+  import InputSize from "./InputSize.vue";
 
   const props = defineProps<{
     graph: Graph;
@@ -49,13 +53,14 @@
     activeSize.value = getSize();
   };
 
-  props.graph.subscribe('onNodeAdded', sizeAddedItem);
-  props.graph.subscribe('onEdgeAdded', sizeAddedItem);
+  props.graph.subscribe("onNodeAdded", sizeAddedItem);
+  props.graph.subscribe("onEdgeAdded", sizeAddedItem);
   props.graph.subscribe("onFocusChange", recalculateActiveSize);
 
-  const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID + '-preview');
-  const sizeLinkPreview = () => SIZE_TO_WIDTH[activeSize.value ?? DEFAULT_MARKUP_SIZE];
-  setTheme('linkPreviewWidth', sizeLinkPreview);
+  const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID + "-preview");
+  const sizeLinkPreview = () =>
+    SIZE_TO_WIDTH[activeSize.value ?? DEFAULT_MARKUP_SIZE];
+  setTheme("linkPreviewWidth", sizeLinkPreview);
 </script>
 
 <template>

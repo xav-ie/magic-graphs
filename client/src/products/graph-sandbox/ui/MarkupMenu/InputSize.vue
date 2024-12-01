@@ -1,8 +1,8 @@
 <script setup lang="ts">
+  import { MARKUP_SIZES } from "@product/graph-sandbox/constants";
+  import type { MarkupSize } from "@product/graph-sandbox/types";
   import ButtonGroup from "./ButtonGroup.vue";
   import Button from "./Button.vue";
-  import { MARKUP_SIZES } from "../types";
-  import type { MarkupSize } from "../types";
 
   const activeSize = defineModel<MarkupSize>();
 </script>

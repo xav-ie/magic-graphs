@@ -1,10 +1,10 @@
+import { useLocalStorage } from "@vueuse/core";
 import { getValue } from "@graph/helpers";
 import { useTheme } from "@graph/themes/useTheme";
 import type { GEdge, GNode, Graph } from "@graph/types";
 import colors, { adjustHex } from "@utils/colors";
 import type { Color } from "@utils/colors";
-import { useLocalStorage } from "@vueuse/core";
-import { MARKUP_USETHEME_ID } from "./types";
+import { MARKUP_USETHEME_ID } from "../constants";
 
 type ColorMapKey = GNode['id'] | GEdge['id'];
 type ColorMapValue = Color;

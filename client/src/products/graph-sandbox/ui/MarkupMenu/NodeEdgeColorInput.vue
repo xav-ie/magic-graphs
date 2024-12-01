@@ -1,11 +1,11 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import type { Graph } from "@graph/types";
-  import type { ColorMap } from "../useMarkupColorizer";
-  import InputColor from "./InputColor.vue";
-  import type { Color } from "@utils/colors";
-  import { DEFAULT_MARKUP_COLOR, MARKUP_USETHEME_ID } from "../types";
   import { useTheme } from "@graph/themes/useTheme";
+  import type { ColorMap } from "@product/graph-sandbox/theme/useMarkupColorizer";
+  import type { Color } from "@utils/colors";
+  import { DEFAULT_MARKUP_COLOR, MARKUP_USETHEME_ID } from "@product/graph-sandbox/constants";
+  import InputColor from "./InputColor.vue";
 
   const props = defineProps<{
     graph: Graph;

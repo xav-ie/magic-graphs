@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import { graph } from "@graph/global"
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
-  import Toolbar from "./Toolbar.vue";
-  import ToolbarButton from "./ToolbarButton.vue";
-  import ToolbarButtonDivider from "./ToolbarButtonDivider.vue";
-  import ToolbarButtonGroup from "./ToolbarButtonGroup.vue";
+  import Toolbar from "./toolbar/Toolbar.vue";
+  import ToolbarButton from "./toolbar/ToolbarButton.vue";
+  import ToolbarButtonDivider from "./toolbar/ToolbarButtonDivider.vue";
+  import ToolbarButtonGroup from "./toolbar/ToolbarButtonGroup.vue";
   import GraphInfoMenu from "./GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
 

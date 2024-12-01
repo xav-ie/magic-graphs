@@ -1,8 +1,8 @@
-import type { GEdge, GNode, Graph } from "@graph/types";
-import { useTheme } from "@graph/themes/useTheme";
-import { MARKUP_USETHEME_ID, SIZE_TO_RADIUS, SIZE_TO_WIDTH } from "./types";
-import type { MarkupSize } from "./types";
 import { useLocalStorage } from "@vueuse/core";
+import { useTheme } from "@graph/themes/useTheme";
+import type { GEdge, GNode, Graph } from "@graph/types";
+import { MARKUP_USETHEME_ID, SIZE_TO_RADIUS, SIZE_TO_WIDTH } from "../constants";
+import type { MarkupSize } from "../types";
 
 type SizeMapKey = GNode['id'] | GEdge['id'];
 type SizeMapValue = MarkupSize;

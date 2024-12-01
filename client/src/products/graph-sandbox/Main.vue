@@ -3,10 +3,10 @@
   import { useGraph } from "@graph/useGraph";
   import GraphProduct from "@ui/product/GraphProduct.vue";
   import { SANDBOX_GRAPH_SETTINGS } from "./settings";
-  import IslandToolbar from "./IslandToolbar.vue";
-  import IslandMarkup from "./IslandMarkup.vue";
-  import { useMarkupColorizer } from "./useMarkupColorizer";
-  import { useMarkupSizer } from "./useMarkupSizer";
+  import IslandToolbar from "./ui/IslandToolbar.vue";
+  import IslandMarkup from "./ui/IslandMarkup.vue";
+  import { useMarkupColorizer } from "./theme/useMarkupColorizer";
+  import { useMarkupSizer } from "./theme/useMarkupSizer";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {

@@ -2,14 +2,14 @@
   import { computed, ref } from "vue";
   import { useRouter } from "vue-router";
   import { graph } from "@graph/global";
+  import { generateId } from "@graph/helpers";
   import { collabControls, myCollaboratorProfile } from "@graph/collab";
   import { debounce } from "@utils/debounce";
   import Button from "@ui/Button.vue";
-  import { generateId } from "@graph/helpers";
   import colors from "@utils/colors";
   import { productIdToProduct, useProductRouting } from "@utils/product";
   import { darkenHex } from "@utils/colors";
-  import GraphSandboxProductInfo from "./info";
+  import GraphSandboxProductInfo from "../info";
 
   const router = useRouter();
   const { navigate } = useProductRouting();
@@ -84,6 +84,7 @@
           v-model="myCollaboratorProfile.name"
           :disabled="isConnected || startingRoom"
           type="text"
+          id="collab-name"
           class="bg-gray-700 text-white w-full p-2 rounded-lg outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           placeholder="The name you want others to see"
         />
@@ -110,8 +111,8 @@
 
         <div v-else>
           <div
-            class="group p-2 bg-gray-900 bg-opacity-50 hover:bg-opacity-100 text-gray-300 rounded-lg cursor-pointer flex justify-between items-center"
             @click="copyLink"
+            class="group p-2 bg-gray-900 bg-opacity-50 hover:bg-opacity-100 text-gray-300 rounded-lg cursor-pointer flex justify-between items-center"
           >
             <span>
               {{ link }}

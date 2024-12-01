@@ -1,8 +1,8 @@
 <script setup lang="ts">
+  import { MARKUP_COLORS } from "@product/graph-sandbox/constants";
+  import type { Color } from "@utils/colors";
   import ButtonGroup from "./ButtonGroup.vue";
   import Button from "./Button.vue";
-  import type { Color } from "@utils/colors";
-  import { MARKUP_COLORS } from "../types";
 
   const activeColor = defineModel<Color>();
 </script>
