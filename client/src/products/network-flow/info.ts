@@ -1,54 +1,7 @@
-import type { ProductInfo, SimulationDeclaration } from 'src/types'
+import type { ProductInfo } from 'src/types'
 import type { Graph } from '@graph/types'
-import { useTextTip } from '@ui/useTextTip'
-import { useFlowSimulation } from './useFlowSimulation'
-import { useSourceSinkControls } from './useSourceSinkControls'
-import { useSourceSinkStyler } from './useSourceSinkStyler'
-import { useEdgeThickener } from './useEdgeThickener'
-
-const flowSimulations = (graph: Graph): SimulationDeclaration[] => {
-  const manager = useSourceSinkControls(graph)
-
-  const {
-    activate: activeEdgeThickener,
-    deactivate: deactivateEdgeThickener
-  } = useEdgeThickener(graph)
-
-  const {
-    stylize: activateFlowColorizer,
-    destylize: deactivateFlowColorizer
-  } = useSourceSinkStyler(graph, manager)
-
-  const controls = useFlowSimulation(graph, manager)
-
-  const { text } = useTextTip()
-
-  return [
-    {
-      name: 'Ford Fulkerson',
-      description: 'Iteratively find augmenting paths until the residual graph is revealed',
-      thumbnail: '/products/thumbnails/network-flow.png',
-      controls,
-      onInit: async () => {
-        activateFlowColorizer()
-        activeEdgeThickener()
-        text.value = 'Select a source node'
-        await manager.setSourceNode()
-        text.value = 'Select a sink node'
-        await manager.setSinkNode()
-        text.value = undefined
-      },
-      onDismiss: async () => {
-        // TODO - call cancel on source/sink promises so that onInit isn't lingering
-        deactivateFlowColorizer()
-        deactivateEdgeThickener()
-        manager.source.value = undefined
-        manager.sink.value = undefined
-        text.value = undefined
-      }
-    }
-  ]
-}
+import state from './state'
+import { useSimulationRunner } from './sim/runner'
 
 const info: ProductInfo = {
   route: {
@@ -63,7 +16,15 @@ const info: ProductInfo = {
     description: 'Visualize Network Flow',
     thumbnail: '/products/thumbnails/network-flow.png',
   },
-  simulations: (graph: Graph) => flowSimulations(graph),
+  simulations: (graph: Graph) => ([
+    {
+      name: 'Ford Fulkerson',
+      description: 'Iteratively find augmenting paths until the residual graph is revealed',
+      thumbnail: '/products/thumbnails/network-flow.png',
+      runner: useSimulationRunner(graph),
+    }
+  ]),
+  state,
 }
 
 export default info

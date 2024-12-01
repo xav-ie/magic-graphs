@@ -107,7 +107,6 @@ export const useUserEditableGraph = (
       graph.subscribe(event, EVENT_BINDINGS[event])
     }
     graph.settings.value.nodeAnchors = true
-    graph.settings.value.draggable = true
     graph.settings.value.edgeLabelsEditable = true
   }
 
@@ -117,7 +116,6 @@ export const useUserEditableGraph = (
       graph.unsubscribe(event, EVENT_BINDINGS[event])
     }
     graph.settings.value.nodeAnchors = false
-    graph.settings.value.draggable = false
     graph.settings.value.edgeLabelsEditable = false
   }
 

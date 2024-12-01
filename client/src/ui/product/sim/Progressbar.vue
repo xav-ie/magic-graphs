@@ -2,6 +2,7 @@
   import { computed } from "vue";
   import { PROGRESS_DEFAULTS } from "./progressTypes";
   import type { ProgressOptions } from "./progressTypes";
+  import colors from "@utils/colors";
 
   const props = withDefaults(defineProps<ProgressOptions>(), PROGRESS_DEFAULTS);
 
@@ -10,40 +11,58 @@
     return end - start;
   });
 
-  const progressPercentage = computed(() => {
+  const progressPercentage = (progressStep: number) => {
     const [start] = props.range;
-    const curr = props.progress;
+    const curr = progressStep;
 
     const progress = Math.min(Math.max(curr - start, 0), range.value);
     return (progress / range.value) * 100;
-  });
+  };
 
-  const updateProgressFromClick = (event: MouseEvent) => {
+  const getStepFromMouseEvent = (event: MouseEvent) => {
     const progressBar = event.currentTarget;
-    if (!(progressBar instanceof HTMLElement)) return;
+    if (!(progressBar instanceof HTMLElement))
+      throw new Error("Invalid target");
 
     const clickPosition = event.offsetX;
     const progressBarWidth = progressBar.offsetWidth;
 
     const clickPercentage = clickPosition / progressBarWidth;
+    const newProgress = props.range[0] + clickPercentage * range.value;
 
-    const [start] = props.range;
-    const newProgress = start + clickPercentage * range.value;
+    return Math.round(newProgress);
+  };
 
-    const newStep = Math.round(newProgress);
-    props.onProgressSet?.(newStep);
+  const handleClick = (event: MouseEvent) => {
+    const step = getStepFromMouseEvent(event);
+    props.onProgressSet?.(step);
+  };
+
+  const handleMouseOver = (event: MouseEvent) => {
+    const step = getStepFromMouseEvent(event);
+    props.onHover?.(step);
   };
 </script>
 
 <template>
   <div
-    @click="updateProgressFromClick"
-    class="relative overflow-hidden h-4 w-full"
+    @mousemove="handleMouseOver"
+    @click="handleClick"
+    class="relative overflow-hidden h-4 w-full z-1"
   >
     <div
-      :class="`absolute top-0 left-0 h-full cursor-pointer bg-[${props.color}]`"
+      :class="`absolute top-0 left-0 h-full z-0`"
       :style="{
-        width: `${progressPercentage}%`,
+        backgroundColor: props.color,
+        width: `${progressPercentage(progress)}%`,
+        transition: `width ${props.transitionTimeMs}ms ${props.transitionEasing}`,
+      }"
+    ></div>
+    <div
+      :class="`absolute top-0 left-0 h-full z-10`"
+      :style="{
+        backgroundColor: colors.GRAY_400 + '90',
+        width: `${progressPercentage(previewProgress ?? props.range[0])}%`,
         transition: `width ${props.transitionTimeMs}ms ${props.transitionEasing}`,
       }"
     ></div>

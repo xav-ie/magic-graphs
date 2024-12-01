@@ -5,23 +5,43 @@ import type { Graph, SchemaItem } from "./types";
  * selects schema items only of graph type 'node'
  *
  * @param graph the graph to select from
- * @returns a promise that resolves to the selected node schema or
+ * @returns a promise that resolves to the selected node or
  * undefined if the selection was cancelled
  */
-export const selectNode = (graph: Graph) => selectFromGraph(graph, {
-  predicate: item => item.graphType === 'node',
-});
+export const selectNode = (graph: Graph) => {
+  const { selectedItemPromise, cancelSelection } = selectFromGraph(graph, {
+    predicate: item => item.graphType === 'node',
+  });
+
+  return {
+    selectedItemPromise: async () => {
+      const selectedItem = await selectedItemPromise;
+      return selectedItem ? graph.getNode(selectedItem.id) : undefined;
+    },
+    cancelSelection,
+  }
+}
 
 /**
  * selects schema items only of graph type 'edge'
  *
  * @param graph the graph to select from
- * @returns a promise that resolves to the selected edge schema or
+ * @returns a promise that resolves to the selected edge or
  * undefined if the selection was cancelled
  */
-export const selectEdge = (graph: Graph) => selectFromGraph(graph, {
-  predicate: item => item.graphType === 'edge',
-});
+export const selectEdge = (graph: Graph) => {
+  const { selectedItemPromise, cancelSelection } = selectFromGraph(graph, {
+    predicate: item => item.graphType === 'edge',
+  });
+
+  return {
+    selectedItemPromise: async () => {
+      const selectedItem = await selectedItemPromise;
+      return selectedItem ? graph.getEdge(selectedItem.id) : undefined;
+    },
+    cancelSelection,
+  }
+}
 
 export type SelectFromGraphOptions = {
   /**

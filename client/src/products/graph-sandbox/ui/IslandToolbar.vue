@@ -1,0 +1,131 @@
+<script setup lang="ts">
+  import { graph } from "@graph/global"
+  import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
+  import Toolbar from "./toolbar/Toolbar.vue";
+  import ToolbarButton from "./toolbar/ToolbarButton.vue";
+  import ToolbarButtonDivider from "./toolbar/ToolbarButtonDivider.vue";
+  import ToolbarButtonGroup from "./toolbar/ToolbarButtonGroup.vue";
+  import GraphInfoMenu from "./GraphInfoMenu.vue";
+  import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
+
+  const hint = useGraphTutorial(graph.value, [
+    {
+      dismiss: "onNodeAdded",
+      hint: "Double click on the canvas to add a node.",
+    },
+    {
+      dismiss: "onEdgeAdded",
+      hint: "Hover node to show anchors, drag between them to add an edge.",
+    },
+  ]);
+
+  hint.start();
+
+  const eraseItems = () => {
+    const ids = [...graph.value.focusedItemIds.value];
+    graph.value.bulkRemoveNode(ids);
+    graph.value.bulkRemoveEdge(ids);
+  };
+
+  const toggleAnnotation = () => {
+    const {
+      activateAnnotation: activate,
+      deactivateAnnotation: deactivate,
+      annotationActive: isActive,
+    } = graph.value;
+
+    isActive.value ? deactivate() : activate();
+  };
+</script>
+
+<template>
+  <Toolbar :hint="hint">
+    <ToolbarButtonGroup>
+      <ToolbarButton
+        @click="graph.settings.value.displayEdgeLabels = true"
+        :active="graph.settings.value.displayEdgeLabels"
+      >
+        mdi-label-outline
+      </ToolbarButton>
+
+      <ToolbarButtonDivider />
+
+      <ToolbarButton
+        @click="graph.settings.value.displayEdgeLabels = false"
+        :active="!graph.settings.value.displayEdgeLabels"
+      >
+        mdi-label-off-outline
+      </ToolbarButton>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonGroup>
+      <ToolbarButton
+        @click="graph.settings.value.isGraphDirected = true"
+        :active="graph.settings.value.isGraphDirected"
+      >
+        mdi-arrow-right-thin
+      </ToolbarButton>
+
+      <ToolbarButtonDivider />
+
+      <ToolbarButton
+        @click="graph.settings.value.isGraphDirected = false"
+        :active="!graph.settings.value.isGraphDirected"
+      >
+        mdi-minus
+      </ToolbarButton>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonGroup>
+      <ToolbarButton
+        @click="graph.undo()"
+        :disabled="!graph.canUndo.value"
+      >
+        mdi-undo
+      </ToolbarButton>
+
+      <ToolbarButtonDivider />
+
+      <ToolbarButton
+        @click="graph.redo()"
+        :disabled="!graph.canRedo.value"
+      >
+        mdi-redo
+      </ToolbarButton>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonGroup>
+      <ToolbarButton
+        @click="eraseItems"
+        :disabled="
+          graph.focusedItemIds.value.size === 0 || graph.annotationActive.value
+        "
+      >
+        mdi-eraser
+      </ToolbarButton>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonGroup>
+      <ToolbarButton
+        @click="toggleAnnotation"
+        :active="graph.annotationActive.value"
+      >
+        mdi-pencil
+      </ToolbarButton>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonGroup>
+      <GraphInfoMenu v-slot="{ isActive }">
+        <ToolbarButton :active="isActive">
+          mdi-information-outline
+        </ToolbarButton>
+      </GraphInfoMenu>
+    </ToolbarButtonGroup>
+
+    <ToolbarButtonGroup>
+      <CollaborativeSessionMenu v-slot="{ isActive }">
+        <ToolbarButton :active="isActive">mdi-account-group</ToolbarButton>
+      </CollaborativeSessionMenu>
+    </ToolbarButtonGroup>
+  </Toolbar>
+</template>

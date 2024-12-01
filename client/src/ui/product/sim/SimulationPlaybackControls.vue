@@ -1,17 +1,20 @@
 <script setup lang="ts">
-  import { toRefs } from "vue";
+  import { onUnmounted, ref, toRefs } from "vue";
+  import type { UnwrapRef } from "vue";
+  import { graph } from "@graph/global";
   import type { SimulationControls } from "./types";
-  import ProgressBar from "./ProgressBar.vue";
   import PlaybackButton from "./PlaybackButton.vue";
+  import ProgressBar from "./ProgressBar.vue";
 
   const props = defineProps<{
-    controls: { value: SimulationControls };
+    controls: UnwrapRef<SimulationControls>;
   }>();
 
   const { isOver, paused, step, trace, hasBegun } = toRefs(
-    props.controls.value
+    props.controls
   );
-  const { nextStep, prevStep, setStep, start, stop } = props.controls.value;
+
+  const { nextStep, prevStep, setStep, start, stop } = props.controls;
 
   const goPrevStep = () => {
     prevStep();
@@ -23,6 +26,12 @@
     paused.value = true;
   };
 
+
+  const goToStep = (step: number) => {
+    setStep(step);
+    paused.value = true;
+  };
+
   const togglePause = () => {
     paused.value = !paused.value;
   };
@@ -31,14 +40,37 @@
     stop();
     start();
   };
+
+  const previewedProgress = ref(-1);
+
+  const onProgressBarHover = (prog: number) => {
+    previewedProgress.value = prog;
+  };
+
+  const onProgressMouseLeave = () => {
+    previewedProgress.value = -1;
+  }
+
+  const pause = () => {
+    paused.value = true;
+  };
+
+  graph.value.subscribe('onStructureChange', pause);
+
+  onUnmounted(() => {
+    graph.value.unsubscribe('onStructureChange', pause);
+  });
 </script>
 
 <template>
   <div class="flex flex-col gap-5 items-center justify-center">
     <ProgressBar
-      :range="[-1, trace.length]"
+      @mouseleave="onProgressMouseLeave"
+      :range="[0, trace.length]"
       :progress="step"
-      :on-progress-set="setStep"
+      :on-progress-set="goToStep"
+      :preview-progress="previewedProgress"
+      :on-hover="onProgressBarHover"
       class="w-full border-gray-200 border-2 rounded-lg"
     />
 

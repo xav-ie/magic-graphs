@@ -13,7 +13,7 @@ export type SimulationControls<T extends any[] = any[]> = {
   nextStep: () => void
   /**
    * skip backward to the previous step.
-   * wont do anything if the current step is -1
+   * wont do anything if the current step is 0
    */
   prevStep: () => void
 
@@ -23,14 +23,14 @@ export type SimulationControls<T extends any[] = any[]> = {
   trace: ComputedRef<T>
   /**
    * the current step of the simulation.
-   * ranges from -1 to trace.length where -1 is the state before the algorithm has begun
+   * ranges from 0 to trace.length where 0 is the state before the algorithm has begun
    * and trace.length is the state after the algorithm has completed.
    */
   step: ComputedRef<number>
   /**
    * set the current step of the simulation
    * @param step the step to set the simulation to
-   * @throws if step is not within the bounds of the trace (-1 to trace.length)
+   * @throws if step is not within the bounds of the trace (0 to trace.length)
    */
   setStep: (step: number) => void
 
@@ -63,7 +63,7 @@ export type SimulationControls<T extends any[] = any[]> = {
   isOver: ComputedRef<boolean>
   /**
    * whether the simulation has begun.
-   * true when the step is greater than -1
+   * true when the step is greater than 0
    */
   hasBegun: ComputedRef<boolean>
 }
@@ -84,11 +84,6 @@ export type SimulationRunner<T extends any[] = any[]> = {
    * Stop the simulation
    */
   stop: () => Promise<void> | void
-  /**
-   * Whether the simulation is currently running or in start up
-   * ie user is selecting the starting node
-   */
-  running: ComputedRef<boolean>
   /**
    * The controls for the simulation
    */

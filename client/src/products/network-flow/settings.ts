@@ -1,4 +1,16 @@
+import { graphLabelGetter, LETTERS } from "@graph/labels";
 import type { GraphSettings } from "@graph/settings";
+import type { Graph } from "@graph/types";
+import { SINK_LABEL, SOURCE_LABEL } from "./constants";
+
+const ALPHABET_WITHOUT_SOURCE_SINK = LETTERS.filter(l => l !== SOURCE_LABEL && l !== SINK_LABEL);
+
+/**
+ * labeller network flow graph instances (nodes)
+ */
+export const flowNodeLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
+  return graphLabelGetter(graph.nodes, ALPHABET_WITHOUT_SOURCE_SINK);
+}
 
 /**
  * settings for the network flow useGraph instance
