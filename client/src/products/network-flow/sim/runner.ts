@@ -1,15 +1,15 @@
 import type { Graph } from "@graph/types";
 import type { SimulationControls, SimulationRunner } from "@ui/product/sim/types";
-import state from "./state";
-import type { FlowTrace } from "./fordFulkerson"
-import { useTextTip } from "@ui/useTextTip";
-import { useSourceSinkStyler } from "./useSourceSinkStyler";
-import { useEdgeThickener } from "./useEdgeThickener";
-import { useResidualEdges } from "./useResidualEdges";
-import { useSimulationTheme } from "./useSimulationTheme";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
-import { useFordFulkerson } from "./useFordFulkerson";
-import { FLOW_USETHEME_ID } from "./constants";
+import { useTextTip } from "@ui/useTextTip";
+import state from "../state";
+import { FLOW_USETHEME_ID } from "../constants";
+import type { FlowTrace } from "../algo/fordFulkerson"
+import { useFordFulkerson } from "../algo/useFordFulkerson";
+import { useSourceSinkStyler } from "../theme/useSourceSinkTheme";
+import { useEdgeThickener } from "../theme/useEdgeThickener";
+import { useResidualEdges } from "../misc/useResidualEdges";
+import { useSimulationTheme } from "./theme";
 
 export type FlowSimulationControls = SimulationControls<FlowTrace>
 export type FlowSimulationRunner = SimulationRunner<FlowTrace>

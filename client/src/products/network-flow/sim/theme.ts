@@ -1,12 +1,12 @@
 import { computed } from "vue";
-import type { GEdge, Graph } from "@graph/types";
-import type { SimulationControls } from "@ui/product/sim/types";
-import type { FlowTrace } from "./fordFulkerson";
-import { FLOW_USETHEME_ID } from "./constants";
 import { useTheme } from "@graph/themes/useTheme";
-import colors from "@utils/colors";
 import { getValue } from "@graph/helpers";
-import { isResidual } from "./useResidualEdges";
+import type { GEdge, Graph } from "@graph/types";
+import colors from "@utils/colors";
+import type { SimulationControls } from "@ui/product/sim/types";
+import type { FlowTrace } from "../algo/fordFulkerson";
+import { FLOW_USETHEME_ID } from "../constants";
+import { isResidual } from "../misc/useResidualEdges";
 
 type WeightMap = Map<GEdge['id'], number>
 

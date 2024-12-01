@@ -2,12 +2,11 @@
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import GraphProduct from "@ui/product/GraphProduct.vue";
-  import { useSourceSinkStyler } from "./useSourceSinkStyler";
-  import { useEdgeThickener } from "./useEdgeThickener";
+  import { useSourceSinkStyler } from "./theme/useSourceSinkTheme";
+  import { useEdgeThickener } from "./theme/useEdgeThickener";
   import { FLOW_GRAPH_SETTINGS, flowNodeLabelGetter } from "./settings";
-  import FlowProperties from "./FlowProperties.vue";
-  import { useFlowProperties } from "./useFlowProperties";
-  import SourceSinkControls from "./SourceSinkControls.vue";
+  import FordFulkersonOutput from "./ui/FordFulkersonOutput.vue";
+  import SourceSinkControls from "./ui/SourceSinkControls.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, {
@@ -15,8 +14,6 @@
   });
 
   graph.settings.value.newNodeLabelGetter = flowNodeLabelGetter(graph);
-
-  const flowProps = useFlowProperties(graph);
 
   const { activate: activateEdgeThickener } = useEdgeThickener(graph);
   const { stylize: activateFlowColorizer } = useSourceSinkStyler(graph);
@@ -31,14 +28,12 @@
     :graph="graph"
   >
     <template #top-center>
-      <FlowProperties :flow-properties="flowProps" />
+      <FordFulkersonOutput />
       <SourceSinkControls />
     </template>
 
     <template #center-left></template>
 
-    <template #center-right-sim>
-
-    </template>
+    <template #center-right-sim></template>
   </GraphProduct>
 </template>

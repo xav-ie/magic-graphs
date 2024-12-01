@@ -1,7 +1,7 @@
 import { onUnmounted } from "vue";
 import { useTheme } from "@graph/themes/useTheme";
 import type { GEdge, Graph } from "@graph/types";
-import { FLOW_USETHEME_ID } from "./constants";
+import { FLOW_USETHEME_ID } from "../constants";
 
 const MIN_THICKNESS = 5;
 const MAX_THICKNESS = 25;

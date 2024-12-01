@@ -3,7 +3,7 @@
   import { graph } from "@graph/global";
   import Button from "@ui/Button.vue";
   import colors from "@utils/colors";
-  import state from "./state";
+  import state from "../state";
 
   const settingSourceNode = ref(false);
   const settingSinkNode = ref(false);

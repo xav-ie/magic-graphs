@@ -42,7 +42,6 @@ export const useGraphProduct = (graph: Graph, product?: ProductInfo) => {
   })
 
   onBeforeUnmount(() => {
-    console.log('unmounting product', product.name);
     product.state?.reset();
   });
 }

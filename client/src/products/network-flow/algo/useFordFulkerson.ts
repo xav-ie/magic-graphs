@@ -1,16 +1,16 @@
-import { computed, ref, watch } from 'vue'
-import state from './state'
+import { computed, readonly, ref, watch } from 'vue'
+import state from '../state'
 import type { Graph } from '@graph/types'
 import { fordFulkerson } from './fordFulkerson'
 import type { FlowTrace } from './fordFulkerson'
-import { useResidualEdges } from './useResidualEdges'
+import { useResidualEdges } from '../misc/useResidualEdges'
 
 /**
  * reactive Ford-Fulkerson algorithm
  */
 export const useFordFulkerson = (graph: Graph) => {
   const trace = ref<FlowTrace>([])
-  const maxFlow = ref(0)
+  const maxFlow = ref<number>()
 
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
   const { sourceNode, sinkNode } = state
@@ -38,7 +38,9 @@ export const useFordFulkerson = (graph: Graph) => {
   watch([sourceNode, sinkNode], update, { immediate: true })
 
   return {
-    maxFlow,
+    output: {
+      maxFlow: readonly(maxFlow),
+    },
     trace: computed(() => [{}, ...trace.value]),
   }
 }
