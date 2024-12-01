@@ -24,8 +24,8 @@ export type Line = {
   textArea?: TextAreaNoLocation,
   /**
    * offsetFromCenter is used to position text. By default, text is centered on the line.
-   * If -10, text will be on the line but 10 units below the center.
-   * If 10, text will be on the line but 10 units above the center.
+   * If -10, text will be on the line but 10 units towards the start.
+   * If 10, text will be on the line but 10 units away from the start.
    */
   textOffsetFromCenter?: number,
   color?: string,
