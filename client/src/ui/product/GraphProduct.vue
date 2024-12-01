@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref } from "vue";
+  import { computed, onMounted, ref, type UnwrapRef } from "vue";
   import GraphCanvas from "@graph/Graph.vue";
   import { useGraphProduct } from "@graph/useGraphProduct";
   import type { Graph } from "@graph/types";
@@ -16,6 +16,12 @@
     graph: Graph;
   }>();
 
+  const emit = defineEmits<{
+    (e: "graph-ref", value: HTMLCanvasElement | undefined): void;
+    (e: "simulation-started", value: UnwrapRef<SimulationDeclaration>): void;
+    (e: "simulation-stopped"): void;
+  }>();
+
   const simulations = getSimulationDeclarationsForProduct(props.graph);
 
   const activeSimulation = ref(simulations[0]);
@@ -26,22 +32,20 @@
 
   const startSimulation = async () => {
     runningSimulation.value = true;
+    emit("simulation-started", activeSimulation.value);
     await simRunner.value.start();
   };
 
   const stopSimulation = async () => {
     await simRunner.value.stop();
     runningSimulation.value = false;
+    emit("simulation-stopped");
   };
 
   const setActiveSimulation = (simulation: SimulationDeclaration) => {
     activeSimulation.value = simulation;
     startSimulation();
   };
-
-  const emit = defineEmits<{
-    (e: "graph-ref", value: HTMLCanvasElement | undefined): void;
-  }>();
 
   const graphEl = ref<HTMLCanvasElement>();
 
