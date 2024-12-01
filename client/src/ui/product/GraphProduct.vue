@@ -6,7 +6,7 @@
   import AnnotationControls from "@product/graph-sandbox/AnnotationControls.vue";
   import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
   import SelectSimulation from "@ui/product/sim/SelectSimulation.vue";
-  import { useGraphProductBoot } from "@utils/productBoot";
+  import { useGraphProduct } from "@utils/productBoot";
   import StartSimButton from "./StartSimButton.vue";
   import StopSimButton from "./StopSimButton.vue";
   import type { SimulationDeclaration } from "src/types";
@@ -45,7 +45,7 @@
 
   const graphEl = ref<HTMLCanvasElement>();
 
-  useGraphProductBoot(props.graph);
+  useGraphProduct(props.graph);
 
   onMounted(() => {
     emit("graph-ref", graphEl.value);

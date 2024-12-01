@@ -1,19 +1,7 @@
-import type { ProductInfo, SimulationDeclaration } from 'src/types'
+import type { ProductInfo } from 'src/types'
 import type { Graph } from '@graph/types'
 import { useSimulationRunner } from './useSimulationRunner'
-
-const flowSimulations = (graph: Graph): SimulationDeclaration[] => {
-  const runner = useSimulationRunner(graph)
-
-  return [
-    {
-      name: 'Ford Fulkerson',
-      description: 'Iteratively find augmenting paths until the residual graph is revealed',
-      thumbnail: '/products/thumbnails/network-flow.png',
-      runner,
-    }
-  ]
-}
+import state from './state'
 
 const info: ProductInfo = {
   route: {
@@ -28,7 +16,15 @@ const info: ProductInfo = {
     description: 'Visualize Network Flow',
     thumbnail: '/products/thumbnails/network-flow.png',
   },
-  simulations: (graph: Graph) => flowSimulations(graph),
+  simulations: (graph: Graph) => ([
+    {
+      name: 'Ford Fulkerson',
+      description: 'Iteratively find augmenting paths until the residual graph is revealed',
+      thumbnail: '/products/thumbnails/network-flow.png',
+      runner: useSimulationRunner(graph),
+    }
+  ]),
+  state,
 }
 
 export default info

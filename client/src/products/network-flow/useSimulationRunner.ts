@@ -9,6 +9,7 @@ import { useResidualEdges } from "./useResidualEdges";
 import { useSimulationTheme } from "./useSimulationTheme";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 import { useFordFulkerson } from "./useFordFulkerson";
+import { FLOW_USETHEME_ID } from "./constants";
 
 export type FlowSimulationControls = SimulationControls<FlowTrace>
 export type FlowSimulationRunner = SimulationRunner<FlowTrace>
@@ -19,12 +20,12 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
   const {
     activate: activeEdgeThickener,
     deactivate: deactivateEdgeThickener
-  } = useEdgeThickener(graph)
+  } = useEdgeThickener(graph, FLOW_USETHEME_ID + '-runner')
 
   const {
     stylize: activateFlowColorizer,
     destylize: deactivateFlowColorizer
-  } = useSourceSinkStyler(graph)
+  } = useSourceSinkStyler(graph, FLOW_USETHEME_ID + '-runner')
 
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
 
@@ -42,13 +43,17 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
     activateFlowColorizer()
     activeEdgeThickener()
 
-    text.value = 'Select a source node'
-    await state.setNode(graph, sourceNode)
+    if (!sourceNode.value) {
+      text.value = 'Select a source node'
+      await state.setNode(graph, sourceNode)
+    }
 
     if (cancelled) return
 
-    text.value = 'Select a sink node'
-    await state.setNode(graph, sinkNode)
+    if (!sinkNode.value) {
+      text.value = 'Select a sink node'
+      await state.setNode(graph, sinkNode)
+    }
 
     text.value = undefined
 

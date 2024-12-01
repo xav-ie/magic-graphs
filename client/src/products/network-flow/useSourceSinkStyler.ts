@@ -7,8 +7,8 @@ import state from "./state";
 /**
  * hooks into the graph with useTheme to color and label the source and sink nodes
  */
-export const useSourceSinkStyler = (graph: Graph) => {
-  const { setTheme, removeTheme } = useTheme(graph, FLOW_USETHEME_ID);
+export const useSourceSinkStyler = (graph: Graph, themeId = FLOW_USETHEME_ID) => {
+  const { setTheme, removeTheme } = useTheme(graph, themeId);
   const { sourceNode, sinkNode } = state
 
   const colorSourceSink = (node: GNode) => {

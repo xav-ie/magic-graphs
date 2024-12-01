@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from "vue-router"
 import type { Graph } from "@graph/types"
-import type { SimulationControls, SimulationRunner } from "@ui/product/sim/types"
+import type { SimulationRunner } from "@ui/product/sim/types"
 
 /**
  * options for exposing a product to the main page
@@ -81,4 +81,9 @@ export type ProductInfo = {
    * if defined, this products simulations will be exposed to other products
    */
   simulations?: SimulationDeclarationGetter,
+  /**
+   * points to a products state, must have a `reset` method that resets the state of
+   * the product when invoked
+   */
+  state?: { reset: () => void },
 }

@@ -17,11 +17,9 @@ export const useFordFulkerson = (graph: Graph) => {
 
   const update = () => {
     if (!sourceNode.value || !sinkNode.value) return
-    if (sourceNode.value.id === sinkNode.value.id) {
-      maxFlow.value = 0
-      trace.value = []
-      return
-    }
+    const validSourceNode = graph.getNode(sourceNode.value.id)
+    const validSinkNode = graph.getNode(sinkNode.value.id)
+    if (!validSourceNode || !validSinkNode) return
 
     createResidualEdges()
     const { maxFlow: gotMaxFlow, trace: gotTrace } = fordFulkerson(graph, {

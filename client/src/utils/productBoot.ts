@@ -1,4 +1,4 @@
-import { onMounted } from "vue";
+import { onBeforeUnmount, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import type { Graph } from "@graph/types";
 import { collabControls } from "@graph/collab";
@@ -7,13 +7,13 @@ import { routeToProduct } from "./product";
 import { graph as globalGraph } from "@graph/global";
 
 /**
- * bootstraps a graph centric product, connecting to a room if a room id is provided in the query
- * and performing various other configuration tasks such as setting the document title
+ * bootstraps and breaks down a graph centric product, connecting to a room if a room id is provided
+ * in the query and performing various other configuration tasks such as setting the document title.
  *
  * @param graph the graph instance of the product
  * @param product the product info for the product (inferred from the route if not provided)
  */
-export const useGraphProductBoot = (graph: Graph, product?: ProductInfo) => {
+export const useGraphProduct = (graph: Graph, product?: ProductInfo) => {
   const route = useRoute();
 
   if (!product) {
@@ -40,4 +40,9 @@ export const useGraphProductBoot = (graph: Graph, product?: ProductInfo) => {
       productId,
     })
   })
+
+  onBeforeUnmount(() => {
+    console.log('unmounting product', product.name);
+    product.state?.reset();
+  });
 }
