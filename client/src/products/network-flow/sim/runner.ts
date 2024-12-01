@@ -6,7 +6,7 @@ import state from "../state";
 import { FLOW_USETHEME_ID } from "../constants";
 import type { FlowTrace } from "../algo/fordFulkerson"
 import { useFordFulkerson } from "../algo/useFordFulkerson";
-import { useSourceSinkStyler } from "../theme/useSourceSinkTheme";
+import { useSourceSinkTheme } from "../theme/useSourceSinkTheme";
 import { useEdgeThickener } from "../theme/useEdgeThickener";
 import { useResidualEdges } from "../misc/useResidualEdges";
 import { useSimulationTheme } from "./theme";
@@ -25,7 +25,7 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
   const {
     stylize: activateFlowColorizer,
     destylize: deactivateFlowColorizer
-  } = useSourceSinkStyler(graph, FLOW_USETHEME_ID + '-runner')
+  } = useSourceSinkTheme(graph, FLOW_USETHEME_ID + '-runner')
 
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
 

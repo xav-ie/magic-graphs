@@ -2,7 +2,7 @@
   import { ref } from "vue";
   import { useGraph } from "@graph/useGraph";
   import GraphProduct from "@ui/product/GraphProduct.vue";
-  import { useSourceSinkStyler } from "./theme/useSourceSinkTheme";
+  import { useSourceSinkTheme } from "./theme/useSourceSinkTheme";
   import { useEdgeThickener } from "./theme/useEdgeThickener";
   import { FLOW_GRAPH_SETTINGS, flowNodeLabelGetter } from "./settings";
   import FordFulkersonOutput from "./ui/FordFulkersonOutput.vue";
@@ -16,7 +16,7 @@
   graph.settings.value.newNodeLabelGetter = flowNodeLabelGetter(graph);
 
   const { activate: activateEdgeThickener } = useEdgeThickener(graph);
-  const { stylize: activateFlowColorizer } = useSourceSinkStyler(graph);
+  const { stylize: activateFlowColorizer } = useSourceSinkTheme(graph);
 
   activateEdgeThickener();
   activateFlowColorizer();

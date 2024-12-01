@@ -16,9 +16,7 @@ export const useDijkstra = (graph: Graph, startingNode: Ref<GNode | undefined>) 
   graph.subscribe("onEdgeLabelChange", update);
   graph.subscribe("onGraphReset", update);
 
-  watch(startingNode, update);
-
-  update();
+  watch(startingNode, update, { immediate: true });
 
   return computed(() => trace.value)
 };

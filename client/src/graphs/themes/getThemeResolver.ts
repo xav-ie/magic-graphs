@@ -43,7 +43,7 @@ export const getThemeResolver = (
         themeGetterOrValue,
         ...args
       ) as UnwrapMaybeGetter<GraphTheme[T]>
-      return themeValue ?? false
+      return themeValue !== undefined
     })
     const getter = themeMapEntry?.value ?? theme.value[prop]
     if (!getter) throw new Error(`Theme property "${prop}" not found`)

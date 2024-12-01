@@ -1,7 +1,7 @@
 import type { ProductInfo } from 'src/types'
 import type { Graph } from '@graph/types'
-import { useSimulationRunner } from './useSimulationRunner'
 import state from './state'
+import { useSimulationRunner } from './sim/runner'
 
 const info: ProductInfo = {
   route: {

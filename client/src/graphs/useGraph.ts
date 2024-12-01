@@ -16,11 +16,10 @@ export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
 ) => {
-  // const overrideThemes = clone(options?.theme ?? {})
-  // const graph = usePersistentGraph(canvas, options)
-  // useUserPreferredTheme(graph, overrideThemes)
-  // return graph
-  return useDarkGraph(canvas, options)
+  const overrideThemes = clone(options?.theme ?? {})
+  const graph = usePersistentGraph(canvas, options)
+  useUserPreferredTheme(graph, overrideThemes)
+  return graph
 }
 
 export const useDarkGraph = (

@@ -1,5 +1,6 @@
 import { onUnmounted } from "vue";
 import { useTheme } from "@graph/themes/useTheme";
+import { getEdgeWeight } from "@graph/helpers";
 import type { GEdge, Graph } from "@graph/types";
 import { FLOW_USETHEME_ID } from "../constants";
 
@@ -9,7 +10,7 @@ const MAX_THICKNESS = 25;
 /**
  * when the edge weight is 0, the edge thickness is set to this value
  */
-const ZERO_THICKNESS = 3;
+const ZERO_THICKNESS = 1;
 
 /**
  * hooks into the graph with useTheme to adjust the thickness of edges
@@ -19,8 +20,7 @@ export const useEdgeThickener = (graph: Graph, themeId = FLOW_USETHEME_ID) => {
   const { setTheme, removeTheme } = useTheme(graph, themeId);
 
   const thickener = (edge: GEdge) => {
-    const edgeWeight = Number(graph.getTheme('edgeText', edge));
-    if (isNaN(edgeWeight)) return;
+    const edgeWeight = getEdgeWeight(edge, graph);
     if (edgeWeight === 0) return ZERO_THICKNESS;
     const adjustedWeight = edgeWeight * 2
     const rawPercentage = (adjustedWeight - MIN_THICKNESS) / (MAX_THICKNESS - MIN_THICKNESS);

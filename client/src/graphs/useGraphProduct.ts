@@ -3,7 +3,7 @@ import { useRoute } from "vue-router";
 import type { Graph } from "@graph/types";
 import { collabControls } from "@graph/collab";
 import type { ProductInfo } from "src/types";
-import { routeToProduct } from "./product";
+import { routeToProduct } from "@utils/product";
 import { graph as globalGraph } from "@graph/global";
 
 /**
