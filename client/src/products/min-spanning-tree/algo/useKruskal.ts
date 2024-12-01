@@ -73,5 +73,10 @@ export const useKruskal = (graph: Graph) => {
   graph.subscribe("onEdgeLabelChange", update);
   graph.subscribe("onGraphReset", update);
 
-  return computed(() => trace.value);
+  return {
+    output: {
+      mst: computed(() => trace.value.at(-1)),
+    },
+    trace: computed(() => trace.value),
+  }
 };

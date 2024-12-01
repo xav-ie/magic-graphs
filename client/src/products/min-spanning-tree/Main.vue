@@ -8,8 +8,6 @@
   const graph = useGraph(graphEl, {
     settings: MST_GRAPH_SETTINGS,
   });
-
-
 </script>
 
 <template>

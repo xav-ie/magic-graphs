@@ -1,6 +1,6 @@
 import { computed } from "vue";
 import type { GEdge, Graph } from "@graph/types";
-import type { MSTTrace } from "./useSimulationRunner";
+import type { MSTTrace } from "./runner";
 import type { SimulationControls } from "@ui/product/sim/types";
 import { useTheme } from "@graph/themes/useTheme";
 import { getValue } from "@graph/helpers";
