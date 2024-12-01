@@ -41,26 +41,6 @@ export const useMarqueeGraph = (
     return Math.abs(width * height)
   }
 
-  const disableNodeCreationNextTick = () => {
-    const callbacks = graph.eventBus['onDblClick']
-
-    let nodeCreationFn;
-    for (const callback of callbacks) {
-      if (callback.name === 'handleNodeCreation') {
-        nodeCreationFn = callback
-        break
-      }
-    }
-
-    if (!nodeCreationFn) {
-      console.error('Could not find node creation function')
-      return
-    }
-
-    graph.unsubscribe('onDblClick', nodeCreationFn)
-    setTimeout(() => graph.subscribe('onDblClick', nodeCreationFn), 10)
-  }
-
   /**
    * given a mouse event, engages or disengages the marquee box
    */
@@ -119,8 +99,6 @@ export const useMarqueeGraph = (
 
   const disengageMarqueeBox = () => {
     if (!marqueeBox.value) return
-    const surfaceArea = getSurfaceArea(marqueeBox.value)
-    if (surfaceArea > 200) disableNodeCreationNextTick()
     marqueeBox.value = undefined
     graph.graphCursorDisabled.value = false
     showNodeAnchors()
