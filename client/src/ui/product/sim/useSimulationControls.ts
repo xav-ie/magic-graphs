@@ -3,7 +3,29 @@ import type { ComputedRef } from "vue"
 import { graph } from "@graph/global";
 import type { SimulationControls } from "@ui/product/sim/types";
 
-export const useSimulationControls = <T extends any[]>(trace: ComputedRef<T>): SimulationControls<T> => {
+type SimulationControlsOptions = {
+  /**
+   * if true, the user can edit the graph while the simulation is running
+   * @default true
+   */
+  allowEditingDuringPlayback?: boolean
+}
+
+const DEFAULT_OPTIONS = {
+  allowEditingDuringPlayback: true
+} as const
+
+export const useSimulationControls = <T extends any[]>(
+  trace: ComputedRef<T>,
+  options: SimulationControlsOptions = {}
+): SimulationControls<T> => {
+  const {
+    allowEditingDuringPlayback
+  } = {
+    ...DEFAULT_OPTIONS,
+    ...options
+  }
+
   const step = ref(0);
   const paused = ref(true);
   const playbackSpeed = ref(1_500);
@@ -15,7 +37,7 @@ export const useSimulationControls = <T extends any[]>(trace: ComputedRef<T>): S
   const start = () => {
     if (active.value) return
 
-    graph.value.settings.value.userEditable = false
+    graph.value.settings.value.userEditable = allowEditingDuringPlayback
 
     paused.value = false
     active.value = true
