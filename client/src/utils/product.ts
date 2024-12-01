@@ -30,7 +30,7 @@ export const routeToProduct = products.reduce<RouteToProduct>((acc, product) => 
  * initializes the simulation declarations for all products with the context of the
  * provided graph
  */
-export const getSimulationDeclarations = (graph: Graph) => {
+export const getAllSimulationDeclarations = (graph: Graph) => {
   const simulationDeclarationGetters = products
     .map((info) => info.simulations)
     .filter(Boolean) as SimulationDeclarationGetter[];
@@ -40,6 +40,32 @@ export const getSimulationDeclarations = (graph: Graph) => {
     .flat();
 
   return simulations;
+}
+
+/**
+ * gets the simulation declarations for a specific product
+ *
+ * @param graph the graph to use for the simulation declarations
+ * @param simDeclarationsGetter the product simulations to get the simulation declarations for, if not provided
+ * will find the product using the current route, if the current route has no simulation declarations,
+ * will return all simulations
+ * @returns the simulation declarations for the product
+ * @throws if the product cannot be found
+ */
+export const getSimulationDeclarationsForProduct = (
+  graph: Graph,
+  simDeclarationsGetter?: ProductInfo['simulations']
+) => {
+  const route = useRoute();
+
+  if (!simDeclarationsGetter) {
+    const productAtRoute = routeToProduct[route.path];
+    if (!productAtRoute) throw new Error(`product not found for ${route.path}`);
+    simDeclarationsGetter = productAtRoute.simulations;
+  }
+
+  const getter = simDeclarationsGetter ?? getAllSimulationDeclarations;
+  return getter(graph);
 }
 
 /**

@@ -1,17 +1,19 @@
 <script setup lang="ts">
   import { ref, toRefs } from "vue";
+  import type { UnwrapRef } from "vue";
   import type { SimulationControls } from "./types";
   import PlaybackButton from "./PlaybackButton.vue";
-  import ProgressBar from "./Progressbar.vue";
+  import ProgressBar from "./ProgressBar.vue";
 
   const props = defineProps<{
-    controls: { value: SimulationControls };
+    controls: UnwrapRef<SimulationControls>;
   }>();
 
   const { isOver, paused, step, trace, hasBegun } = toRefs(
-    props.controls.value
+    props.controls
   );
-  const { nextStep, prevStep, setStep, start, stop } = props.controls.value;
+
+  const { nextStep, prevStep, setStep, start, stop } = props.controls;
 
   const goPrevStep = () => {
     prevStep();

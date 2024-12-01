@@ -236,15 +236,40 @@ export const getEdgesAlongPath = (
 }
 
 /**
- * takes an edge label and returns the weight of the edge
+ * takes an edge and returns the weight of the edge
  *
- * @param label the label of the edge
+ * @param edge the edge to get the weight of
+ * @param graph the graph instance
  * @param fallbackWeight the weight to return if the label cannot be parsed as a number. defaults to 1
  * @returns the weight of the edge
  */
-const edgeLabelToWeight = (label: GEdge['label'], fallbackWeight = 1) => {
+export const getEdgeWeight = (edge: GEdge, graph: Pick<Graph, 'getTheme'>, fallbackWeight = 1) => {
+  const label = graph.getTheme('edgeText', edge)
   const weight = Number(label)
   return isNaN(weight) ? fallbackWeight : weight
+}
+
+export const getDirectedWeightBetweenNodes = (
+  fromNodeId: GNode['id'],
+  toNodeId: GNode['id'],
+  graph: Pick<Graph, 'edges' | 'getTheme'>,
+  fallbackWeight: number,
+) => {
+  const edgesAlongPath = getEdgesAlongPath(fromNodeId, toNodeId, graph)
+  const connectingEdge = edgesAlongPath.find((e) => e.to === toNodeId)
+  if (!connectingEdge) throw new Error('nodes are not adjacent')
+  return getEdgeWeight(connectingEdge, graph, fallbackWeight)
+}
+
+export const getUndirectedWeightBetweenNodes = (
+  fromNodeId: GNode['id'],
+  toNodeId: GNode['id'],
+  graph: Pick<Graph, 'edges' | 'getTheme'>,
+  fallbackWeight: number,
+) => {
+  const [connectingEdge] = getEdgesAlongPath(fromNodeId, toNodeId, graph)
+  if (!connectingEdge) throw new Error('nodes are not adjacent')
+  return getEdgeWeight(connectingEdge, graph, fallbackWeight)
 }
 
 /**
@@ -260,10 +285,10 @@ const edgeLabelToWeight = (label: GEdge['label'], fallbackWeight = 1) => {
 export const getWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'settings' | 'edges'>,
+  graph: Pick<Graph, 'settings' | 'getTheme' | 'edges'>,
   fallbackWeight = 1
 ) => {
-  const connectingEdge = getOutboundEdges(fromNodeId, graph).find(e => e.to === toNodeId)
-  if (!connectingEdge) throw new Error('nodes are not adjacent')
-  return edgeLabelToWeight(connectingEdge.label, fallbackWeight)
+  const isDirected = graph.settings.value.isGraphDirected
+  const fn = isDirected ? getDirectedWeightBetweenNodes : getUndirectedWeightBetweenNodes
+  return fn(fromNodeId, toNodeId, graph, fallbackWeight)
 }

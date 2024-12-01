@@ -165,10 +165,12 @@ export const useAdjacencyList = (graph: Graph) => {
   }
 
   graph.subscribe('onStructureChange', update);
+  graph.subscribe('onEdgeLabelChange', update);
   graph.subscribe('onSettingsChange', checkSettingsDiffForUpdate);
 
   onUnmounted(() => {
     graph.unsubscribe('onStructureChange', update);
+    graph.unsubscribe('onEdgeLabelChange', update);
     graph.unsubscribe('onSettingsChange', checkSettingsDiffForUpdate);
   });
 

@@ -12,6 +12,8 @@ export const drawLineWithCtx = (line: Line) => (ctx: CanvasRenderingContext2D) =
     ...line
   };
 
+  if (width === 0) return;
+
   ctx.beginPath();
   ctx.moveTo(start.x, start.y);
   ctx.lineTo(end.x, end.y);

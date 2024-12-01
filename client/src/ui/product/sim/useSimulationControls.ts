@@ -1,5 +1,6 @@
 import { computed, ref } from "vue"
 import type { ComputedRef } from "vue"
+import { graph } from "@graph/global";
 import type { SimulationControls } from "@ui/product/sim/types";
 
 export const useSimulationControls = <T extends any[]>(trace: ComputedRef<T>): SimulationControls<T> => {
@@ -14,6 +15,8 @@ export const useSimulationControls = <T extends any[]>(trace: ComputedRef<T>): S
   const start = () => {
     if (active.value) return
 
+    graph.value.settings.value.userEditable = false
+
     paused.value = false
     active.value = true
     step.value = 0
@@ -25,6 +28,7 @@ export const useSimulationControls = <T extends any[]>(trace: ComputedRef<T>): S
 
   const stop = () => {
     if (interval.value) clearInterval(interval.value)
+    graph.value.settings.value.userEditable = true
     active.value = false
   }
 
