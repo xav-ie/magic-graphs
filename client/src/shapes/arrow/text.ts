@@ -29,6 +29,10 @@ export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
   const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
   const arrowHeadHeight = width * 2.5;
 
+  const distanceSquared = (lineStart.x - lineEnd.x) ** 2 + (lineStart.y - lineEnd.y) ** 2;
+
+  const textOffsetIfArrowIsBigAndDistanceIsSmall = distanceSquared ** 0.5 < arrowHeadHeight ? arrowHeadHeight : 0
+
   const shaftEnd = {
     x: lineEnd.x - arrowHeadHeight * Math.cos(angle),
     y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
@@ -39,7 +43,7 @@ export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
     end: shaftEnd,
     width,
     color,
-    textOffsetFromCenter,
+    textOffsetFromCenter: textOffsetFromCenter - textOffsetIfArrowIsBigAndDistanceIsSmall,
     textArea,
   }
 

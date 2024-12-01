@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import AdjacencyListDisplay from "./AdjacencyListDisplay.vue";
+  import TransitionMatrixDisplay from "./TransitionMatrixDisplay.vue";
 </script>
 
 <template>
@@ -22,11 +23,10 @@
       <div class="bg-gray-700 p-4 rounded-lg max-h-[200px] overflow-auto">
         <AdjacencyListDisplay />
       </div>
-      <!-- Not completed yet -->
-      <!-- <h2 class="text-xl font-bold text-gray-200 mb-2">Transition Matrix</h2>
+      <h2 class="text-xl font-bold text-gray-200 mb-2">Transition Matrix</h2>
       <div class="bg-gray-700 p-4 rounded-lg max-h-[300px] overflow-auto">
-        <TransitionMatrixDisplay :transitionMatrix="transitionMatrix" />
-      </div> -->
+        <TransitionMatrixDisplay />
+      </div>
     </div>
   </v-menu>
 </template>
