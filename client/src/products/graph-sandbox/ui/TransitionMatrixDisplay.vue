@@ -1,20 +1,42 @@
 <script setup lang="ts">
-import colors from "@colors";
-import { globalGraph } from "@graph/global";
-import { useTransitionMatrix } from "@graph/useTransitionMatrix";
+  import colors from "@colors";
+  import { graph } from "@graph/global";
+  import { useTransitionMatrix } from "@graph/useTransitionMatrix";
 
-const { transitionMatrix } = useTransitionMatrix(globalGraph.value);
+  const { transitionMatrix } = useTransitionMatrix(graph.value);
 
-const brackets = `
-  background: linear-gradient(${colors.GRAY_700}, ${colors.GRAY_700}) 50% 50%/calc(100% - 10px) calc(100% - 10px) no-repeat,
-  linear-gradient(90deg, ${colors.WHITE} 10%, ${colors.TRANSPARENT} 10%, ${colors.TRANSPARENT} 90%, ${colors.WHITE} 90%) 188% 0;
-`;
+  const brackets = {
+    background: `
+      linear-gradient(
+        ${colors.GRAY_700},
+        ${colors.GRAY_700}
+      )
+      50%
+      50%/calc(100% - 10px)
+      calc(100% - 10px) no-repeat,
+      linear-gradient(
+        90deg,
+        ${colors.WHITE}
+        10%,
+        ${colors.TRANSPARENT}
+        10%,
+        ${colors.TRANSPARENT}
+        90%,
+        ${colors.WHITE}
+        90%
+      )
+      188%
+      0`,
+  };
 </script>
 
 <template>
   <div class="flex py-6 items-center">
     <div class="text-xl font-bold px-5 text-nowrap">T =</div>
-    <div class="p-4 rounded" :style="brackets">
+    <div
+      :style="brackets"
+      class="p-4 rounded"
+    >
       <div
         v-for="(row, rowIndex) in transitionMatrix"
         :key="'row-' + rowIndex"
