@@ -1,8 +1,8 @@
 import type { GEdge, Graph } from "@graph/types";
-import { getEdgeWeight } from "@graph/helpers";
 
 export const prim = (graph: Graph) => {
   const { nodes, edges } = graph;
+  const { getEdgeWeight } = graph.helpers;
 
   const getMinEdge = (edges: GEdge[], inMST: Set<string>) => {
     let minEdge: GEdge | null = null;
@@ -13,8 +13,8 @@ export const prim = (graph: Graph) => {
         (inMST.has(edge.to) && !inMST.has(edge.from))
       ) {
         if (!minEdge) minEdge = edge;
-        const minEdgeCost = getEdgeWeight(minEdge, graph);
-        const edgeCost = getEdgeWeight(edge, graph);
+        const minEdgeCost = getEdgeWeight(minEdge.id);
+        const edgeCost = getEdgeWeight(edge.id);
         if (edgeCost < minEdgeCost) minEdge = edge;
       }
     }

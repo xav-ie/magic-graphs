@@ -1,5 +1,4 @@
 import type { GNode, Graph } from "@graph/types";
-import { getInboundEdges, getOutboundEdges } from "@graph/helpers";
 
 export type DijkstrasTrace = ReturnType<typeof dijkstras>;
 type TraceNodeDistance = { id: string; distance: number };
@@ -11,6 +10,8 @@ type TraceExploredNode = { id: string; distance: number };
 export const INF = 999999;
 
 export const dijkstras = (graph: Graph, startingNodeId: GNode['id']) => {
+  const { getInboundEdges, getOutboundEdges } = graph.helpers;
+
   const distanceArr = graph.nodes.value.map(
     (n) =>
     ({
@@ -51,13 +52,13 @@ export const dijkstras = (graph: Graph, startingNodeId: GNode['id']) => {
 
     // don't iterate through nodes with no ingoing edges
     if (
-      getInboundEdges(sourceNode.id, graph).length === 0 &&
+      getInboundEdges(sourceNode.id).length === 0 &&
       sourceNode.id !== startingNodeId
     )
       continue;
 
     // iterate through source's neighbors
-    getOutboundEdges(sourceNode.id, graph).forEach((edge) => {
+    getOutboundEdges(sourceNode.id).forEach((edge) => {
       // updates distance of neighbor if new distance is less than old
       const newDistanceIsLess =
         distanceArr.filter((e) => e.id === edge.from)[0].distance +

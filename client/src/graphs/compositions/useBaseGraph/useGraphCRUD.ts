@@ -245,7 +245,7 @@ export const useGraphCRUD = ({
       ...options
     }
 
-    const edgesToRemove = getConnectedEdges(removedNode.id, { edges, settings })
+    const edgesToRemove = getConnectedEdges(removedNode.id, { edges, getEdge, settings })
     const removedEdges = edgesToRemove.map((e) => removeEdge(e.id, {
       broadcast: false,
       history: false,

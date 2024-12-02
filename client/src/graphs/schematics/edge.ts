@@ -17,8 +17,6 @@ export const getEdgeSchematic = (
   edge: GEdge,
   graph: Pick<BaseGraph, PropsNeededFromGraph>,
 ): Omit<SchemaItem, 'priority'> | undefined => {
-
-
   const { displayEdgeLabels, isGraphDirected } = graph.settings.value
 
   const [from, to] = getConnectedNodes(edge.id, graph)

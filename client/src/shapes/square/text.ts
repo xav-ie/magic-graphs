@@ -8,13 +8,12 @@ import {
   getFullTextArea,
 } from "@shape/text";
 import { rectHitbox } from "@shape/rect/hitbox";
-import { rotatePoint } from "@shape/helpers";
 
 export const getTextAreaLocationOnSquare = (square: Square) => {
   const {
     at,
     size,
-    textArea    
+    textArea
   } = square;
 
   if (!textArea) throw new Error("no text area provided");

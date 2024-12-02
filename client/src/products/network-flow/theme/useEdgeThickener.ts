@@ -1,6 +1,5 @@
 import { onUnmounted } from "vue";
 import { useTheme } from "@graph/themes/useTheme";
-import { getEdgeWeight } from "@graph/helpers";
 import type { GEdge, Graph } from "@graph/types";
 import { FLOW_USETHEME_ID } from "../constants";
 
@@ -18,9 +17,10 @@ const ZERO_THICKNESS = 1;
  */
 export const useEdgeThickener = (graph: Graph, themeId = FLOW_USETHEME_ID) => {
   const { setTheme, removeTheme } = useTheme(graph, themeId);
+  const { getEdgeWeight } = graph.helpers;
 
   const thickener = (edge: GEdge) => {
-    const edgeWeight = getEdgeWeight(edge, graph);
+    const edgeWeight = getEdgeWeight(edge.id);
     if (edgeWeight === 0) return ZERO_THICKNESS;
     const adjustedWeight = edgeWeight * 2
     const rawPercentage = (adjustedWeight - MIN_THICKNESS) / (MAX_THICKNESS - MIN_THICKNESS);

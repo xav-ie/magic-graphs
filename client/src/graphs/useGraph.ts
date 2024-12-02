@@ -2,9 +2,9 @@ import type { Ref } from 'vue'
 import { THEMES } from '@graph/themes'
 import type { GraphOptions } from '@graph/types'
 import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
+import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
 import { clone } from '@utils/clone'
 import { usePersistentGraph } from './compositions/usePersistentGraph'
-import { useGraphHelpers } from './helpers/useGraphHelpers'
 
 /**
  * a package full of tools for creating and managing graphs

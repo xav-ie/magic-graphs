@@ -5,6 +5,7 @@ import {
   watch,
 } from 'vue'
 import type { Ref } from 'vue'
+import { onClickOutside } from '@vueuse/core';
 import type {
   GNode,
   GEdge,
@@ -36,7 +37,6 @@ import { getCtx } from '@utils/ctx';
 import type { GraphAtMousePosition } from './types';
 import { useGraphCursor } from './useGraphCursor';
 import { getCanvasCoords } from '@utils/components/useCanvasCoord';
-import { onClickOutside } from '@vueuse/core';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
