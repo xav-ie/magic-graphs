@@ -2,7 +2,7 @@ import { ref, watch } from "vue";
 import type { Ref } from "vue";
 import type { Aggregator, GraphOptions } from "@graph/types";
 import type { Coordinate } from "@shape/types";
-import { generateId } from "@graph/helpers";
+import { generateId } from "@utils/id";
 import { shapes } from "@shapes";
 import colors from "@utils/colors";
 import type { Color } from "@utils/colors";

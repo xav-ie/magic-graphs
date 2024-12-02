@@ -4,7 +4,7 @@ import type {
 } from "@shape/types";
 import { drawScribbleWithCtx } from "./draw";
 import { scribbleHitbox, scribbleEfficientHitbox, getScribbleBoundingBox } from "./hitbox";
-import { generateId } from "@graph/helpers";
+import { generateId } from "@utils/id";
 
 export type Scribble = {
   id?: string;
@@ -30,22 +30,22 @@ export const scribble = (options: Scribble): Shape => {
     throw new Error('brushWeight must be at least "1"')
   }
 
-  
+
   const shapeHitbox = scribbleHitbox(options);
   const efficientHitbox = scribbleEfficientHitbox(options)
   const hitbox = (point: Coordinate) => {
     return shapeHitbox(point)
   }
-  
+
   const getBoundingBox = getScribbleBoundingBox(options);
-  
+
   const drawShape = drawScribbleWithCtx(options);
 
   const draw = (ctx: CanvasRenderingContext2D) => {
     drawShape(ctx);
   }
 
-  
+
 
   return {
     id: options.id ?? generateId(),

@@ -5,7 +5,7 @@ import type {
 import { crossHitbox, crossEfficientHitbox, getCrossBoundingBox } from "./hitbox"
 import { drawCrossWithCtx } from "./draw"
 import { LINE_DEFAULTS } from "@shape/line"
-import { generateId } from "@graph/helpers"
+import { generateId } from "@utils/id"
 
 export type Cross = {
   id?: string,

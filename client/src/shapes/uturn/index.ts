@@ -1,4 +1,4 @@
-import { generateId } from "@graph/helpers"
+import { generateId } from "@utils/id"
 import type {
   Coordinate,
   Shape,

@@ -13,7 +13,7 @@ import {
   getTextAreaLocationOnSquare
 } from './text'
 import { squareHitbox, squareEfficientHitbox, getSquareBoundingBox } from "./hitbox"
-import { generateId } from "@graph/helpers"
+import { generateId } from "@utils/id";
 import { getFullTextArea } from "@shape/text";
 import { engageTextarea } from "@shape/textarea";
 

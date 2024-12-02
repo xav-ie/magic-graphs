@@ -23,12 +23,6 @@ export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: 
 }
 
 /**
- * generates a new, random, id
- * @example generateId() // 'abc123'
- */
-export const generateId = () => Math.random().toString(36).substring(2, 9)
-
-/**
  * modifies the priority of the items passed in
  * such that the item with the id passed in has the highest priority
  * while preserving the order of the other items and their relative priorities.
