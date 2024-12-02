@@ -1,6 +1,5 @@
-import type { SchemaItem } from "@graph/types";
-import { fractionToDecimal } from "@utils/fracDecConverter/fracDec";
-import type { GNode, GEdge } from "@graph/types";
+import type { SchemaItem, GNode, GEdge } from "@graph/types";
+import { fractionToDecimal } from "@utils/fracDecConverter";
 
 /**
  * BASE GRAPH SETTINGS

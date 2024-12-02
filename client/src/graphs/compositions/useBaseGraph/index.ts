@@ -9,10 +9,6 @@ import { onClickOutside } from '@vueuse/core';
 import type {
   GNode,
   GEdge,
-  MouseEventMap,
-  KeyboardEventMap,
-  MouseEventEntries,
-  KeyboardEventEntries,
   SchemaItem,
   GraphOptions,
   Aggregator,
@@ -26,7 +22,13 @@ import { getInitialThemeMap } from '@graph/themes/types';
 import { delta } from '@utils/deepDelta';
 import { clone } from '@utils/clone';
 import { getInitialEventBus, generateSubscriber } from '@graph/events';
-import type { PartiallyPartial } from '@utils/types';
+import type {
+  PartiallyPartial,
+  MouseEventMap,
+  KeyboardEventMap,
+  MouseEventEntries,
+  KeyboardEventEntries,
+} from '@utils/types';
 import { DEFAULT_GRAPH_SETTINGS } from '@graph/settings';
 import type { GraphSettings } from '@graph/settings';
 import { getThemeResolver } from '@graph/themes/getThemeResolver';

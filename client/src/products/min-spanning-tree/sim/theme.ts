@@ -3,7 +3,7 @@ import type { GEdge, Graph } from "@graph/types";
 import type { MSTTrace } from "./runner";
 import type { SimulationControls } from "@ui/product/sim/types";
 import { useTheme } from "@graph/themes/useTheme";
-import { getValue } from "@graph/helpers";
+import { getValue } from "@utils/maybeGetter";
 
 /**
  * dims the color of the edge if it is not in the MST to ${DIM_FACTOR}%

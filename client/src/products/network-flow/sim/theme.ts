@@ -1,6 +1,6 @@
 import { computed } from "vue";
 import { useTheme } from "@graph/themes/useTheme";
-import { getValue } from "@graph/helpers";
+import { getValue } from "@utils/maybeGetter";
 import type { GEdge, Graph } from "@graph/types";
 import colors from "@utils/colors";
 import type { SimulationControls } from "@ui/product/sim/types";

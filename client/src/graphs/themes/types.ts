@@ -1,14 +1,16 @@
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types"
 import type { SupportedNodeShapes } from "@graph/schematics/node"
 import type {
-  EdgeGetterOrValue,
   GNode,
-  MaybeGetter,
-  MaybeGetterParams,
+  EdgeGetterOrValue,
   NodeGetterOrValue,
-  UnwrapMaybeGetter
 } from "@graph/types"
 import type { TextFontWeight } from "@shape/types"
+import type {
+  MaybeGetter,
+  MaybeGetterParams,
+  UnwrapMaybeGetter
+} from "@utils/maybeGetter"
 
 export type UITheme = {
   primaryColor: string,

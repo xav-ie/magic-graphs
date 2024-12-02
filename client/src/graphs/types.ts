@@ -1,8 +1,8 @@
-import type { Shape } from "@shape/types"
 import { useGraph } from "@graph/useGraph";
+import type { Shape } from "@shape/types"
+import type { MaybeGetter } from "@utils/maybeGetter";
 import type { GraphTheme } from "./themes/types";
 import type { GraphSettings } from "./settings";
-import type { MaybeGetter } from "@utils/maybeGetter";
 
 /**
  * the useGraph composition function
