@@ -77,7 +77,6 @@ export const usePersistentGraph = (
     "onNodeDrop",
     "onGroupDrop",
     "onGraphReset",
-    "onEdgeLabelChange",
   ];
 
   const listenForGraphStateEvents = () => {

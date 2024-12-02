@@ -99,7 +99,7 @@ export const getInitialEventBus = () => {
     onEdgeRemoved: new Set(),
     onBulkEdgeRemoved: new Set(),
 
-    onEdgeLabelChange: new Set(),
+    onEdgeLabelEdited: new Set(),
 
     onRepaint: new Set(),
     onNodeHoverChange: new Set(),

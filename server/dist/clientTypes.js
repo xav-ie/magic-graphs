@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PROGRESS_DEFAULTS = exports.triangle = exports.TRIANGLE_DEFAULTS = exports.scribble = exports.ERASER_BRUSH_WEIGHT = exports.SCRIBBLE_DEFAULTS = exports.useMSTSimulation = exports.MST_ALGORITHMS = exports.useMarkupSizer = exports.useMarkupColorizer = exports.dijkstras = exports.INF = exports.TUTORIAL_THEME_ID = exports.DELAY_UNTIL_NEXT_STEP = exports.NON_COLOR_THEMES = exports.resolveThemeForEdge = exports.resolveThemeForNode = exports.THEMES = exports.getThemeResolver = exports.DEFAULT_GRAPH_SETTINGS = exports.selectFromGraph = exports.getInitialEventBus = exports.useGraphCursor = void 0;
+exports.pointInterpolation = exports.easeFunction = exports.PROGRESS_DEFAULTS = exports.triangle = exports.TRIANGLE_DEFAULTS = exports.scribble = exports.ERASER_BRUSH_WEIGHT = exports.SCRIBBLE_DEFAULTS = exports.useSimulationRunner = exports.useMSTSimulationRunner = exports.kruskal = exports.useMarkupSizer = exports.useMarkupColorizer = exports.dijkstras = exports.INF = exports.getWeightedAdjacencyList = exports.TUTORIAL_THEME_ID = exports.DELAY_UNTIL_NEXT_STEP = exports.NON_COLOR_THEMES = exports.resolveThemeForEdge = exports.resolveThemeForNode = exports.THEMES = exports.getThemeResolver = exports.DEFAULT_GRAPH_SETTINGS = exports.selectFromGraph = exports.getInitialEventBus = exports.useGraphCursor = void 0;
 // @ts-ignore
 // @ts-ignore
 /**
@@ -242,7 +242,7 @@ const getInitialEventBus = () => {
         onBulkEdgeRemoved: new Set(),
         // @ts-ignore
         // @ts-ignore
-        onEdgeLabelChange: new Set(),
+        onEdgeLabelEdited: new Set(),
         // @ts-ignore
         // @ts-ignore
         onRepaint: new Set(),
@@ -542,7 +542,7 @@ prop,
         // @ts-ignore
         );
         // @ts-ignore
-        return themeValue ?? false;
+        return themeValue !== undefined;
         // @ts-ignore
     });
     // @ts-ignore
@@ -685,6 +685,58 @@ exports.TUTORIAL_THEME_ID = 'tutorial';
 // @ts-ignore
 /**
 // @ts-ignore
+ * creates an adjacency list mapping node ids to nodes along with a added field `weight` that
+// @ts-ignore
+ * represents the weight of the edge connecting them
+// @ts-ignore
+ *
+// @ts-ignore
+ * @param graph the graph instance
+// @ts-ignore
+ * @param fallbackWeight the weight between two adjacent nodes if the label of the edge connecting them
+// @ts-ignore
+ * cannot be parsed as a number. defaults to 1
+// @ts-ignore
+ * @returns an adjacency list using ids of nodes as keys and the full node objects with weights as values
+// @ts-ignore
+ * @example getWeightedAdjacencyList(graph)
+// @ts-ignore
+ * // {
+// @ts-ignore
+ * //   'abc123': [{ id: 'def456', label: 'B', weight: 1, x: 0, y: 0 }],
+// @ts-ignore
+ * //   'def456': [{ id: 'abc123', label: 'A', weight: 1, x: 100, y: 100 }]
+// @ts-ignore
+ * // }
+// @ts-ignore
+ */
+// @ts-ignore
+const getWeightedAdjacencyList = (graph, fallbackWeight = 1) => {
+    // @ts-ignore
+    const adjList = getAdjacencyList(graph);
+    // @ts-ignore
+    const adjListEntries = Object.entries(adjList);
+    // @ts-ignore
+    // @ts-ignore
+    return adjListEntries.reduce((acc, [keyNodeId, toNodeIds]) => {
+        // @ts-ignore
+        acc[keyNodeId] = toNodeIds.map(toNodeId => ({
+            // @ts-ignore
+            ...graph.getNode(toNodeId),
+            // @ts-ignore
+            weight: getWeightBetweenNodes(keyNodeId, toNodeId, graph, fallbackWeight)
+            // @ts-ignore
+        }));
+        // @ts-ignore
+        return acc;
+        // @ts-ignore
+    }, {});
+};
+exports.getWeightedAdjacencyList = getWeightedAdjacencyList;
+// @ts-ignore
+// @ts-ignore
+/**
+// @ts-ignore
  * serializable infinity value for node distance
 // @ts-ignore
  */
@@ -693,6 +745,9 @@ exports.INF = 999999;
 // @ts-ignore
 // @ts-ignore
 const dijkstras = (graph, startingNodeId) => {
+    // @ts-ignore
+    const { getInboundEdges, getOutboundEdges } = graph.helpers;
+    // @ts-ignore
     // @ts-ignore
     const distanceArr = graph.nodes.value.map(
     // @ts-ignore
@@ -768,7 +823,7 @@ const dijkstras = (graph, startingNodeId) => {
         // @ts-ignore
         if (
         // @ts-ignore
-        getInboundEdges(sourceNode.id, graph).length === 0 &&
+        getInboundEdges(sourceNode.id).length === 0 &&
             // @ts-ignore
             sourceNode.id !== startingNodeId
         // @ts-ignore
@@ -779,7 +834,7 @@ const dijkstras = (graph, startingNodeId) => {
         // @ts-ignore
         // iterate through source's neighbors
         // @ts-ignore
-        getOutboundEdges(sourceNode.id, graph).forEach((edge) => {
+        getOutboundEdges(sourceNode.id).forEach((edge) => {
             // @ts-ignore
             // updates distance of neighbor if new distance is less than old
             // @ts-ignore
@@ -872,6 +927,8 @@ const useMarkupColorizer = (graph) => {
     // @ts-ignore
     const colorMap = useLocalStorage('markup-color-map', new Map());
     // @ts-ignore
+    // @ts-ignore
+    // TODO
     // @ts-ignore
     // go through all keys in the colorMap and remove inactive nodes/edges
     // @ts-ignore
@@ -1034,159 +1091,290 @@ const useMarkupSizer = (graph) => {
 };
 exports.useMarkupSizer = useMarkupSizer;
 // @ts-ignore
-exports.MST_ALGORITHMS = ["kruskal", "prim"];
+// @ts-ignore
+const kruskal = (graph) => {
+    // @ts-ignore
+    const { nodes, edges } = graph;
+    // @ts-ignore
+    const { getEdgeWeight } = graph.helpers;
+    // @ts-ignore
+    // @ts-ignore
+    const find = (parent, nodeId) => {
+        // @ts-ignore
+        if (parent.get(nodeId) !== nodeId) {
+            // @ts-ignore
+            parent.set(nodeId, find(parent, parent.get(nodeId)));
+            // @ts-ignore
+        }
+        // @ts-ignore
+        return parent.get(nodeId);
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    const union = (parent, rank, nodeA, nodeB) => {
+        // @ts-ignore
+        const rootA = find(parent, nodeA);
+        // @ts-ignore
+        const rootB = find(parent, nodeB);
+        // @ts-ignore
+        // @ts-ignore
+        if (rootA !== rootB) {
+            // @ts-ignore
+            const rankA = rank.get(rootA);
+            // @ts-ignore
+            const rankB = rank.get(rootB);
+            // @ts-ignore
+            // @ts-ignore
+            if (rankA < rankB) {
+                // @ts-ignore
+                parent.set(rootA, rootB);
+                // @ts-ignore
+            }
+            else if (rankA > rankB) {
+                // @ts-ignore
+                parent.set(rootB, rootA);
+                // @ts-ignore
+            }
+            else {
+                // @ts-ignore
+                parent.set(rootB, rootA);
+                // @ts-ignore
+                rank.set(rootA, rankA + 1);
+                // @ts-ignore
+            }
+            // @ts-ignore
+        }
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    const run = () => {
+        // @ts-ignore
+        const sortedEdges = Object.values(edges.value).sort((edgeA, edgeB) => {
+            // @ts-ignore
+            return getEdgeWeight(edgeA.id) - getEdgeWeight(edgeB.id);
+            // @ts-ignore
+        });
+        // @ts-ignore
+        // @ts-ignore
+        const parent = new Map();
+        // @ts-ignore
+        const rank = new Map();
+        // @ts-ignore
+        // @ts-ignore
+        graph.nodes.value.forEach((node) => {
+            // @ts-ignore
+            parent.set(node.id, node.id);
+            // @ts-ignore
+            rank.set(node.id, 0);
+            // @ts-ignore
+        });
+        // @ts-ignore
+        // @ts-ignore
+        const mst = [];
+        // @ts-ignore
+        for (const edge of sortedEdges) {
+            // @ts-ignore
+            const sourceRoot = find(parent, edge.from);
+            // @ts-ignore
+            const targetRoot = find(parent, edge.to);
+            // @ts-ignore
+            // @ts-ignore
+            if (sourceRoot !== targetRoot) {
+                // @ts-ignore
+                mst.push(edge);
+                // @ts-ignore
+                union(parent, rank, sourceRoot, targetRoot);
+                // @ts-ignore
+                // @ts-ignore
+                if (mst.length === nodes.value.length - 1)
+                    break;
+                // @ts-ignore
+            }
+            // @ts-ignore
+        }
+        // @ts-ignore
+        return mst;
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
+    return run();
+};
+exports.kruskal = kruskal;
 // @ts-ignore
 // @ts-ignore
-const useMSTSimulation = (
+const useMSTSimulationRunner = (
 // @ts-ignore
 graph, 
 // @ts-ignore
-currentAlgorithm
+trace
 // @ts-ignore
 ) => {
     // @ts-ignore
+    const simControls = useSimulationControls(trace);
     // @ts-ignore
-    const kruskalTrace = useKruskal(graph);
+    const { activate, deactivate } = useSimulationTheme(graph, simControls);
     // @ts-ignore
-    const primsTrace = usePrim(graph);
-    // @ts-ignore
-    // @ts-ignore
-    const trace = computed(() => {
+    return {
         // @ts-ignore
-        if (currentAlgorithm.value === "prim")
-            return primsTrace.value;
+        simControls,
         // @ts-ignore
-        else
-            return kruskalTrace.value;
+        start: () => {
+            // @ts-ignore
+            activate();
+            // @ts-ignore
+            simControls.start();
+            // @ts-ignore
+        },
+        // @ts-ignore
+        stop: () => {
+            // @ts-ignore
+            deactivate();
+            // @ts-ignore
+            simControls.stop();
+            // @ts-ignore
+        },
+        // @ts-ignore
+    };
+};
+exports.useMSTSimulationRunner = useMSTSimulationRunner;
+// @ts-ignore
+// @ts-ignore
+const useSimulationRunner = (graph) => {
+    // @ts-ignore
+    const { text } = useTextTip();
+    // @ts-ignore
+    // @ts-ignore
+    const { 
+    // @ts-ignore
+    activate: activeEdgeThickener, 
+    // @ts-ignore
+    deactivate: deactivateEdgeThickener
+    // @ts-ignore
+     } = useEdgeThickener(graph, FLOW_USETHEME_ID + '-runner');
+    // @ts-ignore
+    // @ts-ignore
+    const { 
+    // @ts-ignore
+    stylize: activateFlowColorizer, 
+    // @ts-ignore
+    destylize: deactivateFlowColorizer
+    // @ts-ignore
+     } = useSourceSinkTheme(graph, FLOW_USETHEME_ID + '-runner');
+    // @ts-ignore
+    // @ts-ignore
+    const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph);
+    // @ts-ignore
+    // @ts-ignore
+    const { sourceNode, sinkNode } = state;
+    // @ts-ignore
+    const { trace } = useFordFulkerson(graph);
+    // @ts-ignore
+    const simControls = useSimulationControls(trace, {
+        // @ts-ignore
+        allowEditingDuringPlayback: false,
         // @ts-ignore
     });
     // @ts-ignore
     // @ts-ignore
-    const step = ref(0);
-    // @ts-ignore
-    const paused = ref(true);
-    // @ts-ignore
-    const playbackSpeed = ref(1_500);
-    // @ts-ignore
-    const active = ref(false);
-    // @ts-ignore
-    const interval = ref();
+    const { activate: activateTheme, deactivate: deactivateTheme } = useSimulationTheme(graph, simControls);
     // @ts-ignore
     // @ts-ignore
-    const hasBegun = computed(() => step.value > 0);
-    // @ts-ignore
-    const isOver = computed(() => step.value === trace.value.length + 1);
+    let cancelled = false;
     // @ts-ignore
     // @ts-ignore
-    const traceAtStep = computed(() => trace.value.slice(0, step.value));
-    // @ts-ignore
-    // @ts-ignore
-    const { colorize, decolorize } = useMSTColorizer(graph, traceAtStep);
-    // @ts-ignore
-    // @ts-ignore
-    const start = () => {
+    const start = async () => {
         // @ts-ignore
-        if (active.value)
-            return;
+        graph.settings.value.persistent = false;
         // @ts-ignore
         // @ts-ignore
-        paused.value = false;
+        activateFlowColorizer();
         // @ts-ignore
-        active.value = true;
+        activeEdgeThickener();
         // @ts-ignore
-        step.value = 0;
         // @ts-ignore
-        colorize();
-        // @ts-ignore
-        interval.value = setInterval(() => {
+        if (!sourceNode.value) {
             // @ts-ignore
-            if (isOver.value || paused.value)
-                return;
+            text.value = 'Select a source node';
             // @ts-ignore
-            nextStep();
+            await state.setNode(graph, sourceNode);
             // @ts-ignore
-        }, playbackSpeed.value);
+        }
         // @ts-ignore
-    };
-    // @ts-ignore
-    // @ts-ignore
-    const stop = () => {
         // @ts-ignore
-        if (interval.value)
-            clearInterval(interval.value);
-        // @ts-ignore
-        active.value = false;
-        // @ts-ignore
-        decolorize();
-        // @ts-ignore
-    };
-    // @ts-ignore
-    // @ts-ignore
-    const nextStep = () => {
-        // @ts-ignore
-        if (isOver.value)
+        if (cancelled)
             return;
         // @ts-ignore
-        step.value++;
+        // @ts-ignore
+        if (!sinkNode.value) {
+            // @ts-ignore
+            text.value = 'Select a sink node';
+            // @ts-ignore
+            await state.setNode(graph, sinkNode);
+            // @ts-ignore
+        }
+        // @ts-ignore
+        // @ts-ignore
+        text.value = undefined;
+        // @ts-ignore
+        // @ts-ignore
+        if (cancelled)
+            return;
+        // @ts-ignore
+        // @ts-ignore
+        createResidualEdges();
+        // @ts-ignore
+        activateTheme();
+        // @ts-ignore
+        // @ts-ignore
+        simControls.start();
         // @ts-ignore
     };
     // @ts-ignore
     // @ts-ignore
-    const prevStep = () => {
+    const stop = async () => {
         // @ts-ignore
-        if (!hasBegun.value)
-            return;
+        cancelled = true;
         // @ts-ignore
-        step.value--;
         // @ts-ignore
-    };
-    // @ts-ignore
-    // @ts-ignore
-    const setStep = (newStep) => {
+        state.cancelNodeSelection.value?.();
         // @ts-ignore
-        if (newStep < -1 || newStep > trace.value.length)
-            return;
         // @ts-ignore
-        step.value = newStep;
+        simControls.stop();
+        // @ts-ignore
+        cleanupResidualEdges();
+        // @ts-ignore
+        deactivateTheme();
+        // @ts-ignore
+        // @ts-ignore
+        deactivateFlowColorizer();
+        // @ts-ignore
+        deactivateEdgeThickener();
+        // @ts-ignore
+        // @ts-ignore
+        text.value = undefined;
+        // @ts-ignore
+        graph.settings.value.persistent = true;
+        // @ts-ignore
+        // @ts-ignore
+        setTimeout(() => cancelled = false, 0);
         // @ts-ignore
     };
     // @ts-ignore
     // @ts-ignore
     return {
         // @ts-ignore
-        nextStep,
-        // @ts-ignore
-        prevStep,
-        // @ts-ignore
-        setStep,
-        // @ts-ignore
-        // @ts-ignore
-        trace: computed(() => trace.value),
-        // @ts-ignore
-        step: computed(() => step.value),
-        // @ts-ignore
-        // @ts-ignore
         start,
         // @ts-ignore
         stop,
         // @ts-ignore
-        paused,
-        // @ts-ignore
-        playbackSpeed,
-        // @ts-ignore
-        // @ts-ignore
-        isOver,
-        // @ts-ignore
-        hasBegun,
-        // @ts-ignore
-        isActive: computed(() => active.value),
-        // @ts-ignore
-        // progress: computed(() => `${step.value} / ${trace.value.length}`),
+        simControls,
         // @ts-ignore
     };
-    // @ts-ignore
 };
-exports.useMSTSimulation = useMSTSimulation;
+exports.useSimulationRunner = useSimulationRunner;
 // @ts-ignore
 // @ts-ignore
 exports.SCRIBBLE_DEFAULTS = {
@@ -1246,7 +1434,7 @@ const scribble = (options) => {
     // @ts-ignore
     return {
         // @ts-ignore
-        id: generateId(),
+        id: options.id ?? generateId(),
         // @ts-ignore
         name: 'scribble',
         // @ts-ignore
@@ -1315,7 +1503,7 @@ const triangle = (options) => {
     // @ts-ignore
     return {
         // @ts-ignore
-        id: generateId(),
+        id: options.id ?? generateId(),
         // @ts-ignore
         name: "triangle",
         // @ts-ignore
@@ -1349,14 +1537,140 @@ exports.triangle = triangle;
 // @ts-ignore
 exports.PROGRESS_DEFAULTS = {
     // @ts-ignore
-    backgroundColor: "white",
+    transitionTimeMs: 250,
     // @ts-ignore
-    progressColor: "green",
+    transitionEasing: "ease-in-out",
     // @ts-ignore
-    easeTime: 250,
-    // @ts-ignore
-    progressEasing: "ease-in-out",
-    // @ts-ignore
-    borderRadius: 0,
+    color: colors.GRAY_200,
     // @ts-ignore
 };
+// @ts-ignore
+// @ts-ignore
+// @ts-ignore
+/**
+// @ts-ignore
+ *
+// @ts-ignore
+ * @param {number} progress the current progress
+// @ts-ignore
+ * @param {EasingFunction} ease the easing function
+// @ts-ignore
+ * @returns
+// @ts-ignore
+ */
+// @ts-ignore
+const easeFunction = (progress, ease) => {
+    // @ts-ignore
+    if (typeof ease === "function")
+        return ease(progress);
+    // @ts-ignore
+    // @ts-ignore
+    switch (ease) {
+        // @ts-ignore
+        case "linear":
+            // @ts-ignore
+            return progress;
+        // @ts-ignore
+        case "in":
+            // @ts-ignore
+            return progress * progress;
+        // @ts-ignore
+        case "out":
+            // @ts-ignore
+            return progress * (2 - progress);
+        // @ts-ignore
+        case "in-out":
+            // @ts-ignore
+            return progress < 0.5
+                // @ts-ignore
+                ? 2 * progress * progress
+                // @ts-ignore
+                : -1 + (4 - 2 * progress) * progress;
+        // @ts-ignore
+        default:
+            // @ts-ignore
+            throw new Error("invalid easing function");
+        // @ts-ignore
+    }
+    // @ts-ignore
+};
+exports.easeFunction = easeFunction;
+// @ts-ignore
+// @ts-ignore
+/**
+// @ts-ignore
+ *
+// @ts-ignore
+ * @param {number} startPosition the start position of the element
+// @ts-ignore
+ * @param {number} endPosition the end position of the element
+// @ts-ignore
+ * @param {number} steps the number of steps to get from `startPosition` to `endPosition`
+// @ts-ignore
+ * @param {EasingFunction} easing the easing function
+// @ts-ignore
+ * @returns {Coordinate[]} list of coordinates following the `easing` function between `startPosition` and `endPosition`
+// @ts-ignore
+ *
+// @ts-ignore
+ * @example
+// @ts-ignore
+ * pointInterpolation({ x: 0, y: 0 }, { x: 100, y: 50 }, 5, 'linear')
+// @ts-ignore
+ * // returns
+// @ts-ignore
+ * // {x: 20, y: 10}
+// @ts-ignore
+ * // {x: 40, y: 20}
+// @ts-ignore
+ * // {x: 60, y: 30}
+// @ts-ignore
+ * // {x: 80, y: 40}
+// @ts-ignore
+ * // {x: 100, y: 50}
+// @ts-ignore
+ */
+// @ts-ignore
+const pointInterpolation = (
+// @ts-ignore
+startPosition, 
+// @ts-ignore
+endPosition, 
+// @ts-ignore
+steps, 
+// @ts-ignore
+easing = "linear"
+// @ts-ignore
+) => {
+    // @ts-ignore
+    if (steps < 1)
+        throw new Error('Steps must be greater than 0');
+    // @ts-ignore
+    if (steps % 1 !== 0)
+        throw new Error('Step must be integer');
+    // @ts-ignore
+    // @ts-ignore
+    const result = [];
+    // @ts-ignore
+    // @ts-ignore
+    for (let i = 1; i <= steps; i++) {
+        // @ts-ignore
+        const progress = i / steps;
+        // @ts-ignore
+        const easedProgress = (0, exports.easeFunction)(progress, easing);
+        // @ts-ignore
+        // @ts-ignore
+        const x = Math.round(startPosition.x + (endPosition.x - startPosition.x) * easedProgress);
+        // @ts-ignore
+        const y = Math.round(startPosition.y + (endPosition.y - startPosition.y) * easedProgress);
+        // @ts-ignore
+        // @ts-ignore
+        result.push({ x, y });
+        // @ts-ignore
+    }
+    // @ts-ignore
+    // @ts-ignore
+    return result;
+    // @ts-ignore
+};
+exports.pointInterpolation = pointInterpolation;

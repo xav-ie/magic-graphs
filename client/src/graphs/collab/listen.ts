@@ -4,10 +4,8 @@ import type {
   CollaboratorMap,
   GraphSocketEvents,
   CollabSocketEvents,
-  SocketEvents,
   GraphSocket,
 } from "./types"
-import type { Socket } from "socket.io-client"
 
 type SocketListenOptions = {
   graph: Graph,
@@ -45,9 +43,7 @@ const graphListeners = ({ graph }: SocketListenOptions): GraphSocketEvents => ({
     graph.removeEdge(edgeId, { broadcast: false, history: false })
   },
   'edgeLabelEdited': (edgeId, newLabel) => {
-    const edge = graph.getEdge(edgeId)
-    if (!edge) throw new Error('edge not found')
-    edge.label = newLabel
+    graph.editEdgeLabel(edgeId, newLabel, { broadcast: false, history: false })
   },
 })
 

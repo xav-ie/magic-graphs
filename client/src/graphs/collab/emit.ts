@@ -1,9 +1,8 @@
 import { ref, watch } from "vue";
 import type { Ref } from "vue";
-import type { Socket } from "socket.io-client";
 import type { GraphEventMap } from "@graph/events";
 import type { Graph } from "@graph/types";
-import type { GraphSocket, SocketEvents } from "./types";
+import type { GraphSocket } from "./types";
 
 export const graphEmitters = (
   socket: GraphSocket,
@@ -49,7 +48,8 @@ export const graphEmitters = (
     if (!broadcast) return
     socket.emit('edgeRemoved', edge.id)
   },
-  onEdgeLabelChange: (edge) => {
+  onEdgeLabelEdited: (edge, { broadcast }) => {
+    if (!broadcast) return
     socket.emit('edgeLabelEdited', edge.id, edge.label)
   },
   onMouseMove: ({ coords }) => {

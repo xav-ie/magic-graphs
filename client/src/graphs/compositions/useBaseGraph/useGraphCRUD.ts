@@ -17,6 +17,7 @@ import type {
   MoveNodeOptions,
   RemoveNodeOptions,
   AddNodeOptions,
+  EditEdgeLabelOptions,
 } from "./types";
 import { getConnectedEdges } from "@graph/helpers";
 import { generateId } from "@utils/id";
@@ -227,6 +228,24 @@ export const useGraphCRUD = ({
     emit('onNodeMoved', node, fullOptions)
   }
 
+  const editEdgeLabel = (
+    edgeId: GEdge['id'],
+    newLabel: GEdge['label'],
+    options: Partial<EditEdgeLabelOptions> = {}
+  ) => {
+    const fullOptions = {
+      ...ADD_EDGE_OPTIONS_DEFAULTS,
+      ...options
+    }
+
+    const edge = getEdge(edgeId)
+    if (!edge) return
+
+    edge.label = newLabel
+
+    emit('onEdgeLabelEdited', edge, fullOptions)
+    emit('onStructureChange', nodes.value, edges.value)
+  }
 
   // DELETE OPERATIONS
 
@@ -350,6 +369,7 @@ export const useGraphCRUD = ({
     addEdge,
 
     moveNode,
+    editEdgeLabel,
 
     removeNode,
     removeEdge,
