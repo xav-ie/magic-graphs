@@ -12,6 +12,9 @@
   import { getSimulationDeclarationsForProduct } from "@utils/product";
   import StartSimButton from "./StartSimButton.vue";
   import StopSimButton from "./StopSimButton.vue";
+  import Button from "@ui/Button.vue";
+  import colors from "@utils/colors";
+  import { toggleFullscreen } from '@product/setFullscreen'
 
   const props = defineProps<{
     graph: Graph;
@@ -69,7 +72,7 @@
     <template v-if="runningSimulation">
       <slot name="top-center-sim"></slot>
     </template>
-
+    
     <template v-else>
       <slot name="top-center"></slot>
     </template>
@@ -138,6 +141,18 @@
 
     <div v-show="graph.annotationActive.value">
       <AnnotationControls />
+    </div>
+    <div 
+      class="absolute bottom-0 right-8"
+    >
+      <Button 
+        @click="toggleFullscreen"
+        :color="colors.GRAY_800" 
+        :text-color="colors.WHITE" 
+        class="aspect-square"
+      >
+        <v-icon>mdi-fullscreen</v-icon>
+      </Button>
     </div>
   </div>
 </template>
