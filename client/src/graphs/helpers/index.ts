@@ -2,25 +2,8 @@ import type {
   Graph,
   GNode,
   GEdge,
-  MaybeGetter,
   SchemaItem,
 } from '@graph/types'
-
-/**
- * unwraps a MaybeGetter into a value of type T.
- *
- * @param value - the value to unwrap
- * @param args - the arguments to pass to the getter if the value is a getter
- * @returns T, which is UnwrapMaybeGetter<MaybeGetter<T, K>>
- * @example getValue(5) // 5
- * getValue(() => 5) // 5
- */
-export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
-  if (typeof value === 'function') {
-    return (value as (...args: K) => T)(...args)
-  }
-  return value
-}
 
 /**
  * modifies the priority of the items passed in
