@@ -136,7 +136,10 @@ export const getUndirectedInboundEdges = (nodeId: string, edges: GEdge[]) => {
  * @example getInboundEdges('abc123', graph)
  * // [{ from: 'ghi789', to: 'abc123' }]
  */
-export const getInboundEdges = (nodeId: string, graph: Graph) => {
+export const getInboundEdges = (
+  nodeId: string,
+  graph: Pick<Graph, 'settings' | 'edges'>
+) => {
   const fn = graph.settings.value.isGraphDirected ? getDirectedInboundEdges : getUndirectedInboundEdges
   return fn(nodeId, graph.edges.value)
 }
@@ -158,7 +161,10 @@ export const getUndirectedOutboundEdges = (nodeId: string, edges: GEdge[]) => {
  * @example getOutboundEdges('abc123', graph)
  * // [{ from: 'abc123', to: 'def456' }]
  */
-export const getOutboundEdges = (nodeId: string, graph: Pick<Graph, 'settings' | 'edges'>) => {
+export const getOutboundEdges = (
+  nodeId: string,
+  graph: Pick<Graph, 'settings' | 'edges'>
+) => {
   const fn = graph.settings.value.isGraphDirected ? getDirectedOutboundEdges : getUndirectedOutboundEdges
   return fn(nodeId, graph.edges.value)
 }

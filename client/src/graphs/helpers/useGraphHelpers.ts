@@ -1,4 +1,5 @@
-import type { GEdge, GNode, Graph } from "@graph/types";
+import type { GEdge, GNode } from "@graph/types";
+import { usePersistentGraph } from "@graph/compositions/usePersistentGraph";
 import {
   getConnectedEdges,
   getConnectedNodes,
@@ -11,7 +12,9 @@ import {
   isEdgeFlowingOutOfNode
 } from ".";
 
-export const useGraphHelpers = (graph: Graph) => ({
+type PersistentGraph = ReturnType<typeof usePersistentGraph>
+
+export const useGraphHelpers = (graph: PersistentGraph) => ({
   getConnectedNodes: (edgeId: GEdge['id']) => getConnectedNodes(edgeId, graph),
   getConnectedEdges: (nodeId: GNode['id']) => getConnectedEdges(nodeId, graph),
   getInboundEdges: (nodeId: GNode['id']) => getInboundEdges(nodeId, graph),
