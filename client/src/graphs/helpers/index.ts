@@ -112,10 +112,10 @@ export const getConnectedNodes = (edgeId: GEdge['id'], graph: Pick<Graph, 'getNo
  */
 export const getConnectedEdges = (
   nodeId: GNode['id'],
-  graph: Pick<Graph, 'edges' | 'settings'>
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'settings'>
 ) => graph.edges.value.filter(edge => {
-  const isFlowingOut = isEdgeFlowingOutOfNode(edge, nodeId, graph)
-  const isFlowingIn = isEdgeFlowingIntoNode(edge, nodeId, graph)
+  const isFlowingOut = isEdgeFlowingOutOfNode(edge.id, nodeId, graph)
+  const isFlowingIn = isEdgeFlowingIntoNode(edge.id, nodeId, graph)
   return isFlowingOut || isFlowingIn
 })
 
@@ -174,17 +174,20 @@ const isUndirectedEdgeFlowingOutOfNode = (edge: GEdge, nodeId: GNode['id']) => {
 /**
  * checks if an edge originates from a node
  *
- * @param edge - the edge to check
+ * @param edgeId - the id of the edge to check
  * @param nodeId - the id of the node to check
  * @param graph - the graph instance
  * @returns true if the edge flows out of the node, false otherwise
  */
 export const isEdgeFlowingOutOfNode = (
-  edge: GEdge,
+  edgeId: GEdge['id'],
   nodeId: GNode['id'],
-  graph: Pick<Graph, 'settings'>
+  graph: Pick<Graph, 'settings' | 'getEdge'>
 ) => {
-  const fn = graph.settings.value.isGraphDirected ? isDirectedEdgeFlowingOutOfNode : isUndirectedEdgeFlowingOutOfNode
+  const edge = graph.getEdge(edgeId)
+  if (!edge) throw new Error('edge not found')
+  const isDirected = graph.settings.value.isGraphDirected
+  const fn = isDirected ? isDirectedEdgeFlowingOutOfNode : isUndirectedEdgeFlowingOutOfNode
   return fn(edge, nodeId)
 }
 
@@ -199,17 +202,20 @@ const isUndirectedEdgeFlowingIntoNode = (edge: GEdge, nodeId: GNode['id']) => {
 /**
  * checks if an edge goes to a node
  *
- * @param edge - the edge to check
+ * @param edgeId - the id of the edge to check
  * @param nodeId - the id of the node to check
  * @param graph - the graph instance
  * @returns true if the edge flows out of the node, false otherwise
  */
 export const isEdgeFlowingIntoNode = (
-  edge: GEdge,
+  edgeId: GEdge['id'],
   nodeId: GNode['id'],
-  graph: Pick<Graph, 'settings'>
+  graph: Pick<Graph, 'settings' | 'getEdge'>
 ) => {
-  const fn = graph.settings.value.isGraphDirected ? isDirectedEdgeFlowingIntoNode : isUndirectedEdgeFlowingIntoNode
+  const edge = graph.getEdge(edgeId)
+  if (!edge) throw new Error('edge not found')
+  const isDirected = graph.settings.value.isGraphDirected
+  const fn = isDirected ? isDirectedEdgeFlowingIntoNode : isUndirectedEdgeFlowingIntoNode
   return fn(edge, nodeId)
 }
 
@@ -238,12 +244,18 @@ export const getEdgesAlongPath = (
 /**
  * takes an edge and returns the weight of the edge
  *
- * @param edge the edge to get the weight of
+ * @param edgeId the edge to get the weight of
  * @param graph the graph instance
  * @param fallbackWeight the weight to return if the label cannot be parsed as a number. defaults to 1
  * @returns the weight of the edge
  */
-export const getEdgeWeight = (edge: GEdge, graph: Pick<Graph, 'getTheme'>, fallbackWeight = 1) => {
+export const getEdgeWeight = (
+  edgeId: GEdge['id'],
+  graph: Pick<Graph, 'getTheme' | 'getEdge'>,
+  fallbackWeight = 1
+) => {
+  const edge = graph.getEdge(edgeId)
+  if (!edge) throw new Error('edge not found')
   const label = graph.getTheme('edgeText', edge)
   const weight = Number(label)
   return isNaN(weight) ? fallbackWeight : weight
@@ -252,24 +264,24 @@ export const getEdgeWeight = (edge: GEdge, graph: Pick<Graph, 'getTheme'>, fallb
 export const getDirectedWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'edges' | 'getTheme'>,
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme'>,
   fallbackWeight: number,
 ) => {
   const edgesAlongPath = getEdgesAlongPath(fromNodeId, toNodeId, graph)
   const connectingEdge = edgesAlongPath.find((e) => e.to === toNodeId)
   if (!connectingEdge) throw new Error('nodes are not adjacent')
-  return getEdgeWeight(connectingEdge, graph, fallbackWeight)
+  return getEdgeWeight(connectingEdge.id, graph, fallbackWeight)
 }
 
 export const getUndirectedWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'edges' | 'getTheme'>,
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme'>,
   fallbackWeight: number,
 ) => {
   const [connectingEdge] = getEdgesAlongPath(fromNodeId, toNodeId, graph)
   if (!connectingEdge) throw new Error('nodes are not adjacent')
-  return getEdgeWeight(connectingEdge, graph, fallbackWeight)
+  return getEdgeWeight(connectingEdge.id, graph, fallbackWeight)
 }
 
 /**
@@ -285,7 +297,7 @@ export const getUndirectedWeightBetweenNodes = (
 export const getWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'settings' | 'getTheme' | 'edges'>,
+  graph: Pick<Graph, 'settings' | 'getTheme' | 'edges' | 'getEdge'>,
   fallbackWeight = 1
 ) => {
   const isDirected = graph.settings.value.isGraphDirected
