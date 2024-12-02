@@ -14,8 +14,10 @@
   import StopSimButton from "./StopSimButton.vue";
   import Button from "@ui/Button.vue";
   import colors from "@utils/colors";
-  import { toggleFullscreen } from '@product/setFullscreen'
-import { useShortcutPressed } from "@graph/compositions/useUserEditableGraph/useShortcutPressed";
+  import { useShortcutPressed } from "@graph/compositions/useUserEditableGraph/useShortcutPressed";
+  import { useFullscreen } from '@vueuse/core'
+
+  const { toggle: toggleFullscreen } = useFullscreen()
 
   const props = defineProps<{
     graph: Graph;
@@ -80,7 +82,7 @@ import { useShortcutPressed } from "@graph/compositions/useUserEditableGraph/use
     emit("graph-ref", graphEl.value);
     document.addEventListener('keydown', handleKeyboardEvents);
   });
-  
+
   onUnmounted(() => {
     document.removeEventListener('keydown', handleKeyboardEvents);
   });
