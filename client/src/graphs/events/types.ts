@@ -6,6 +6,7 @@ import type {
   MoveNodeOptions,
   AddEdgeOptions,
   RemoveEdgeOptions,
+  EditEdgeLabelOptions,
 } from "@graph/compositions/useBaseGraph/types";
 import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types";
 import type { GraphTheme } from "@graph/themes";
@@ -69,7 +70,7 @@ export type BaseGraphEventMap = {
   /**
    * when an edge's text label is changed
    */
-  onEdgeLabelChange: (edge: GEdge) => void;
+  onEdgeLabelEdited: (edge: GEdge, oldLabel: GEdge['label'], options: EditEdgeLabelOptions) => void;
   /**
    * when the canvas is repainted
    *

@@ -2,14 +2,6 @@ import type { GEdge, GNode } from "@graph/types";
 import type { FocusOption } from "../useBaseGraph/types";
 
 /**
- * affected items that are nodes
- */
-export type GNodeRecord = {
-  graphType: 'node',
-  data: GNode
-}
-
-/**
  * affected items that are nodes and have been moved
  */
 export type GNodeMoveRecord = {
@@ -19,6 +11,23 @@ export type GNodeMoveRecord = {
     from: { x: number, y: number },
     to: { x: number, y: number }
   }
+}
+
+export type GEdgeLabelEditRecord = {
+  graphType: 'edge',
+  data: {
+    id: GEdge['id'],
+    from: GEdge['label'],
+    to: GEdge['label']
+  }
+}
+
+/**
+ * affected items that are nodes
+ */
+export type GNodeRecord = {
+  graphType: 'node',
+  data: GNode
 }
 
 /**
@@ -58,10 +67,24 @@ export type MoveRecord = {
 }
 
 /**
+ * a record indicating an item in the graph had its label edited
+ */
+export type EditRecord = {
+  /**
+   * the action that was taken in order to create this record.
+   */
+  action: 'edit',
+  /**
+   * the items that were affected by the action.
+   */
+  affectedItems: GEdgeLabelEditRecord[];
+}
+
+/**
  * a record of an event stored in the history stack of a graph.
  * provides for undo/redo functionality
  */
-export type HistoryRecord = AddRemoveRecord | MoveRecord;
+export type HistoryRecord = AddRemoveRecord | MoveRecord | EditRecord;
 
 export type UndoHistoryOptions = FocusOption;
 

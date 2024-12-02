@@ -60,9 +60,7 @@ export const useFocusGraph = (
       if (!edge) throw new Error('textarea only implemented for edges')
       const newLabel = graph.settings.value.edgeInputToLabel(str)
       if (newLabel === undefined || edge.label === newLabel) return
-      edge.label = newLabel
-      graph.emit('onEdgeLabelChange', edge)
-      graph.emit('onStructureChange', graph.nodes.value, graph.edges.value)
+      graph.editEdgeLabel(edge.id, newLabel)
     })
   }
 

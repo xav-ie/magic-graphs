@@ -186,6 +186,7 @@ export const useBaseGraph = (
     addNode,
     addEdge,
     moveNode,
+    editEdgeLabel,
     removeNode,
     removeEdge,
     bulkAddNode,
@@ -274,6 +275,7 @@ export const useBaseGraph = (
     addEdge,
 
     moveNode,
+    editEdgeLabel,
 
     removeNode,
     removeEdge,

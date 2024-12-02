@@ -25,12 +25,6 @@ export type GButton = {
 }
 
 // @ts-ignore
-type SocketEmitOptions = {
-// @ts-ignore
-  graph: Graph
-}
-
-// @ts-ignore
 type ConnectOptions = {
 // @ts-ignore
   /**
@@ -195,6 +189,9 @@ export type ConnectionSocketEvents = {
 export type SocketEvents = GraphSocketEvents & CollabSocketEvents & ConnectionSocketEvents
 
 // @ts-ignore
+export type GraphSocket = Socket<SocketEvents, SocketEvents>
+
+// @ts-ignore
 export type BaseGraph = ReturnType<typeof useBaseGraph>
 
 // @ts-ignore
@@ -247,6 +244,9 @@ export type RemoveEdgeOptions = BroadcastOption & HistoryOption
 
 // @ts-ignore
 export type MoveNodeOptions = BroadcastOption
+
+// @ts-ignore
+export type EditEdgeLabelOptions = BroadcastOption & HistoryOption
 
 // @ts-ignore
 export type GraphAtMousePosition = {
@@ -819,7 +819,7 @@ export const getInitialEventBus = () => {
 // @ts-ignore
 
 // @ts-ignore
-    onEdgeLabelChange: new Set(),
+    onEdgeLabelEdited: new Set(),
 // @ts-ignore
 
 // @ts-ignore
@@ -925,7 +925,13 @@ export type BaseGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * when a node or edge is added or removed from the graph
+   * when one of the following occurs:
+// @ts-ignore
+   * - a node is added or removed
+// @ts-ignore
+   * - an edge is added or removed
+// @ts-ignore
+   * - an edge label is changed (usually indicating a change to the weight of the edge)
 // @ts-ignore
    */
 // @ts-ignore
@@ -1017,7 +1023,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
    */
 // @ts-ignore
-  onEdgeLabelChange: (edge: GEdge) => void;
+  onEdgeLabelEdited: (edge: GEdge, options: EditEdgeLabelOptions) => void;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -1231,27 +1237,7 @@ export type AnnotationGraphEventMap = {}
 export type PersistentGraphEventMap = {}
 
 // @ts-ignore
-export type GraphEventMap = (
-// @ts-ignore
-  BaseGraphEventMap &
-// @ts-ignore
-  HistoryGraphEventMap &
-// @ts-ignore
-  FocusGraphEventMap &
-// @ts-ignore
-  DraggableGraphEventMap &
-// @ts-ignore
-  NodeAnchorGraphEventMap &
-// @ts-ignore
-  MarqueeGraphEventMap &
-// @ts-ignore
-  UserEditableGraphEventMap &
-// @ts-ignore
-  PersistentGraphEventMap &
-// @ts-ignore
-  CollaborativeGraphEventMap
-// @ts-ignore
-)
+type PersistentGraph = ReturnType<typeof usePersistentGraph>
 
 // @ts-ignore
 export type LabelledItem = { label: string };
@@ -1452,7 +1438,7 @@ export type BaseGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * whether to display edge labels
+   * whether to display {@link GEdge.label | edge labels}
 // @ts-ignore
    * @default true
 // @ts-ignore
@@ -1462,7 +1448,7 @@ export type BaseGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * whether edge labels should be editable
+   * whether {@link GEdge.label | edge labels} should be editable
 // @ts-ignore
    * @default true
 // @ts-ignore
@@ -1472,11 +1458,15 @@ export type BaseGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * a setter for edge labels - takes the user inputted string and returns a string that will
+   * a setter for {@link GEdge.label | edge labels} - takes the user inputted string and returns a string that will
 // @ts-ignore
    * be set as the edge label or returns undefined if the edge label should not be set
 // @ts-ignore
-   * @default function tries converting the user input to a number
+   * @default (input) => {
+// @ts-ignore
+   * // tries converting the user input to a number
+// @ts-ignore
+   * }
 // @ts-ignore
    */
 // @ts-ignore
@@ -1484,7 +1474,7 @@ export type BaseGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * a function that returns a new label for a node when a new node is created.
+   * a function that returns the {@link GNode.label | label} for a node when a new node is created.
 // @ts-ignore
    * if null, new nodes will be generated alphabetically: A, B, C, ... Z, AA, AB, ...
 // @ts-ignore
@@ -1510,7 +1500,7 @@ export type FocusGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * if false, no items on the graph can be focused
+   * if false, no {@link SchemaItem | item} on the graph can be focused
 // @ts-ignore
    * @default true
 // @ts-ignore
@@ -1520,7 +1510,7 @@ export type FocusGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * a list of item ids that cannot be focused
+   * a list of {@link SchemaItem.id | item ids} that cannot be focused
 // @ts-ignore
    * @default []
 // @ts-ignore
@@ -1534,7 +1524,7 @@ export type DraggableGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * whether the graph is draggable
+   * whether the nodes on the graph are draggable
 // @ts-ignore
    * @default true
 // @ts-ignore
@@ -1548,7 +1538,9 @@ export type NodeAnchorGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * whether node anchors are enabled
+   * whether node anchors are enabled, if true, anchors will spawn around nodes while hovered
+// @ts-ignore
+   * enabling edge creation
 // @ts-ignore
    * @default true
 // @ts-ignore
@@ -1596,9 +1588,9 @@ export type UserEditableGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * the default label assigned to edges when created using the UI
+   * the default {@link GEdge.label | label} assigned to edges when created using the UI
 // @ts-ignore
-   * @default 1
+   * @default '1'
 // @ts-ignore
    */
 // @ts-ignore
@@ -1634,7 +1626,7 @@ export type PersistentGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * whether the graph is persistent
+   * whether the nodes and edges of the graph will be saved in {@link localStorage | local storage}
 // @ts-ignore
    * @default true
 // @ts-ignore
@@ -1644,7 +1636,7 @@ export type PersistentGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * the key to use for storing the graph in local storage
+   * the key used for saving the graph in {@link localStorage | local storage}
 // @ts-ignore
    * @default "graph"
 // @ts-ignore
@@ -1654,23 +1646,13 @@ export type PersistentGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * whether to track theme changes
+   * set of node or edge ids that will not be saved through graph persistence
 // @ts-ignore
-   * @default false
-// @ts-ignore
-   */
-// @ts-ignore
-  persistentTrackTheme: boolean,
-// @ts-ignore
-  /**
-// @ts-ignore
-   * whether to track settings changes
-// @ts-ignore
-   * @default false
+   * @default new Set()
 // @ts-ignore
    */
 // @ts-ignore
-  persistentTrackSettings: boolean,
+  persistentBlacklist: Set<GNode['id'] | GEdge['id']>
 }
 
 // @ts-ignore
@@ -1775,7 +1757,7 @@ export const getThemeResolver = (
 // @ts-ignore
       ) as UnwrapMaybeGetter<GraphTheme[T]>
 // @ts-ignore
-      return themeValue ?? false
+      return themeValue !== undefined
 // @ts-ignore
     })
 // @ts-ignore
@@ -1791,7 +1773,7 @@ export const getThemeResolver = (
 // @ts-ignore
 /**
 // @ts-ignore
- * describes the function that gets a value from a theme inquiry
+ * the function that gets a value from a theme inquiry
 // @ts-ignore
  */
 // @ts-ignore
@@ -2031,46 +2013,7 @@ export type AnnotationGraphTheme = {}
 export type PersistentGraphTheme = {}
 
 // @ts-ignore
-export type GraphTheme = (
-// @ts-ignore
-  UITheme &
-// @ts-ignore
-  BaseGraphTheme &
-// @ts-ignore
-  HistoryGraphTheme &
-// @ts-ignore
-  FocusGraphTheme &
-// @ts-ignore
-  DraggableGraphTheme &
-// @ts-ignore
-  NodeAnchorGraphTheme &
-// @ts-ignore
-  MarqueeGraphTheme &
-// @ts-ignore
-  UserEditableGraphTheme &
-// @ts-ignore
-  PersistentGraphTheme &
-// @ts-ignore
-  CollaborativeGraphTheme
-// @ts-ignore
-)
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * decomposes MaybeGetter<T, K> such that it turns T into T | void
-// @ts-ignore
- */
-// @ts-ignore
 export type MaybeGetterOrVoid<T> = MaybeGetter<UnwrapMaybeGetter<T> | void, MaybeGetterParams<T>>
-// @ts-ignore
-
-// @ts-ignore
-type WrapWithNodeGetter<T extends Record<string, any>> = {
-// @ts-ignore
-  [K in keyof T]: NodeGetterOrValue<T[K]>
-}
 
 // @ts-ignore
 type WrapWithEdgeGetter<T extends Record<string, any>> = {
@@ -2519,7 +2462,7 @@ export type GEdge = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * the text label that appears on the edge - NOT IMPLEMENTED
+   * the text label that appears on the edge
 // @ts-ignore
    */
 // @ts-ignore
@@ -2533,73 +2476,8 @@ export type Aggregator = SchemaItem[]
 export type UpdateAggregator = (aggregator: Aggregator) => Aggregator
 
 // @ts-ignore
-export type RemoveAnyArray<T extends any[]> = T extends ['!!!-@-NOT-A-TYPE-@-!!!'][] ? never : T
-
-// @ts-ignore
-export type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
-
-// @ts-ignore
-export type NodeGetterOrValue<T> = MaybeGetter<T, [GNode]>
-// @ts-ignore
 export type EdgeGetterOrValue<T> = MaybeGetter<T, [GEdge]>
-// @ts-ignore
 
-// @ts-ignore
-/**
-// @ts-ignore
- * @describes the value of a MaybeGetter
-// @ts-ignore
-*/
-// @ts-ignore
-export type UnwrapMaybeGetter<T> = T extends MaybeGetter<infer U, infer _> ? U : T
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * @describes the parameters of a MaybeGetter
-// @ts-ignore
-*/
-// @ts-ignore
-export type MaybeGetterParams<T> = RemoveAnyArray<T extends MaybeGetter<infer _, infer K> ? K : []>
-// @ts-ignore
-
-// @ts-ignore
-type EventNames = keyof HTMLElementEventMap
-// @ts-ignore
-
-// @ts-ignore
-type FilterEventNames<T> = {
-// @ts-ignore
-  [K in EventNames]: HTMLElementEventMap[K] extends T ? K : never
-// @ts-ignore
-}[EventNames]
-// @ts-ignore
-
-// @ts-ignore
-type MouseEventNames = FilterEventNames<MouseEvent>
-// @ts-ignore
-type KeyboardEventNames = FilterEventNames<KeyboardEvent>
-// @ts-ignore
-
-// @ts-ignore
-type EventMap<T extends EventNames, E> = Record<T, (ev: E) => void>
-// @ts-ignore
-
-// @ts-ignore
-export type MouseEventMap = EventMap<MouseEventNames, MouseEvent>
-// @ts-ignore
-export type KeyboardEventMap = EventMap<KeyboardEventNames, KeyboardEvent>
-// @ts-ignore
-
-// @ts-ignore
-export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][]
-// @ts-ignore
-export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]
-// @ts-ignore
-
-// @ts-ignore
-type BaseGraphTypes = 'node' | 'edge'
 // @ts-ignore
 type MarqueeGraphTypes = 'marquee-box' | 'encapsulated-node-box'
 // @ts-ignore
@@ -2611,7 +2489,7 @@ type AnnotationGraphTypes = 'annotation'
 // @ts-ignore
 /**
 // @ts-ignore
- * @describes a schema item that can be fed into the aggregator in order to be rendered on the canvas
+ * an item that can be fed into the `aggregator` in order to be rendered on the canvas
 // @ts-ignore
  */
 // @ts-ignore
@@ -2627,7 +2505,7 @@ export type SchemaItem = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * the type of graph data this schema item represents
+   * the type of graph data this schema item represents (node, edge, etc.)
 // @ts-ignore
    */
 // @ts-ignore
@@ -2649,7 +2527,7 @@ export type SchemaItem = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * the magic shape instance that will be rendered on the canvas
+   * the {@link Shape | shape} instance that will be rendered on the canvas
 // @ts-ignore
    */
 // @ts-ignore
@@ -2660,7 +2538,76 @@ export type SchemaItem = {
 export type AdjacencyList = Record<string, string[]>;
 
 // @ts-ignore
-export type FullNodeAdjacencyList = Record<string, GNode[]>;
+export type FullNodeAdjacencyList = Record<GNode['id'], GNode[]>;
+
+// @ts-ignore
+export type WeightedAdjacencyList = Record<GNode['id'], (GNode & {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the weight of the edge that connects the key node to the neighbor node
+// @ts-ignore
+   */
+// @ts-ignore
+  weight: number
+// @ts-ignore
+})[]>;
+// @ts-ignore
+
+// @ts-ignore
+/**
+// @ts-ignore
+ * creates an adjacency list mapping node ids to nodes along with a added field `weight` that
+// @ts-ignore
+ * represents the weight of the edge connecting them
+// @ts-ignore
+ *
+// @ts-ignore
+ * @param graph the graph instance
+// @ts-ignore
+ * @param fallbackWeight the weight between two adjacent nodes if the label of the edge connecting them
+// @ts-ignore
+ * cannot be parsed as a number. defaults to 1
+// @ts-ignore
+ * @returns an adjacency list using ids of nodes as keys and the full node objects with weights as values
+// @ts-ignore
+ * @example getWeightedAdjacencyList(graph)
+// @ts-ignore
+ * // {
+// @ts-ignore
+ * //   'abc123': [{ id: 'def456', label: 'B', weight: 1, x: 0, y: 0 }],
+// @ts-ignore
+ * //   'def456': [{ id: 'abc123', label: 'A', weight: 1, x: 100, y: 100 }]
+// @ts-ignore
+ * // }
+// @ts-ignore
+ */
+// @ts-ignore
+export const getWeightedAdjacencyList = (graph: Graph, fallbackWeight = 1) => {
+// @ts-ignore
+  const adjList = getAdjacencyList(graph);
+// @ts-ignore
+  const adjListEntries = Object.entries(adjList);
+// @ts-ignore
+
+// @ts-ignore
+  return adjListEntries.reduce<WeightedAdjacencyList>((acc, [keyNodeId, toNodeIds]) => {
+// @ts-ignore
+    acc[keyNodeId] = toNodeIds.map(toNodeId => ({
+// @ts-ignore
+      ...graph.getNode(toNodeId)!,
+// @ts-ignore
+      weight: getWeightBetweenNodes(keyNodeId, toNodeId, graph, fallbackWeight)
+// @ts-ignore
+    }))
+// @ts-ignore
+    return acc;
+// @ts-ignore
+  }, {});
+}
+
+// @ts-ignore
+export type TransitionMatrix = number[][];
 
 // @ts-ignore
 export type GraphPlaygroundControls = {
@@ -2668,8 +2615,6 @@ export type GraphPlaygroundControls = {
   theme: boolean,
 // @ts-ignore
   tutorial: boolean,
-// @ts-ignore
-  collab: boolean,
 // @ts-ignore
   settings: boolean,
 // @ts-ignore
@@ -2696,6 +2641,10 @@ export const INF = 999999;
 
 // @ts-ignore
 export const dijkstras = (graph: Graph, startingNodeId: GNode['id']) => {
+// @ts-ignore
+  const { getInboundEdges, getOutboundEdges } = graph.helpers;
+// @ts-ignore
+
 // @ts-ignore
   const distanceArr = graph.nodes.value.map(
 // @ts-ignore
@@ -2777,7 +2726,7 @@ export const dijkstras = (graph: Graph, startingNodeId: GNode['id']) => {
 // @ts-ignore
     if (
 // @ts-ignore
-      getInboundEdges(sourceNode.id, graph).length === 0 &&
+      getInboundEdges(sourceNode.id).length === 0 &&
 // @ts-ignore
       sourceNode.id !== startingNodeId
 // @ts-ignore
@@ -2789,7 +2738,7 @@ export const dijkstras = (graph: Graph, startingNodeId: GNode['id']) => {
 // @ts-ignore
     // iterate through source's neighbors
 // @ts-ignore
-    getOutboundEdges(sourceNode.id, graph).forEach((edge) => {
+    getOutboundEdges(sourceNode.id).forEach((edge) => {
 // @ts-ignore
       // updates distance of neighbor if new distance is less than old
 // @ts-ignore
@@ -2878,10 +2827,7 @@ export const dijkstras = (graph: Graph, startingNodeId: GNode['id']) => {
 };
 
 // @ts-ignore
-export type DijkstraSimulatorControls = SimulationControls<DijkstrasTrace>
-
-// @ts-ignore
-export type MarkupSize = typeof MARKUP_SIZES[number];
+export type DijkstraSimulationRunner = SimulationRunner<DijkstrasTrace>;
 
 // @ts-ignore
 type ColorMapKey = GNode['id'] | GEdge['id'];
@@ -2901,6 +2847,8 @@ export const useMarkupColorizer = (graph: Graph) => {
   const colorMap = useLocalStorage('markup-color-map', new Map<ColorMapKey, ColorMapValue>());
 // @ts-ignore
 
+// @ts-ignore
+  // TODO
 // @ts-ignore
   // go through all keys in the colorMap and remove inactive nodes/edges
 // @ts-ignore
@@ -3080,193 +3028,349 @@ export const useMarkupSizer = (graph: Graph) => {
 };
 
 // @ts-ignore
+export type MarkupSize = typeof MARKUP_SIZES[number];
+
+// @ts-ignore
 export type AdjacencyMap = Map<number, number[]>;
 
 // @ts-ignore
 export type Parent = Map<string, string>
-
 // @ts-ignore
-export type MSTSimulationControls = SimulationControls<GEdge[]>;
-// @ts-ignore
-export const MST_ALGORITHMS = ["kruskal", "prim"] as const;
-// @ts-ignore
-export type MSTAlgorithm = typeof MST_ALGORITHMS[number];
+export type Rank = Map<string, number>
 // @ts-ignore
 
 // @ts-ignore
-export const useMSTSimulation = (
+export const kruskal = (graph: Graph) => {
+// @ts-ignore
+  const { nodes, edges } = graph;
+// @ts-ignore
+  const { getEdgeWeight } = graph.helpers;
+// @ts-ignore
+
+// @ts-ignore
+  const find = (parent: Parent, nodeId: string): string => {
+// @ts-ignore
+    if (parent.get(nodeId) !== nodeId) {
+// @ts-ignore
+      parent.set(nodeId, find(parent, parent.get(nodeId)!));
+// @ts-ignore
+    }
+// @ts-ignore
+    return parent.get(nodeId)!;
+// @ts-ignore
+  };
+// @ts-ignore
+
+// @ts-ignore
+  const union = (parent: Parent, rank: Rank, nodeA: string, nodeB: string) => {
+// @ts-ignore
+    const rootA = find(parent, nodeA);
+// @ts-ignore
+    const rootB = find(parent, nodeB);
+// @ts-ignore
+
+// @ts-ignore
+    if (rootA !== rootB) {
+// @ts-ignore
+      const rankA = rank.get(rootA)!;
+// @ts-ignore
+      const rankB = rank.get(rootB)!;
+// @ts-ignore
+
+// @ts-ignore
+      if (rankA < rankB) {
+// @ts-ignore
+        parent.set(rootA, rootB);
+// @ts-ignore
+      } else if (rankA > rankB) {
+// @ts-ignore
+        parent.set(rootB, rootA);
+// @ts-ignore
+      } else {
+// @ts-ignore
+        parent.set(rootB, rootA);
+// @ts-ignore
+        rank.set(rootA, rankA + 1);
+// @ts-ignore
+      }
+// @ts-ignore
+    }
+// @ts-ignore
+  };
+// @ts-ignore
+
+// @ts-ignore
+  const run = () => {
+// @ts-ignore
+    const sortedEdges = Object.values(edges.value).sort((edgeA, edgeB) => {
+// @ts-ignore
+      return getEdgeWeight(edgeA.id) - getEdgeWeight(edgeB.id);
+// @ts-ignore
+    });
+// @ts-ignore
+
+// @ts-ignore
+    const parent = new Map<string, string>();
+// @ts-ignore
+    const rank = new Map<string, number>();
+// @ts-ignore
+
+// @ts-ignore
+    graph.nodes.value.forEach((node) => {
+// @ts-ignore
+      parent.set(node.id, node.id);
+// @ts-ignore
+      rank.set(node.id, 0);
+// @ts-ignore
+    });
+// @ts-ignore
+
+// @ts-ignore
+    const mst: GEdge[] = [];
+// @ts-ignore
+    for (const edge of sortedEdges) {
+// @ts-ignore
+      const sourceRoot = find(parent, edge.from);
+// @ts-ignore
+      const targetRoot = find(parent, edge.to);
+// @ts-ignore
+
+// @ts-ignore
+      if (sourceRoot !== targetRoot) {
+// @ts-ignore
+        mst.push(edge);
+// @ts-ignore
+        union(parent, rank, sourceRoot, targetRoot);
+// @ts-ignore
+
+// @ts-ignore
+        if (mst.length === nodes.value.length - 1) break;
+// @ts-ignore
+      }
+// @ts-ignore
+    }
+// @ts-ignore
+    return mst;
+// @ts-ignore
+  };
+// @ts-ignore
+
+// @ts-ignore
+  return run();
+}
+
+// @ts-ignore
+export type MSTTrace = GEdge[];
+// @ts-ignore
+export type MSTSimulationControls = SimulationControls<MSTTrace>;
+// @ts-ignore
+export type MSTSimulationRunner = SimulationRunner<MSTTrace>;
+// @ts-ignore
+
+// @ts-ignore
+export const useMSTSimulationRunner = (
 // @ts-ignore
   graph: Graph,
 // @ts-ignore
-  currentAlgorithm: Ref<MSTAlgorithm>
+  trace: MSTSimulationControls['trace']
 // @ts-ignore
-): MSTSimulationControls => {
+): MSTSimulationRunner => {
 // @ts-ignore
-
+  const simControls = useSimulationControls(trace);
 // @ts-ignore
-  const kruskalTrace = useKruskal(graph);
-// @ts-ignore
-  const primsTrace = usePrim(graph);
-// @ts-ignore
-
-// @ts-ignore
-  const trace = computed(() => {
-// @ts-ignore
-    if (currentAlgorithm.value === "prim") return primsTrace.value;
-// @ts-ignore
-    else return kruskalTrace.value;
-// @ts-ignore
-  });
-// @ts-ignore
-
-// @ts-ignore
-  const step = ref(0);
-// @ts-ignore
-  const paused = ref(true);
-// @ts-ignore
-  const playbackSpeed = ref(1_500);
-// @ts-ignore
-  const active = ref(false);
-// @ts-ignore
-  const interval = ref<NodeJS.Timeout | undefined>();
-// @ts-ignore
-
-// @ts-ignore
-  const hasBegun = computed(() => step.value > 0);
-// @ts-ignore
-  const isOver = computed(() => step.value === trace.value.length + 1);
-// @ts-ignore
-
-// @ts-ignore
-  const traceAtStep = computed(() => trace.value.slice(0, step.value));
-// @ts-ignore
-
-// @ts-ignore
-  const { colorize, decolorize } = useMSTColorizer(graph, traceAtStep);
-// @ts-ignore
-
-// @ts-ignore
-  const start = () => {
-// @ts-ignore
-    if (active.value) return;
-// @ts-ignore
-
-// @ts-ignore
-    paused.value = false;
-// @ts-ignore
-    active.value = true;
-// @ts-ignore
-    step.value = 0;
-// @ts-ignore
-    colorize();
-// @ts-ignore
-    interval.value = setInterval(() => {
-// @ts-ignore
-      if (isOver.value || paused.value) return;
-// @ts-ignore
-      nextStep();
-// @ts-ignore
-    }, playbackSpeed.value);
-// @ts-ignore
-  };
-// @ts-ignore
-
-// @ts-ignore
-  const stop = () => {
-// @ts-ignore
-    if (interval.value) clearInterval(interval.value);
-// @ts-ignore
-    active.value = false;
-// @ts-ignore
-    decolorize();
-// @ts-ignore
-  };
-// @ts-ignore
-
-// @ts-ignore
-  const nextStep = () => {
-// @ts-ignore
-    if (isOver.value) return;
-// @ts-ignore
-    step.value++;
-// @ts-ignore
-  };
-// @ts-ignore
-
-// @ts-ignore
-  const prevStep = () => {
-// @ts-ignore
-    if (!hasBegun.value) return;
-// @ts-ignore
-    step.value--;
-// @ts-ignore
-  };
-// @ts-ignore
-
-// @ts-ignore
-  const setStep = (newStep: number) => {
-// @ts-ignore
-    if (newStep < -1 || newStep > trace.value.length) return;
-// @ts-ignore
-    step.value = newStep;
-// @ts-ignore
-  };
-// @ts-ignore
-
+  const { activate, deactivate } = useSimulationTheme(graph, simControls);
 // @ts-ignore
   return {
 // @ts-ignore
-    nextStep,
+    simControls,
 // @ts-ignore
-    prevStep,
+    start: () => {
 // @ts-ignore
-    setStep,
+      activate();
 // @ts-ignore
-
+      simControls.start();
 // @ts-ignore
-    trace: computed(() => trace.value),
+    },
 // @ts-ignore
-    step: computed(() => step.value),
+    stop: () => {
 // @ts-ignore
-
+      deactivate();
 // @ts-ignore
-    start,
+      simControls.stop();
 // @ts-ignore
-    stop,
+    },
 // @ts-ignore
-    paused,
-// @ts-ignore
-    playbackSpeed,
-// @ts-ignore
-
-// @ts-ignore
-    isOver,
-// @ts-ignore
-    hasBegun,
-// @ts-ignore
-    isActive: computed(() => active.value),
-// @ts-ignore
-    // progress: computed(() => `${step.value} / ${trace.value.length}`),
-// @ts-ignore
-  };
-// @ts-ignore
-};
-// @ts-ignore
+  }
+}
 
 // @ts-ignore
 export type FlowTrace = Record<GEdge['id'], number>[]
 
 // @ts-ignore
-export type EdgeThickenerControls = ReturnType<typeof useEdgeThickener>;
-
-// @ts-ignore
-export type FlowProperties = ReturnType<typeof useFlowProperties>;
-
-// @ts-ignore
 export type FlowSimulationControls = SimulationControls<FlowTrace>
+// @ts-ignore
+export type FlowSimulationRunner = SimulationRunner<FlowTrace>
+// @ts-ignore
 
 // @ts-ignore
-export type SourceSinkControls = ReturnType<typeof useSourceSinkControls>;
+export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
+// @ts-ignore
+  const { text } = useTextTip();
+// @ts-ignore
+
+// @ts-ignore
+  const {
+// @ts-ignore
+    activate: activeEdgeThickener,
+// @ts-ignore
+    deactivate: deactivateEdgeThickener
+// @ts-ignore
+  } = useEdgeThickener(graph, FLOW_USETHEME_ID + '-runner')
+// @ts-ignore
+
+// @ts-ignore
+  const {
+// @ts-ignore
+    stylize: activateFlowColorizer,
+// @ts-ignore
+    destylize: deactivateFlowColorizer
+// @ts-ignore
+  } = useSourceSinkTheme(graph, FLOW_USETHEME_ID + '-runner')
+// @ts-ignore
+
+// @ts-ignore
+  const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
+// @ts-ignore
+
+// @ts-ignore
+  const { sourceNode, sinkNode } = state
+// @ts-ignore
+  const { trace } = useFordFulkerson(graph)
+// @ts-ignore
+  const simControls = useSimulationControls(trace, {
+// @ts-ignore
+    allowEditingDuringPlayback: false,
+// @ts-ignore
+  })
+// @ts-ignore
+
+// @ts-ignore
+  const { activate: activateTheme, deactivate: deactivateTheme } = useSimulationTheme(graph, simControls)
+// @ts-ignore
+
+// @ts-ignore
+  let cancelled = false;
+// @ts-ignore
+
+// @ts-ignore
+  const start = async () => {
+// @ts-ignore
+    graph.settings.value.persistent = false;
+// @ts-ignore
+
+// @ts-ignore
+    activateFlowColorizer()
+// @ts-ignore
+    activeEdgeThickener()
+// @ts-ignore
+
+// @ts-ignore
+    if (!sourceNode.value) {
+// @ts-ignore
+      text.value = 'Select a source node'
+// @ts-ignore
+      await state.setNode(graph, sourceNode)
+// @ts-ignore
+    }
+// @ts-ignore
+
+// @ts-ignore
+    if (cancelled) return
+// @ts-ignore
+
+// @ts-ignore
+    if (!sinkNode.value) {
+// @ts-ignore
+      text.value = 'Select a sink node'
+// @ts-ignore
+      await state.setNode(graph, sinkNode)
+// @ts-ignore
+    }
+// @ts-ignore
+
+// @ts-ignore
+    text.value = undefined
+// @ts-ignore
+
+// @ts-ignore
+    if (cancelled) return
+// @ts-ignore
+
+// @ts-ignore
+    createResidualEdges()
+// @ts-ignore
+    activateTheme()
+// @ts-ignore
+
+// @ts-ignore
+    simControls.start()
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  const stop = async () => {
+// @ts-ignore
+    cancelled = true
+// @ts-ignore
+
+// @ts-ignore
+    state.cancelNodeSelection.value?.()
+// @ts-ignore
+
+// @ts-ignore
+    simControls.stop()
+// @ts-ignore
+    cleanupResidualEdges()
+// @ts-ignore
+    deactivateTheme()
+// @ts-ignore
+
+// @ts-ignore
+    deactivateFlowColorizer()
+// @ts-ignore
+    deactivateEdgeThickener()
+// @ts-ignore
+
+// @ts-ignore
+    text.value = undefined
+// @ts-ignore
+    graph.settings.value.persistent = true
+// @ts-ignore
+
+// @ts-ignore
+    setTimeout(() => cancelled = false, 0)
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  return {
+// @ts-ignore
+    start,
+// @ts-ignore
+    stop,
+// @ts-ignore
+    simControls,
+// @ts-ignore
+  }
+}
+
+// @ts-ignore
+type WeightMap = Map<GEdge['id'], number>
+
+// @ts-ignore
+export type EdgeThickenerControls = ReturnType<typeof useEdgeThickener>;
 
 // @ts-ignore
 export type AlgoName = keyof typeof algos
@@ -3283,6 +3387,8 @@ export type Arrow = Line
 // @ts-ignore
 export type Circle = {
 // @ts-ignore
+  id?: string,
+// @ts-ignore
   at: Coordinate,
 // @ts-ignore
   radius: number,
@@ -3296,6 +3402,8 @@ export type Circle = {
 
 // @ts-ignore
 export type Cross = {
+// @ts-ignore
+  id?: string,
 // @ts-ignore
   at: Coordinate
 // @ts-ignore
@@ -3313,6 +3421,8 @@ export type Cross = {
 // @ts-ignore
 export type Line = {
 // @ts-ignore
+  id?: string,
+// @ts-ignore
   start: Coordinate,
 // @ts-ignore
   end: Coordinate,
@@ -3325,9 +3435,9 @@ export type Line = {
 // @ts-ignore
    * offsetFromCenter is used to position text. By default, text is centered on the line.
 // @ts-ignore
-   * If -10, text will be on the line but 10 units below the center.
+   * If -10, text will be on the line but 10 units towards the start.
 // @ts-ignore
-   * If 10, text will be on the line but 10 units above the center.
+   * If 10, text will be on the line but 10 units away from the start.
 // @ts-ignore
    */
 // @ts-ignore
@@ -3338,6 +3448,8 @@ export type Line = {
 
 // @ts-ignore
 export type Rect = {
+// @ts-ignore
+  id?: string
 // @ts-ignore
   at: Coordinate
 // @ts-ignore
@@ -3358,6 +3470,8 @@ export type Rect = {
 
 // @ts-ignore
 export type Scribble = {
+// @ts-ignore
+  id?: string;
 // @ts-ignore
   type: "draw" | "erase";
 // @ts-ignore
@@ -3403,7 +3517,7 @@ export const scribble = (options: Scribble): Shape => {
 // @ts-ignore
 
 // @ts-ignore
-  
+
 // @ts-ignore
   const shapeHitbox = scribbleHitbox(options);
 // @ts-ignore
@@ -3415,11 +3529,11 @@ export const scribble = (options: Scribble): Shape => {
 // @ts-ignore
   }
 // @ts-ignore
-  
+
 // @ts-ignore
   const getBoundingBox = getScribbleBoundingBox(options);
 // @ts-ignore
-  
+
 // @ts-ignore
   const drawShape = drawScribbleWithCtx(options);
 // @ts-ignore
@@ -3433,13 +3547,13 @@ export const scribble = (options: Scribble): Shape => {
 // @ts-ignore
 
 // @ts-ignore
-  
+
 // @ts-ignore
 
 // @ts-ignore
   return {
 // @ts-ignore
-    id: generateId(),
+    id: options.id ?? generateId(),
 // @ts-ignore
     name: 'scribble',
 // @ts-ignore
@@ -3465,6 +3579,8 @@ export const scribble = (options: Scribble): Shape => {
 // @ts-ignore
 export type Square = {
 // @ts-ignore
+  id?: string
+// @ts-ignore
   at: Coordinate
 // @ts-ignore
   size: number
@@ -3482,6 +3598,8 @@ export type Square = {
 
 // @ts-ignore
 export type Triangle = {
+// @ts-ignore
+  id?: string;
 // @ts-ignore
   point1: Coordinate;
 // @ts-ignore
@@ -3551,7 +3669,7 @@ export const triangle = (options: Triangle): Shape => {
 // @ts-ignore
   return {
 // @ts-ignore
-    id: generateId(),
+    id: options.id ?? generateId(),
 // @ts-ignore
     name: "triangle",
 // @ts-ignore
@@ -3683,9 +3801,11 @@ export type Stroke = {
 // @ts-ignore
 export type UTurn = {
 // @ts-ignore
-  spacing: number,
+  id?: string,
 // @ts-ignore
   at: Coordinate,
+// @ts-ignore
+  spacing: number,
 // @ts-ignore
   upDistance: number,
 // @ts-ignore
@@ -3769,35 +3889,11 @@ export type SimulationDeclaration = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * the controls for the simulation returned by your products useSimulation instance
+   * the runner for the simulation
 // @ts-ignore
    */
 // @ts-ignore
-  controls: SimulationControls,
-// @ts-ignore
-  /**
-// @ts-ignore
-   * runs when the simulation is opened or started by the user.
-// @ts-ignore
-   * use this to prepare the simulation experience by activating colorizers, prompting
-// @ts-ignore
-   * user for starting nodes, etc.
-// @ts-ignore
-   */
-// @ts-ignore
-  onInit?: () => Promise<void> | void,
-// @ts-ignore
-  /**
-// @ts-ignore
-   * runs when the simulation is closed or stopped by the user.
-// @ts-ignore
-   * use this to deactivate colorizers or other visual effects that were activated
-// @ts-ignore
-   * in `onInit` or during the runtime of the simulation.
-// @ts-ignore
-   */
-// @ts-ignore
-  onDismiss?: () => Promise<void> | void,
+  runner: SimulationRunner,
 }
 
 // @ts-ignore
@@ -3857,7 +3953,107 @@ export type ProductInfo = {
    */
 // @ts-ignore
   simulations?: SimulationDeclarationGetter,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * points to a products state, must have a `reset` method that resets the state of
+// @ts-ignore
+   * the product when invoked
+// @ts-ignore
+   */
+// @ts-ignore
+  state?: { reset: () => void },
 }
+
+// @ts-ignore
+export type ProgressOptions = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * at the value in the 0th index, the progress bar will be empty.
+// @ts-ignore
+   * at the 1st index, the progress bar will be full.
+// @ts-ignore
+   */
+// @ts-ignore
+  range: [number, number];
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the current value of the progress bar.
+// @ts-ignore
+   * should be within the range specified in the range prop.
+// @ts-ignore
+   */
+// @ts-ignore
+  progress: number;
+// @ts-ignore
+  /**
+// @ts-ignore
+   *
+// @ts-ignore
+   */
+// @ts-ignore
+  previewProgress?: number;
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the time it takes, in milliseconds, for the progress bar
+// @ts-ignore
+   * to visually adjust to the new progress value.
+// @ts-ignore
+   * @default 250
+// @ts-ignore
+   */
+// @ts-ignore
+  transitionTimeMs?: number;
+// @ts-ignore
+  /**
+// @ts-ignore
+   * a css easing function used to transition the progress bar.
+// @ts-ignore
+   * @default "ease-in-out"
+// @ts-ignore
+   */
+// @ts-ignore
+  transitionEasing?: "linear" | "ease-in-out";
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the color of the progress bar.
+// @ts-ignore
+   * @default colors.GRAY_200 // tailwind gray-200
+// @ts-ignore
+   */
+// @ts-ignore
+  color?: string;
+// @ts-ignore
+  /**
+// @ts-ignore
+   * called when the user clicks on the progress bar to set the progress.
+// @ts-ignore
+   * @param progress the new progress value.
+// @ts-ignore
+   */
+// @ts-ignore
+  onProgressSet?: (progress: number) => void
+// @ts-ignore
+  onHover?: (progress: number) => void
+// @ts-ignore
+};
+// @ts-ignore
+
+// @ts-ignore
+export const PROGRESS_DEFAULTS = {
+// @ts-ignore
+  transitionTimeMs: 250,
+// @ts-ignore
+  transitionEasing: "ease-in-out",
+// @ts-ignore
+  color: colors.GRAY_200,
+// @ts-ignore
+} as const;
+// @ts-ignore
 
 // @ts-ignore
 export type SimulationControls<T extends any[] = any[]> = {
@@ -3876,7 +4072,7 @@ export type SimulationControls<T extends any[] = any[]> = {
 // @ts-ignore
    * skip backward to the previous step.
 // @ts-ignore
-   * wont do anything if the current step is -1
+   * wont do anything if the current step is 0
 // @ts-ignore
    */
 // @ts-ignore
@@ -3896,7 +4092,7 @@ export type SimulationControls<T extends any[] = any[]> = {
 // @ts-ignore
    * the current step of the simulation.
 // @ts-ignore
-   * ranges from -1 to trace.length where -1 is the state before the algorithm has begun
+   * ranges from 0 to trace.length where 0 is the state before the algorithm has begun
 // @ts-ignore
    * and trace.length is the state after the algorithm has completed.
 // @ts-ignore
@@ -3910,7 +4106,7 @@ export type SimulationControls<T extends any[] = any[]> = {
 // @ts-ignore
    * @param step the step to set the simulation to
 // @ts-ignore
-   * @throws if step is not within the bounds of the trace (-1 to trace.length)
+   * @throws if step is not within the bounds of the trace (0 to trace.length)
 // @ts-ignore
    */
 // @ts-ignore
@@ -3976,7 +4172,7 @@ export type SimulationControls<T extends any[] = any[]> = {
 // @ts-ignore
    * whether the simulation has begun.
 // @ts-ignore
-   * true when the step is greater than -1
+   * true when the step is greater than 0
 // @ts-ignore
    */
 // @ts-ignore
@@ -3984,47 +4180,199 @@ export type SimulationControls<T extends any[] = any[]> = {
 }
 
 // @ts-ignore
-type ProgressThemeOptions = {
+export type SimulationRunner<T extends any[] = any[]> = {
 // @ts-ignore
-  backgroundColor: string;
+  /**
 // @ts-ignore
-  progressColor: string;
+   * Start the simulation
 // @ts-ignore
-  easeTime: number;
+   */
 // @ts-ignore
-  borderRadius: number;
+  start: () => Promise<void> | void
 // @ts-ignore
-  progressEasing: "linear" | "ease-in-out";
+  /**
+// @ts-ignore
+   * Stop the simulation
+// @ts-ignore
+   */
+// @ts-ignore
+  stop: () => Promise<void> | void
+// @ts-ignore
+  /**
+// @ts-ignore
+   * The controls for the simulation
+// @ts-ignore
+   */
+// @ts-ignore
+  simControls: SimulationControls<T>
 }
 
 // @ts-ignore
-export type ProgressOptions = {
+type SimulationControlsOptions = {
 // @ts-ignore
-  theme?: Partial<ProgressThemeOptions>;
+  /**
 // @ts-ignore
-  startProgress: number;
+   * if true, the user can edit the graph while the simulation is running
 // @ts-ignore
-  currentProgress: number;
+   * @default true
 // @ts-ignore
-  endProgress: number;
+   */
 // @ts-ignore
-  setProgress: (progress: number) => void
+  allowEditingDuringPlayback?: boolean
+}
+
+// @ts-ignore
+export type EasingFunction =
+// @ts-ignore
+  | "linear"
+// @ts-ignore
+  | "in-out"
+// @ts-ignore
+  | "in"
+// @ts-ignore
+  | "out"
+// @ts-ignore
+  /**
+// @ts-ignore
+   * @param {number} progress the current progress
+// @ts-ignore
+   * @returns {number} the new progress
+// @ts-ignore
+   */
+// @ts-ignore
+  | ((progress: number) => number);
+// @ts-ignore
+
+// @ts-ignore
+
+// @ts-ignore
+/**
+// @ts-ignore
+ *
+// @ts-ignore
+ * @param {number} progress the current progress
+// @ts-ignore
+ * @param {EasingFunction} ease the easing function
+// @ts-ignore
+ * @returns
+// @ts-ignore
+ */
+// @ts-ignore
+export const easeFunction = (progress: number, ease: EasingFunction) => {
+// @ts-ignore
+  if (typeof ease === "function") return ease(progress);
+// @ts-ignore
+
+// @ts-ignore
+  switch (ease) {
+// @ts-ignore
+    case "linear":
+// @ts-ignore
+      return progress;
+// @ts-ignore
+    case "in":
+// @ts-ignore
+      return progress * progress;
+// @ts-ignore
+    case "out":
+// @ts-ignore
+      return progress * (2 - progress);
+// @ts-ignore
+    case "in-out":
+// @ts-ignore
+      return progress < 0.5
+// @ts-ignore
+        ? 2 * progress * progress
+// @ts-ignore
+        : -1 + (4 - 2 * progress) * progress;
+// @ts-ignore
+    default:
+// @ts-ignore
+      throw new Error("invalid easing function");
+// @ts-ignore
+  }
 // @ts-ignore
 };
 // @ts-ignore
 
 // @ts-ignore
-export const PROGRESS_DEFAULTS = {
+/**
 // @ts-ignore
-  backgroundColor: "white",
+ *
 // @ts-ignore
-  progressColor: "green",
+ * @param {number} startPosition the start position of the element
 // @ts-ignore
-  easeTime: 250,
+ * @param {number} endPosition the end position of the element
 // @ts-ignore
-  progressEasing: "ease-in-out",
+ * @param {number} steps the number of steps to get from `startPosition` to `endPosition`
 // @ts-ignore
-  borderRadius: 0,
+ * @param {EasingFunction} easing the easing function
+// @ts-ignore
+ * @returns {Coordinate[]} list of coordinates following the `easing` function between `startPosition` and `endPosition`
+// @ts-ignore
+ *
+// @ts-ignore
+ * @example
+// @ts-ignore
+ * pointInterpolation({ x: 0, y: 0 }, { x: 100, y: 50 }, 5, 'linear')
+// @ts-ignore
+ * // returns
+// @ts-ignore
+ * // {x: 20, y: 10}
+// @ts-ignore
+ * // {x: 40, y: 20}
+// @ts-ignore
+ * // {x: 60, y: 30}
+// @ts-ignore
+ * // {x: 80, y: 40}
+// @ts-ignore
+ * // {x: 100, y: 50}
+// @ts-ignore
+ */
+// @ts-ignore
+export const pointInterpolation = (
+// @ts-ignore
+  startPosition: Coordinate,
+// @ts-ignore
+  endPosition: Coordinate,
+// @ts-ignore
+  steps: number,
+// @ts-ignore
+  easing: EasingFunction = "linear"
+// @ts-ignore
+) => {
+// @ts-ignore
+  if (steps < 1) throw new Error('Steps must be greater than 0')
+// @ts-ignore
+  if (steps % 1 !== 0) throw new Error('Step must be integer')
+// @ts-ignore
+
+// @ts-ignore
+  const result: Coordinate[] = [];
+// @ts-ignore
+
+// @ts-ignore
+  for (let i = 1; i <= steps; i++) {
+// @ts-ignore
+    const progress = i / steps;
+// @ts-ignore
+    const easedProgress = easeFunction(progress, easing);
+// @ts-ignore
+
+// @ts-ignore
+    const x = Math.round(startPosition.x + (endPosition.x - startPosition.x) * easedProgress);
+// @ts-ignore
+    const y = Math.round(startPosition.y + (endPosition.y - startPosition.y) * easedProgress);
+// @ts-ignore
+
+// @ts-ignore
+    result.push({ x, y });
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
+  return result;
 // @ts-ignore
 };
 // @ts-ignore
@@ -4034,6 +4382,21 @@ export type Color = string;
 
 // @ts-ignore
 export type CanvasCoords = ReturnType<typeof useCanvasCoords>;
+
+// @ts-ignore
+export type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
+
+// @ts-ignore
+export type UnwrapMaybeGetter<T> = T extends MaybeGetter<infer U, infer _> ? U : T
+
+// @ts-ignore
+export type MaybeGetterParams<T> = RemoveAnyArray<T extends MaybeGetter<infer _, infer K> ? K : []>
+
+// @ts-ignore
+export type ProductMap = Record<ProductInfo['productId'], ProductInfo>
+
+// @ts-ignore
+export type ProductInfoWithMenu = ProductInfo & Required<Pick<ProductInfo, "menu">>;
 
 // @ts-ignore
 export type DeepPartial<T> = {
@@ -4052,6 +4415,8 @@ export type DeepPartial<T> = {
 // @ts-ignore
  * make every key in an object required including nested objects
 // @ts-ignore
+ * @example DeepRequired<{ a?: number, b?: { c?: string } }> // { a: number, b: { c: string } }
+// @ts-ignore
  */
 // @ts-ignore
 export type DeepRequired<T> = {
@@ -4069,6 +4434,8 @@ export type DeepRequired<T> = {
 /**
 // @ts-ignore
  * makes only certain keys K in an object T optional
+// @ts-ignore
+ * @example PartiallyPartial<{ a: number, b: string }, 'a'> // { a?: number, b: string }
 // @ts-ignore
  */
 // @ts-ignore
@@ -4091,6 +4458,8 @@ type AcceptableObject = Record<AcceptableKeys, any>
 /**
 // @ts-ignore
  * get a clean union of all paths in an object
+// @ts-ignore
+ * @example NestedKeys<{ a: { b: { c: 5 } } }> // 'a' | 'a.b' | 'a.b.c'
 // @ts-ignore
  */
 // @ts-ignore
@@ -4140,4 +4509,64 @@ type ExecuteDeepValue<T, Path extends string> =
 // @ts-ignore
 
 // @ts-ignore
+/**
+// @ts-ignore
+ * get the value of a nested key in an object
+// @ts-ignore
+ * @example DeepValue<{ a: { b: { c: 5 } } }, 'a.b.c'> // 5
+// @ts-ignore
+ */
+// @ts-ignore
 export type DeepValue<T, Path extends string> = ExecuteDeepValue<OnlyObjNested<T>, Path>
+// @ts-ignore
+
+// @ts-ignore
+/**
+// @ts-ignore
+ * takes `any[]` out of a union of arrays
+// @ts-ignore
+ * @example RemoveAnyArray<number[] | any[]> // number[]
+// @ts-ignore
+ */
+// @ts-ignore
+export type RemoveAnyArray<T extends any[]> = T extends ['!!!-@-NOT-A-TYPE-@-!!!'][] ? never : T
+// @ts-ignore
+
+// @ts-ignore
+
+// @ts-ignore
+// HTML mouse and keyboard event types
+// @ts-ignore
+
+// @ts-ignore
+type EventNames = keyof HTMLElementEventMap
+// @ts-ignore
+
+// @ts-ignore
+type FilterEventNames<T> = {
+// @ts-ignore
+  [K in EventNames]: HTMLElementEventMap[K] extends T ? K : never
+// @ts-ignore
+}[EventNames]
+// @ts-ignore
+
+// @ts-ignore
+type MouseEventNames = FilterEventNames<MouseEvent>
+// @ts-ignore
+type KeyboardEventNames = FilterEventNames<KeyboardEvent>
+// @ts-ignore
+
+// @ts-ignore
+type EventMap<T extends EventNames, E> = Record<T, (ev: E) => void>
+// @ts-ignore
+
+// @ts-ignore
+export type MouseEventMap = EventMap<MouseEventNames, MouseEvent>
+// @ts-ignore
+export type KeyboardEventMap = EventMap<KeyboardEventNames, KeyboardEvent>
+// @ts-ignore
+
+// @ts-ignore
+export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][]
+// @ts-ignore
+export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]

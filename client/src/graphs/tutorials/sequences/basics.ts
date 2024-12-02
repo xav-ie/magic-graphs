@@ -39,7 +39,7 @@ export const BASICS_STEPS: (graph: Graph) => Record<string, TutorialStep> = (gra
   },
   editEdgeWeight: {
     hint: 'Edit the edge weight by clicking on it and typing a number',
-    dismiss: 'onEdgeLabelChange'
+    dismiss: 'onEdgeLabelEdited'
   },
   removeElement: getRemoveNodeOrEdgeStep(graph),
 });
