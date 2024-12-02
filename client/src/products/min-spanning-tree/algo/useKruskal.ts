@@ -11,7 +11,6 @@ export const useKruskal = (graph: Graph) => {
   const update = () => trace.value = kruskal(graph);
 
   graph.subscribe("onStructureChange", update);
-  graph.subscribe("onGraphReset", update);
 
   return {
     output: {

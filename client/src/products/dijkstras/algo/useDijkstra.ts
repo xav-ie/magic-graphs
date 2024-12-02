@@ -16,8 +16,6 @@ export const useDijkstra = (graph: Graph) => {
   }
 
   graph.subscribe("onStructureChange", update);
-  graph.subscribe("onGraphReset", update);
-
   watch(startNode, update, { immediate: true });
 
   return {

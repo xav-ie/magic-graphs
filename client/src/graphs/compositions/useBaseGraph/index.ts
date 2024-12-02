@@ -238,9 +238,8 @@ export const useBaseGraph = (
     nodes.value = []
     edges.value = []
     emit('onGraphReset')
+    emit('onStructureChange')
   }
-
-  subscribe('onGraphReset', () => emit('onStructureChange', nodes.value, edges.value))
 
   const activeTheme = ref(clone(theme.value))
   watch(theme, (newTheme) => {

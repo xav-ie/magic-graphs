@@ -47,7 +47,7 @@ export const usePersistentGraph = (
       const edgesToAdd = edges.filter((edge) => {
         const edgeInBlacklist = graph.settings.value.persistentBlacklist.has(edge.id)
         return !edgeInBlacklist
-    });
+      });
       localStorage.setItem(
         graph.settings.value.persistentStorageKey + "-edges",
         JSON.stringify(edgesToAdd)
@@ -67,16 +67,13 @@ export const usePersistentGraph = (
     graph.edges.value = edgeStorage.get();
 
     // wait for the next microtask to ensure caller of useGraph has a chance to sub to onStructureChange
-    queueMicrotask(() =>
-      graph.emit("onStructureChange", graph.nodes.value, graph.edges.value)
-    );
+    queueMicrotask(() => graph.emit("onStructureChange"));
   };
 
   const trackChangeEvents: GraphEvent[] = [
     "onStructureChange",
     "onNodeDrop",
     "onGroupDrop",
-    "onGraphReset",
   ];
 
   const listenForGraphStateEvents = () => {

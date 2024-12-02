@@ -25,8 +25,9 @@ export type BaseGraphEventMap = {
    * - a node is added or removed
    * - an edge is added or removed
    * - an edge label is changed (usually indicating a change to the weight of the edge)
+   * - the graph resets (graph.reset())
    */
-  onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
+  onStructureChange: () => void;
   /**
    * when a node is added to the graph
    */

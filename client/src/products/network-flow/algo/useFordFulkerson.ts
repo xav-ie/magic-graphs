@@ -32,8 +32,6 @@ export const useFordFulkerson = (graph: Graph) => {
   }
 
   graph.subscribe('onStructureChange', update)
-  graph.subscribe('onGraphReset', update)
-
   watch([sourceNode, sinkNode], update, { immediate: true })
 
   return {

@@ -96,7 +96,7 @@ export const useGraphCRUD = ({
 
     nodes.value.push(newNode)
     emit('onNodeAdded', newNode, fullOptions)
-    emit('onStructureChange', nodes.value, edges.value)
+    emit('onStructureChange')
     return newNode
   }
 
@@ -168,7 +168,7 @@ export const useGraphCRUD = ({
     edges.value.push(newEdge)
 
     emit('onEdgeAdded', newEdge, fullOptions)
-    emit('onStructureChange', nodes.value, edges.value)
+    emit('onStructureChange')
 
     return newEdge
   }
@@ -245,7 +245,7 @@ export const useGraphCRUD = ({
     edge.label = newLabel
 
     emit('onEdgeLabelEdited', edge, oldLabel, fullOptions)
-    emit('onStructureChange', nodes.value, edges.value)
+    emit('onStructureChange')
   }
 
   // DELETE OPERATIONS
@@ -275,7 +275,7 @@ export const useGraphCRUD = ({
     nodes.value = nodes.value.filter(n => n.id !== removedNode.id)
 
     emit('onNodeRemoved', removedNode, removedEdges, fullOptions)
-    emit('onStructureChange', nodes.value, edges.value)
+    emit('onStructureChange')
 
     return [removedNode, removedEdges] as const
   }
@@ -331,7 +331,7 @@ export const useGraphCRUD = ({
     edges.value = edges.value.filter(e => e.id !== edge.id)
 
     emit('onEdgeRemoved', edge, fullOptions)
-    emit('onStructureChange', nodes.value, edges.value)
+    emit('onStructureChange')
     return edge
   }
 
