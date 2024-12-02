@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref } from "vue";
+  import { computed, onMounted, onUnmounted, ref } from "vue";
   import type { UnwrapRef } from "vue";
   import GraphCanvas from "@graph/Graph.vue";
   import { useGraphProduct } from "@graph/useGraphProduct";
@@ -15,6 +15,7 @@
   import Button from "@ui/Button.vue";
   import colors from "@utils/colors";
   import { toggleFullscreen } from '@product/setFullscreen'
+import { useShortcutPressed } from "@graph/compositions/useUserEditableGraph/useShortcutPressed";
 
   const props = defineProps<{
     graph: Graph;
@@ -55,8 +56,33 @@
 
   useGraphProduct(props.graph);
 
+  const KEY_BINDINGS = {
+    Mac: {
+      ['F']: toggleFullscreen,
+    },
+    Windows: {
+      ['F']: toggleFullscreen,
+    },
+  } as const
+
+  const USER_PLATFORM = window.navigator.userAgent.includes('Mac') ? 'Mac' : 'Windows'
+
+  const { isPressed } = useShortcutPressed()
+
+  const handleKeyboardEvents = () => {
+    const userKeyBindings = KEY_BINDINGS[USER_PLATFORM]
+    for (const key in userKeyBindings) {
+      if (isPressed(key)) userKeyBindings[key as keyof typeof userKeyBindings]()
+    }
+  }
+
   onMounted(() => {
     emit("graph-ref", graphEl.value);
+    document.addEventListener('keydown', handleKeyboardEvents);
+  });
+  
+  onUnmounted(() => {
+    document.removeEventListener('keydown', handleKeyboardEvents);
   });
 </script>
 
