@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref } from "vue";
+  import { computed, onMounted, onUnmounted, ref } from "vue";
   import type { UnwrapRef } from "vue";
   import GraphCanvas from "@graph/Graph.vue";
   import { useGraphProduct } from "@graph/useGraphProduct";
@@ -12,6 +12,12 @@
   import { getSimulationDeclarationsForProduct } from "@utils/product";
   import StartSimButton from "./StartSimButton.vue";
   import StopSimButton from "./StopSimButton.vue";
+  import Button from "@ui/Button.vue";
+  import colors from "@utils/colors";
+  import { useShortcutPressed } from "@graph/compositions/useUserEditableGraph/useShortcutPressed";
+  import { useFullscreen } from '@vueuse/core'
+
+  const { toggle: toggleFullscreen } = useFullscreen()
 
   const props = defineProps<{
     graph: Graph;
@@ -52,8 +58,33 @@
 
   useGraphProduct(props.graph);
 
+  const KEY_BINDINGS = {
+    Mac: {
+      ['F']: toggleFullscreen,
+    },
+    Windows: {
+      ['F']: toggleFullscreen,
+    },
+  } as const
+
+  const USER_PLATFORM = window.navigator.userAgent.includes('Mac') ? 'Mac' : 'Windows'
+
+  const { isPressed } = useShortcutPressed()
+
+  const handleKeyboardEvents = () => {
+    const userKeyBindings = KEY_BINDINGS[USER_PLATFORM]
+    for (const key in userKeyBindings) {
+      if (isPressed(key)) userKeyBindings[key as keyof typeof userKeyBindings]()
+    }
+  }
+
   onMounted(() => {
     emit("graph-ref", graphEl.value);
+    document.addEventListener('keydown', handleKeyboardEvents);
+  });
+
+  onUnmounted(() => {
+    document.removeEventListener('keydown', handleKeyboardEvents);
   });
 </script>
 
@@ -69,7 +100,7 @@
     <template v-if="runningSimulation">
       <slot name="top-center-sim"></slot>
     </template>
-
+    
     <template v-else>
       <slot name="top-center"></slot>
     </template>
@@ -138,6 +169,18 @@
 
     <div v-show="graph.annotationActive.value">
       <AnnotationControls />
+    </div>
+    <div 
+      class="absolute bottom-0 right-8"
+    >
+      <Button 
+        @click="toggleFullscreen"
+        :color="colors.GRAY_800" 
+        :text-color="colors.WHITE" 
+        class="aspect-square"
+      >
+        <v-icon>mdi-fullscreen</v-icon>
+      </Button>
     </div>
   </div>
 </template>
