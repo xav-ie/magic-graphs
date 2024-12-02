@@ -241,9 +241,10 @@ export const useGraphCRUD = ({
     const edge = getEdge(edgeId)
     if (!edge) return
 
+    const oldLabel = edge.label
     edge.label = newLabel
 
-    emit('onEdgeLabelEdited', edge, fullOptions)
+    emit('onEdgeLabelEdited', edge, oldLabel, fullOptions)
     emit('onStructureChange', nodes.value, edges.value)
   }
 

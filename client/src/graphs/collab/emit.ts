@@ -48,7 +48,7 @@ export const graphEmitters = (
     if (!broadcast) return
     socket.emit('edgeRemoved', edge.id)
   },
-  onEdgeLabelEdited: (edge, { broadcast }) => {
+  onEdgeLabelEdited: (edge, _, { broadcast }) => {
     if (!broadcast) return
     socket.emit('edgeLabelEdited', edge.id, edge.label)
   },

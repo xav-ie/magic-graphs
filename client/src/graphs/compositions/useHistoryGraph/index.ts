@@ -2,7 +2,16 @@ import { computed, ref } from "vue";
 import type { Ref } from "vue";
 import { useBaseGraph } from "@graph/compositions/useBaseGraph";
 import type { GNode, GraphOptions } from "@graph/types";
-import { DEFAULT_REDO_HISTORY_OPTIONS, DEFAULT_UNDO_HISTORY_OPTIONS, type GNodeMoveRecord, type HistoryRecord, type RedoHistoryOptions, type UndoHistoryOptions } from "./types";
+import {
+  DEFAULT_REDO_HISTORY_OPTIONS,
+  DEFAULT_UNDO_HISTORY_OPTIONS
+} from "./types";
+import type {
+  HistoryRecord,
+  RedoHistoryOptions,
+  UndoHistoryOptions,
+  GNodeMoveRecord,
+} from './types';
 import type { Coordinate } from "@shape/types";
 
 /**
@@ -12,9 +21,9 @@ const MAX_HISTORY = 100;
 
 /**
  * the minimum distance a node must be moved to be considered a move action
+ * that should be added to the history stack
  */
 const MIN_DISTANCE = 3;
-
 
 export const useHistoryGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -96,6 +105,21 @@ export const useHistoryGraph = (
       affectedItems: [...nodeRecords, ...edgeRecords],
     })
   });
+
+  graph.subscribe('onEdgeLabelEdited', (edge, oldLabel, { history }) => {
+    if (!history) return;
+    addToUndoStack({
+      action: 'edit',
+      affectedItems: [{
+        graphType: 'edge',
+        data: {
+          id: edge.id,
+          from: oldLabel,
+          to: edge.label,
+        },
+      }]
+    })
+  })
 
   graph.subscribe('onEdgeAdded', (edge, { history }) => {
     if (!history) return;
@@ -216,6 +240,7 @@ export const useHistoryGraph = (
       ...DEFAULT_UNDO_HISTORY_OPTIONS,
       ...options,
     });
+
     return record;
   }
 
@@ -229,6 +254,7 @@ export const useHistoryGraph = (
       ...DEFAULT_REDO_HISTORY_OPTIONS,
       ...options,
     });
+
     return record;
   }
 
@@ -259,6 +285,10 @@ export const useHistoryGraph = (
           });
         }
       }
+    } else if (record.action === 'edit') {
+      for (const item of record.affectedItems) {
+        graph.editEdgeLabel(item.data.id, item.data.from, { history: false });
+      }
     }
   }
 
@@ -288,6 +318,10 @@ export const useHistoryGraph = (
             y: to.y,
           });
         }
+      }
+    } else if (record.action === 'edit') {
+      for (const item of record.affectedItems) {
+        graph.editEdgeLabel(item.data.id, item.data.to, { history: false });
       }
     }
   }

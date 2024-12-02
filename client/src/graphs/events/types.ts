@@ -70,7 +70,7 @@ export type BaseGraphEventMap = {
   /**
    * when an edge's text label is changed
    */
-  onEdgeLabelEdited: (edge: GEdge, options: EditEdgeLabelOptions) => void;
+  onEdgeLabelEdited: (edge: GEdge, oldLabel: GEdge['label'], options: EditEdgeLabelOptions) => void;
   /**
    * when the canvas is repainted
    *
