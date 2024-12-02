@@ -9,7 +9,7 @@
 
 import { ref, readonly } from 'vue'
 import type { Ref } from 'vue'
-import { generateId, prioritizeNode } from "@graph/helpers";
+import { prioritizeNode } from "@graph/helpers";
 import { useDraggableGraph } from "@graph/compositions/useDraggableGraph";
 import type { NodeAnchor } from '@graph/compositions/useNodeAnchorGraph/types';
 import type {
@@ -18,6 +18,7 @@ import type {
   GEdge,
   GraphOptions,
 } from "@graph/types";
+import { generateId } from '@utils/id';
 import { circle, line } from '@shapes';
 import type { GraphMouseEvent } from '../useBaseGraph/types';
 

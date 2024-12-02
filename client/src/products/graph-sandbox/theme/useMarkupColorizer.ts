@@ -1,7 +1,7 @@
 import { useLocalStorage } from "@vueuse/core";
-import { getValue } from "@graph/helpers";
 import { useTheme } from "@graph/themes/useTheme";
 import type { GEdge, GNode, Graph } from "@graph/types";
+import { getValue } from "@utils/maybeGetter";
 import colors, { adjustHex } from "@utils/colors";
 import type { Color } from "@utils/colors";
 import { MARKUP_USETHEME_ID } from "../constants";

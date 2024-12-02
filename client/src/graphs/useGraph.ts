@@ -2,6 +2,7 @@ import type { Ref } from 'vue'
 import { THEMES } from '@graph/themes'
 import type { GraphOptions } from '@graph/types'
 import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
+import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
 import { clone } from '@utils/clone'
 import { usePersistentGraph } from './compositions/usePersistentGraph'
 
@@ -16,10 +17,18 @@ export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
 ) => {
-  const overrideThemes = clone(options?.theme ?? {})
   const graph = usePersistentGraph(canvas, options)
-  useUserPreferredTheme(graph, overrideThemes)
-  return graph
+  const helpers = useGraphHelpers(graph)
+
+  const graphWithHelpers = {
+    ...graph,
+    helpers,
+  }
+
+  const overrideThemes = clone(options?.theme ?? {})
+  useUserPreferredTheme(graphWithHelpers, overrideThemes)
+
+  return graphWithHelpers
 }
 
 export const useDarkGraph = (

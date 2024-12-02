@@ -14,11 +14,5 @@
   <GraphProduct
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
-  >
-    <template #top-center></template>
-
-    <template #center-left></template>
-
-    <template #top-right></template>
-  </GraphProduct>
+  ></GraphProduct>
 </template>

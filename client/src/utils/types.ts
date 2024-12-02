@@ -1,6 +1,7 @@
 
 /**
  * make every key in an object optional including nested objects
+ * @example DeepPartial<{ a: number, b: { c: string } }> // { a?: number, b?: { c?: string } }
  */
 export type DeepPartial<T> = {
   [K in keyof T]?: K extends Record<any, any>
@@ -10,6 +11,7 @@ export type DeepPartial<T> = {
 
 /**
  * make every key in an object required including nested objects
+ * @example DeepRequired<{ a?: number, b?: { c?: string } }> // { a: number, b: { c: string } }
  */
 export type DeepRequired<T> = {
   [K in keyof T]-?: T[K] extends Record<any, any>
@@ -19,6 +21,7 @@ export type DeepRequired<T> = {
 
 /**
  * makes only certain keys K in an object T optional
+ * @example PartiallyPartial<{ a: number, b: string }, 'a'> // { a?: number, b: string }
  */
 export type PartiallyPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
@@ -30,6 +33,7 @@ type AcceptableObject = Record<AcceptableKeys, any>
 
 /**
  * get a clean union of all paths in an object
+ * @example NestedKeys<{ a: { b: { c: 5 } } }> // 'a' | 'a.b' | 'a.b.c'
  */
 export type NestedKeys<T extends AcceptableObject> = T extends AcceptableObject ? {
   [K in keyof T]: K | (
@@ -55,4 +59,34 @@ type ExecuteDeepValue<T, Path extends string> =
   ? T[Path]
   : never;
 
+/**
+ * get the value of a nested key in an object
+ * @example DeepValue<{ a: { b: { c: 5 } } }, 'a.b.c'> // 5
+ */
 export type DeepValue<T, Path extends string> = ExecuteDeepValue<OnlyObjNested<T>, Path>
+
+/**
+ * takes `any[]` out of a union of arrays
+ * @example RemoveAnyArray<number[] | any[]> // number[]
+ */
+export type RemoveAnyArray<T extends any[]> = T extends ['!!!-@-NOT-A-TYPE-@-!!!'][] ? never : T
+
+
+// HTML mouse and keyboard event types
+
+type EventNames = keyof HTMLElementEventMap
+
+type FilterEventNames<T> = {
+  [K in EventNames]: HTMLElementEventMap[K] extends T ? K : never
+}[EventNames]
+
+type MouseEventNames = FilterEventNames<MouseEvent>
+type KeyboardEventNames = FilterEventNames<KeyboardEvent>
+
+type EventMap<T extends EventNames, E> = Record<T, (ev: E) => void>
+
+export type MouseEventMap = EventMap<MouseEventNames, MouseEvent>
+export type KeyboardEventMap = EventMap<KeyboardEventNames, KeyboardEvent>
+
+export type MouseEventEntries = [keyof MouseEventMap, (ev: MouseEvent) => void][]
+export type KeyboardEventEntries = [keyof KeyboardEventMap, (ev: KeyboardEvent) => void][]

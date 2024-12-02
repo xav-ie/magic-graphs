@@ -2,13 +2,13 @@
   import { computed, ref } from "vue";
   import { useRouter } from "vue-router";
   import { graph } from "@graph/global";
-  import { generateId } from "@graph/helpers";
   import { collabControls, myCollaboratorProfile } from "@graph/collab";
-  import { debounce } from "@utils/debounce";
   import Button from "@ui/Button.vue";
+  import { debounce } from "@utils/debounce";
   import colors from "@utils/colors";
   import { productIdToProduct, useProductRouting } from "@utils/product";
   import { darkenHex } from "@utils/colors";
+  import { generateId } from "@utils/id";
   import GraphSandboxProductInfo from "../info";
 
   const router = useRouter();

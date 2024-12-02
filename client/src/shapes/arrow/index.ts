@@ -1,4 +1,4 @@
-import { generateId } from "@graph/helpers";
+import { generateId } from "@utils/id";
 import { LINE_DEFAULTS } from "@shape/line";
 import type { Line } from "@shape/line";
 import type { Shape, Coordinate } from "@shape/types";
@@ -23,7 +23,7 @@ export const arrow = (options: Arrow): Shape => {
   if (options.width && options.width < 0) {
     throw new Error('width must be positive')
   }
-  
+
   const drawShape = drawArrowWithCtx(options);
 
   const shapeHitbox = arrowHitbox(options);

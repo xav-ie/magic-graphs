@@ -1,14 +1,15 @@
-import { computed, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import type { Ref } from "vue";
 import type { Aggregator, GraphOptions } from "@graph/types";
-import type { Coordinate, Shape } from "@shape/types";
+import type { Coordinate } from "@shape/types";
+import { generateId } from "@utils/id";
 import { shapes } from "@shapes";
+import colors from "@utils/colors";
+import type { Color } from "@utils/colors";
+import type { Scribble } from "@shape/scribble";
 import { useMarqueeGraph } from "../useMarqueeGraph";
 import type { GraphMouseEvent } from "../useBaseGraph/types";
 import { BRUSH_WEIGHTS, COLORS } from "./types";
-import colors, { type Color } from "@utils/colors";
-import type { Scribble } from "@shape/scribble";
-import { generateId } from "@graph/helpers";
 
 export const useAnnotationGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,

@@ -3,10 +3,9 @@ import type { Coordinate } from "@shape/types";
 /**
  *
  * @param {number} frameRate in frames per second
- * @param {number} duration in miliseconds
+ * @param {number} duration in milliseconds
  * @returns {number} number of steps
  */
-
 export const calculateSteps = (
   frameRate: number = 60,
   duration: number = 1000
@@ -48,7 +47,7 @@ export const easeFunction = (progress: number, ease: EasingFunction) => {
         ? 2 * progress * progress
         : -1 + (4 - 2 * progress) * progress;
     default:
-      return progress;
+      throw new Error("invalid easing function");
   }
 };
 

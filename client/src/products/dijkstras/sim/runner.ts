@@ -15,11 +15,6 @@ export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
   const { activate: theme, deactivate: untheme } = useSimulationTheme(graph, simControls);
   const { showText, hideText } = useTextTip("select the starting node");
 
-  /**
-   * handler we get back from selectNode
-   */
-  let cancelNodeSelectionHandler = () => {};
-
   const start = async () => {
     showText();
     await state.setNode(graph, state.startNode);
@@ -29,7 +24,7 @@ export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
   };
 
   const stop = () => {
-    cancelNodeSelectionHandler();
+    state.cancelNodeSelection.value?.();
     simControls.stop();
     untheme();
     hideText();

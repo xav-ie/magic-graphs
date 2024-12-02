@@ -1,6 +1,5 @@
-import type { SchemaItem } from "@graph/types";
-import { fractionToDecimal } from "@utils/fracDecConverter/fracDec";
-import type { GNode, GEdge } from "@graph/types";
+import type { SchemaItem, GNode, GEdge } from "@graph/types";
+import { fractionToDecimal } from "@utils/fracDecConverter";
 
 /**
  * BASE GRAPH SETTINGS
@@ -19,7 +18,9 @@ export type BaseGraphSettings = {
   /**
    * a setter for {@link GEdge.label | edge labels} - takes the user inputted string and returns a string that will
    * be set as the edge label or returns undefined if the edge label should not be set
-   * @default function tries converting the user input to a number
+   * @default (input) => {
+   * // tries converting the user input to a number
+   * }
    */
   edgeInputToLabel: (input: string) => string | undefined;
   /**
@@ -135,7 +136,7 @@ export type UserEditableGraphSettings = {
   userEditable: boolean;
   /**
    * the default {@link GEdge.label | label} assigned to edges when created using the UI
-   * @default 1
+   * @default '1'
    */
   userAddedEdgeLabel: string,
   /**

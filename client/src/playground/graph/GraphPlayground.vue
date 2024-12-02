@@ -11,7 +11,7 @@
   import ThemeControls from "./ThemeControls.vue";
   import type { GraphPlaygroundControls as Controls } from "./types";
   import GraphPlaygroundControls from "./GraphPlaygroundControls.vue";
-  import { isFraction } from "@utils/fracDecConverter/fracDec";
+  import { isFraction } from "@utils/fracDecConverter";
   import SettingsControls from "./SettingsControls.vue";
 
   const graphElement = ref<HTMLCanvasElement>();

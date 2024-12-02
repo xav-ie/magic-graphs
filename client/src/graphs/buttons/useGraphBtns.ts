@@ -1,8 +1,8 @@
 import type { Graph } from "@graph/types";
-import { getRandomInRange } from "@graph/helpers";
 import { GRAPH_BUTTON_ID } from "@graph/buttons/types";
 import type { GButton } from "@graph/buttons/types";
 import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
+import { getRandomInRange } from "@utils/random";
 
 /**
  * a one stop shop for the dials you need to control your graph

@@ -1,18 +1,17 @@
 import { computed, readonly, ref } from "vue";
+import { useLocalStorage } from "@vueuse/core";
+import { io } from "socket.io-client";
 import type {
   CollaboratorProfile,
   Collaborator,
   CollaboratorMap,
-  SocketEvents,
   GraphSocket,
 } from "./types";
-import { SOCKET_URL, COLLAB_COLORS } from "./constants";
-import { io } from "socket.io-client";
 import type { Graph } from "@graph/types";
+import { getRandomElement } from "@utils/random";
+import { SOCKET_URL, COLLAB_COLORS } from "./constants";
 import { useSocketEmitters } from "./emit";
 import type { ProductInfo } from "src/types";
-import { useLocalStorage } from "@vueuse/core";
-import { getRandomElement } from "@utils/array";
 import { startListening } from "./listen";
 import { usePaintCollabTags } from "./collabTag";
 

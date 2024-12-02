@@ -1,3 +1,4 @@
+import type { Ref } from "vue";
 import type { GEdge, GNode } from "@graph/types";
 import type { NodeMap, EdgeMap } from "./useNodeEdgeMap";
 import type { PartiallyPartial } from "@utils/types";
@@ -17,8 +18,8 @@ import type {
   RemoveNodeOptions,
   AddNodeOptions,
 } from "./types";
-import { generateId, getConnectedEdges } from "@graph/helpers";
-import type { Ref } from "vue";
+import { getConnectedEdges } from "@graph/helpers";
+import { generateId } from "@utils/id";
 import type { Emitter } from "@graph/events";
 import { nodeLetterLabelGetter } from "@graph/labels";
 import type { GraphSettings } from "@graph/settings";
@@ -245,7 +246,7 @@ export const useGraphCRUD = ({
       ...options
     }
 
-    const edgesToRemove = getConnectedEdges(removedNode.id, { edges, settings })
+    const edgesToRemove = getConnectedEdges(removedNode.id, { edges, getEdge, settings })
     const removedEdges = edgesToRemove.map((e) => removeEdge(e.id, {
       broadcast: false,
       history: false,

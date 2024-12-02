@@ -13,7 +13,7 @@ import {
   drawTextOnRect,
   getTextAreaLocationOnRect
 } from './text'
-import { generateId } from "@graph/helpers";
+import { generateId } from "@utils/id";
 import { getFullTextArea } from "@shape/text";
 import { engageTextarea } from "@shape/textarea";
 
@@ -49,7 +49,7 @@ export const rect = (options: Rect): Shape => {
   const hitbox = (point: Coordinate) => {
     return textHitbox?.(point) || shapeHitbox(point)
   }
-  
+
   const getBoundingBox = getRectBoundingBox(options);
 
   const drawTextArea = drawTextAreaOnRect(options);

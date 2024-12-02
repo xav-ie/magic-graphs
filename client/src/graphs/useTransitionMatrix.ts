@@ -1,7 +1,6 @@
 import { ref, onUnmounted } from "vue";
 import type { Graph } from "@graph/types";
 import { getAdjacencyList } from "./useAdjacencyList";
-import { getEdgesAlongPath, getEdgeWeight } from "./helpers";
 
 /**
  * a 2D array (matrix) where matrix[i][j] represents the absolute weight of
@@ -20,6 +19,7 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
   const nodes = graph.nodes.value;
   const nodeCount = nodes.length;
   const adjacencyList = getAdjacencyList(graph);
+  const { getEdgesAlongPath, getEdgeWeight } = graph.helpers;
 
   const nodeIndexMap = nodes.reduce<Record<string, number>>(
     (acc, node, index) => {
@@ -37,14 +37,14 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
     const rowIndex = nodeIndexMap[nodeId];
 
     neighbors.forEach((neighborId) => {
-      const edges = getEdgesAlongPath(nodeId, neighborId, graph).filter(
+      const edges = getEdgesAlongPath(nodeId, neighborId).filter(
         (edge) => edge.from === nodeId && edge.to === neighborId
       );
       const colIndex = nodeIndexMap[neighborId];
 
       if (edges.length > 0) {
         const weight = edges.reduce(
-          (sum, edge) => sum + getEdgeWeight(edge, graph),
+          (sum, edge) => sum + getEdgeWeight(edge.id),
           0
         );
         matrix[rowIndex][colIndex] = weight;
@@ -56,7 +56,7 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
 };
 
 export const useTransitionMatrix = (graph: Graph) => {
-  const transitionMatrix = ref<TransitionMatrix>([]);
+  const transitionMatrix = ref(getTransitionMatrix(graph));
 
   const update = () => {
     transitionMatrix.value = getTransitionMatrix(graph);
@@ -67,8 +67,6 @@ export const useTransitionMatrix = (graph: Graph) => {
   onUnmounted(() => {
     graph.unsubscribe("onStructureChange", update);
   });
-
-  update();
 
   return {
     transitionMatrix,

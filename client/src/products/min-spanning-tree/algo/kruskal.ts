@@ -1,11 +1,11 @@
 import type { GEdge, Graph } from "@graph/types";
-import { getEdgeWeight } from "@graph/helpers";
 
 export type Parent = Map<string, string>
 export type Rank = Map<string, number>
 
 export const kruskal = (graph: Graph) => {
   const { nodes, edges } = graph;
+  const { getEdgeWeight } = graph.helpers;
 
   const find = (parent: Parent, nodeId: string): string => {
     if (parent.get(nodeId) !== nodeId) {
@@ -35,7 +35,7 @@ export const kruskal = (graph: Graph) => {
 
   const run = () => {
     const sortedEdges = Object.values(edges.value).sort((edgeA, edgeB) => {
-      return getEdgeWeight(edgeA, graph) - getEdgeWeight(edgeB, graph);
+      return getEdgeWeight(edgeA.id) - getEdgeWeight(edgeB.id);
     });
 
     const parent = new Map<string, string>();

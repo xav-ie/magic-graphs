@@ -2,31 +2,8 @@ import type {
   Graph,
   GNode,
   GEdge,
-  MaybeGetter,
   SchemaItem,
 } from '@graph/types'
-
-/**
- * unwraps a MaybeGetter into a value of type T.
- *
- * @param value - the value to unwrap
- * @param args - the arguments to pass to the getter if the value is a getter
- * @returns T, which is UnwrapMaybeGetter<MaybeGetter<T, K>>
- * @example getValue(5) // 5
- * getValue(() => 5) // 5
- */
-export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
-  if (typeof value === 'function') {
-    return (value as (...args: K) => T)(...args)
-  }
-  return value
-}
-
-/**
- * generates a new, random, id
- * @example generateId() // 'abc123'
- */
-export const generateId = () => Math.random().toString(36).substring(2, 9)
 
 /**
  * modifies the priority of the items passed in
@@ -68,20 +45,6 @@ export const prioritizeNode = (id: SchemaItem['id'], items: SchemaItem[]) => {
 }
 
 /**
- * @description given two numbers, this function returns a random number between them (inclusive)
- *
- * @param min - the lowest number
- * @param max - the highest number
- * @returns a random number between min and max
- */
-export const getRandomInRange = (min: number, max: number) => Math.round(Math.random() * (max - min) + min);
-
-export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement, buffer = 50) => ({
-  x: getRandomInRange(buffer, canvas.width - buffer),
-  y: getRandomInRange(buffer, canvas.height - buffer),
-});
-
-/**
  * get the nodes that an edge links together
  *
  * @param edgeId - the id of the edge
@@ -112,10 +75,10 @@ export const getConnectedNodes = (edgeId: GEdge['id'], graph: Pick<Graph, 'getNo
  */
 export const getConnectedEdges = (
   nodeId: GNode['id'],
-  graph: Pick<Graph, 'edges' | 'settings'>
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'settings'>
 ) => graph.edges.value.filter(edge => {
-  const isFlowingOut = isEdgeFlowingOutOfNode(edge, nodeId, graph)
-  const isFlowingIn = isEdgeFlowingIntoNode(edge, nodeId, graph)
+  const isFlowingOut = isEdgeFlowingOutOfNode(edge.id, nodeId, graph)
+  const isFlowingIn = isEdgeFlowingIntoNode(edge.id, nodeId, graph)
   return isFlowingOut || isFlowingIn
 })
 
@@ -136,7 +99,10 @@ export const getUndirectedInboundEdges = (nodeId: string, edges: GEdge[]) => {
  * @example getInboundEdges('abc123', graph)
  * // [{ from: 'ghi789', to: 'abc123' }]
  */
-export const getInboundEdges = (nodeId: string, graph: Graph) => {
+export const getInboundEdges = (
+  nodeId: string,
+  graph: Pick<Graph, 'settings' | 'edges'>
+) => {
   const fn = graph.settings.value.isGraphDirected ? getDirectedInboundEdges : getUndirectedInboundEdges
   return fn(nodeId, graph.edges.value)
 }
@@ -158,7 +124,10 @@ export const getUndirectedOutboundEdges = (nodeId: string, edges: GEdge[]) => {
  * @example getOutboundEdges('abc123', graph)
  * // [{ from: 'abc123', to: 'def456' }]
  */
-export const getOutboundEdges = (nodeId: string, graph: Pick<Graph, 'settings' | 'edges'>) => {
+export const getOutboundEdges = (
+  nodeId: string,
+  graph: Pick<Graph, 'settings' | 'edges'>
+) => {
   const fn = graph.settings.value.isGraphDirected ? getDirectedOutboundEdges : getUndirectedOutboundEdges
   return fn(nodeId, graph.edges.value)
 }
@@ -174,17 +143,20 @@ const isUndirectedEdgeFlowingOutOfNode = (edge: GEdge, nodeId: GNode['id']) => {
 /**
  * checks if an edge originates from a node
  *
- * @param edge - the edge to check
+ * @param edgeId - the id of the edge to check
  * @param nodeId - the id of the node to check
  * @param graph - the graph instance
  * @returns true if the edge flows out of the node, false otherwise
  */
 export const isEdgeFlowingOutOfNode = (
-  edge: GEdge,
+  edgeId: GEdge['id'],
   nodeId: GNode['id'],
-  graph: Pick<Graph, 'settings'>
+  graph: Pick<Graph, 'settings' | 'getEdge'>
 ) => {
-  const fn = graph.settings.value.isGraphDirected ? isDirectedEdgeFlowingOutOfNode : isUndirectedEdgeFlowingOutOfNode
+  const edge = graph.getEdge(edgeId)
+  if (!edge) throw new Error('edge not found')
+  const isDirected = graph.settings.value.isGraphDirected
+  const fn = isDirected ? isDirectedEdgeFlowingOutOfNode : isUndirectedEdgeFlowingOutOfNode
   return fn(edge, nodeId)
 }
 
@@ -199,17 +171,20 @@ const isUndirectedEdgeFlowingIntoNode = (edge: GEdge, nodeId: GNode['id']) => {
 /**
  * checks if an edge goes to a node
  *
- * @param edge - the edge to check
+ * @param edgeId - the id of the edge to check
  * @param nodeId - the id of the node to check
  * @param graph - the graph instance
  * @returns true if the edge flows out of the node, false otherwise
  */
 export const isEdgeFlowingIntoNode = (
-  edge: GEdge,
+  edgeId: GEdge['id'],
   nodeId: GNode['id'],
-  graph: Pick<Graph, 'settings'>
+  graph: Pick<Graph, 'settings' | 'getEdge'>
 ) => {
-  const fn = graph.settings.value.isGraphDirected ? isDirectedEdgeFlowingIntoNode : isUndirectedEdgeFlowingIntoNode
+  const edge = graph.getEdge(edgeId)
+  if (!edge) throw new Error('edge not found')
+  const isDirected = graph.settings.value.isGraphDirected
+  const fn = isDirected ? isDirectedEdgeFlowingIntoNode : isUndirectedEdgeFlowingIntoNode
   return fn(edge, nodeId)
 }
 
@@ -238,12 +213,18 @@ export const getEdgesAlongPath = (
 /**
  * takes an edge and returns the weight of the edge
  *
- * @param edge the edge to get the weight of
+ * @param edgeId the edge to get the weight of
  * @param graph the graph instance
  * @param fallbackWeight the weight to return if the label cannot be parsed as a number. defaults to 1
  * @returns the weight of the edge
  */
-export const getEdgeWeight = (edge: GEdge, graph: Pick<Graph, 'getTheme'>, fallbackWeight = 1) => {
+export const getEdgeWeight = (
+  edgeId: GEdge['id'],
+  graph: Pick<Graph, 'getTheme' | 'getEdge'>,
+  fallbackWeight = 1
+) => {
+  const edge = graph.getEdge(edgeId)
+  if (!edge) throw new Error('edge not found')
   const label = graph.getTheme('edgeText', edge)
   const weight = Number(label)
   return isNaN(weight) ? fallbackWeight : weight
@@ -252,24 +233,24 @@ export const getEdgeWeight = (edge: GEdge, graph: Pick<Graph, 'getTheme'>, fallb
 export const getDirectedWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'edges' | 'getTheme'>,
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme'>,
   fallbackWeight: number,
 ) => {
   const edgesAlongPath = getEdgesAlongPath(fromNodeId, toNodeId, graph)
   const connectingEdge = edgesAlongPath.find((e) => e.to === toNodeId)
   if (!connectingEdge) throw new Error('nodes are not adjacent')
-  return getEdgeWeight(connectingEdge, graph, fallbackWeight)
+  return getEdgeWeight(connectingEdge.id, graph, fallbackWeight)
 }
 
 export const getUndirectedWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'edges' | 'getTheme'>,
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme'>,
   fallbackWeight: number,
 ) => {
   const [connectingEdge] = getEdgesAlongPath(fromNodeId, toNodeId, graph)
   if (!connectingEdge) throw new Error('nodes are not adjacent')
-  return getEdgeWeight(connectingEdge, graph, fallbackWeight)
+  return getEdgeWeight(connectingEdge.id, graph, fallbackWeight)
 }
 
 /**
@@ -285,7 +266,7 @@ export const getUndirectedWeightBetweenNodes = (
 export const getWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'settings' | 'getTheme' | 'edges'>,
+  graph: Pick<Graph, 'settings' | 'getTheme' | 'edges' | 'getEdge'>,
   fallbackWeight = 1
 ) => {
   const isDirected = graph.settings.value.isGraphDirected

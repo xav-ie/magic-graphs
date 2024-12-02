@@ -1,6 +1,10 @@
 import { onUnmounted, ref } from 'vue';
 import type { GNode, Graph } from '@graph/types';
-import { getDirectedOutboundEdges, getEdgesAlongPath, getOutboundEdges, getUndirectedOutboundEdges, getWeightBetweenNodes } from './helpers';
+import {
+  getDirectedOutboundEdges,
+  getUndirectedOutboundEdges,
+  getWeightBetweenNodes
+} from '@graph/helpers';
 import type { DeepPartial } from '@utils/types';
 import type { GraphSettings } from './settings';
 

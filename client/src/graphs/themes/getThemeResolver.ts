@@ -1,8 +1,8 @@
 import type { Ref } from "vue"
 import type { GraphTheme } from "@graph/themes"
 import type { FullThemeMap } from "@graph/themes/types"
-import { getValue } from "@graph/helpers"
-import type { UnwrapMaybeGetter } from "@graph/types"
+import { getValue } from "@utils/maybeGetter"
+import type { UnwrapMaybeGetter } from "@utils/maybeGetter"
 
 /**
  * slightly modified extract utility useful for replacing the never type with R.
@@ -51,6 +51,6 @@ export const getThemeResolver = (
   }
 
 /**
- * describes the function that gets a value from a theme inquiry
+ * the function that gets a value from a theme inquiry
  */
 export type ThemeGetter = ReturnType<typeof getThemeResolver>
