@@ -2,7 +2,7 @@
   import {
     COLORS,
     BRUSH_WEIGHTS,
-  } from "@graph/plugins/annotation/types";
+  } from "@graph/plugins/annotations/types";
   import { graph } from "@graph/global";
   import colors, { type Color } from "@utils/colors";
   import Toolbar from "./toolbar/Toolbar.vue";

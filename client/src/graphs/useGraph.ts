@@ -4,6 +4,16 @@ import type { GraphOptions } from '@graph/types'
 import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
 import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
 import { clone } from '@utils/clone'
+
+import { useBaseGraph } from '@graph/base'
+
+import { useMarquee } from './plugins/marquee'
+import { useDraggable } from './plugins/draggable'
+import { useNodeAnchors } from './plugins/anchors'
+import { useUserEditableGraph } from './plugins/editable'
+import { useAnnotations } from './plugins/annotations'
+import { useFocus } from './plugins/focus'
+import { useHistory } from './plugins/history'
 import { usePersistent } from './plugins/persistent'
 
 /**
@@ -17,7 +27,8 @@ export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
 ) => {
-  const graph = usePersistent(canvas, options)
+  const graph = useBaseGraph(canvas, options)
+
   const helpers = useGraphHelpers(graph)
 
   const graphWithHelpers = {
@@ -30,14 +41,3 @@ export const useGraph = (
 
   return graphWithHelpers
 }
-
-export const useDarkGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
-) => usePersistent(canvas, {
-  theme: {
-    ...options.theme,
-    ...THEMES.dark,
-  },
-  settings: options.settings,
-})

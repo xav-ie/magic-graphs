@@ -7,8 +7,8 @@ import type {
   AddEdgeOptions,
   RemoveEdgeOptions,
   EditEdgeLabelOptions,
-} from "@graph/plugins/base/types";
-import type { NodeAnchor } from "@graph/plugins/anchor/types";
+} from "@graph/base/types";
+import type { NodeAnchor } from "@graph/plugins/anchors/types";
 import type { GraphTheme } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
 import type {
@@ -17,7 +17,7 @@ import type {
   UndoHistoryOptions,
 } from "@graph/plugins/history/types";
 import type { Coordinate } from "@shape/types";
-import type { GraphMouseEvent } from "@graph/plugins/base/types";
+import type { GraphMouseEvent } from "@graph/base/types";
 
 export type BaseGraphEventMap = {
   /**

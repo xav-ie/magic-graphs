@@ -1,5 +1,5 @@
 import { computed, ref } from "vue";
-import { useBaseGraph } from "@graph/plugins/base";
+import { useBaseGraph } from "@graph/base";
 import type { GNode } from "@graph/types";
 import {
   DEFAULT_REDO_HISTORY_OPTIONS,

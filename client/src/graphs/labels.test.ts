@@ -5,7 +5,7 @@ import {
   nodeNumberLabelGetter
 } from './labels'
 import { ref } from 'vue'
-import { useBaseGraph } from './plugins/base'
+import { useBaseGraph } from './base'
 
 describe('graph labels', () => {
   const graph = useBaseGraph(ref())

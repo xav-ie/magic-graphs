@@ -1,8 +1,8 @@
 import type { GNode } from "@graph/types"
-import type { NodeAnchor } from "@graph/plugins/anchor/types"
+import type { NodeAnchor } from "@graph/plugins/anchors/types"
 import { useShortcutPressed } from './useShortcutPressed'
-import type { GraphMouseEvent } from '../base/types'
-import type { useAnnotations } from '../annotation'
+import type { GraphMouseEvent } from '../../base/types'
+import type { useAnnotations } from '../annotations'
 
 /**
  * The user editable graph implements handlers for node creation,

@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import type { GNode } from '@graph/types'
 import { useFocus } from '@graph/plugins/focus';
 import type { ActiveDragNode } from './types';
-import type { GraphMouseEvent } from '../base/types';
+import type { GraphMouseEvent } from '../../base/types';
 
 export const useDraggable = (
   graph: ReturnType<typeof useFocus>,

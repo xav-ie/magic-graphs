@@ -8,7 +8,7 @@ import colors from "@utils/colors";
 import type { Color } from "@utils/colors";
 import type { Scribble } from "@shape/scribble";
 import { useMarquee } from "../marquee";
-import type { GraphMouseEvent } from "../base/types";
+import type { GraphMouseEvent } from "../../base/types";
 import { BRUSH_WEIGHTS, COLORS } from "./types";
 import { useAnnotationHistory } from "./history";
 

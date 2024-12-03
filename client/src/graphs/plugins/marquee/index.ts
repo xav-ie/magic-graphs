@@ -6,7 +6,7 @@ import type {
   SchemaItem,
 } from '@graph/types'
 import { useTheme } from '@graph/themes/useTheme'
-import { useNodeAnchors } from '@graph/plugins/anchor'
+import { useNodeAnchors } from '@graph/plugins/anchors'
 import { MARQUEE_CONSTANTS } from '@graph/plugins/marquee/types'
 import colors from '@colors'
 import { rect } from '@shapes'
@@ -16,7 +16,7 @@ import type {
   RedoHistoryOptions,
   UndoHistoryOptions
 } from '../history/types'
-import type { GraphMouseEvent } from '../base/types'
+import type { GraphMouseEvent } from '../../base/types'
 
 export const useMarquee = (
   graph: ReturnType<typeof useNodeAnchors>,

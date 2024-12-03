@@ -10,7 +10,7 @@
 import { ref, readonly } from 'vue'
 import { prioritizeNode } from "@graph/helpers";
 import { useDraggable } from "@graph/plugins/draggable";
-import type { NodeAnchor } from '@graph/plugins/anchor/types';
+import type { NodeAnchor } from '@graph/plugins/anchors/types';
 import type {
   SchemaItem,
   GNode,
@@ -18,7 +18,7 @@ import type {
 } from "@graph/types";
 import { generateId } from '@utils/id';
 import { circle, line } from '@shapes';
-import type { GraphMouseEvent } from '../base/types';
+import type { GraphMouseEvent } from '../../base/types';
 
 /**
  * Node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors

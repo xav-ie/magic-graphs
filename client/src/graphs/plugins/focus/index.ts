@@ -12,7 +12,7 @@ import { useTheme } from "@graph/themes/useTheme";
 import { useHistory } from "@graph/plugins/history";
 import { getCtx } from "@utils/ctx";
 import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "./constants";
-import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../base/types";
+import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../../base/types";
 
 export const useFocus = (
   graph: ReturnType<typeof useHistory>,
