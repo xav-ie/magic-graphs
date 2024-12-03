@@ -2,18 +2,16 @@ import type { Ref } from 'vue'
 import type { GraphOptions } from '@graph/types'
 import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
 import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
-import { clone } from '@utils/clone'
-
 import { useBaseGraph } from '@graph/base'
-
-import { useMarquee } from './plugins/marquee'
-import { useNodeDrag } from './plugins/drag'
-import { useNodeAnchors } from './plugins/anchors'
-import { useUserEditableGraph } from './plugins/editable'
-import { useAnnotations } from './plugins/annotations'
-import { useFocus } from './plugins/focus'
-import { useHistory } from './plugins/history'
-import { usePersistent } from './plugins/persistent'
+import { useMarquee } from '@graph/plugins/marquee'
+import { useNodeDrag } from '@graph/plugins/drag'
+import { useNodeAnchors } from '@graph/plugins/anchors'
+import { useUserEditableGraph } from '@graph/plugins/editable'
+import { useAnnotations } from '@graph/plugins/annotations'
+import { useFocus } from '@graph/plugins/focus'
+import { useHistory } from '@graph/plugins/history'
+import { usePersistent } from '@graph/plugins/persistent'
+import { clone } from '@utils/clone'
 
 /**
  * a package full of tools for creating and managing graphs
@@ -31,8 +29,8 @@ export const useGraph = (
   const focusControls = useFocus(baseGraph)
   const historyControls = useHistory(baseGraph)
   const marqueeControls = useMarquee({ ...baseGraph, ...focusControls })
-  const nodeDragControls = useNodeDrag(baseGraph)
   const nodeAnchorControls = useNodeAnchors({ ...baseGraph, ...focusControls })
+  const nodeDragControls = useNodeDrag({ ...baseGraph, ...nodeAnchorControls })
   const annotationControls = useAnnotations(baseGraph)
   const persistentControls = usePersistent(baseGraph)
 

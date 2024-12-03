@@ -29,6 +29,13 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
    */
   const activeAnchor = ref<NodeAnchor | undefined>()
 
+  const setParentNode = (nodeId: GNode['id']) => {
+    const node = graph.getNode(nodeId)
+    if (!node) throw new Error('node not found')
+    parentNode.value = node
+    updateNodeAnchors(node)
+  }
+
   const resetParentNode = () => {
     parentNode.value = undefined
     activeAnchor.value = undefined
@@ -274,6 +281,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
     graph.unsubscribe('onMouseDown', setActiveAnchor)
     graph.unsubscribe('onMouseUp', dropAnchor)
     graph.unsubscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
+    resetParentNode()
   }
 
   graph.subscribe('onSettingsChange', (diff) => {
@@ -292,6 +300,10 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
      * the parent node of the active anchor
      */
     nodeAnchorParentNode: readonly(parentNode),
+    /**
+     * set the parent node and spawn anchors around it
+     */
+    nodeAnchorSetParentNode: setParentNode,
   }
 }
 
