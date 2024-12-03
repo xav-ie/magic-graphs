@@ -69,6 +69,7 @@ export const useUserEditableGraph = (
     Mac: {
       ['Meta+Z']: () => graph.undo(),
       ['Shift+Meta+Z']: () => graph.redo(),
+      ['Meta+Shift+Z']: () => graph.redo(),
       ['Backspace']: handleDeletion,
       ['Meta+A']: graph.focusAll,
       ['Escape']: graph.resetFocus,
@@ -76,6 +77,7 @@ export const useUserEditableGraph = (
     Windows: {
       ['Control+Z']: () => graph.undo(),
       ['Shift+Control+Z']: () => graph.redo(),
+      ['Control+Shift+Z']: () => graph.redo(),
       ['Backspace']: handleDeletion,
       ['Control+A']: graph.focusAll,
       ['Escape']: graph.resetFocus,
