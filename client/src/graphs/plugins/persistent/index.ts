@@ -48,12 +48,10 @@ export const usePersistent = (graph: BaseGraph) => {
     edgeStorage.set(graph.edges.value);
   };
 
-  const load = () => {
-    graph.nodes.value = nodeStorage.get();
-    graph.edges.value = edgeStorage.get();
-
-    graph.emit("onStructureChange");
-  };
+  const load = () => graph.load({
+    nodes: nodeStorage.get(),
+    edges: edgeStorage.get(),
+  });
 
   const trackChangeEvents: GraphEvent[] = [
     "onStructureChange",
@@ -73,12 +71,8 @@ export const usePersistent = (graph: BaseGraph) => {
     );
   };
 
-  const stopListeningForEvents = () => {
-    stopListeningForGraphStateEvents();
-  };
-
   graph.subscribe("onSettingsChange", (diff) => {
-    stopListeningForEvents();
+    stopListeningForGraphStateEvents();
 
     // persistent was true, but now it is false
     const persistenceTurnedOff = "persistent" in diff && !diff.persistent;
