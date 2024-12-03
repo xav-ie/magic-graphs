@@ -8,11 +8,14 @@ export const useNodeDrag = (graph: BaseGraph & NodeAnchorControls) => {
   const activeDragNode = ref<ActiveDragNode | undefined>()
 
   const beginDrag = ({ items, coords }: GraphMouseEvent) => {
-    graph.settings.value.nodeAnchors = false
     const topItem = items.at(-1)
     if (!topItem || topItem.graphType !== 'node') return
+
+    graph.settings.value.nodeAnchors = false
+
     const node = graph.getNode(topItem.id)
     if (!node) return
+
     activeDragNode.value = { node, coords }
     graph.emit('onNodeDragStart', node)
   }
