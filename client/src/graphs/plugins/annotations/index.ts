@@ -31,7 +31,7 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     history.addToUndoStack({
       action: 'remove',
-      scribbles: scribbles.value,
+      annotations: scribbles.value,
     })
 
     scribbles.value = []
@@ -87,7 +87,7 @@ export const useAnnotations = (graph: BaseGraph) => {
 
       history.addToUndoStack({
         action: 'remove',
-        scribbles: erasedScribbles
+        annotations: erasedScribbles
       })
 
       scribbles.value = scribbles.value.filter(scribble => {
@@ -110,7 +110,7 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     history.addToUndoStack({
       action: 'add',
-      scribbles: [scribble]
+      annotations: [scribble]
     })
 
     batch.value = [];

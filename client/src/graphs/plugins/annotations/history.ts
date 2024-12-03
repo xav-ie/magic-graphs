@@ -4,7 +4,7 @@ import type { Annotation } from "./types"
 
 type AnnotationHistoryRecord = {
   action: 'add' | 'remove',
-  scribbles: Annotation[]
+  annotations: Annotation[]
 }
 
 export const useAnnotationHistory = (annotations: Ref<Annotation[]>) => {
@@ -22,14 +22,14 @@ export const useAnnotationHistory = (annotations: Ref<Annotation[]>) => {
   const undo = () => {
     const record = undoStack.value.pop()
     if (!record) return
-    const { action, scribbles } = record
-    const ids = scribbles.map(({ id }) => id)
+    const { action, annotations: undoneAnnotations } = record
+    const ids = undoneAnnotations.map(({ id }) => id)
     if (action === 'add') {
       annotations.value = annotations.value.filter(({ id: annotationId }) => {
         return !ids.includes(annotationId)
       })
     } else if (action === 'remove') {
-      annotations.value.push(...scribbles)
+      annotations.value.push(...undoneAnnotations)
     }
     redoStack.value.push(record)
   }
@@ -37,10 +37,10 @@ export const useAnnotationHistory = (annotations: Ref<Annotation[]>) => {
   const redo = () => {
     const record = redoStack.value.pop()
     if (!record) return
-    const { action, scribbles } = record
-    const ids = scribbles.map(({ id }) => id)
+    const { action, annotations: redoneAnnotations } = record
+    const ids = redoneAnnotations.map(({ id }) => id)
     if (action === 'add') {
-      annotations.value.push(...scribbles)
+      annotations.value.push(...redoneAnnotations)
     } else if (action === 'remove') {
       annotations.value = annotations.value.filter(({ id: annotationId }) => {
         return !ids.includes(annotationId)
@@ -49,7 +49,13 @@ export const useAnnotationHistory = (annotations: Ref<Annotation[]>) => {
     undoStack.value.push(record)
   }
 
+  const clearHistory = () => {
+    undoStack.value = []
+    redoStack.value = []
+  }
+
   return {
+    clearHistory,
     undo,
     redo,
     addToUndoStack,
