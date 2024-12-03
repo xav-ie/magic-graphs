@@ -1,4 +1,4 @@
-import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types"
+import type { NodeAnchor } from "@graph/plugins/anchor/types"
 import type { SupportedNodeShapes } from "@graph/schematics/node"
 import type {
   GNode,

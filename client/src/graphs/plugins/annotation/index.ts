@@ -7,19 +7,16 @@ import { shapes } from "@shapes";
 import colors from "@utils/colors";
 import type { Color } from "@utils/colors";
 import type { Scribble } from "@shape/scribble";
-import { useMarqueeGraph } from "../useMarqueeGraph";
-import type { GraphMouseEvent } from "../useBaseGraph/types";
+import { useMarquee } from "../marquee";
+import type { GraphMouseEvent } from "../base/types";
 import { BRUSH_WEIGHTS, COLORS } from "./types";
 import { useAnnotationHistory } from "./history";
 
 export type Annotation = Scribble & { id: string }
 
-export const useAnnotationGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
+export const useAnnotations = (
+  graph: ReturnType<typeof useMarquee>,
 ) => {
-  const graph = useMarqueeGraph(canvas, options)
-
   const selectedColor = ref<Color>(COLORS[0])
   const selectedBrushWeight = ref(BRUSH_WEIGHTS[1])
   const erasing = ref(false)

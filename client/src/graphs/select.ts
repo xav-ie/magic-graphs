@@ -1,4 +1,4 @@
-import type { GraphMouseEvent } from "./compositions/useBaseGraph/types";
+import type { GraphMouseEvent } from "./plugins/base/types";
 import type { Graph, SchemaItem } from "./types";
 
 /**

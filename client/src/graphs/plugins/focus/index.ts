@@ -3,25 +3,20 @@ import {
   computed,
   readonly,
 } from "vue";
-import type { Ref } from "vue";
 import type {
   GEdge,
   GNode,
-  GraphOptions,
   SchemaItem
 } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
-import { useHistoryGraph } from "@graph/compositions/useHistoryGraph";
+import { useHistory } from "@graph/plugins/history";
 import { getCtx } from "@utils/ctx";
 import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "./constants";
-import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../useBaseGraph/types";
+import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../base/types";
 
-export const useFocusGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
+export const useFocus = (
+  graph: ReturnType<typeof useHistory>,
 ) => {
-  const graph = useHistoryGraph(canvas, options);
-
   const { setTheme } = useTheme(graph, FOCUS_THEME_ID)
   const focusedItemIds = ref(new Set<string>())
 
@@ -150,7 +145,6 @@ export const useFocusGraph = (
     graph.subscribe('onNodeAdded', setFocusToAddedItem)
     graph.subscribe('onEdgeAdded', setFocusToAddedItem)
     graph.subscribe('onMouseDown', handleFocusChange)
-    graph.subscribe('onGraphReset', resetFocus)
     graph.subscribe('onKeyDown', handleKeyDown)
     graph.subscribe('onKeyUp', handleKeyUp)
     graph.subscribe('onStructureChange', clearOutDeletedItemsFromFocus)
@@ -160,7 +154,6 @@ export const useFocusGraph = (
     graph.unsubscribe('onNodeAdded', setFocusToAddedItem)
     graph.unsubscribe('onEdgeAdded', setFocusToAddedItem)
     graph.unsubscribe('onMouseDown', handleFocusChange)
-    graph.unsubscribe('onGraphReset', resetFocus)
     graph.unsubscribe('onKeyDown', handleKeyDown)
     graph.unsubscribe('onKeyUp', handleKeyUp)
     graph.unsubscribe('onStructureChange', clearOutDeletedItemsFromFocus)

@@ -4,7 +4,7 @@ import type { GraphOptions } from '@graph/types'
 import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
 import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
 import { clone } from '@utils/clone'
-import { usePersistentGraph } from './compositions/usePersistentGraph'
+import { usePersistent } from './plugins/persistent'
 
 /**
  * a package full of tools for creating and managing graphs
@@ -17,7 +17,7 @@ export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
 ) => {
-  const graph = usePersistentGraph(canvas, options)
+  const graph = usePersistent(canvas, options)
   const helpers = useGraphHelpers(graph)
 
   const graphWithHelpers = {
@@ -34,7 +34,7 @@ export const useGraph = (
 export const useDarkGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
-) => usePersistentGraph(canvas, {
+) => usePersistent(canvas, {
   theme: {
     ...options.theme,
     ...THEMES.dark,

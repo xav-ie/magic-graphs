@@ -1,15 +1,13 @@
 import { ref } from 'vue'
-import type { Ref } from 'vue'
 import type {
   GEdge,
   GNode,
   Aggregator,
-  GraphOptions,
   SchemaItem,
 } from '@graph/types'
 import { useTheme } from '@graph/themes/useTheme'
-import { useNodeAnchorGraph } from '@graph/compositions/useNodeAnchorGraph'
-import { MARQUEE_CONSTANTS } from '@graph/compositions/useMarqueeGraph/types'
+import { useNodeAnchors } from '@graph/plugins/anchor'
+import { MARQUEE_CONSTANTS } from '@graph/plugins/marquee/types'
 import colors from '@colors'
 import { rect } from '@shapes'
 import type { BoundingBox, Coordinate } from "@shape/types";
@@ -17,15 +15,12 @@ import type {
   HistoryRecord,
   RedoHistoryOptions,
   UndoHistoryOptions
-} from '../useHistoryGraph/types'
-import type { GraphMouseEvent } from '../useBaseGraph/types'
+} from '../history/types'
+import type { GraphMouseEvent } from '../base/types'
 
-export const useMarqueeGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
+export const useMarquee = (
+  graph: ReturnType<typeof useNodeAnchors>,
 ) => {
-  const graph = useNodeAnchorGraph(canvas, options)
-
   const marqueeBox = ref<BoundingBox | undefined>()
   const encapsulatedNodeBox = ref<BoundingBox | undefined>()
 

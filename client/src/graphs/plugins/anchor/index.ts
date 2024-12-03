@@ -1,5 +1,5 @@
 /**
- * @Helpful terms:
+ * @helpful terms:
  * - Parent Node: The node that the anchors are spawned around.
  * - Node Anchor/Anchor: A draggable handle that spawns around the parent node.
  * - Link Preview: The line that appears between the parent node and the anchor when the anchor is being dragged.
@@ -8,19 +8,17 @@
 */
 
 import { ref, readonly } from 'vue'
-import type { Ref } from 'vue'
 import { prioritizeNode } from "@graph/helpers";
-import { useDraggableGraph } from "@graph/compositions/useDraggableGraph";
-import type { NodeAnchor } from '@graph/compositions/useNodeAnchorGraph/types';
+import { useDraggable } from "@graph/plugins/draggable";
+import type { NodeAnchor } from '@graph/plugins/anchor/types';
 import type {
   SchemaItem,
   GNode,
   GEdge,
-  GraphOptions,
 } from "@graph/types";
 import { generateId } from '@utils/id';
 import { circle, line } from '@shapes';
-import type { GraphMouseEvent } from '../useBaseGraph/types';
+import type { GraphMouseEvent } from '../base/types';
 
 /**
  * Node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
@@ -33,13 +31,9 @@ import type { GraphMouseEvent } from '../useBaseGraph/types';
  * @param {Object} options - The configuration options for the anchor node graph.
  * @returns {Object} The draggable graph interface with additional node anchor functionality, options, and events.
  */
-export const useNodeAnchorGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
+export const useNodeAnchors = (
+  graph: ReturnType<typeof useDraggable>
 ) => {
-
-  const graph = useDraggableGraph(canvas, options)
-
   /**
    * The node that the anchors are spawned around.
    */

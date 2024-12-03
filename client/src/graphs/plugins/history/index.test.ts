@@ -1,10 +1,10 @@
 import { ref } from 'vue'
 import { test, describe, expect } from 'vitest'
-import { useHistoryGraph } from './index'
+import { useHistory } from './index'
 
 describe('useHistoryGraph', () => {
 
-  const graph = useHistoryGraph(ref())
+  const graph = useHistory(ref())
 
   test('undoes and redoes', () => {
     const node1 = graph.addNode({})

@@ -7,17 +7,17 @@ import type {
   AddEdgeOptions,
   RemoveEdgeOptions,
   EditEdgeLabelOptions,
-} from "@graph/compositions/useBaseGraph/types";
-import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types";
+} from "@graph/plugins/base/types";
+import type { NodeAnchor } from "@graph/plugins/anchor/types";
 import type { GraphTheme } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
 import type {
   HistoryRecord,
   RedoHistoryOptions,
   UndoHistoryOptions,
-} from "@graph/compositions/useHistoryGraph/types";
+} from "@graph/plugins/history/types";
 import type { Coordinate } from "@shape/types";
-import type { GraphMouseEvent } from "@graph/compositions/useBaseGraph/types";
+import type { GraphMouseEvent } from "@graph/plugins/base/types";
 
 export type BaseGraphEventMap = {
   /**

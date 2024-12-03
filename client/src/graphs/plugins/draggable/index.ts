@@ -1,17 +1,12 @@
 import { ref, computed } from 'vue'
-import type { Ref } from 'vue'
-import type { GNode, GraphOptions } from '@graph/types'
-import { useFocusGraph } from '@graph/compositions/useFocusGraph';
+import type { GNode } from '@graph/types'
+import { useFocus } from '@graph/plugins/focus';
 import type { ActiveDragNode } from './types';
-import type { GraphMouseEvent } from '../useBaseGraph/types';
+import type { GraphMouseEvent } from '../base/types';
 
-export const useDraggableGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
+export const useDraggable = (
+  graph: ReturnType<typeof useFocus>,
 ) => {
-
-  const graph = useFocusGraph(canvas, options)
-
   const activeDragNode = ref<ActiveDragNode | undefined>()
 
   const beginDrag = ({ items, coords }: GraphMouseEvent) => {

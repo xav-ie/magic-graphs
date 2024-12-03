@@ -1,7 +1,5 @@
-import type { Ref } from "vue";
-import type { GNode, GEdge, GraphOptions } from "@graph/types";
-import { useUserEditableGraph } from "@graph/compositions/useUserEditableGraph";
-import type { GraphTheme } from "@graph/themes";
+import type { GNode, GEdge } from "@graph/types";
+import { useUserEditableGraph } from "@graph/plugins/editable";
 import type { GraphEvent } from "@graph/events";
 
 /**
@@ -11,12 +9,9 @@ import type { GraphEvent } from "@graph/events";
  * @param options
  * @returns the graph interface with additional persistent graph functionality
  */
-export const usePersistentGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {}
+export const usePersistent = (
+  graph: ReturnType<typeof useUserEditableGraph>,
 ) => {
-  const graph = useUserEditableGraph(canvas, options);
-
   const nodeStorage = {
     get: () =>
       JSON.parse(
