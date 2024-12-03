@@ -1,19 +1,17 @@
 import type { GNode } from "@graph/types"
+import type { BaseGraph } from "@graph/base"
+import type { GraphMouseEvent } from '@graph/base/types'
 import type { NodeAnchor } from "@graph/plugins/anchors/types"
 import { useShortcutPressed } from './useShortcutPressed'
-import type { GraphMouseEvent } from '../../base/types'
-import type { useAnnotations } from '../annotations'
+import type { GraphHistoryControls } from "../history"
+import type { GraphFocusControls } from "../focus"
 
 /**
- * The user editable graph implements handlers for node creation,
+ * the user editable graph implements handlers for node creation,
  * edge creation and deletion driven by user input.
- *
- * @param canvas - the canvas element to render the graph
- * @param options - the options to configure the graph
- * @returns a user editable graph
  */
 export const useUserEditableGraph = (
-  graph: ReturnType<typeof useAnnotations>,
+  graph: BaseGraph & GraphHistoryControls & GraphFocusControls,
 ) => {
   const handleNodeCreation = ({ coords, event }: GraphMouseEvent) => {
     graph.addNode(coords)
@@ -117,6 +115,4 @@ export const useUserEditableGraph = (
     if (diff.userEditable === true) activate()
     else if (diff.userEditable === false) deactivate()
   })
-
-  return graph
 }

@@ -1,26 +1,15 @@
 import { ref } from 'vue'
-import type {
-  GEdge,
-  GNode,
-  Aggregator,
-  SchemaItem,
-} from '@graph/types'
+import type { Aggregator } from '@graph/types'
 import { useTheme } from '@graph/themes/useTheme'
-import { useNodeAnchors } from '@graph/plugins/anchors'
 import { MARQUEE_CONSTANTS } from '@graph/plugins/marquee/types'
 import colors from '@colors'
 import { rect } from '@shapes'
 import type { BoundingBox, Coordinate } from "@shape/types";
-import type {
-  HistoryRecord,
-  RedoHistoryOptions,
-  UndoHistoryOptions
-} from '../history/types'
-import type { GraphMouseEvent } from '../../base/types'
+import type { BaseGraph } from '@graph/base'
+import type { GraphMouseEvent } from '@graph/base/types'
+import type { GraphFocusControls } from '../focus'
 
-export const useMarquee = (
-  graph: ReturnType<typeof useNodeAnchors>,
-) => {
+export const useMarquee = (graph: BaseGraph & GraphFocusControls) => {
   const marqueeBox = ref<BoundingBox | undefined>()
   const encapsulatedNodeBox = ref<BoundingBox | undefined>()
 
@@ -248,8 +237,6 @@ export const useMarquee = (
   if (graph.settings.value.marquee) activate()
 
   return {
-    ...graph,
-
     /**
      * updates the bounding box around the nodes that are currently focused.
      * use this when you are changing theme or position outside of the standard supported use cases
@@ -257,3 +244,5 @@ export const useMarquee = (
     updateEncapsulatedNodeBox,
   }
 }
+
+export type GraphMarqueeControls = ReturnType<typeof useMarquee>

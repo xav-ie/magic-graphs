@@ -3,16 +3,8 @@ import {
   computed,
   readonly,
 } from "vue";
-import type {
-  GEdge,
-  GNode,
-  SchemaItem
-} from "@graph/types";
-import type {
-  AddNodeOptions,
-  FocusOption,
-  GraphMouseEvent
-} from "@graph/base/types";
+import type { SchemaItem } from "@graph/types";
+import type { FocusOption, GraphMouseEvent } from "@graph/base/types";
 import type { BaseGraph } from "@graph/base";
 import { useTheme } from "@graph/themes/useTheme";
 import { getCtx } from "@utils/ctx";
@@ -205,3 +197,5 @@ export const useFocus = (graph: BaseGraph) => {
     focusedEdges: computed(() => graph.edges.value.filter(edge => isFocused(edge.id))),
   }
 }
+
+export type GraphFocusControls = ReturnType<typeof useFocus>

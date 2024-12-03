@@ -1,15 +1,15 @@
 import { ref, watch } from "vue";
 import type { Aggregator } from "@graph/types";
+import type { BaseGraph } from "@graph/base";
+import type { GraphMouseEvent } from "@graph/base/types";
 import type { Coordinate } from "@shape/types";
 import { generateId } from "@utils/id";
 import { shapes } from "@shapes";
 import colors from "@utils/colors";
 import type { Color } from "@utils/colors";
-import type { GraphMouseEvent } from "@graph/base/types";
 import { BRUSH_WEIGHTS, COLORS } from "./constants";
 import { useAnnotationHistory } from "./history";
 import type { Annotation } from "./types";
-import type { BaseGraph } from "@graph/base";
 
 export const useAnnotations = (graph: BaseGraph) => {
   const selectedColor = ref<Color>(COLORS[0])
@@ -226,3 +226,5 @@ export const useAnnotations = (graph: BaseGraph) => {
     canRedoAnnotation: history.canRedo,
   }
 }
+
+export type GraphAnnotationControls = ReturnType<typeof useAnnotations>

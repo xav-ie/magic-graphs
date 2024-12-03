@@ -3,7 +3,7 @@ import type { GraphMouseEvent } from '@graph/base/types';
 import type { ActiveDragNode } from './types';
 import type { BaseGraph } from '@graph/base';
 
-export const useDraggable = (graph: BaseGraph) => {
+export const useNodeDrag = (graph: BaseGraph) => {
   const activeDragNode = ref<ActiveDragNode | undefined>()
 
   const beginDrag = ({ items, coords }: GraphMouseEvent) => {
@@ -60,3 +60,5 @@ export const useDraggable = (graph: BaseGraph) => {
     activeDragNode: computed(() => activeDragNode.value?.node),
   }
 }
+
+export type GraphNodeDragControls = ReturnType<typeof useNodeDrag>

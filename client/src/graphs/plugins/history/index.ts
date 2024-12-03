@@ -366,3 +366,5 @@ export const useHistory = (graph: BaseGraph) => {
     clearHistory,
   }
 };
+
+export type GraphHistoryControls = ReturnType<typeof useHistory>;

@@ -1,39 +1,25 @@
+import { ref, readonly } from 'vue'
+import { prioritizeNode } from "@graph/helpers";
+import type { BaseGraph } from '@graph/base';
+import type { GraphMouseEvent } from '@graph/base/types';
+import type { SchemaItem, GNode } from "@graph/types";
+import type { GraphFocusControls } from '@graph/plugins/focus';
+import type { NodeAnchor } from '@graph/plugins/anchors/types';
+import { generateId } from '@utils/id';
+import { circle, line } from '@shapes';
+
 /**
- * @helpful terms:
+ * node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
+ * when hovered over.
+ *
+ * helpful definitions:
  * - Parent Node: The node that the anchors are spawned around.
  * - Node Anchor/Anchor: A draggable handle that spawns around the parent node.
  * - Link Preview: The line that appears between the parent node and the anchor when the anchor is being dragged.
  * - Active Anchor: The anchor that is currently being dragged.
  * - Anchor Node Graph: A graph that supports the creation and event propagation of anchors around nodes.
-*/
-
-import { ref, readonly } from 'vue'
-import { prioritizeNode } from "@graph/helpers";
-import { useDraggable } from "@graph/plugins/draggable";
-import type { NodeAnchor } from '@graph/plugins/anchors/types';
-import type {
-  SchemaItem,
-  GNode,
-  GEdge,
-} from "@graph/types";
-import { generateId } from '@utils/id';
-import { circle, line } from '@shapes';
-import type { GraphMouseEvent } from '../../base/types';
-
-/**
- * Node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
- * when hovered over.
- *
- * Extends the event bus to support child composition functions subscribing to events like `onNodeAnchorDragStart`
- * and `onNodeAnchorDrop` for user-driven anchor interactions.
- *
- * @param {HTMLCanvasElement} canvas - The canvas element on which to render the graph.
- * @param {Object} options - The configuration options for the anchor node graph.
- * @returns {Object} The draggable graph interface with additional node anchor functionality, options, and events.
  */
-export const useNodeAnchors = (
-  graph: ReturnType<typeof useDraggable>
-) => {
+export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
   /**
    * The node that the anchors are spawned around.
    */
@@ -49,8 +35,6 @@ export const useNodeAnchors = (
   }
 
   const getAnchorSchemas = (node: GNode) => {
-    if (graph.activeDragNode.value) return []
-
     const { getTheme } = graph
 
     const color = getTheme('nodeAnchorColor', node)
@@ -300,8 +284,6 @@ export const useNodeAnchors = (
   if (graph.settings.value.nodeAnchors) activate()
 
   return {
-    ...graph,
-
     /**
      * the node anchor that is currently being dragged by the user
      */
@@ -312,3 +294,5 @@ export const useNodeAnchors = (
     nodeAnchorParentNode: readonly(parentNode),
   }
 }
+
+export type NodeAnchorControls = ReturnType<typeof useNodeAnchors>

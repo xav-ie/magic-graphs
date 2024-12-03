@@ -8,7 +8,7 @@ import { clone } from '@utils/clone'
 import { useBaseGraph } from '@graph/base'
 
 import { useMarquee } from './plugins/marquee'
-import { useDraggable } from './plugins/draggable'
+import { useNodeDrag } from './plugins/drag'
 import { useNodeAnchors } from './plugins/anchors'
 import { useUserEditableGraph } from './plugins/editable'
 import { useAnnotations } from './plugins/annotations'
