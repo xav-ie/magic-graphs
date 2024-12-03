@@ -1,4 +1,5 @@
 import type { GEdge, GNode } from "@graph/types";
+import type { BaseGraph } from "@graph/base";
 import {
   getConnectedEdges,
   getConnectedNodes,
@@ -10,9 +11,6 @@ import {
   isEdgeFlowingIntoNode,
   isEdgeFlowingOutOfNode
 } from ".";
-import type { useBaseGraph } from "@graph/base";
-
-type BaseGraph = ReturnType<typeof useBaseGraph>
 
 export const useGraphHelpers = (graph: BaseGraph) => ({
   getConnectedNodes: (edgeId: GEdge['id']) => getConnectedNodes(edgeId, graph),

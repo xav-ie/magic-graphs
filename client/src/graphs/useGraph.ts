@@ -1,5 +1,4 @@
 import type { Ref } from 'vue'
-import { THEMES } from '@graph/themes'
 import type { GraphOptions } from '@graph/types'
 import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
 import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
@@ -27,17 +26,30 @@ export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
 ) => {
-  const graph = useBaseGraph(canvas, options)
+  const baseGraph = useBaseGraph(canvas, options)
 
-  const helpers = useGraphHelpers(graph)
+  const focusControls = useFocus(baseGraph)
+  const historyControls = useHistory(baseGraph)
+  const marqueeControls = useMarquee({ ...baseGraph, ...focusControls })
+  const nodeDragControls = useNodeDrag(baseGraph)
+  const nodeAnchorControls = useNodeAnchors({ ...baseGraph, ...focusControls })
+  const annotationControls = useAnnotations(baseGraph)
+  const persistentControls = usePersistent(baseGraph)
 
-  const graphWithHelpers = {
-    ...graph,
-    helpers,
-  }
+  useUserEditableGraph({ ...baseGraph, ...historyControls, ...focusControls })
 
   const overrideThemes = clone(options?.theme ?? {})
-  useUserPreferredTheme(graphWithHelpers, overrideThemes)
+  useUserPreferredTheme(baseGraph, overrideThemes)
 
-  return graphWithHelpers
+  return {
+    ...baseGraph,
+    ...focusControls,
+    ...historyControls,
+    ...marqueeControls,
+    ...nodeDragControls,
+    ...nodeAnchorControls,
+    ...annotationControls,
+    ...persistentControls,
+    helpers: useGraphHelpers(baseGraph),
+  }
 }

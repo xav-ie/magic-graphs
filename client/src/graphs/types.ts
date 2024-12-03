@@ -3,12 +3,6 @@ import type { Shape } from "@shape/types"
 import type { MaybeGetter } from "@utils/maybeGetter";
 import type { GraphTheme } from "./themes/types";
 import type { GraphSettings } from "./settings";
-import type { useBaseGraph } from "./base";
-
-/**
- * a graph instance with only the base APIs
- */
-export type BaseGraph = ReturnType<typeof useBaseGraph>
 
 /**
  * the useGraph composition function
