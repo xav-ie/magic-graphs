@@ -25,17 +25,17 @@ export const useStorePanZoomState = (canvasRef: Ref<HTMLCanvasElement | undefine
   const apply = () => {
     const ctx = getCtx(canvasRef);
     console.log("applying", scale.value, panX.value, panY.value)
-    ctx.resetTransform();
-    ctx.translate(panX.value, panY.value);
-    ctx.scale(scale.value, scale.value);
+    // ctx.resetTransform();
+    // ctx.translate(panX.value, panY.value);
+    // ctx.scale(scale.value, scale.value);
   }
 
   onMounted(() => {
     if (!canvasRef.value) return;
-    apply();
     canvasRef.value.addEventListener("wheel", track);
     canvasRef.value.addEventListener("mousedown", track);
     canvasRef.value.addEventListener("mouseup", track);
+    setTimeout(() => apply(), 0)
   })
 
   onUnmounted(() => {

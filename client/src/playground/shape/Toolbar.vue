@@ -4,7 +4,7 @@
   import { useHeatmap } from "@playground/shape/useHeatmap";
   import Button from "@ui/Button.vue";
   import InputRange from "@ui/InputRange.vue";
-import { getCtx } from "@utils/ctx";
+  import { getCtx } from "@utils/ctx";
 
   const props = defineProps<{
     canvas: HTMLCanvasElement | undefined;
@@ -14,10 +14,13 @@ import { getCtx } from "@utils/ctx";
 
   const { items, canvas } = toRefs(props);
 
-  const { heatmapActive, heatmapOpacity, heatmapResolution, toggleHeatmapMode, heatmapMode } = useHeatmap(
-    canvas,
-    items
-  );
+  const {
+    heatmapActive,
+    heatmapOpacity,
+    heatmapResolution,
+    toggleHeatmapMode,
+    heatmapMode,
+  } = useHeatmap(canvas, items);
 
   const heatmapBtnText = computed(() =>
     heatmapActive.value ? "Hide Heatmap" : "Show Heatmap"
@@ -28,11 +31,11 @@ import { getCtx } from "@utils/ctx";
   );
 
   const fn = () => {
-    const ctx = getCtx(canvas)
+    const ctx = getCtx(canvas);
     items.value[2].activateTextArea?.(ctx, (str) => {
-      console.log('value', str)
-    })
-  }
+      console.log("value", str);
+    });
+  };
 </script>
 
 <template>
@@ -42,13 +45,14 @@ import { getCtx } from "@utils/ctx";
     {{ heatmapBtnText }}
   </Button>
 
-  <Button v-if="heatmapActive" @click="toggleHeatmapMode">
+  <Button
+    v-if="heatmapActive"
+    @click="toggleHeatmapMode"
+  >
     {{ toggleHeatmapModeButtonText }}
   </Button>
 
-  <Button @click="fn">
-    Micro Control
-  </Button>
+  <Button @click="fn">Micro Control</Button>
 
   <div
     v-if="heatmapActive"

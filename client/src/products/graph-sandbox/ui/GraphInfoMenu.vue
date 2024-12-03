@@ -8,7 +8,10 @@
 </script>
 
 <template>
-  <v-menu :offset="[10, 0]">
+  <v-menu
+    :offset="[10, 0]"
+    :close-on-content-click="false"
+  >
     <template #activator="{ props, isActive }">
       <div v-bind="props">
         <slot :isActive="isActive"></slot>

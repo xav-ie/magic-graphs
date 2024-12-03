@@ -66,16 +66,25 @@
     ...parentClasses.value,
     ...propClasses.value,
   ]);
+
+  const disabled = computed(() => props.disabled);
+
+  const disabledStyle = computed(() => {
+    if (disabled.value) {
+      return {
+        pointerEvents: "none",
+        opacity: 0.5,
+        cursor: "not-allowed",
+      } as const;
+    }
+    return {} as const;
+  });
 </script>
 
 <template>
   <button
     :class="classList"
-    :style="{
-      pointerEvents: props.disabled ? 'none' : 'auto',
-      opacity: props.disabled ? 0.5 : 1,
-      cursor: props.disabled ? 'not-allowed' : 'pointer',
-    }"
+    :style="disabledStyle"
   >
     <slot></slot>
   </button>
