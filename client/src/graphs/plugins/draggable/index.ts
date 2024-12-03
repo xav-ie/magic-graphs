@@ -1,12 +1,9 @@
 import { ref, computed } from 'vue'
-import type { GNode } from '@graph/types'
-import { useFocus } from '@graph/plugins/focus';
+import type { GraphMouseEvent } from '@graph/base/types';
 import type { ActiveDragNode } from './types';
-import type { GraphMouseEvent } from '../../base/types';
+import type { BaseGraph } from '@graph/base';
 
-export const useDraggable = (
-  graph: ReturnType<typeof useFocus>,
-) => {
+export const useDraggable = (graph: BaseGraph) => {
   const activeDragNode = ref<ActiveDragNode | undefined>()
 
   const beginDrag = ({ items, coords }: GraphMouseEvent) => {
@@ -57,8 +54,6 @@ export const useDraggable = (
   if (graph.settings.value.draggable) activate()
 
   return {
-    ...graph,
-
     /**
      * the node that is currently being dragged or undefined if no node is being dragged
      */

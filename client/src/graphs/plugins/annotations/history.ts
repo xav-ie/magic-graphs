@@ -1,6 +1,6 @@
 import { computed, ref } from "vue"
 import type { Ref } from 'vue'
-import type { Annotation } from "."
+import type { Annotation } from "./types"
 
 type AnnotationHistoryRecord = {
   action: 'add' | 'remove',
@@ -19,7 +19,7 @@ export const useAnnotationHistory = (annotations: Ref<Annotation[]>) => {
     redoStack.value.push(record)
   }
 
-  const executeUndo = () => {
+  const undo = () => {
     const record = undoStack.value.pop()
     if (!record) return
     const { action, scribbles } = record
@@ -34,7 +34,7 @@ export const useAnnotationHistory = (annotations: Ref<Annotation[]>) => {
     redoStack.value.push(record)
   }
 
-  const executeRedo = () => {
+  const redo = () => {
     const record = redoStack.value.pop()
     if (!record) return
     const { action, scribbles } = record
@@ -50,8 +50,8 @@ export const useAnnotationHistory = (annotations: Ref<Annotation[]>) => {
   }
 
   return {
-    executeUndo,
-    executeRedo,
+    undo,
+    redo,
     addToUndoStack,
     addToRedoStack,
 

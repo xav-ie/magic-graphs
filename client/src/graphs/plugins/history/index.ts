@@ -1,5 +1,5 @@
 import { computed, ref } from "vue";
-import { useBaseGraph } from "@graph/base";
+import type { BaseGraph } from "@graph/base";
 import type { GNode } from "@graph/types";
 import {
   DEFAULT_REDO_HISTORY_OPTIONS,
@@ -24,9 +24,7 @@ const MAX_HISTORY = 100;
  */
 const MIN_DISTANCE = 3;
 
-export const useHistory = (
-  graph: ReturnType<typeof useBaseGraph>,
-) => {
+export const useHistory = (graph: BaseGraph) => {
   const undoStack = ref<HistoryRecord[]>([]);
   const redoStack = ref<HistoryRecord[]>([]);
 
@@ -328,8 +326,6 @@ export const useHistory = (
   }
 
   return {
-    ...graph,
-
     /**
      * undoes the last action and moves it to the redo stack
      */

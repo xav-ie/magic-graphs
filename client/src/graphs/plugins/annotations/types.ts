@@ -1,10 +1,6 @@
-import colors from "@utils/colors";
+import type { Scribble } from "@shape/scribble";
 
-export const COLORS = [
-  colors.RED_600,
-  colors.BLUE_600,
-  colors.GREEN_600,
-  colors.YELLOW_600,
-];
-
-export const BRUSH_WEIGHTS = [3, 6, 9, 12];
+/**
+ * a scribble that is on the graph as an annotation
+ */
+export type Annotation = Scribble & { id: string }

@@ -8,15 +8,17 @@ import type {
   GNode,
   SchemaItem
 } from "@graph/types";
+import type {
+  AddNodeOptions,
+  FocusOption,
+  GraphMouseEvent
+} from "@graph/base/types";
+import type { BaseGraph } from "@graph/base";
 import { useTheme } from "@graph/themes/useTheme";
-import { useHistory } from "@graph/plugins/history";
 import { getCtx } from "@utils/ctx";
 import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "./constants";
-import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../../base/types";
 
-export const useFocus = (
-  graph: ReturnType<typeof useHistory>,
-) => {
+export const useFocus = (graph: BaseGraph) => {
   const { setTheme } = useTheme(graph, FOCUS_THEME_ID)
   const focusedItemIds = ref(new Set<string>())
 
@@ -168,8 +170,6 @@ export const useFocus = (
   if (graph.settings.value.focusable) activate()
 
   return {
-    ...graph,
-
     /**
      * The id of the focused item in the graph, if any
      */

@@ -1,22 +1,17 @@
-import { computed, ref, watch } from "vue";
-import type { Ref } from "vue";
-import type { Aggregator, GraphOptions } from "@graph/types";
+import { ref, watch } from "vue";
+import type { Aggregator } from "@graph/types";
 import type { Coordinate } from "@shape/types";
 import { generateId } from "@utils/id";
 import { shapes } from "@shapes";
 import colors from "@utils/colors";
 import type { Color } from "@utils/colors";
-import type { Scribble } from "@shape/scribble";
-import { useMarquee } from "../marquee";
-import type { GraphMouseEvent } from "../../base/types";
-import { BRUSH_WEIGHTS, COLORS } from "./types";
+import type { GraphMouseEvent } from "@graph/base/types";
+import { BRUSH_WEIGHTS, COLORS } from "./constants";
 import { useAnnotationHistory } from "./history";
+import type { Annotation } from "./types";
+import type { BaseGraph } from "@graph/base";
 
-export type Annotation = Scribble & { id: string }
-
-export const useAnnotations = (
-  graph: ReturnType<typeof useMarquee>,
-) => {
+export const useAnnotations = (graph: BaseGraph) => {
   const selectedColor = ref<Color>(COLORS[0])
   const selectedBrushWeight = ref(BRUSH_WEIGHTS[1])
   const erasing = ref(false)
@@ -29,18 +24,12 @@ export const useAnnotations = (
 
   const isActive = ref(false)
 
-  const {
-    executeUndo,
-    executeRedo,
-    addToUndoStack,
-    canUndo,
-    canRedo,
-  } = useAnnotationHistory(scribbles)
+  const history = useAnnotationHistory(scribbles)
 
   const clear = () => {
     if (scribbles.value.length === 0) return
 
-    addToUndoStack({
+    history.addToUndoStack({
       action: 'remove',
       scribbles: scribbles.value,
     })
@@ -96,7 +85,7 @@ export const useAnnotations = (
         return erasedScribbleIds.value.has(scribble.id)
       })
 
-      addToUndoStack({
+      history.addToUndoStack({
         action: 'remove',
         scribbles: erasedScribbles
       })
@@ -119,7 +108,7 @@ export const useAnnotations = (
 
     scribbles.value.push(scribble);
 
-    addToUndoStack({
+    history.addToUndoStack({
       action: 'add',
       scribbles: [scribble]
     })
@@ -221,8 +210,6 @@ export const useAnnotations = (
   }
 
   return {
-    ...graph,
-
     clearAnnotations: clear,
     annotationActive: isActive,
 
@@ -233,9 +220,9 @@ export const useAnnotations = (
     activateAnnotation: activate,
     deactivateAnnotation: deactivate,
 
-    undo: () => isActive.value ? executeUndo() : graph.undo(),
-    redo: () => isActive.value ? executeRedo() : graph.redo(),
-    canUndo: computed(() => isActive.value ? canUndo.value : graph.canUndo.value),
-    canRedo: computed(() => isActive.value ? canRedo.value : graph.canRedo.value),
+    undoAnnotation: history.undo,
+    redoAnnotation: history.redo,
+    canUndoAnnotation: history.canUndo,
+    canRedoAnnotation: history.canRedo,
   }
 }
