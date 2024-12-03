@@ -234,6 +234,13 @@ export const useBaseGraph = (
 
   updateAggregator.push(liftHoveredNodeToTop)
 
+  const load = (graph: { nodes: GNode[], edges: GEdge[] }) => {
+    nodes.value = graph.nodes
+    edges.value = graph.edges
+    emit('onGraphLoaded')
+    emit('onStructureChange')
+  }
+
   const reset = () => {
     nodes.value = []
     edges.value = []
@@ -304,6 +311,7 @@ export const useBaseGraph = (
     themeMap,
     settings,
 
+    load,
     reset,
 
     canvas,

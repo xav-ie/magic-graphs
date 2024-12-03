@@ -1,4 +1,4 @@
-import type { GEdge, GNode } from "@graph/types";
+import type { GEdge, GNode, Graph } from "@graph/types";
 import type { GraphSettings } from "@graph/settings";
 import type {
   AddNodeOptions,
@@ -22,14 +22,15 @@ import type { GraphMouseEvent } from "@graph/base/types";
 export type BaseGraphEventMap = {
   /**
    * when one of the following occurs:
-   * - a node is added or removed
-   * - an edge is added or removed
-   * - an edge label is changed (usually indicating a change to the weight of the edge)
-   * - the graph resets (graph.reset())
+   * - a node is {@link Graph.addNode | added} or {@link Graph.removeNode | removed}
+   * - an edge is {@link Graph.addEdge | added} or {@link Graph.removeEdge | removed}
+   * - an edge label is {@link Graph.editEdgeLabel | edited}
+   * - the {@link Graph.load | graph load} api is invoked with new nodes and edges
+   * - the {@link Graph.reset | graph reset} api is invoked clearing all nodes and edges
    */
   onStructureChange: () => void;
   /**
-   * when a node is added to the graph
+   * when a node is {@link Graph.addNode | added} to the graph
    */
   onNodeAdded: (node: GNode, options: AddNodeOptions) => void;
   /**
@@ -37,7 +38,7 @@ export type BaseGraphEventMap = {
    */
   onBulkNodeAdded: (nodes: GNode[], options: AddNodeOptions) => void;
   /**
-   * when a node is removed from the graph
+   * when a node is {@link Graph.removeNode | removed} from the graph
    */
   onNodeRemoved: (removedNode: GNode, removedEdges: GEdge[], options: RemoveNodeOptions) => void;
   /**
@@ -45,7 +46,7 @@ export type BaseGraphEventMap = {
    */
   onBulkNodeRemoved: (removedNodes: GNode[], removedEdges: GEdge[], options: RemoveNodeOptions) => void;
   /**
-   * when a node is moved to a new position on the canvas
+   * when a node is {@link Graph.moveNode | moved} to a new position on the canvas
    */
   onNodeMoved: (node: GNode, options: MoveNodeOptions) => void;
   /**
@@ -53,7 +54,7 @@ export type BaseGraphEventMap = {
    */
   onBulkNodeMoved: (nodes: GNode[], options: MoveNodeOptions) => void;
   /**
-   * when an edge is added to the graph
+   * when an edge is {@link Graph.addEdge | added} to the graph
    */
   onEdgeAdded: (edge: GEdge, options: AddEdgeOptions) => void;
   /**
@@ -61,7 +62,7 @@ export type BaseGraphEventMap = {
    */
   onBulkEdgeAdded: (edges: GEdge[], options: AddEdgeOptions) => void;
   /**
-   * when an edge is removed from the graph
+   * when an edge is {@link Graph.removeEdge | removed} from the graph
    */
   onEdgeRemoved: (edge: GEdge, options: RemoveEdgeOptions) => void;
   /**
@@ -69,14 +70,14 @@ export type BaseGraphEventMap = {
    */
   onBulkEdgeRemoved: (edges: GEdge[], options: RemoveEdgeOptions) => void;
   /**
-   * when an edge's text label is changed
+   * when an edge's text label is {@link Graph.editEdgeLabel | edited}
    */
   onEdgeLabelEdited: (edge: GEdge, oldLabel: GEdge['label'], options: EditEdgeLabelOptions) => void;
   /**
    * when the canvas is repainted
    *
-   * WARNING: items drawn to the canvas using ctx won't be tied to graphs internal state.
-   * Use updateAggregator if you need drawn item to integrate with graph APIs
+   * **WARNING** items drawn to the canvas using ctx won't be tied to graphs internal state.
+   * see {@link Graph.updateAggregator | `updateAggregator`} if you need drawn item to integrate with graph APIs
    */
   onRepaint: (ctx: CanvasRenderingContext2D, repaintId: string) => void;
   /**
@@ -85,7 +86,11 @@ export type BaseGraphEventMap = {
    */
   onNodeHoverChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
   /**
-   * when the reset process is triggered
+   * when the graph is {@link Graph.load | loaded} with new nodes and edges.
+   */
+  onGraphLoaded: () => void;
+  /**
+   * when the graph has {@link Graph.reset | reset} and all nodes and edges have been removed
    */
   onGraphReset: () => void;
   /**
@@ -121,11 +126,11 @@ export type BaseGraphEventMap = {
    */
   onKeyUp: (ev: KeyboardEvent) => void;
   /**
-   * when the graph theme is changed
+   * when the {@link Graph.theme | theme} of the graph has changed
    */
   onThemeChange: (diff: DeepPartial<GraphTheme>) => void;
   /**
-   * when the settings of the graph are changed
+   * when the {@link Graph.settings | settings} of the graph have changed
    */
   onSettingsChange: (diff: DeepPartial<GraphSettings>) => void;
 }

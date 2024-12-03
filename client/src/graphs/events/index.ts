@@ -103,6 +103,8 @@ export const getInitialEventBus = () => {
 
     onRepaint: new Set(),
     onNodeHoverChange: new Set(),
+
+    onGraphLoaded: new Set(),
     onGraphReset: new Set(),
 
     onClick: new Set(),
