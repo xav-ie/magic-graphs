@@ -1,22 +1,8 @@
-import type { Ref } from "vue";
-import type { GNode, GEdge, GraphOptions } from "@graph/types";
-import { useUserEditableGraph } from "@graph/compositions/useUserEditableGraph";
-import type { GraphTheme } from "@graph/themes";
+import type { GNode, GEdge } from "@graph/types";
 import type { GraphEvent } from "@graph/events";
+import type { BaseGraph } from "@graph/base";
 
-/**
- * extends the useGraph interface to include capabilities for storing and retrieving a graph from local storage.
- *
- * @param canvas
- * @param options
- * @returns the graph interface with additional persistent graph functionality
- */
-export const usePersistentGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {}
-) => {
-  const graph = useUserEditableGraph(canvas, options);
-
+export const usePersistent = (graph: BaseGraph) => {
   const nodeStorage = {
     get: () =>
       JSON.parse(
@@ -66,8 +52,7 @@ export const usePersistentGraph = (
     graph.nodes.value = nodeStorage.get();
     graph.edges.value = edgeStorage.get();
 
-    // wait for the next microtask to ensure caller of useGraph has a chance to sub to onStructureChange
-    queueMicrotask(() => graph.emit("onStructureChange"));
+    graph.emit("onStructureChange");
   };
 
   const trackChangeEvents: GraphEvent[] = [
@@ -117,16 +102,17 @@ export const usePersistentGraph = (
   });
 
   if (graph.settings.value.persistent) {
-    load();
+    // ensure caller has a chance to sub to onStructureChange
+    queueMicrotask(load);
     listenForGraphStateEvents();
   }
 
   return {
-    ...graph,
-
     /**
      * track the graph state on local storage
      */
     trackGraphState,
   };
 };
+
+export type GraphPersistentControls = ReturnType<typeof usePersistent>;

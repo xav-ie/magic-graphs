@@ -3,25 +3,14 @@ import {
   computed,
   readonly,
 } from "vue";
-import type { Ref } from "vue";
-import type {
-  GEdge,
-  GNode,
-  GraphOptions,
-  SchemaItem
-} from "@graph/types";
+import type { SchemaItem } from "@graph/types";
+import type { FocusOption, GraphMouseEvent } from "@graph/base/types";
+import type { BaseGraph } from "@graph/base";
 import { useTheme } from "@graph/themes/useTheme";
-import { useHistoryGraph } from "@graph/compositions/useHistoryGraph";
 import { getCtx } from "@utils/ctx";
 import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "./constants";
-import type { AddNodeOptions, FocusOption, GraphMouseEvent } from "../useBaseGraph/types";
 
-export const useFocusGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
-) => {
-  const graph = useHistoryGraph(canvas, options);
-
+export const useFocus = (graph: BaseGraph) => {
   const { setTheme } = useTheme(graph, FOCUS_THEME_ID)
   const focusedItemIds = ref(new Set<string>())
 
@@ -150,7 +139,6 @@ export const useFocusGraph = (
     graph.subscribe('onNodeAdded', setFocusToAddedItem)
     graph.subscribe('onEdgeAdded', setFocusToAddedItem)
     graph.subscribe('onMouseDown', handleFocusChange)
-    graph.subscribe('onGraphReset', resetFocus)
     graph.subscribe('onKeyDown', handleKeyDown)
     graph.subscribe('onKeyUp', handleKeyUp)
     graph.subscribe('onStructureChange', clearOutDeletedItemsFromFocus)
@@ -160,7 +148,6 @@ export const useFocusGraph = (
     graph.unsubscribe('onNodeAdded', setFocusToAddedItem)
     graph.unsubscribe('onEdgeAdded', setFocusToAddedItem)
     graph.unsubscribe('onMouseDown', handleFocusChange)
-    graph.unsubscribe('onGraphReset', resetFocus)
     graph.unsubscribe('onKeyDown', handleKeyDown)
     graph.unsubscribe('onKeyUp', handleKeyUp)
     graph.unsubscribe('onStructureChange', clearOutDeletedItemsFromFocus)
@@ -175,8 +162,6 @@ export const useFocusGraph = (
   if (graph.settings.value.focusable) activate()
 
   return {
-    ...graph,
-
     /**
      * The id of the focused item in the graph, if any
      */
@@ -212,3 +197,5 @@ export const useFocusGraph = (
     focusedEdges: computed(() => graph.edges.value.filter(edge => isFocused(edge.id))),
   }
 }
+
+export type GraphFocusControls = ReturnType<typeof useFocus>

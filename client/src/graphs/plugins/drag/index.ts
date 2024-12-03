@@ -1,24 +1,21 @@
 import { ref, computed } from 'vue'
-import type { Ref } from 'vue'
-import type { GNode, GraphOptions } from '@graph/types'
-import { useFocusGraph } from '@graph/compositions/useFocusGraph';
+import type { GraphMouseEvent } from '@graph/base/types';
 import type { ActiveDragNode } from './types';
-import type { GraphMouseEvent } from '../useBaseGraph/types';
+import type { BaseGraph } from '@graph/base';
+import type { NodeAnchorControls } from '../anchors';
 
-export const useDraggableGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
-) => {
-
-  const graph = useFocusGraph(canvas, options)
-
+export const useNodeDrag = (graph: BaseGraph & NodeAnchorControls) => {
   const activeDragNode = ref<ActiveDragNode | undefined>()
 
   const beginDrag = ({ items, coords }: GraphMouseEvent) => {
     const topItem = items.at(-1)
     if (!topItem || topItem.graphType !== 'node') return
+
+    graph.settings.value.nodeAnchors = false
+
     const node = graph.getNode(topItem.id)
     if (!node) return
+
     activeDragNode.value = { node, coords }
     graph.emit('onNodeDragStart', node)
   }
@@ -26,6 +23,8 @@ export const useDraggableGraph = (
   const drop = () => {
     if (!activeDragNode.value) return
     graph.emit('onNodeDrop', activeDragNode.value.node)
+    graph.settings.value.nodeAnchors = true
+    graph.nodeAnchorSetParentNode(activeDragNode.value.node.id)
     activeDragNode.value = undefined;
   }
 
@@ -62,11 +61,11 @@ export const useDraggableGraph = (
   if (graph.settings.value.draggable) activate()
 
   return {
-    ...graph,
-
     /**
      * the node that is currently being dragged or undefined if no node is being dragged
      */
     activeDragNode: computed(() => activeDragNode.value?.node),
   }
 }
+
+export type GraphNodeDragControls = ReturnType<typeof useNodeDrag>

@@ -1,8 +1,8 @@
 import { watch } from "vue"
 import { useDark } from "@vueuse/core"
-import type { Graph } from "@graph/types"
 import { THEMES } from "@graph/themes"
 import type { GraphTheme } from "./types"
+import type { BaseGraph } from "@graph/base"
 
 /**
  * WARNING - EXPERIMENTAL
@@ -12,7 +12,7 @@ import type { GraphTheme } from "./types"
  * @param overrideThemes the themes to override the default light/dark themes with
  */
 export const useUserPreferredTheme = (
-  graph: Graph,
+  graph: BaseGraph,
   overrideThemes: Partial<GraphTheme>
 ) => {
   const isDark = useDark()

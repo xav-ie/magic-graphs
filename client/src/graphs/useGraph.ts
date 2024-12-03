@@ -1,10 +1,17 @@
 import type { Ref } from 'vue'
-import { THEMES } from '@graph/themes'
 import type { GraphOptions } from '@graph/types'
 import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
 import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
+import { useBaseGraph } from '@graph/base'
+import { useMarquee } from '@graph/plugins/marquee'
+import { useNodeDrag } from '@graph/plugins/drag'
+import { useNodeAnchors } from '@graph/plugins/anchors'
+import { useUserEditableGraph } from '@graph/plugins/editable'
+import { useAnnotations } from '@graph/plugins/annotations'
+import { useFocus } from '@graph/plugins/focus'
+import { useHistory } from '@graph/plugins/history'
+import { usePersistent } from '@graph/plugins/persistent'
 import { clone } from '@utils/clone'
-import { usePersistentGraph } from './compositions/usePersistentGraph'
 
 /**
  * a package full of tools for creating and managing graphs
@@ -17,27 +24,30 @@ export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   options: Partial<GraphOptions> = {},
 ) => {
-  const graph = usePersistentGraph(canvas, options)
-  const helpers = useGraphHelpers(graph)
+  const baseGraph = useBaseGraph(canvas, options)
 
-  const graphWithHelpers = {
-    ...graph,
-    helpers,
-  }
+  const focusControls = useFocus(baseGraph)
+  const historyControls = useHistory(baseGraph)
+  const marqueeControls = useMarquee({ ...baseGraph, ...focusControls })
+  const nodeAnchorControls = useNodeAnchors({ ...baseGraph, ...focusControls })
+  const nodeDragControls = useNodeDrag({ ...baseGraph, ...nodeAnchorControls })
+  const annotationControls = useAnnotations(baseGraph)
+  const persistentControls = usePersistent(baseGraph)
+
+  useUserEditableGraph({ ...baseGraph, ...historyControls, ...focusControls })
 
   const overrideThemes = clone(options?.theme ?? {})
-  useUserPreferredTheme(graphWithHelpers, overrideThemes)
+  useUserPreferredTheme(baseGraph, overrideThemes)
 
-  return graphWithHelpers
+  return {
+    ...baseGraph,
+    ...focusControls,
+    ...historyControls,
+    ...marqueeControls,
+    ...nodeDragControls,
+    ...nodeAnchorControls,
+    ...annotationControls,
+    ...persistentControls,
+    helpers: useGraphHelpers(baseGraph),
+  }
 }
-
-export const useDarkGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
-) => usePersistentGraph(canvas, {
-  theme: {
-    ...options.theme,
-    ...THEMES.dark,
-  },
-  settings: options.settings,
-})

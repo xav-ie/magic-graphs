@@ -1,10 +1,8 @@
 <script setup lang="ts">
-  import {
-    COLORS,
-    BRUSH_WEIGHTS,
-  } from "@graph/compositions/useAnnotationGraph/types";
+  import { COLORS, BRUSH_WEIGHTS } from "@graph/plugins/annotations/constants";
   import { graph } from "@graph/global";
-  import colors, { type Color } from "@utils/colors";
+  import colors from "@utils/colors";
+  import type { Color } from "@utils/colors";
   import Toolbar from "./toolbar/Toolbar.vue";
   import ToolbarButton from "./toolbar/ToolbarButton.vue";
   import ToolbarButtonDivider from "./toolbar/ToolbarButtonDivider.vue";

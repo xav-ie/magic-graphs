@@ -1,7 +1,6 @@
 import { computed, ref } from "vue";
-import type { Ref } from "vue";
-import { useBaseGraph } from "@graph/compositions/useBaseGraph";
-import type { GNode, GraphOptions } from "@graph/types";
+import type { BaseGraph } from "@graph/base";
+import type { GNode } from "@graph/types";
 import {
   DEFAULT_REDO_HISTORY_OPTIONS,
   DEFAULT_UNDO_HISTORY_OPTIONS
@@ -25,12 +24,7 @@ const MAX_HISTORY = 100;
  */
 const MIN_DISTANCE = 3;
 
-export const useHistoryGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
-) => {
-  const graph = useBaseGraph(canvas, options);
-
+export const useHistory = (graph: BaseGraph) => {
   const undoStack = ref<HistoryRecord[]>([]);
   const redoStack = ref<HistoryRecord[]>([]);
 
@@ -332,8 +326,6 @@ export const useHistoryGraph = (
   }
 
   return {
-    ...graph,
-
     /**
      * undoes the last action and moves it to the redo stack
      */
@@ -374,3 +366,5 @@ export const useHistoryGraph = (
     clearHistory,
   }
 };
+
+export type GraphHistoryControls = ReturnType<typeof useHistory>;

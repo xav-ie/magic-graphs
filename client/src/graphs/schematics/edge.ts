@@ -1,7 +1,7 @@
 import type { GEdge, SchemaItem } from '@graph/types'
 import { getConnectedNodes, getEdgesAlongPath } from '@graph/helpers'
 import { getLargestAngularSpace } from '@shape/helpers'
-import type { BaseGraph } from '@graph/compositions/useBaseGraph'
+import type { BaseGraph } from '@graph/base'
 import { GOLDEN_RATIO } from '@utils/math'
 import {
   line,

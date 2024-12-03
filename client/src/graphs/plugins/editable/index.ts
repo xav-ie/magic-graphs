@@ -1,30 +1,18 @@
-import type { Ref } from 'vue'
-import type {
-  SchemaItem,
-  GNode,
-  GraphOptions
-} from "@graph/types"
-import type { NodeAnchor } from "@graph/compositions/useNodeAnchorGraph/types"
-import { useAnnotationGraph } from '@graph/compositions/useAnnotationGraph'
-import type { HistoryRecord } from '../useHistoryGraph/types'
+import type { GNode } from "@graph/types"
+import type { BaseGraph } from "@graph/base"
+import type { GraphMouseEvent } from '@graph/base/types'
+import type { NodeAnchor } from "@graph/plugins/anchors/types"
 import { useShortcutPressed } from './useShortcutPressed'
-import type { GraphMouseEvent } from '../useBaseGraph/types'
+import type { GraphHistoryControls } from "../history"
+import type { GraphFocusControls } from "../focus"
 
 /**
- * The user editable graph implements handlers for node creation,
+ * the user editable graph implements handlers for node creation,
  * edge creation and deletion driven by user input.
- *
- * @param canvas - the canvas element to render the graph
- * @param options - the options to configure the graph
- * @returns a user editable graph
  */
 export const useUserEditableGraph = (
-  canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {}
+  graph: BaseGraph & GraphHistoryControls & GraphFocusControls,
 ) => {
-
-  const graph = useAnnotationGraph(canvas, options)
-
   const handleNodeCreation = ({ coords, event }: GraphMouseEvent) => {
     graph.addNode(coords)
     setTimeout(() => graph.updateGraphAtMousePosition(event), 10)
@@ -127,6 +115,4 @@ export const useUserEditableGraph = (
     if (diff.userEditable === true) activate()
     else if (diff.userEditable === false) deactivate()
   })
-
-  return graph
 }
