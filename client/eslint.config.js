@@ -22,7 +22,27 @@ export default typescriptEslint.config(
       },
     },
     rules: {
-      // your rules
+      "@typescript-eslint/no-empty-object-type": "off",
+      
+      "vue/attributes-order": [
+        "error",
+        {
+          order: [
+            "CONDITIONALS", // v-if, v-else-if
+            "LIST_RENDERING", // v-for
+            "UNIQUE", // ref, key, v-slot
+            "TWO_WAY_BINDING", // v-model
+            "RENDER_MODIFIERS", // v-once, v-pre
+            "DEFINITION", // is, v-is
+            "EVENTS", // @click, @change
+            "GLOBAL", // id
+            "CONTENT", // class, style
+            "OTHER_DIRECTIVES", // other v- directives
+            "OTHER_ATTR", // all other attributes
+          ],
+          alphabetical: false,
+        },
+      ],
     },
   },
   eslintConfigPrettier
