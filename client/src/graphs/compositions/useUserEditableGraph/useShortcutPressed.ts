@@ -1,7 +1,6 @@
 import { computed, onUnmounted, ref } from "vue"
 
 export const useShortcutPressed = (caseSensitive = false) => {
-
   const getKeyMapping = (e: KeyboardEvent) => {
     if (e.key === ' ') return 'Space'
     const isSpecial = e.key.length > 1

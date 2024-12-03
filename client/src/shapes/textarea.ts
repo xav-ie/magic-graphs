@@ -2,7 +2,11 @@ import type { TextArea } from '@shape/types'
 import { getCanvasScale } from '@utils/components/useCanvasCoord';
 import type { DeepRequired } from '@utils/types';
 
-export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequired<TextArea>, handler: (str: string) => void) => {
+export const engageTextarea = (
+  ctx: CanvasRenderingContext2D,
+  textArea: DeepRequired<TextArea>,
+  handler: (str: string) => void
+) => {
   const {
     at,
     text,
@@ -85,6 +89,7 @@ export const engageTextarea = (ctx: CanvasRenderingContext2D, textArea: DeepRequ
   input.onblur = removeInput;
 
   input.onkeydown = (ev) => {
+    ev.stopPropagation();
     if (ev.key === 'Enter') {
       ev.preventDefault();
       removeInput();

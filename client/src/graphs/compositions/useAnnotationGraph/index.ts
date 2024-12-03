@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import type { Ref } from "vue";
 import type { Aggregator, GraphOptions } from "@graph/types";
 import type { Coordinate } from "@shape/types";
@@ -10,6 +10,9 @@ import type { Scribble } from "@shape/scribble";
 import { useMarqueeGraph } from "../useMarqueeGraph";
 import type { GraphMouseEvent } from "../useBaseGraph/types";
 import { BRUSH_WEIGHTS, COLORS } from "./types";
+import { useAnnotationHistory } from "./history";
+
+export type Annotation = Scribble & { id: string }
 
 export const useAnnotationGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -23,13 +26,28 @@ export const useAnnotationGraph = (
   const erasedScribbleIds = ref(new Set<string>())
 
   const batch = ref<Coordinate[]>([])
-  const scribbles = ref<(Scribble & { id: string })[]>([])
+  const scribbles = ref<Annotation[]>([])
   const isDrawing = ref(false)
   const lastPoint = ref<Coordinate>()
 
   const isActive = ref(false)
 
+  const {
+    executeUndo,
+    executeRedo,
+    addToUndoStack,
+    canUndo,
+    canRedo,
+  } = useAnnotationHistory(scribbles)
+
   const clear = () => {
+    if (scribbles.value.length === 0) return
+
+    addToUndoStack({
+      action: 'remove',
+      scribbles: scribbles.value,
+    })
+
     scribbles.value = []
   }
 
@@ -66,7 +84,6 @@ export const useAnnotationGraph = (
 
     lastPoint.value = coords;
     batch.value.push(coords);
-
   };
 
   const stopDrawing = () => {
@@ -78,6 +95,15 @@ export const useAnnotationGraph = (
     if (batch.value.length === 0) return;
 
     if (erasing.value) {
+      const erasedScribbles = scribbles.value.filter(scribble => {
+        return erasedScribbleIds.value.has(scribble.id)
+      })
+
+      addToUndoStack({
+        action: 'remove',
+        scribbles: erasedScribbles
+      })
+
       scribbles.value = scribbles.value.filter(scribble => {
         return !erasedScribbleIds.value.has(scribble.id)
       })
@@ -86,13 +112,20 @@ export const useAnnotationGraph = (
       return;
     }
 
-    scribbles.value.push({
+    const scribble = {
       id: generateId(),
       type: 'draw',
       points: batch.value,
       color: selectedColor.value,
       brushWeight: selectedBrushWeight.value,
-    });
+    } as const;
+
+    scribbles.value.push(scribble);
+
+    addToUndoStack({
+      action: 'add',
+      scribbles: [scribble]
+    })
 
     batch.value = [];
   };
@@ -202,5 +235,10 @@ export const useAnnotationGraph = (
 
     activateAnnotation: activate,
     deactivateAnnotation: deactivate,
+
+    undo: () => isActive.value ? executeUndo() : graph.undo(),
+    redo: () => isActive.value ? executeRedo() : graph.redo(),
+    canUndo: computed(() => isActive.value ? canUndo.value : graph.canUndo.value),
+    canRedo: computed(() => isActive.value ? canRedo.value : graph.canRedo.value),
   }
 }
