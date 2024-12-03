@@ -131,9 +131,7 @@ const useCollab = () => {
 
       socket.value.emit('joinRoom', joinOptions, (collabMap, graphState) => {
         collaborators.value = collabMap
-        options.graph.nodes.value = graphState.nodes
-        options.graph.edges.value = graphState.edges
-        options.graph.emit('onStructureChange')
+        options.graph.load(graphState)
         res()
       })
     })

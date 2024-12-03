@@ -234,13 +234,20 @@ export const useBaseGraph = (
 
   updateAggregator.push(liftHoveredNodeToTop)
 
-  const load = (graph: { nodes: GNode[], edges: GEdge[] }) => {
-    nodes.value = graph.nodes
-    edges.value = graph.edges
+  /**
+   * load a graph state into the graph
+   * @param graphState - the graph state to load (nodes and edges)
+   */
+  const load = (graphState: { nodes: GNode[], edges: GEdge[] }) => {
+    nodes.value = graphState.nodes
+    edges.value = graphState.edges
     emit('onGraphLoaded')
     emit('onStructureChange')
   }
 
+  /**
+   * reset the graph to an empty state with no nodes or edges
+   */
   const reset = () => {
     nodes.value = []
     edges.value = []
