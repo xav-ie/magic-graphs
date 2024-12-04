@@ -30,7 +30,7 @@
       </div>
 
       <span class="text-xl mx-3">
-        <c-icon icon="arrow_right" />
+        <CIcon icon="arrow_right" />
       </span>
 
       <div class="overflow-auto">

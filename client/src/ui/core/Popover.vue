@@ -23,9 +23,8 @@
     @show="isOpen = true"
     @hide="isOpen = false"
   >
-    <slot
-      name="content"
-      :isOpen="isOpen"
-    ></slot>
+    <div class="mt-3">
+      <slot></slot>
+    </div>
   </Popover>
 </template>

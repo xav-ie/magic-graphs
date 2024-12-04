@@ -23,7 +23,7 @@
         <GraphNode :size="30">
           {{ toNode.label }}
         </GraphNode>
-        <c-icon :size="16">mdi-arrow-right</icon>
+        <CIcon :size="16">mdi-arrow-right</icon>
         <GraphNode :size="30">
           {{ fromNode.label }}
         </GraphNode>

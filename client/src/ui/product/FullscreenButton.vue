@@ -25,6 +25,6 @@
     :text-color="colors.WHITE"
     class="aspect-square"
   >
-    <c-icon icon="fullscreen" />
+    <CIcon icon="fullscreen" />
   </Button>
 </template>

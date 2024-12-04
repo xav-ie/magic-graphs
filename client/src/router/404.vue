@@ -8,7 +8,7 @@ import CIcon from "@ui/core/Icon.vue";
   >
     <div class="absolute text-center mt-12 max-w-[600px] flex flex-col items-center justify-center gap-8">
         <div class="bg-gray-900 rounded-full h-60 w-60 flex items-center justify-center">
-          <c-icon
+          <CIcon
             style="font-size: 150px"
             icon="rabbit_variant_outline"
           />

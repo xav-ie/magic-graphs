@@ -106,14 +106,15 @@
       />
     </ToolbarButtonGroup>
 
-    <!-- <ToolbarButtonGroup>
-      <GraphInfoMenu v-slot="{ isActive }">
+    <ToolbarButtonGroup>
+      <GraphInfoMenu v-slot="{ toggle, isOpen }">
         <ToolbarButton
-          :active="isActive"
-          icon="information_outline"
+          @click="toggle"
+          :active="isOpen"
+          icon="info_outline"
         />
       </GraphInfoMenu>
-    </ToolbarButtonGroup> -->
+    </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
       <CollaborativeSessionMenu v-slot="{ toggle, isOpen }">

@@ -25,7 +25,7 @@
     ]"
   >
     <slot>
-      <c-icon
+      <CIcon
         :icon="icon ?? ''"
         class="text-white"
       />

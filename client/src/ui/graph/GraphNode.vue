@@ -23,13 +23,14 @@
       'font-bold',
       'items-center',
       'justify-center',
-      `border-[${borderSize}px]`,
-      `border-[${color}]`,
-      `text-[${color}]`,
       'rounded-full',
-      `h-[${size}px]`,
-      `w-[${size}px]`,
     ]"
+    :style="{
+      color,
+      border: `${borderSize}px solid ${color}`,
+      height: `${size}px`,
+      width: `${size}px`,
+    }"
   >
     <slot></slot>
   </div>

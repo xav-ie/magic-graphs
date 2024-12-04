@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <Button style="border-radius: 40px">
-    <c-icon
+    <CIcon
       size="42"
       class="py-6 px-10"
       :icon="icon"
