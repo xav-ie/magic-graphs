@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type { SimulationDeclaration } from "src/types";
-  import StartSimButton from "@ui/product/StartSimButton.vue";
+  import CPopover from "@ui/core/Popover.vue";
+  import CIcon from "@ui/core/Icon.vue";
 
   defineProps<{
     simulations: SimulationDeclaration[];
@@ -12,9 +13,17 @@
 </script>
 
 <template>
-  <!-- <v-menu :offset="[10, 0]">
-    <template #activator="{ props }">
-      <StartSimButton v-bind="props" />
+  <CPopover>
+    <template #activator="{ toggle }">
+      <button
+        @click="toggle"
+        class="bg-gray-800 hover:bg-gray-700 transition duration-100 grid place-items-center h-14 w-14 rounded-full"
+      >
+        <CIcon
+          class="text-white text-3xl"
+          icon="play_arrow"
+        />
+      </button>
     </template>
 
     <div class="bg-gray-800 flex flex-col text-white p-2 w-[400px] rounded-lg">
@@ -38,5 +47,5 @@
         </div>
       </button>
     </div>
-  </v-menu> -->
+  </CPopover>
 </template>

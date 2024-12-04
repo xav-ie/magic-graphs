@@ -10,7 +10,6 @@
   import SelectSimulation from "@ui/product/sim/SelectSimulation.vue";
   import type { SimulationDeclaration } from "src/types";
   import { getSimulationDeclarationsForProduct } from "@utils/product";
-  import StartSimButton from "./StartSimButton.vue";
   import StopSimButton from "./StopSimButton.vue";
   import FullscreenButton from "./FullscreenButton.vue";
 
@@ -117,15 +116,10 @@
 
     <template v-else>
       <slot name="top-right">
-        <template v-if="simulations.length > 1">
-          <SelectSimulation
-            @simulation-selected="setActiveSimulation"
-            :simulations="simulations"
-          />
-        </template>
-        <template v-else>
-          <StartSimButton @click="startSimulation" />
-        </template>
+        <SelectSimulation
+          @simulation-selected="setActiveSimulation"
+          :simulations="simulations"
+        />
       </slot>
     </template>
   </div>

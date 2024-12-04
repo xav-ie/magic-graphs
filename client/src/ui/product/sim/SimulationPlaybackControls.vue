@@ -84,13 +84,13 @@
       <PlaybackButton
         v-if="isOver"
         @click="restart"
-        icon="restart"
+        icon="restart_alt"
       />
 
       <PlaybackButton
         v-else
         @click="togglePause"
-        :icon="paused ? 'play' : 'pause'"
+        :icon="paused ? 'play_arrow' : 'pause'"
       />
 
       <PlaybackButton
