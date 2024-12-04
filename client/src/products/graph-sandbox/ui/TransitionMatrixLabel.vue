@@ -2,6 +2,7 @@
   import type { GNode } from "@graph/types";
   import GraphNode from "@ui/graph/GraphNode.vue";
   import CIcon from "@ui/core/Icon.vue";
+  import CPopoverTooltip from "@ui/core/PopoverTooltip.vue";
 
   defineProps<{
     toNode: GNode;
@@ -12,22 +13,26 @@
 
 <template>
   <div
-    class="text-gray-200 text-xl font-bold text-center flex items-center justify-center overflow-hidden w-12 h-12"
+    class="text-gray-200 text-xl font-bold text-center flex items-center justify-center overflow-hidden p-[3px]"
   >
-    {{ weight }}
-    <!-- <v-tooltip
-      activator="parent"
-      location="top"
-    >
-      <div class="flex gap-1 items-center">
-        <GraphNode :size="30">
-          {{ toNode.label }}
-        </GraphNode>
-        <CIcon :size="16">mdi-arrow-right</icon>
-        <GraphNode :size="30">
-          {{ fromNode.label }}
-        </GraphNode>
+    <CPopoverTooltip>
+      <div class="hover:bg-gray-800 h-10 w-10 cursor-default grid place-items-center rounded-md">
+        {{ weight }}
       </div>
-    </v-tooltip> -->
+      <template #content>
+        <div class="flex items-center bg-gray-800 py-2 px-3 rounded-md">
+          <GraphNode :size="30">
+            {{ toNode.label }}
+          </GraphNode>
+          <CIcon
+            class="text-2xl text-white"
+            icon="arrow_right"
+          />
+          <GraphNode :size="30">
+            {{ fromNode.label }}
+          </GraphNode>
+        </div>
+      </template>
+    </CPopoverTooltip>
   </div>
 </template>
