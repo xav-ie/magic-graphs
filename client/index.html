@@ -10,29 +10,29 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0"
     />
-    <script src="https://cdn.tailwindcss.com"></script>
     <title>Magic CS ✨🦄</title>
   </head>
   <body>
     <div id="app"></div>
     <script>
       // TODO add postcss configuration to create alias for tailwindcss
-      window.tailwindConfig = {
-        content: ["./src/**/*.{html,js,vue}"], // Adjust based on your project structure
-        theme: {
-          extend: {},
-        },
-        plugins: [
-          function ({ addUtilities }) {
-            addUtilities({
-              ".magic-text": {
-                "@apply bg-gradient-to-tr dark:from-purple-700 dark:to-orange-600 from-purple-500 to-orange-500 text-transparent bg-clip-text":
-                  {},
-              },
-            });
-          },
-        ],
-      };
+      // window.tailwindConfig = {
+      //   content: ["./src/**/*.{html,js,vue}"], // Adjust based on your project structure
+      //   theme: {
+      //     extend: {},
+      //   },
+      //   plugins: [
+      //     function ({ addUtilities }) {
+      //       addUtilities({
+      //         ".magic-text": {
+      //           "@apply bg-gradient-to-tr dark:from-purple-700 dark:to-orange-600 from-purple-500 to-orange-500 text-transparent bg-clip-text":
+      //             {},
+      //         },
+      //       });
+      //     },
+      //     require('tailwindcss-primeui')
+      //   ],
+      // };
     </script>
     <script
       type="module"

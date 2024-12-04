@@ -11,13 +11,12 @@
 
 <template>
   <div
-    class="text-gray-300 text-sm font-bold text-center flex items-center justify-center overflow-hidden w-12 h-12"
+    class="text-gray-200 text-xl font-bold text-center flex items-center justify-center overflow-hidden w-12 h-12"
   >
     {{ weight }}
     <v-tooltip
       activator="parent"
       location="top"
-      color="red-lighten-2"
     >
       <div class="flex gap-1 items-center">
         <GraphNode :size="30">
