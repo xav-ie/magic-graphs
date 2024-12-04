@@ -12,7 +12,7 @@
 </script>
 
 <template>
-  <v-menu :offset="[10, 0]">
+  <!-- <v-menu :offset="[10, 0]">
     <template #activator="{ props }">
       <StartSimButton v-bind="props" />
     </template>
@@ -22,7 +22,7 @@
         v-for="simulation in simulations"
         @click="emits('simulation-selected', simulation)"
         :key="simulation.name"
-        class="hover:bg-gray-900 p-2 rounded-md cursor-pointer rounded-lg text-left flex gap-4"
+        class="hover:bg-gray-900 p-2 rounded-md cursor-pointer text-left flex gap-4"
       >
         <img
           :src="simulation.thumbnail"
@@ -38,5 +38,5 @@
         </div>
       </button>
     </div>
-  </v-menu>
+  </v-menu> -->
 </template>

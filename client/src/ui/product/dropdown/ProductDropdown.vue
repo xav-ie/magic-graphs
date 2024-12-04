@@ -4,11 +4,11 @@
 </script>
 
 <template>
-  <v-menu :offset="[10, 0]">
+  <!-- <v-menu :offset="[10, 0]">
     <template #activator="{ props }">
       <ProductDropdownButton v-bind="props" />
     </template>
 
     <ProductDropdownMenu />
-  </v-menu>
+  </v-menu> -->
 </template>

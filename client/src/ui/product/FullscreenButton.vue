@@ -4,6 +4,7 @@
   import { graph } from "@graph/global";
   import colors from "@utils/colors";
   import Button from "@ui/Button.vue";
+  import CIcon from "@ui/core/Icon.vue";
 
   const { toggle } = useFullscreen();
 
@@ -24,6 +25,6 @@
     :text-color="colors.WHITE"
     class="aspect-square"
   >
-    <v-icon>mdi-fullscreen</v-icon>
+    <c-icon icon="fullscreen" />
   </Button>
 </template>

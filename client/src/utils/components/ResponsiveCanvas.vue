@@ -195,8 +195,8 @@ import { useStorePanZoomState } from "./useStorePanZoomState";
       ref="bgCanvas"
       :width="canvasWidth"
       :height="canvasHeight"
+      :style="{ backgroundColor: color }"
       :class="[
-        `bg-[${color}]`,
         `w-[${canvasWidth}px]`,
         `h-[${canvasHeight}px]`,
         'absolute',

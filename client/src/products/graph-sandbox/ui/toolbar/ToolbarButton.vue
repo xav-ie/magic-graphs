@@ -1,7 +1,10 @@
 <script setup lang="ts">
+  import CIcon from "@ui/core/Icon.vue";
+
   defineProps<{
     active?: boolean;
     disabled?: boolean;
+    icon?: string;
   }>();
 </script>
 
@@ -9,17 +12,23 @@
   <button
     :disabled="disabled"
     :class="[
-      'text-white',
-      'p-2',
+      'p-1',
       'rounded-md',
-      disabled ? 'text-opacity-50' : '',
+      'grid',
+      'place-items-center',
+      'w-10',
+      'h-10',
+      disabled ? 'opacity-50' : '',
       disabled ? '' : 'hover:bg-gray-900',
       disabled ? 'cursor-not-allowed' : 'cursor-pointer',
       active ? 'bg-gray-900' : 'bg-gray-800',
     ]"
   >
-    <v-icon>
-      <slot></slot>
-    </v-icon>
+    <slot>
+      <c-icon
+        :icon="icon ?? ''"
+        class="text-white"
+      />
+    </slot>
   </button>
 </template>

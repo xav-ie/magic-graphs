@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { graph } from "@graph/global"
+  import { graph } from "@graph/global";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
   import Toolbar from "./toolbar/Toolbar.vue";
   import ToolbarButton from "./toolbar/ToolbarButton.vue";
@@ -44,87 +44,84 @@
       <ToolbarButton
         @click="graph.settings.value.displayEdgeLabels = true"
         :active="graph.settings.value.displayEdgeLabels"
-      >
-        mdi-label-outline
-      </ToolbarButton>
+        icon="label_outline"
+      />
 
       <ToolbarButtonDivider />
 
       <ToolbarButton
         @click="graph.settings.value.displayEdgeLabels = false"
         :active="!graph.settings.value.displayEdgeLabels"
-      >
-        mdi-label-off-outline
-      </ToolbarButton>
+        icon="label_off_outline"
+      />
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="graph.settings.value.isGraphDirected = true"
         :active="graph.settings.value.isGraphDirected"
-      >
-        mdi-arrow-right-thin
-      </ToolbarButton>
+        icon="arrow_right_alt"
+      />
 
       <ToolbarButtonDivider />
 
       <ToolbarButton
         @click="graph.settings.value.isGraphDirected = false"
         :active="!graph.settings.value.isGraphDirected"
-      >
-        mdi-minus
-      </ToolbarButton>
+        icon="remove"
+      />
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="graph.undo()"
         :disabled="!graph.canUndo.value"
-      >
-        mdi-undo
-      </ToolbarButton>
+        icon="undo"
+      />
 
       <ToolbarButtonDivider />
 
       <ToolbarButton
         @click="graph.redo()"
         :disabled="!graph.canRedo.value"
-      >
-        mdi-redo
-      </ToolbarButton>
+        icon="redo"
+      />
     </ToolbarButtonGroup>
 
-    <ToolbarButtonGroup>
+    <!-- <ToolbarButtonGroup>
       <ToolbarButton
         @click="eraseItems"
         :disabled="
           graph.focusedItemIds.value.size === 0 || graph.annotationActive.value
         "
-      >
-        mdi-eraser
-      </ToolbarButton>
-    </ToolbarButtonGroup>
+        icon="ink_eraser"
+      />
+    </ToolbarButtonGroup> -->
 
     <ToolbarButtonGroup>
       <ToolbarButton
         @click="toggleAnnotation"
         :active="graph.annotationActive.value"
-      >
-        mdi-pencil
-      </ToolbarButton>
+        icon="edit"
+      />
     </ToolbarButtonGroup>
 
-    <ToolbarButtonGroup>
+    <!-- <ToolbarButtonGroup>
       <GraphInfoMenu v-slot="{ isActive }">
-        <ToolbarButton :active="isActive">
-          mdi-information-outline
-        </ToolbarButton>
+        <ToolbarButton
+          :active="isActive"
+          icon="information_outline"
+        />
       </GraphInfoMenu>
-    </ToolbarButtonGroup>
+    </ToolbarButtonGroup> -->
 
     <ToolbarButtonGroup>
-      <CollaborativeSessionMenu v-slot="{ isActive }">
-        <ToolbarButton :active="isActive">mdi-account-group</ToolbarButton>
+      <CollaborativeSessionMenu v-slot="{ toggle, isOpen }">
+        <ToolbarButton
+          @click="toggle"
+          :active="isOpen"
+          icon="group"
+        />
       </CollaborativeSessionMenu>
     </ToolbarButtonGroup>
   </Toolbar>

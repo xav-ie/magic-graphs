@@ -1,12 +1,17 @@
+<script setup lang="ts">
+import CIcon from "@ui/core/Icon.vue";
+</script>
+
 <template>
   <div
     class="w-full h-full dark:bg-gray-800 dark:text-white font-bold text-3xl flex justify-center"
   >
     <div class="absolute text-center mt-12 max-w-[600px] flex flex-col items-center justify-center gap-8">
         <div class="bg-gray-900 rounded-full h-60 w-60 flex items-center justify-center">
-          <v-icon style="font-size: 150px">
-            mdi-rabbit-variant-outline
-          </v-icon>
+          <c-icon
+            style="font-size: 150px"
+            icon="rabbit_variant_outline"
+          />
         </div>
       <h1>
         <span class="text-4xl">Poof!</span> <br> Looks like

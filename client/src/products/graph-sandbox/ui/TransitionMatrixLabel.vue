@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type { GNode } from "@graph/types";
   import GraphNode from "@ui/graph/GraphNode.vue";
+  import CIcon from "@ui/core/Icon.vue";
 
   defineProps<{
     toNode: GNode;
@@ -14,7 +15,7 @@
     class="text-gray-200 text-xl font-bold text-center flex items-center justify-center overflow-hidden w-12 h-12"
   >
     {{ weight }}
-    <v-tooltip
+    <!-- <v-tooltip
       activator="parent"
       location="top"
     >
@@ -22,11 +23,11 @@
         <GraphNode :size="30">
           {{ toNode.label }}
         </GraphNode>
-        <v-icon :size="16">mdi-arrow-right</v-icon>
+        <c-icon :size="16">mdi-arrow-right</icon>
         <GraphNode :size="30">
           {{ fromNode.label }}
         </GraphNode>
       </div>
-    </v-tooltip>
+    </v-tooltip> -->
   </div>
 </template>

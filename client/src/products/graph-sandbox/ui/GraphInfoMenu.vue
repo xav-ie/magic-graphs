@@ -8,7 +8,7 @@
 </script>
 
 <template>
-  <v-menu
+  <!-- <v-menu
     :offset="[10, 0]"
     :close-on-content-click="false"
   >
@@ -37,5 +37,5 @@
         <h2>Add some nodes to get started</h2>
       </div>
     </div>
-  </v-menu>
+  </v-menu> -->
 </template>

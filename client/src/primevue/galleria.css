@@ -22,7 +22,7 @@
 }
 
 .p-galleria-next-icon,
-.p-galleria-prev-icon {
+.p-galleria-preicon {
     @apply text-2xl w-6 h-6
 }
 
@@ -74,7 +74,7 @@
 }
 
 .p-galleria-thumbnail-nav-button .p-galleria-thumbnail-next-icon,
-.p-galleria-thumbnail-nav-button .p-galleria-thumbnail-prev-icon {
+.p-galleria-thumbnail-nav-button .p-galleria-thumbnail-preicon {
     @apply text-base w-4 h-4
 }
 

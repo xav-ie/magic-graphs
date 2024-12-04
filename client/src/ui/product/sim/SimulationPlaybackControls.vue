@@ -78,30 +78,26 @@
       <PlaybackButton
         @click="goPrevStep"
         :disabled="!hasBegun"
-      >
-        mdi-chevron-left
-      </PlaybackButton>
+        icon="chevron_left"
+      />
 
       <PlaybackButton
         v-if="isOver"
         @click="restart"
-      >
-        mdi-restart
-      </PlaybackButton>
+        icon="restart"
+      />
 
       <PlaybackButton
         v-else
         @click="togglePause"
-      >
-        {{ paused ? "mdi-play" : "mdi-pause" }}
-      </PlaybackButton>
+        :icon="paused ? 'play' : 'pause'"
+      />
 
       <PlaybackButton
         @click="goNextStep"
         :disabled="isOver"
-      >
-        mdi-chevron-right
-      </PlaybackButton>
+        icon="chevron_right"
+      />
     </div>
   </div>
 </template>

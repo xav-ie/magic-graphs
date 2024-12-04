@@ -3,9 +3,9 @@
 </script>
 
 <template>
-  <v-btn
+  <!-- <v-btn
     :color="colors.RED_600"
     icon="mdi-stop"
     size="large"
-  ></v-btn>
+  ></v-btn> -->
 </template>

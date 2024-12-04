@@ -10,6 +10,8 @@
   import { darkenHex } from "@utils/colors";
   import { generateId } from "@utils/id";
   import GraphSandboxProductInfo from "../info";
+  import CPopover from "@ui/core/Popover.vue";
+  import CIcon from "@ui/core/Icon.vue";
 
   const router = useRouter();
   const { navigate } = useProductRouting();
@@ -65,110 +67,108 @@
 </script>
 
 <template>
-  <v-menu
-    :offset="[10, 0]"
-    :close-on-content-click="false"
-  >
-    <template v-slot:activator="{ props, isActive }">
-      <div v-bind="props">
-        <slot :isActive="isActive"></slot>
-      </div>
+  <c-popover>
+    <template #activator="props">
+      <slot v-bind="props"></slot>
     </template>
+    <template #content>
+      <div
+        class="bg-gray-800 flex flex-col text-white p-3 w-[400px] rounded-lg mt-3"
+      >
+        <h1 class="text-2xl font-bold text-gray-200 mb-3">Collaborate</h1>
 
-    <div class="bg-gray-800 flex flex-col text-white p-3 w-[400px] rounded-lg">
-      <h1 class="text-2xl font-bold text-gray-200 mb-3">Collaborate</h1>
+        <h2 class="text-xl font-bold text-gray-200 mb-2">My Name</h2>
+        <div class="rounded-lg mb-2">
+          <input
+            v-model="myCollaboratorProfile.name"
+            :disabled="isConnected || startingRoom"
+            type="text"
+            id="collab-name"
+            class="bg-gray-700 text-white w-full p-2 rounded-lg outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            placeholder="The name you want others to see"
+          />
+        </div>
 
-      <h2 class="text-xl font-bold text-gray-200 mb-2">My Name</h2>
-      <div class="rounded-lg mb-2">
-        <input
-          v-model="myCollaboratorProfile.name"
-          :disabled="isConnected || startingRoom"
-          type="text"
-          id="collab-name"
-          class="bg-gray-700 text-white w-full p-2 rounded-lg outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-          placeholder="The name you want others to see"
-        />
-      </div>
-
-      <div class="w-full mt-2">
-        <Button
-          v-if="!isConnected && !startingRoom"
-          @click="startCollaboration"
-          :disabled="!myCollaboratorProfile.name"
-          class="w-full"
-        >
-          Generate Link
-          <v-icon class="ml-2">mdi-link</v-icon>
-        </Button>
-
-        <Button
-          v-else-if="startingRoom"
-          disabled
-          class="w-full"
-        >
-          Preparing Room...
-        </Button>
-
-        <div v-else>
-          <div
-            @click="copyLink"
-            class="group p-2 bg-gray-900 bg-opacity-50 hover:bg-opacity-100 text-gray-300 rounded-lg cursor-pointer flex justify-between items-center"
+        <div class="w-full mt-2">
+          <Button
+            v-if="!isConnected && !startingRoom"
+            @click="startCollaboration"
+            :disabled="!myCollaboratorProfile.name"
+            class="w-full"
           >
-            <span>
-              {{ link }}
-            </span>
-            <v-icon
-              v-if="!linkCopied"
-              class="text-gray-400 opacity-0 group-hover:opacity-100"
+            Generate Link
+            <c-icon
+              icon="link"
+              class="ml-2"
+            />
+          </Button>
+
+          <Button
+            v-else-if="startingRoom"
+            disabled
+            class="w-full"
+          >
+            Preparing Room...
+          </Button>
+
+          <div v-else>
+            <div
+              @click="copyLink"
+              class="group p-2 bg-gray-900 bg-opacity-50 hover:bg-opacity-100 text-gray-300 rounded-lg cursor-pointer flex justify-between items-center"
             >
-              mdi-content-copy
-            </v-icon>
-            <v-icon
-              v-if="linkCopied"
-              class="text-green-400 opacity-0 group-hover:opacity-100"
-            >
-              mdi-check-underline
-            </v-icon>
+              <span>
+                {{ link }}
+              </span>
+              <c-icon
+                v-if="!linkCopied"
+                icon="content_copy"
+                class="text-gray-400 opacity-0 group-hover:opacity-100"
+              />
+              <c-icon
+                v-if="linkCopied"
+                icon="check_underline"
+                class="text-green-400 opacity-0 group-hover:opacity-100"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div
-        v-if="isConnected"
-        class="mt-4 w-full"
-      >
-        <Button
-          @click="stopCollaboration"
-          :color="colors.RED_600"
-          :text-color="colors.WHITE"
-          class="w-full"
+        <div
+          v-if="isConnected"
+          class="mt-4 w-full"
         >
-          Disconnect
-        </Button>
-      </div>
-
-      <div v-if="isConnected && meAsACollaborator">
-        <h2 class="text-xl font-bold text-gray-200 mt-4 mb-2">
-          Collaborators ({{ collaboratorCount }})
-        </h2>
-        <div class="flex flex-wrap items-center gap-2">
-          <div
-            :class="`text-gray-300 bg-[${meAsACollaborator.color}] font-bold rounded-md px-3 py-1`"
+          <Button
+            @click="stopCollaboration"
+            :color="colors.RED_600"
+            :text-color="colors.WHITE"
+            class="w-full"
           >
-            {{ meAsACollaborator.name }} (You)
-            <v-tooltip
+            Disconnect
+          </Button>
+        </div>
+
+        <div v-if="isConnected && meAsACollaborator">
+          <h2 class="text-xl font-bold text-gray-200 mt-4 mb-2">
+            Collaborators ({{ collaboratorCount }})
+          </h2>
+          <div class="flex flex-wrap items-center gap-2">
+            <div
+              :class="`text-gray-300 bg-[${meAsACollaborator.color}] font-bold rounded-md px-3 py-1`"
+            >
+              {{ meAsACollaborator.name }} (You)
+              <!-- <v-tooltip
               activator="parent"
               location="bottom"
             >
               You are in
               {{ productIdToProduct[meAsACollaborator.productId].name }}
-            </v-tooltip>
-          </div>
-          <button
-            v-for="collaborator in collaborators"
-            @click="navigate(productIdToProduct[collaborator.productId])"
-            :key="collaborator.id"
-            :class="`
+            </v-tooltip> -->
+            </div>
+            <button
+              v-for="collaborator in collaborators"
+              @click="navigate(productIdToProduct[collaborator.productId])"
+              :key="collaborator.id"
+              :class="`
               text-gray-300
               bg-[${collaborator.color}]
               font-bold
@@ -177,18 +177,19 @@
               py-1
               hover:bg-[${darkenHex(collaborator.color, 20)}]
             `"
-          >
-            {{ collaborator.name }}
-            <v-tooltip
+            >
+              {{ collaborator.name }}
+              <!-- <v-tooltip
               activator="parent"
               location="bottom"
             >
               {{ collaborator.name }} is in
               {{ productIdToProduct[collaborator.productId].name }}
-            </v-tooltip>
-          </button>
+            </v-tooltip> -->
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </v-menu>
+    </template>
+  </c-popover>
 </template>

@@ -46,13 +46,15 @@
 
     <!-- background matte -->
     <div
+      :style="{
+        backgroundColor: `#${CODE_MIRROR_DARK_BACKGROUND}`,
+      }"
       :class="[
         'absolute',
         'top-0',
         'w-full',
         'h-full',
         '-z-10',
-        `bg-[${CODE_MIRROR_DARK_BACKGROUND}]`,
       ]"
     ></div>
   </div>

@@ -42,10 +42,12 @@
         @click="selectColor(color)"
         :active="isColorActive(color)"
         :key="color"
-        :color="color"
       >
         <div :class="['rounded-full', 'p-[3px]']">
-          <div :class="['w-6', 'h-6', 'rounded-full', `bg-[${color}]`]"></div>
+          <div
+            :style="{ backgroundColor: color }"
+            :class="['w-6', 'h-6', 'rounded-full']"
+          ></div>
         </div>
       </ToolbarButton>
     </ToolbarButtonGroup>
@@ -58,15 +60,14 @@
         @click="selectBrushWeight(weight)"
         :active="isBrushWeightActive(weight)"
         :key="weight"
-        :color="colors.TRANSPARENT"
       >
         <div
           :class="[
             'bg-gray-400',
             'rounded-md',
             'w-[15px]',
-            `h-[${index * 5 + 1}px]`,
           ]"
+          :style="{ height: `${index * 5 + 1}px` }"
         ></div>
       </ToolbarButton>
     </ToolbarButtonGroup>
@@ -74,16 +75,16 @@
     <ToolbarButtonDivider />
 
     <ToolbarButtonGroup class="gap-1">
-      <ToolbarButton
+      <!-- <ToolbarButton
         @click="toggleErasing"
         :active="graph.annotationErasing.value"
-      >
-        mdi-eraser
-      </ToolbarButton>
+        icon="ink_eraser"
+      /> -->
 
-      <ToolbarButton @click="clearAnnotations">
-        mdi-delete-outline
-      </ToolbarButton>
+      <ToolbarButton
+        @click="clearAnnotations"
+        icon="delete_outline"
+      />
     </ToolbarButtonGroup>
   </Toolbar>
 </template>
