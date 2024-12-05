@@ -7,16 +7,24 @@ type AnnotationHistoryRecord = {
   annotations: Annotation[]
 }
 
+const MAX_HISTORY_LENGTH = 100
+
 export const useAnnotationHistory = (annotations: Ref<Annotation[]>) => {
   const undoStack = ref<AnnotationHistoryRecord[]>([])
   const redoStack = ref<AnnotationHistoryRecord[]>([])
 
   const addToUndoStack = (record: AnnotationHistoryRecord) => {
     undoStack.value.push(record)
+    if (undoStack.value.length > MAX_HISTORY_LENGTH) {
+      undoStack.value.shift()
+    }
   }
 
   const addToRedoStack = (record: AnnotationHistoryRecord) => {
     redoStack.value.push(record)
+    if (redoStack.value.length > MAX_HISTORY_LENGTH) {
+      redoStack.value.shift()
+    }
   }
 
   const undo = () => {

@@ -1,5 +1,7 @@
 <script setup lang="ts">
   import type { TutorialControls } from "@graph/tutorials/types";
+  import CButton from "@ui/core/Button.vue";
+  import colors from "@utils/colors";
 
   const { tutorial } = defineProps<{
     tutorial: TutorialControls;
@@ -7,28 +9,28 @@
 </script>
 
 <template>
-  <button
+  <CButton
     @click="tutorial.prevStep"
-    :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
+    :color="colors.BLUE_600"
   >
-    <span class="select-none">Previous Step</span>
-  </button>
-  <button
+    Previous Step
+  </CButton>
+  <CButton
     @click="tutorial.nextStep"
-    :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
+    :color="colors.BLUE_600"
   >
-    <span class="select-none">Next Step</span>
-  </button>
-  <button
+    Next Step
+  </CButton>
+  <CButton
     @click="tutorial.stop"
-    :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
+    :color="colors.BLUE_600"
   >
-    <span class="select-none">End Tutorial</span>
-  </button>
-  <button
+    End Tutorial
+  </CButton>
+  <CButton
     @click="tutorial.start"
-    :class="`bg-blue-600 text-white px-3 py-1 rounded-lg font-bold`"
+    :color="colors.BLUE_600"
   >
-    <span class="select-none">Restart Tutorial</span>
-  </button>
+    Restart Tutorial
+  </CButton>
 </template>

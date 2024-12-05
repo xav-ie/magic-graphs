@@ -1,20 +1,25 @@
 import { ref } from 'vue'
 import { test, describe, expect } from 'vitest'
 import { useHistory } from './index'
+import { useBaseGraph } from '@graph/base'
 
 describe('useHistoryGraph', () => {
-
-  const graph = useHistory(ref())
+  const graph = useBaseGraph(ref())
+  const historyPlugin = useHistory(graph)
+  const historyGraph = {
+    ...graph,
+    ...historyPlugin,
+  }
 
   test('undoes and redoes', () => {
-    const node1 = graph.addNode({})
-    const node2 = graph.addNode({})
+    const node1 = historyGraph.addNode({})
+    const node2 = historyGraph.addNode({})
     if (!node1 || !node2) throw new Error('Node is undefined')
-    graph.addEdge({ from: node1.id, to: node2.id })
-    const record = graph.undo()
+    historyGraph.addEdge({ from: node1.id, to: node2.id })
+    const record = historyGraph.undo()
     if (!record) throw new Error('Record is undefined')
     const { action, affectedItems } = record
-    const { redoStack, undoStack } = graph
+    const { redoStack, undoStack } = historyGraph
     expect(undoStack.value.length).toBe(2)
     expect(redoStack.value.length).toBe(1)
     expect(action).toBe('add')
@@ -23,31 +28,31 @@ describe('useHistoryGraph', () => {
   })
 
   test('clears history', () => {
-    graph.addNode({})
-    graph.addNode({})
-    graph.undo()
-    graph.redo()
-    graph.clearHistory()
-    expect(graph.undoStack.value.length).toBe(0)
-    expect(graph.redoStack.value.length).toBe(0)
+    historyGraph.addNode({})
+    historyGraph.addNode({})
+    historyGraph.undo()
+    historyGraph.redo()
+    historyGraph.clearHistory()
+    expect(historyGraph.undoStack.value.length).toBe(0)
+    expect(historyGraph.redoStack.value.length).toBe(0)
   })
 
   test('can redo and can undo are correct', () => {
-    expect(graph.canUndo.value).toBe(false)
-    expect(graph.canRedo.value).toBe(false)
-    graph.addNode({})
-    expect(graph.canUndo.value).toBe(true)
-    graph.undo()
-    expect(graph.canRedo.value).toBe(true)
-    expect(graph.canUndo.value).toBe(false)
+    expect(historyGraph.canUndo.value).toBe(false)
+    expect(historyGraph.canRedo.value).toBe(false)
+    historyGraph.addNode({})
+    expect(historyGraph.canUndo.value).toBe(true)
+    historyGraph.undo()
+    expect(historyGraph.canRedo.value).toBe(true)
+    expect(historyGraph.canUndo.value).toBe(false)
   })
 
   test('moves nodes correctly', () => {
-    const node = graph.addNode({})
+    const node = historyGraph.addNode({})
     if (!node) throw new Error('Node is undefined')
 
     // simulates a node being picked up and dropped in a new location
-    graph.undoStack.value.push({
+    historyGraph.undoStack.value.push({
       action: 'move',
       affectedItems: [
         {
@@ -61,12 +66,12 @@ describe('useHistoryGraph', () => {
       ]
     })
 
-    graph.undo()
+    historyGraph.undo()
 
     expect(node.x).toBe(10)
     expect(node.y).toBe(10)
 
-    graph.redo()
+    historyGraph.redo()
 
     expect(node.x).toBe(20)
     expect(node.y).toBe(20)

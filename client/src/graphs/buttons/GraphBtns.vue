@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import type { GButton } from "@graph/buttons/types";
+  import CButton from "@ui/core/Button.vue";
 
   const { btns } = defineProps<{
     btns: GButton[];
@@ -10,15 +11,16 @@
 
 <template>
   <div v-for="btn in btns">
-    <button
+    <CButton
       v-if="showBtn(btn.cond)"
       @click.stop="btn.action"
-      :class="`bg-${btn.color()}-600 text-white px-3 py-1 rounded-lg font-bold`"
+      :color="btn.color()"
+      text-color="white"
       :id="btn.id"
     >
       <span class="select-none">
         {{ btn.label() }}
       </span>
-    </button>
+    </CButton>
   </div>
 </template>

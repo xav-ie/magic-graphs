@@ -101,12 +101,30 @@ export const useBaseGraph = (
   })
 
   const mouseEvents: Partial<MouseEventMap> = {
-    click: (ev: MouseEvent) => emit('onClick', graphMouseEv(ev)),
-    mousemove: (ev: MouseEvent) => emit('onMouseMove', graphMouseEv(ev)),
-    mousedown: (ev: MouseEvent) => emit('onMouseDown', graphMouseEv(ev)),
-    mouseup: (ev: MouseEvent) => emit('onMouseUp', graphMouseEv(ev)),
-    dblclick: (ev: MouseEvent) => emit('onDblClick', graphMouseEv(ev)),
-    contextmenu: (ev: MouseEvent) => emit('onContextMenu', graphMouseEv(ev)),
+    click: (ev: MouseEvent) => {
+      ev.preventDefault()
+      emit('onClick', graphMouseEv(ev))
+    },
+    mousemove: (ev: MouseEvent) => {
+      ev.preventDefault()
+      emit('onMouseMove', graphMouseEv(ev))
+    },
+    mousedown: (ev: MouseEvent) => {
+      ev.preventDefault()
+      emit('onMouseDown', graphMouseEv(ev))
+    },
+    mouseup: (ev: MouseEvent) => {
+      ev.preventDefault()
+      emit('onMouseUp', graphMouseEv(ev))
+    },
+    dblclick: (ev: MouseEvent) => {
+      ev.preventDefault()
+      emit('onDblClick', graphMouseEv(ev))
+    },
+    contextmenu: (ev: MouseEvent) => {
+      ev.preventDefault()
+      emit('onContextMenu', graphMouseEv(ev))
+    },
   }
 
   const keyboardEvents: Partial<KeyboardEventMap> = {

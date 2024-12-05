@@ -3,6 +3,7 @@ import { GRAPH_BUTTON_ID } from "@graph/buttons/types";
 import type { GButton } from "@graph/buttons/types";
 import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
 import { getRandomInRange } from "@utils/random";
+import colors from "@utils/colors";
 
 /**
  * a one stop shop for the dials you need to control your graph
@@ -15,42 +16,42 @@ export const useGraphBtns = (graph: Graph) => {
   const reset: GButton = {
     label: () => 'Reset',
     action: () => graph.reset(),
-    color: () => 'red',
+    color: () => colors.RED_600,
     id: GRAPH_BUTTON_ID.reset,
   };
 
   const toggleDraggable: GButton = {
     label: () => graph.settings.value.draggable ? 'Draggable' : 'Not Draggable',
     action: () => graph.settings.value.draggable = !graph.settings.value.draggable,
-    color: () => graph.settings.value.draggable ? 'green' : 'orange',
+    color: () => graph.settings.value.draggable ? colors.GREEN_600 : colors.ORANGE_600,
     id: GRAPH_BUTTON_ID.draggable,
   };
 
   const toggleNodeAnchors: GButton = {
     label: () => graph.settings.value.nodeAnchors ? 'Anchors' : 'No Anchors',
     action: () => graph.settings.value.nodeAnchors = !graph.settings.value.nodeAnchors,
-    color: () => graph.settings.value.nodeAnchors ? 'green' : 'orange',
+    color: () => graph.settings.value.nodeAnchors ? colors.GREEN_600 : colors.ORANGE_600,
     id: GRAPH_BUTTON_ID.nodeAnchors,
   };
 
   const toggleEdgeLabelDisplay: GButton = {
     label: () => graph.settings.value.displayEdgeLabels ? 'Edge Labels' : 'No Edge Labels',
     action: () => graph.settings.value.displayEdgeLabels = !graph.settings.value.displayEdgeLabels,
-    color: () => graph.settings.value.displayEdgeLabels ? 'green' : 'orange',
+    color: () => graph.settings.value.displayEdgeLabels ? colors.GREEN_600 : colors.ORANGE_600,
     id: GRAPH_BUTTON_ID.edgeLabels,
   };
 
   const toggleEdgeLabelsEditable: GButton = {
     label: () => graph.settings.value.edgeLabelsEditable ? 'Edge Labels Editable' : 'Edge Labels Not Editable',
     action: () => graph.settings.value.edgeLabelsEditable = !graph.settings.value.edgeLabelsEditable,
-    color: () => graph.settings.value.edgeLabelsEditable ? 'green' : 'orange',
+    color: () => graph.settings.value.edgeLabelsEditable ? colors.GREEN_600 : colors.ORANGE_600,
     id: GRAPH_BUTTON_ID.edgeLabelsEditable,
   };
 
   const toggleUserEditable: GButton = {
     label: () => graph.settings.value.userEditable ? 'Editable' : 'Not Editable',
     action: () => graph.settings.value.userEditable = !graph.settings.value.userEditable,
-    color: () => graph.settings.value.userEditable ? 'green' : 'orange',
+    color: () => graph.settings.value.userEditable ? colors.GREEN_600 : colors.ORANGE_600,
     id: GRAPH_BUTTON_ID.userEditable,
   };
 
@@ -63,14 +64,14 @@ export const useGraphBtns = (graph: Graph) => {
     action: () => {
       graph.settings.value.userAddedEdgeLabel = getRandomInRange(1, 10).toString();
     },
-    color: () => 'green',
+    color: () => colors.GREEN_600,
     id: GRAPH_BUTTON_ID.edgeWeight,
   };
 
   const changeNodeSize: GButton = {
     label: () => `Change Node Size (${graph.theme.value.nodeSize})`,
     action: () => graph.theme.value.nodeSize = getRandomInRange(20, 50),
-    color: () => 'pink',
+    color: () => colors.PINK_600,
     id: GRAPH_BUTTON_ID.nodeSize,
   };
 
@@ -84,14 +85,14 @@ export const useGraphBtns = (graph: Graph) => {
       const newStorageKey = persistentStorageKey === 'graph' ? 'graph2' : 'graph';
       graph.settings.value.persistentStorageKey = newStorageKey;
     },
-    color: () => 'blue',
+    color: () => colors.PURPLE_600,
     id: GRAPH_BUTTON_ID.storageKey,
   };
 
   const clearLocalStorage: GButton = {
     label: () => 'Clear Local Storage',
     action: () => localStorage.clear(),
-    color: () => 'red',
+    color: () => colors.RED_600,
     id: GRAPH_BUTTON_ID.clearLocalStorage,
   };
 
@@ -100,14 +101,14 @@ export const useGraphBtns = (graph: Graph) => {
     action: () => {
       graph.settings.value.persistentStorageKey = 'search-visualizer-graph'
     },
-    color: () => 'amber',
+    color: () => colors.AMBER_600,
     id: GRAPH_BUTTON_ID.persistentGraphClone,
   };
 
   const log: GButton = {
     label: () => 'Log',
     action: () => {},
-    color: () => 'blue',
+    color: () => colors.BLUE_600,
     id: GRAPH_BUTTON_ID.log,
   };
 
@@ -120,7 +121,7 @@ export const useGraphBtns = (graph: Graph) => {
       const stopText = `Stop Colorizing (${node?.label})`;
       return isColorized.value ? stopText : startText;
     },
-    color: () => (isColorized.value ? "red" : "pink"),
+    color: () => isColorized.value ? colors.GREEN_600 : colors.BLUE_600,
     action: toggleColorize,
     id: "toggle-bfs-colorize",
   };
