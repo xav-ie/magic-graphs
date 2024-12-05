@@ -21,12 +21,6 @@
 
   hint.start();
 
-  const eraseItems = () => {
-    const ids = [...graph.value.focusedItemIds.value];
-    graph.value.bulkRemoveNode(ids);
-    graph.value.bulkRemoveEdge(ids);
-  };
-
   const toggleAnnotation = () => {
     const {
       activateAnnotation: activate,
@@ -87,16 +81,6 @@
         icon="redo"
       />
     </ToolbarButtonGroup>
-
-    <!-- <ToolbarButtonGroup>
-      <ToolbarButton
-        @click="eraseItems"
-        :disabled="
-          graph.focusedItemIds.value.size === 0 || graph.annotationActive.value
-        "
-        icon="ink_eraser"
-      />
-    </ToolbarButtonGroup> -->
 
     <ToolbarButtonGroup>
       <ToolbarButton

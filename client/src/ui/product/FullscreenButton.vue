@@ -3,7 +3,7 @@
   import { useFullscreen } from "@vueuse/core";
   import { graph } from "@graph/global";
   import colors from "@utils/colors";
-  import Button from "@ui/Button.vue";
+  import CButton from "@ui/core/Button.vue";
   import CIcon from "@ui/core/Icon.vue";
 
   const { toggle } = useFullscreen();
@@ -19,12 +19,11 @@
 </script>
 
 <template>
-  <Button
+  <CButton
     @click="toggle"
     :color="colors.GRAY_800"
-    :text-color="colors.WHITE"
     class="aspect-square"
   >
     <CIcon icon="fullscreen" />
-  </Button>
+  </CButton>
 </template>

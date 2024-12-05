@@ -2,7 +2,7 @@
   import { computed, toRefs } from "vue";
   import type { Shape } from "@shape/types";
   import { useHeatmap } from "@playground/shape/useHeatmap";
-  import Button from "@ui/Button.vue";
+  import Button from "@ui/core/Button.vue";
   import InputRange from "@ui/InputRange.vue";
   import { getCtx } from "@utils/ctx";
 
