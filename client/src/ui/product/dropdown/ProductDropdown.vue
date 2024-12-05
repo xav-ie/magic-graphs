@@ -1,14 +1,23 @@
 <script setup lang="ts">
-  import ProductDropdownButton from "./ProductDropdownButton.vue";
+  import CPopover from "@ui/core/Popover.vue";
   import ProductDropdownMenu from "./ProductDropdownMenu.vue";
 </script>
 
 <template>
-  <v-menu :offset="[10, 0]">
-    <template #activator="{ props }">
-      <ProductDropdownButton v-bind="props" />
+  <CPopover>
+    <template #activator="{ toggle }">
+      <button
+        @click="toggle"
+        class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 text-xl font-bold rounded-lg"
+      >
+        <h1
+          class="text-magic"
+        >
+          Magic Algorithms
+        </h1>
+      </button>
     </template>
 
     <ProductDropdownMenu />
-  </v-menu>
+  </CPopover>
 </template>

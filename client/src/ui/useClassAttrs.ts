@@ -2,9 +2,6 @@ import { computed, useAttrs } from "vue";
 
 /**
  * extracts the classes of a component assigned by the parent caller
- * and makes them all high precedence
- *
- * WARNING: Tailwind Only!
  *
  * @returns {ComputedRef<string[]>} the classes assigned to the component
  * @example
@@ -28,6 +25,6 @@ export const useClassAttrs = () => {
   return computed<string[]>(() => {
     if (!classAttr) return [];
     if (typeof classAttr !== "string") throw new Error("class attribute must be a string");
-    return classAttr.split(" ").map((c) => "!" + c.trim());
+    return classAttr.split(" ")
   });
 };

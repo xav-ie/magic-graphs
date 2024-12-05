@@ -1,8 +1,9 @@
 <script setup lang="ts">
+  import { computed } from "vue";
   import colors from "@colors";
   import { graph } from "@graph/global";
   import { useTransitionMatrix } from "@graph/useTransitionMatrix";
-import GraphNode from "@ui/graph/GraphNode.vue";
+  import TransitionMatrixLabel from "./TransitionMatrixLabel.vue";
 
   const { transitionMatrix } = useTransitionMatrix(graph.value);
 
@@ -29,11 +30,13 @@ import GraphNode from "@ui/graph/GraphNode.vue";
       188%
       0`,
   };
+
+  const nodes = computed(() => graph.value.nodes.value);
 </script>
 
 <template>
-  <div 
-    v-if="transitionMatrix.length !== 0" 
+  <div
+    v-if="transitionMatrix.length !== 0"
     class="flex py-6 items-center"
   >
     <div class="text-xl font-bold px-5 text-nowrap">T =</div>
@@ -49,20 +52,12 @@ import GraphNode from "@ui/graph/GraphNode.vue";
         <div
           v-for="(col, colIndex) in row"
           :key="'col-' + colIndex"
-          class="text-gray-300 text-sm font-bold text-center flex items-center justify-center w-12 h-12"
-          style="overflow: hidden"
         >
-          <v-tooltip
-            activator="parent"
-            location="top"
-          >
-            <div class="flex items-center">
-              <GraphNode :size="30">{{ graph.nodes.value[rowIndex].label }}</GraphNode>
-              <v-icon>mdi-arrow-right</v-icon>
-              <GraphNode :size="30">{{ graph.nodes.value[colIndex].label }}</GraphNode>
-            </div>
-          </v-tooltip>
-          {{ Math.round(col * 10) / 10 }}
+          <TransitionMatrixLabel
+            :toNode="nodes[rowIndex]"
+            :fromNode="nodes[colIndex]"
+            :weight="col"
+          />
         </div>
       </div>
     </div>

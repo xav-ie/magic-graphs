@@ -3,6 +3,7 @@
   import { useAdjacencyList } from "@graph/useAdjacencyList";
   import GraphNode from "@ui/graph/GraphNode.vue";
   import { graph } from "@graph/global";
+  import CIcon from "@ui/core/Icon.vue";
 
   const { weightedAdjacencyList } = useAdjacencyList(graph.value);
 
@@ -29,7 +30,7 @@
       </div>
 
       <span class="text-xl mx-3">
-        <v-icon>mdi-arrow-right</v-icon>
+        <CIcon icon="arrow_right" />
       </span>
 
       <div class="overflow-auto">

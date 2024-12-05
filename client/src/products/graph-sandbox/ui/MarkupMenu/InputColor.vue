@@ -15,7 +15,10 @@
       :key="color"
       :active="activeColor === color"
     >
-      <div :class="[`bg-[${color}]`, 'w-full', 'h-full', 'rounded-md']"></div>
+      <div
+        :style="{ backgroundColor: color }"
+        :class="['w-full', 'h-full', 'rounded-md']"
+      ></div>
     </Button>
   </ButtonGroup>
 </template>

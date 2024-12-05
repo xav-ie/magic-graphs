@@ -9,6 +9,7 @@
   import CoordinateIndicator from "./CoordinateIndicator.vue";
   import { useCanvasCoords } from "./useCanvasCoord";
   import { usePinchToZoom } from "./usePinchToZoom";
+import { useStorePanZoomState } from "./useStorePanZoomState";
 
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
@@ -46,6 +47,7 @@
     "relative",
     "overflow-auto",
   ];
+
   const callerClasses = useClassAttrs();
   const parentElClasses = computed(() => [
     ...DEFAULT_PARENT_CLASSES,
@@ -151,6 +153,7 @@
   });
 
   const controls = usePinchToZoom(mainCanvasRef);
+  useStorePanZoomState(mainCanvasRef);
 
   watch(controls.scale, () => {
     const { scale, origin } = controls;
@@ -192,8 +195,8 @@
       ref="bgCanvas"
       :width="canvasWidth"
       :height="canvasHeight"
+      :style="{ backgroundColor: color }"
       :class="[
-        `bg-[${color}]`,
         `w-[${canvasWidth}px]`,
         `h-[${canvasHeight}px]`,
         'absolute',

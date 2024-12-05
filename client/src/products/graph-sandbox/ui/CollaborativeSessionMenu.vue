@@ -3,13 +3,16 @@
   import { useRouter } from "vue-router";
   import { graph } from "@graph/global";
   import { collabControls, myCollaboratorProfile } from "@graph/collab";
-  import Button from "@ui/Button.vue";
   import { debounce } from "@utils/debounce";
   import colors from "@utils/colors";
   import { productIdToProduct, useProductRouting } from "@utils/product";
   import { darkenHex } from "@utils/colors";
   import { generateId } from "@utils/id";
   import GraphSandboxProductInfo from "../info";
+  import CPopover from "@ui/core/Popover.vue";
+  import CPopoverTooltip from "@ui/core/PopoverTooltip.vue";
+  import CButton from "@ui/core/Button.vue";
+  import CIcon from "@ui/core/Icon.vue";
 
   const router = useRouter();
   const { navigate } = useProductRouting();
@@ -65,16 +68,10 @@
 </script>
 
 <template>
-  <v-menu
-    :offset="[10, 0]"
-    :close-on-content-click="false"
-  >
-    <template v-slot:activator="{ props, isActive }">
-      <div v-bind="props">
-        <slot :isActive="isActive"></slot>
-      </div>
+  <CPopover>
+    <template #activator="props">
+      <slot v-bind="props"></slot>
     </template>
-
     <div class="bg-gray-800 flex flex-col text-white p-3 w-[400px] rounded-lg">
       <h1 class="text-2xl font-bold text-gray-200 mb-3">Collaborate</h1>
 
@@ -91,23 +88,26 @@
       </div>
 
       <div class="w-full mt-2">
-        <Button
+        <CButton
           v-if="!isConnected && !startingRoom"
           @click="startCollaboration"
           :disabled="!myCollaboratorProfile.name"
           class="w-full"
         >
           Generate Link
-          <v-icon class="ml-2">mdi-link</v-icon>
-        </Button>
+          <CIcon
+            icon="link"
+            class="ml-2"
+          />
+        </CButton>
 
-        <Button
+        <CButton
           v-else-if="startingRoom"
           disabled
           class="w-full"
         >
           Preparing Room...
-        </Button>
+        </CButton>
 
         <div v-else>
           <div
@@ -117,18 +117,16 @@
             <span>
               {{ link }}
             </span>
-            <v-icon
+            <CIcon
               v-if="!linkCopied"
+              icon="content_copy"
               class="text-gray-400 opacity-0 group-hover:opacity-100"
-            >
-              mdi-content-copy
-            </v-icon>
-            <v-icon
+            />
+            <CIcon
               v-if="linkCopied"
+              icon="check_underline"
               class="text-green-400 opacity-0 group-hover:opacity-100"
-            >
-              mdi-check-underline
-            </v-icon>
+            />
           </div>
         </div>
       </div>
@@ -137,14 +135,13 @@
         v-if="isConnected"
         class="mt-4 w-full"
       >
-        <Button
+        <CButton
           @click="stopCollaboration"
           :color="colors.RED_600"
-          :text-color="colors.WHITE"
           class="w-full"
         >
           Disconnect
-        </Button>
+        </CButton>
       </div>
 
       <div v-if="isConnected && meAsACollaborator">
@@ -153,42 +150,35 @@
         </h2>
         <div class="flex flex-wrap items-center gap-2">
           <div
-            :class="`text-gray-300 bg-[${meAsACollaborator.color}] font-bold rounded-md px-3 py-1`"
+            v-tooltip.bottom="{
+              value: `You are in ${
+                productIdToProduct[meAsACollaborator.productId].name
+              }`,
+              pt: {
+                text: 'bg-magic'
+              },
+            }"
+            :style="{ backgroundColor: meAsACollaborator.color }"
+            class="text-gray-300 font-bold rounded-md px-3 py-1"
           >
             {{ meAsACollaborator.name }} (You)
-            <v-tooltip
-              activator="parent"
-              location="bottom"
-            >
-              You are in
-              {{ productIdToProduct[meAsACollaborator.productId].name }}
-            </v-tooltip>
           </div>
           <button
             v-for="collaborator in collaborators"
+            v-tooltip="
+              `${collaborator.name} is in ${
+                productIdToProduct[collaborator.productId].name
+              }`
+            "
             @click="navigate(productIdToProduct[collaborator.productId])"
             :key="collaborator.id"
-            :class="`
-              text-gray-300
-              bg-[${collaborator.color}]
-              font-bold
-              rounded-md
-              px-3
-              py-1
-              hover:bg-[${darkenHex(collaborator.color, 20)}]
-            `"
+            :style="{ backgroundColor: collaborator.color }"
+            class="text-gray-300 font-bold rounded-md px-3 py-1"
           >
             {{ collaborator.name }}
-            <v-tooltip
-              activator="parent"
-              location="bottom"
-            >
-              {{ collaborator.name }} is in
-              {{ productIdToProduct[collaborator.productId].name }}
-            </v-tooltip>
           </button>
         </div>
       </div>
     </div>
-  </v-menu>
+  </CPopover>
 </template>

@@ -94,8 +94,8 @@ export const adjustHex = (color: Color, amount: number): Color => {
 
   const colorStr = rgb
     .map((v) => Math.min(Math.max(v, 0), 255)
-    .toString(16)
-    .padStart(2, '0'))
+      .toString(16)
+      .padStart(2, '0'))
     .join('');
 
   return `#${colorStr}`;
@@ -108,6 +108,46 @@ export const darkenHex = (color: Color, amount: number): Color => {
 export const lightenHex = (color: Color, amount: number): Color => {
   return adjustHex(color, amount);
 }
+
+/**
+ * calculates the relative luminance of a HEX color
+ *
+ * the relative luminance is computed using the WCAG formula:
+ * L = 0.2126 * R + 0.7152 * G + 0.0722 * B
+ * where R, G, B are linearized RGB values (gamma corrected).
+ *
+ * @param {string} hex - the HEX color string
+ * @returns {number} the relative luminance of the color, a number between 0 (black) and 1 (white).
+ *
+ * @throws an error if the HEX string is invalid
+ *
+ * @example getLuminance('#ff0000'); // 0.2126
+ */
+export const getLuminance = (hex: Color) => {
+  if (!isHex(hex)) {
+    throw new Error('invalid HEX color');
+  }
+
+  const cleanHex = hex.length === 6 ? hex.slice(1) : hex.slice(1, 7);
+  const bigint = parseInt(cleanHex, 16);
+  const rgb = [
+    (bigint >> 16) & 255,
+    (bigint >> 8) & 255,
+    bigint & 255,
+  ];
+
+  const luminance = (channel: number) => {
+    const c = channel / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  };
+
+  return (
+    0.2126 * luminance(rgb[0]) +
+    0.7152 * luminance(rgb[1]) +
+    0.0722 * luminance(rgb[2])
+  );
+}
+
 
 /**
  * all tailwind gray colors

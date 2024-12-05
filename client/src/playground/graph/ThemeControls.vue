@@ -5,7 +5,7 @@
   import InputText from "@ui/InputText.vue";
   import { camelCaseToTitleCase } from "@utils/string";
   import { THEMES } from "@graph/themes";
-  import Button from "@ui/Button.vue";
+  import CButton from "@ui/core/Button.vue";
 
   defineProps<{
     graph: Graph;
@@ -26,13 +26,12 @@
           v-for="(value, key) in THEMES"
           @click="graph.theme.value = value"
         >
-          <Button
+          <CButton
             :color="value['secondaryColor']"
-            :text-color="value['secondaryTextColor']"
             style="width: 120px; text-align: center;"
           >
             {{ camelCaseToTitleCase(key) }}
-          </Button>
+          </CButton>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import { graph } from "@graph/global";
-  import Button from "@ui/Button.vue";
+  import CButton from "@ui/core/Button.vue";
   import colors from "@utils/colors";
   import state from "../state";
 
@@ -25,36 +25,36 @@
 
 <template>
   <div class="flex gap-3">
-    <Button
+    <CButton
       v-if="!settingSourceNode"
       @click="selectSrc"
     >
       Switch Source
-    </Button>
+    </CButton>
 
-    <Button
+    <CButton
       v-else
       @click="cancel"
       :color="colors.RED_500"
       :text-color="colors.WHITE"
     >
       Cancel
-    </Button>
+    </CButton>
 
-    <Button
+    <CButton
       v-if="!settingSinkNode"
       @click="selectSink"
     >
       Switch Sink
-    </Button>
+    </CButton>
 
-    <Button
+    <CButton
       v-else
       @click="cancel"
       :color="colors.RED_500"
       :text-color="colors.WHITE"
     >
       Cancel
-    </Button>
+    </CButton>
   </div>
 </template>
