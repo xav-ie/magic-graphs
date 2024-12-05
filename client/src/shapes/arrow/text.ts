@@ -4,50 +4,47 @@ import {
   getTextAreaDimension,
   getFullTextArea,
 } from "@shape/text";
-import type { Coordinate } from "@shape/types";
+import { TEXT_DEFAULTS, type Coordinate } from "@shape/types";
 import { rectHitbox } from "@shape/rect/hitbox";
-import { getTextAreaLocationOnLine } from "@shape/line/text";
 import { ARROW_DEFAULTS } from ".";
 import type { Arrow } from ".";
+import { getAngle } from "@shape/helpers";
 
 export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
 
   const {
     textOffsetFromCenter,
-    start: lineStart,
-    end: lineEnd,
+    start,
+    end,
     textArea,
-    width,
-    color
   } = {
     ...ARROW_DEFAULTS,
     ...arrow,
   }
 
-  if (!textArea) throw new Error('no text area provided');
+  if (!textArea) throw new Error('no text area provided')
 
-  const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
-  const arrowHeadHeight = width * 2.5;
+  const { text } = textArea;
 
-  const distanceSquared = (lineStart.x - lineEnd.x) ** 2 + (lineStart.y - lineEnd.y) ** 2;
-
-  const textOffsetIfArrowIsBigAndDistanceIsSmall = distanceSquared ** 0.5 < arrowHeadHeight ? arrowHeadHeight : 0
-
-  const shaftEnd = {
-    x: lineEnd.x - arrowHeadHeight * Math.cos(angle),
-    y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
+  const { fontSize } = {
+    ...TEXT_DEFAULTS,
+    ...text,
   }
 
-  const shaft = {
-    start: lineStart,
-    end: shaftEnd,
-    width,
-    color,
-    textOffsetFromCenter: textOffsetFromCenter - textOffsetIfArrowIsBigAndDistanceIsSmall,
-    textArea,
-  }
+  const angle = getAngle(start, end);
 
-  return getTextAreaLocationOnLine(shaft);
+  const offsetX = textOffsetFromCenter * Math.cos(angle);
+  const offsetY = textOffsetFromCenter * Math.sin(angle);
+
+  const textX = (start.x + end.x) / 2 + offsetX;
+  const textY = (start.y + end.y) / 2 + offsetY;
+
+
+  return {
+    x: textX - fontSize,
+    y: textY - fontSize
+  }
+  
 }
 
 export const arrowTextHitbox = (arrow: Arrow) => {

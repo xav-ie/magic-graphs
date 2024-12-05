@@ -149,13 +149,13 @@ export const getEdgeSchematic = (
     }
   }
 
-  const edgeTextAdjustment = fromNodeSize >= 50 ? 0.9 : (fromNodeSize >= 25 ? 1 : 1.3)
+  // const edgeTextAdjustment = fromNodeSize >= 50 ? 0.9 : (fromNodeSize >= 25 ? 1 : 1.3)
 
   const shape = arrow({
     start: edgeStart,
     end: edgeEnd,
     width: edgeWidth,
-    textOffsetFromCenter: fromNodeSize ** edgeTextAdjustment,
+    textOffsetFromCenter: (fromNodeSize + fromNodeBorderWidth / 2) / 2,
     color,
     textArea,
   })
