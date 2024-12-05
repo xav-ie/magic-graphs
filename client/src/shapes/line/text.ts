@@ -32,10 +32,10 @@ export const getTextAreaLocationOnLine = (line: Line) => {
     ...text,
   }
 
-  const theta = getAngle(start, end);
+  const angle = getAngle(start, end);
 
-  const offsetX = textOffsetFromCenter * Math.cos(theta);
-  const offsetY = textOffsetFromCenter * Math.sin(theta);
+  const offsetX = textOffsetFromCenter * Math.cos(angle);
+  const offsetY = textOffsetFromCenter * Math.sin(angle);
 
   const textX = (start.x + end.x) / 2 + offsetX;
   const textY = (start.y + end.y) / 2 + offsetY;
