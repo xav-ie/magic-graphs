@@ -4,44 +4,17 @@ import {
   getTextAreaDimension,
   getFullTextArea,
 } from "@shape/text";
-import { TEXT_DEFAULTS, type Coordinate } from "@shape/types";
+import { type Coordinate } from "@shape/types";
+import { getTextAreaLocationOnLine } from "@shape/line/text";
 import { rectHitbox } from "@shape/rect/hitbox";
-import { ARROW_DEFAULTS } from ".";
 import type { Arrow } from ".";
-import { getAngle } from "@shape/helpers";
 
 export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
-  const {
-    textOffsetFromCenter,
-    start,
-    end,
-    textArea,
-  } = {
-    ...ARROW_DEFAULTS,
-    ...arrow,
-  }
+  const { textArea } = arrow
 
   if (!textArea) throw new Error('no text area provided')
 
-  const { text } = textArea;
-
-  const { fontSize } = {
-    ...TEXT_DEFAULTS,
-    ...text,
-  }
-
-  const angle = getAngle(start, end);
-
-  const offsetX = textOffsetFromCenter * Math.cos(angle);
-  const offsetY = textOffsetFromCenter * Math.sin(angle);
-
-  const textX = (start.x + end.x) / 2 + offsetX;
-  const textY = (start.y + end.y) / 2 + offsetY;
-
-  return {
-    x: textX - fontSize,
-    y: textY - fontSize
-  }
+  return getTextAreaLocationOnLine(arrow)
 }
 
 export const arrowTextHitbox = (arrow: Arrow) => {

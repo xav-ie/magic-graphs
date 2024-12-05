@@ -61,6 +61,6 @@
         </div>
       </div>
     </div>
-    <div class="text-gray-700">block</div>
+    <div class="text-gray-700 select-none">block</div>
   </div>
 </template>
