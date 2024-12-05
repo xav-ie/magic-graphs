@@ -11,7 +11,6 @@ import type { Arrow } from ".";
 import { getAngle } from "@shape/helpers";
 
 export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
-
   const {
     textOffsetFromCenter,
     start,
@@ -39,12 +38,10 @@ export const getTextAreaLocationOnArrow = (arrow: Arrow) => {
   const textX = (start.x + end.x) / 2 + offsetX;
   const textY = (start.y + end.y) / 2 + offsetY;
 
-
   return {
     x: textX - fontSize,
     y: textY - fontSize
   }
-  
 }
 
 export const arrowTextHitbox = (arrow: Arrow) => {
