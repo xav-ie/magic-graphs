@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import { computed } from "vue";
+  import tinycolor from "tinycolor2";
   import { twMerge } from "tailwind-merge";
   import { useClassAttrs } from "@ui/useClassAttrs";
-  import { darkenHex, getLuminance, isHex } from "@utils/colors";
 
   const props = defineProps<{
     /**
@@ -19,6 +19,15 @@
      */
     disabled?: boolean;
   }>();
+
+  const color = computed(() => {
+    if (!props.color) return;
+    const tinycolorInstance = tinycolor(props.color);
+    if (!tinycolorInstance.isValid()) {
+      throw new Error("invalid color provided to button");
+    }
+    return tinycolorInstance;
+  });
 
   const parentClassList = useClassAttrs();
 
@@ -45,7 +54,8 @@
   ];
 
   const classes = computed(() => {
-    return twMerge(defaultButtonClasses, parentClassList.value);
+    const twClasses = twMerge(defaultButtonClasses, parentClassList.value);
+    return twClasses + (color.value ? ' insert-hover-color' : '');
   });
 
   const disabled = computed(() => props.disabled);
@@ -55,17 +65,8 @@
       return props.textColor;
     }
 
-    if (!props.color) {
-      // if no color is provided, no need to resolve text color
-      return ''
-    }
-
-    if (props.color && isHex(props.color)) {
-      return getLuminance(props.color) > 0.5 ? "black" : "white";
-    }
-
-    console.warn('could not resolve text color for button with color', props.color);
-    return "white";
+    if (!color.value) return;
+    return color.value.isDark() ? "white" : "black";
   });
 
   const styles = computed(() => {
@@ -76,9 +77,9 @@
     } as const;
 
     const colorStyles = {
-      backgroundColor: props.color,
+      backgroundColor: color.value?.toHexString(),
       color: textColor.value,
-      "--hover-color": darkenHex(props.color || "", 30),
+      "--hover-color": color.value?.darken().toHexString(),
     } as const;
 
     return {
@@ -96,3 +97,9 @@
     <slot></slot>
   </button>
 </template>
+
+<style scoped>
+  .insert-hover-color:hover {
+    background-color: var(--hover-color) !important;
+  }
+</style>
