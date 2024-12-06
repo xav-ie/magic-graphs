@@ -12,15 +12,6 @@ import type {
   UnwrapMaybeGetter
 } from "@utils/maybeGetter"
 
-export type UITheme = {
-  primaryColor: string,
-  primaryTextColor: string,
-  secondaryColor: string,
-  secondaryTextColor: string,
-  tertiaryColor: string,
-  tertiaryTextColor: string,
-}
-
 export type BaseGraphNodeTheme = {
   nodeSize: number,
   nodeBorderWidth: number,
@@ -80,7 +71,6 @@ export type UserEditableGraphTheme = {}
 export type PersistentGraphTheme = {}
 
 export type GraphTheme = (
-  UITheme &
   BaseGraphTheme &
   HistoryGraphTheme &
   FocusGraphTheme &
@@ -90,6 +80,14 @@ export type GraphTheme = (
   UserEditableGraphTheme &
   PersistentGraphTheme
 )
+
+/**
+ * the raw theme object without any getters
+ */
+export type GraphThemeRaw = {
+  // nodeText and edgeText are special cases which must remain as getters
+  [K in keyof GraphTheme]: K extends 'nodeText' | 'edgeText' ? GraphTheme[K] : UnwrapMaybeGetter<GraphTheme[K]>
+}
 
 /**
  * decomposes MaybeGetter<T, K> such that it turns T into T | void
@@ -116,16 +114,6 @@ export type FullThemeMap = {
 export type PartialThemeMap = Partial<FullThemeMap>
 
 export const getInitialThemeMap = (): FullThemeMap => ({
-  /**
-   * UI themes
-   */
-  primaryColor: [],
-  secondaryColor: [],
-  tertiaryColor: [],
-  primaryTextColor: [],
-  secondaryTextColor: [],
-  tertiaryTextColor: [],
-
   /**
    * base themes
    */

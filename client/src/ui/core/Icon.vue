@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+  import { computed } from "vue";
 
-const props = defineProps<{
-  icon: string;
-}>()
+  const props = defineProps<{
+    icon: string;
+  }>();
 
-const isOutlined = computed(() => {
-  return props.icon.endsWith('_outline');
-})
+  const isOutlined = computed(() => {
+    return props.icon.endsWith("_outline");
+  });
 
-const iconClass = computed(() => {
-  if (isOutlined.value) {
-    return 'material-icons-outlined';
-  }
+  const iconClass = computed(() => {
+    if (isOutlined.value) {
+      return "material-icons-outlined";
+    }
 
-  return 'material-icons';
-})
+    return "material-icons";
+  });
 
-const icon = computed(() => {
-  // if icon ends with _outline, remove it
-  return props.icon.replace(/_outline$/, '');
-})
+  const icon = computed(() => {
+    // if icon ends with _outline, remove it
+    return props.icon.replace(/_outline$/, "");
+  });
 </script>
 
 <template>

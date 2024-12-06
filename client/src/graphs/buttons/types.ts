@@ -23,7 +23,7 @@ type GraphButtonId = GraphButtonIdMap[keyof GraphButtonIdMap];
 /**
  * @describes a button that can be added to the graph toolbar
  */
-export type GButton = {
+export type GraphPlaygroundButton = {
   cond?: () => boolean,
   label: () => string,
   action: () => void,

@@ -1,11 +1,19 @@
 <script setup lang="ts">
   import { graph } from "@graph/global";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
+<<<<<<< HEAD
   import Toolbar from "./toolbar/Toolbar.vue";
   import ToolbarButton from "./toolbar/ToolbarButton.vue";
   import ToolbarButtonDivider from "./toolbar/ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "./toolbar/ToolbarButtonGroup.vue";
   import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
+=======
+  import GToolbar from "@ui/graph/toolbar/GToolbarBase.vue";
+  import GToolbarButton from "@ui/graph/toolbar/GToolbarButton.vue";
+  import GToolbarDivider from "@ui/graph/toolbar/GToolbarDivider.vue";
+  import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
+  import GraphInfoMenu from "./GraphInfoMenu.vue";
+>>>>>>> graph-components
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
 
   const hint = useGraphTutorial(graph.value, [
@@ -33,17 +41,17 @@
 </script>
 
 <template>
-  <Toolbar :hint="hint">
+  <GToolbar :hint="hint">
     <ToolbarButtonGroup>
-      <ToolbarButton
+      <GToolbarButton
         @click="graph.settings.value.displayEdgeLabels = true"
         :active="graph.settings.value.displayEdgeLabels"
         icon="label_outline"
       />
 
-      <ToolbarButtonDivider />
+      <GToolbarDivider />
 
-      <ToolbarButton
+      <GToolbarButton
         @click="graph.settings.value.displayEdgeLabels = false"
         :active="!graph.settings.value.displayEdgeLabels"
         icon="label_off_outline"
@@ -51,15 +59,15 @@
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
-      <ToolbarButton
+      <GToolbarButton
         @click="graph.settings.value.isGraphDirected = true"
         :active="graph.settings.value.isGraphDirected"
         icon="arrow_right_alt"
       />
 
-      <ToolbarButtonDivider />
+      <GToolbarDivider />
 
-      <ToolbarButton
+      <GToolbarButton
         @click="graph.settings.value.isGraphDirected = false"
         :active="!graph.settings.value.isGraphDirected"
         icon="remove"
@@ -67,15 +75,15 @@
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
-      <ToolbarButton
+      <GToolbarButton
         @click="graph.undo()"
         :disabled="!graph.canUndo.value"
         icon="undo"
       />
 
-      <ToolbarButtonDivider />
+      <GToolbarDivider />
 
-      <ToolbarButton
+      <GToolbarButton
         @click="graph.redo()"
         :disabled="!graph.canRedo.value"
         icon="redo"
@@ -83,7 +91,7 @@
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
-      <ToolbarButton
+      <GToolbarButton
         @click="toggleAnnotation"
         :active="graph.annotationActive.value"
         icon="edit"
@@ -92,7 +100,7 @@
 
     <ToolbarButtonGroup>
       <GraphInfoMenu v-slot="{ toggle, isOpen }">
-        <ToolbarButton
+        <GToolbarButton
           @click="toggle"
           :active="isOpen"
           icon="info_outline"
@@ -102,12 +110,12 @@
 
     <ToolbarButtonGroup>
       <CollaborativeSessionMenu v-slot="{ toggle, isOpen }">
-        <ToolbarButton
+        <GToolbarButton
           @click="toggle"
           :active="isOpen"
           icon="group"
         />
       </CollaborativeSessionMenu>
     </ToolbarButtonGroup>
-  </Toolbar>
+  </GToolbar>
 </template>

@@ -1,11 +1,17 @@
 <script setup lang="ts">
+  import CButton from "@ui/graph/button/GButton.vue";
+  import CIcon from "@ui/core/Icon.vue";
   import colors from "@utils/colors";
 </script>
 
 <template>
-  <!-- <v-btn
-    :color="colors.RED_600"
-    icon="mdi-stop"
-    size="large"
-  ></v-btn> -->
+  <CButton
+    :color="colors.RED_500"
+    class="h-14 w-14 rounded-full"
+  >
+    <CIcon
+      class="text-3xl"
+      icon="stop"
+    />
+  </CButton>
 </template>

@@ -24,7 +24,7 @@ export const useStorePanZoomState = (canvasRef: Ref<HTMLCanvasElement | undefine
    */
   const apply = () => {
     const ctx = getCtx(canvasRef);
-    console.log("applying", scale.value, panX.value, panY.value)
+    // console.log("applying", scale.value, panX.value, panY.value)
     // ctx.resetTransform();
     // ctx.translate(panX.value, panY.value);
     // ctx.scale(scale.value, scale.value);

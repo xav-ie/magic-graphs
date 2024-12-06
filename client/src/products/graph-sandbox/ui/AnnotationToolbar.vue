@@ -1,12 +1,11 @@
 <script setup lang="ts">
   import { COLORS, BRUSH_WEIGHTS } from "@graph/plugins/annotations/constants";
   import { graph } from "@graph/global";
-  import colors from "@utils/colors";
   import type { Color } from "@utils/colors";
-  import Toolbar from "./toolbar/Toolbar.vue";
-  import ToolbarButton from "./toolbar/ToolbarButton.vue";
-  import ToolbarButtonDivider from "./toolbar/ToolbarButtonDivider.vue";
-  import ToolbarButtonGroup from "./toolbar/ToolbarButtonGroup.vue";
+  import GToolbar from "@ui/graph/toolbar/GToolbarBase.vue";
+  import GToolbarButton from "@ui/graph/toolbar/GToolbarButton.vue";
+  import GToolbarButtonDivider from "@ui/graph/toolbar/GToolbarDivider.vue";
+  import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
 
   const { clearAnnotations } = graph.value;
 
@@ -35,9 +34,9 @@
 </script>
 
 <template>
-  <Toolbar>
+  <GToolbar>
     <ToolbarButtonGroup>
-      <ToolbarButton
+      <GToolbarButton
         v-for="color in COLORS"
         @click="selectColor(color)"
         :active="isColorActive(color)"
@@ -49,13 +48,13 @@
             :class="['w-6', 'h-6', 'rounded-full']"
           ></div>
         </div>
-      </ToolbarButton>
+      </GToolbarButton>
     </ToolbarButtonGroup>
 
-    <ToolbarButtonDivider />
+    <GToolbarButtonDivider />
 
     <ToolbarButtonGroup>
-      <ToolbarButton
+      <GToolbarButton
         v-for="(weight, index) in BRUSH_WEIGHTS"
         @click="selectBrushWeight(weight)"
         :active="isBrushWeightActive(weight)"
@@ -69,10 +68,10 @@
           ]"
           :style="{ height: `${index * 5 + 1}px` }"
         ></div>
-      </ToolbarButton>
+      </GToolbarButton>
     </ToolbarButtonGroup>
 
-    <ToolbarButtonDivider />
+    <GToolbarButtonDivider />
 
     <ToolbarButtonGroup class="gap-1">
       <!-- <ToolbarButton
@@ -81,10 +80,10 @@
         icon="ink_eraser"
       /> -->
 
-      <ToolbarButton
+      <GToolbarButton
         @click="clearAnnotations"
         icon="delete_outline"
       />
     </ToolbarButtonGroup>
-  </Toolbar>
+  </GToolbar>
 </template>

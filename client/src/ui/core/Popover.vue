@@ -2,15 +2,18 @@
   import { ref } from "vue";
   import Popover from "primevue/popover";
 
-  withDefaults(defineProps<{
-    /**
-     * the offset of the popover content from the activator (in pixels)
-     * @default 12
-     */
-    offset?: string | number;
-  }>(), {
-    offset: 12,
-  });
+  withDefaults(
+    defineProps<{
+      /**
+       * the offset of the popover content from the activator (in pixels)
+       * @default 12
+       */
+      offset?: string | number;
+    }>(),
+    {
+      offset: 12,
+    }
+  );
 
   const op = ref();
 

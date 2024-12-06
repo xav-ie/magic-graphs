@@ -9,9 +9,7 @@
   import SourceSinkControls from "./ui/SourceSinkControls.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
-  const graph = useGraph(graphEl, {
-    settings: FLOW_GRAPH_SETTINGS,
-  });
+  const graph = useGraph(graphEl, FLOW_GRAPH_SETTINGS);
 
   graph.settings.value.newNodeLabelGetter = flowNodeLabelGetter(graph);
 

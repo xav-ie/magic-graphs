@@ -2,6 +2,7 @@
   import { ref } from "vue";
   import type { Graph } from "@graph/types";
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
+import { THEMES, type GraphThemeName } from "./themes";
 
   const props = defineProps<{
     graph: Graph;
@@ -16,11 +17,12 @@
   const patternColor = ref(props.graph.getTheme("graphBgPatternColor"));
   const bgColor = ref(props.graph.getTheme("graphBgColor"));
 
-  props.graph.subscribe("onThemeChange", (diff) => {
-    const { graphBgPatternColor, graphBgColor } = diff;
-    if (graphBgPatternColor) patternColor.value = graphBgPatternColor;
-    if (graphBgColor) bgColor.value = graphBgColor;
-  });
+  const changeCanvasColor = async () => {
+    patternColor.value = props.graph.getTheme("graphBgPatternColor");
+    bgColor.value = props.graph.getTheme("graphBgColor");
+  }
+
+  props.graph.subscribe("onThemeChange", changeCanvasColor);
 </script>
 
 <template>

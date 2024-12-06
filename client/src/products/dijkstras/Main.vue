@@ -6,9 +6,7 @@
   import { DIJKSTRAS_GRAPH_SETTINGS } from "./settings";
 
   const graphEl = ref<HTMLCanvasElement>();
-  const graph = useGraph(graphEl, {
-    settings: DIJKSTRAS_GRAPH_SETTINGS,
-  });
+  const graph = useGraph(graphEl, DIJKSTRAS_GRAPH_SETTINGS);
 </script>
 
 <template>

@@ -15,14 +15,6 @@ export type UseGraph = typeof useGraph
 export type Graph = ReturnType<UseGraph>
 
 /**
- * the options argument for useGraph
- */
-export type GraphOptions = {
-  theme: Partial<GraphTheme>;
-  settings: Partial<GraphSettings>;
-}
-
-/**
  * a node in a graph instance
  */
 export type GNode = {

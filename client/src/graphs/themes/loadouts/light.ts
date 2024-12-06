@@ -1,15 +1,8 @@
 import colors from '@colors'
-import type { GraphTheme } from '@graph/themes'
 import { NON_COLOR_THEMES } from './universal'
+import type { GraphThemeRaw } from '../types'
 
-export const LIGHT_THEME: GraphTheme = {
-  primaryColor: colors.BLUE_500,
-  secondaryColor: colors.BLUE_700,
-  tertiaryColor: colors.BLUE_900,
-  primaryTextColor: colors.WHITE,
-  secondaryTextColor: colors.WHITE,
-  tertiaryTextColor: colors.WHITE,
-
+export const LIGHT_THEME: GraphThemeRaw = {
   nodeColor: colors.GRAY_50,
   nodeBorderColor: colors.GRAY_800,
   nodeFocusBorderColor: colors.BLUE_600,

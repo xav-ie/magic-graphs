@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CButton from "@ui/core/Button.vue";
+import GButton from "@ui/graph/button/GButton.vue";
 import CIcon from "@ui/core/Icon.vue";
 
 defineProps<{
@@ -8,10 +8,10 @@ defineProps<{
 </script>
 
 <template>
-  <CButton style="border-radius: 40px">
+  <GButton style="border-radius: 40px">
     <CIcon
       class="py-1 px-6 text-5xl"
       :icon="icon"
     />
-  </CButton>
+  </GButton>
 </template>

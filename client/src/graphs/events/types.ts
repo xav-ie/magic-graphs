@@ -9,7 +9,7 @@ import type {
   EditEdgeLabelOptions,
 } from "@graph/base/types";
 import type { NodeAnchor } from "@graph/plugins/anchors/types";
-import type { GraphTheme } from "@graph/themes";
+import type { GraphTheme, GraphThemeName } from "@graph/themes";
 import type { DeepPartial } from "@utils/types";
 import type {
   HistoryRecord,
@@ -126,9 +126,9 @@ export type BaseGraphEventMap = {
    */
   onKeyUp: (ev: KeyboardEvent) => void;
   /**
-   * when the {@link Graph.theme | theme} of the graph has changed
+   * when the {@link Graph.themeName | theme} of the graph has changed
    */
-  onThemeChange: (diff: DeepPartial<GraphTheme>) => void;
+  onThemeChange: (newTheme: GraphThemeName, oldTheme: GraphThemeName) => void;
   /**
    * when the {@link Graph.settings | settings} of the graph have changed
    */
