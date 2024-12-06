@@ -220,11 +220,16 @@ export const getEdgesAlongPath = (
  */
 export const getEdgeWeight = (
   edgeId: GEdge['id'],
-  graph: Pick<Graph, 'getTheme' | 'getEdge'>,
+  graph: Pick<Graph, 'getTheme' | 'getEdge' | 'settings'>,
   fallbackWeight = 1
 ) => {
+
   const edge = graph.getEdge(edgeId)
   if (!edge) throw new Error('edge not found')
+
+  // unweighted
+  if (!graph.settings.value.displayEdgeLabels) return 1
+
   const label = graph.getTheme('edgeText', edge)
   const weight = Number(label)
   return isNaN(weight) ? fallbackWeight : weight
@@ -233,7 +238,7 @@ export const getEdgeWeight = (
 export const getDirectedWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme'>,
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme' | 'settings'>,
   fallbackWeight: number,
 ) => {
   const edgesAlongPath = getEdgesAlongPath(fromNodeId, toNodeId, graph)
@@ -245,7 +250,7 @@ export const getDirectedWeightBetweenNodes = (
 export const getUndirectedWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme'>,
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme' | 'settings'>,
   fallbackWeight: number,
 ) => {
   const [connectingEdge] = getEdgesAlongPath(fromNodeId, toNodeId, graph)
@@ -266,7 +271,7 @@ export const getUndirectedWeightBetweenNodes = (
 export const getWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'settings' | 'getTheme' | 'edges' | 'getEdge'>,
+  graph: Pick<Graph, 'edges' | 'getTheme' | 'getEdge' | 'settings' >,
   fallbackWeight = 1
 ) => {
   const isDirected = graph.settings.value.isGraphDirected
