@@ -82,6 +82,14 @@ export type GraphTheme = (
 )
 
 /**
+ * the raw theme object without any getters
+ */
+export type GraphThemeRaw = {
+  // nodeText and edgeText are special cases which must remain as getters
+  [K in keyof GraphTheme]: K extends 'nodeText' | 'edgeText' ? GraphTheme[K] : UnwrapMaybeGetter<GraphTheme[K]>
+}
+
+/**
  * decomposes MaybeGetter<T, K> such that it turns T into T | void
  */
 export type MaybeGetterOrVoid<T> = MaybeGetter<UnwrapMaybeGetter<T> | void, MaybeGetterParams<T>>

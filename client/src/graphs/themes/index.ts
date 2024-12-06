@@ -18,6 +18,8 @@ export const THEMES = {
   girl: GIRL_THEME,
 } as const satisfies Record<string, GraphTheme>
 
+export type GraphThemeName = keyof typeof THEMES
+
 /**
  * gets the theme attributes for a GNode at the point in time the function is called
  *

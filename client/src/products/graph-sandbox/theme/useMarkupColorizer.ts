@@ -1,7 +1,6 @@
 import { useLocalStorage } from "@vueuse/core";
 import { useTheme } from "@graph/themes/useTheme";
 import type { GEdge, GNode, Graph } from "@graph/types";
-import { getValue } from "@utils/maybeGetter";
 import colors, { adjustHex } from "@utils/colors";
 import type { Color } from "@utils/colors";
 import { MARKUP_USETHEME_ID } from "../constants";
@@ -26,7 +25,7 @@ export const useMarkupColorizer = (graph: Graph) => {
   const colorNode = (node: GNode) => {
     const color = colorMap.value.get(node.id);
     if (!color) return;
-    return getValue(graph.theme.value.nodeColor, node);
+    return graph.baseTheme.value.nodeColor;
   }
 
   const colorNodeBorder = (node: GNode) => {

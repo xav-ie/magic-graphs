@@ -3,6 +3,7 @@ import {
   onMounted,
   onBeforeUnmount,
   watch,
+  computed,
 } from 'vue'
 import type { Ref } from 'vue'
 import { onClickOutside } from '@vueuse/core';
@@ -15,8 +16,7 @@ import type {
 import { prioritizeNode } from '@graph/helpers';
 import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
-import { THEMES } from '@graph/themes';
-import type { GraphTheme } from '@graph/themes'
+import { THEMES, type GraphTheme, type GraphThemeName } from '@graph/themes'
 import { getInitialThemeMap } from '@graph/themes/types';
 import { delta } from '@utils/deepDelta';
 import { clone } from '@utils/clone';
@@ -43,10 +43,10 @@ export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   startupSettings: Partial<GraphSettings> = {},
 ) => {
-  const theme = ref<GraphTheme>(THEMES.light)
+  const themeName = ref<GraphThemeName>('light')
 
   const themeMap = getInitialThemeMap()
-  const getTheme = getThemeResolver(theme, themeMap)
+  const getTheme = getThemeResolver(themeName, themeMap)
 
   const settings = ref<GraphSettings>({
     ...DEFAULT_GRAPH_SETTINGS,
@@ -54,7 +54,6 @@ export const useBaseGraph = (
   })
 
   const eventBus = getInitialEventBus()
-
   const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
 
   const canvasFocused = ref(true)
@@ -268,13 +267,9 @@ export const useBaseGraph = (
     emit('onStructureChange')
   }
 
-  const activeTheme = ref(clone(theme.value))
-  watch(theme, (newTheme) => {
-    const themeDiff = delta(activeTheme.value, theme.value)
-    if (!themeDiff) return
-    activeTheme.value = clone(newTheme)
-    emit('onThemeChange', themeDiff)
-  }, { deep: true })
+  watch(themeName, async (newThemeName, oldThemeName) => {
+    emit('onThemeChange', newThemeName, oldThemeName)
+  })
 
   const activeSettings = ref(clone(settings.value))
   watch(settings, (newSettings) => {
@@ -326,7 +321,8 @@ export const useBaseGraph = (
     updateAggregator,
     aggregator,
 
-    theme,
+    baseTheme: computed(() => THEMES[themeName.value]),
+    themeName,
     getTheme,
     themeMap,
     settings,

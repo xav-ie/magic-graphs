@@ -68,13 +68,6 @@ export const useGraphBtns = (graph: Graph) => {
     id: GRAPH_BUTTON_ID.edgeWeight,
   };
 
-  const changeNodeSize: GButton = {
-    label: () => `Change Node Size (${graph.theme.value.nodeSize})`,
-    action: () => graph.theme.value.nodeSize = getRandomInRange(20, 50),
-    color: () => colors.PINK_600,
-    id: GRAPH_BUTTON_ID.nodeSize,
-  };
-
   const changeStorageKey: GButton = {
     label: () => {
       const { persistentStorageKey } = graph.settings.value;
@@ -131,7 +124,6 @@ export const useGraphBtns = (graph: Graph) => {
     clearLocalStorage,
 
     // base
-    changeNodeSize,
     toggleEdgeLabelDisplay,
     toggleEdgeLabelsEditable,
 

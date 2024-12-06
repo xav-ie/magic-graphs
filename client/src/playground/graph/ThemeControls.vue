@@ -6,10 +6,26 @@
   import { camelCaseToTitleCase } from "@utils/string";
   import { THEMES } from "@graph/themes";
   import CButton from "@ui/core/Button.vue";
+  import { useTheme } from "@graph/themes/useTheme";
+  import { ref, watch } from "vue";
 
-  defineProps<{
+  const props = defineProps<{
     graph: Graph;
   }>();
+
+  const { setTheme } = useTheme(props.graph, 'playground-theme-controls');
+
+  const themes = ref(THEMES[props.graph.themeName.value]);
+
+  const adjustThemes = () => {
+    const themeEntries = Object.entries(themes.value);
+    for (const [key, value] of themeEntries) {
+      // @ts-ignore
+      setTheme(key, value);
+    }
+  };
+
+  watch(themes, adjustThemes, { deep: true });
 </script>
 
 <template>
@@ -23,11 +39,10 @@
       </div>
       <div class="flex flex-wrap gap-3">
         <div
-          v-for="(value, key) in THEMES"
-          @click="graph.theme.value = value"
+          v-for="(_, key) in THEMES"
+          @click="graph.themeName.value = key"
         >
           <CButton
-            :color="value['secondaryColor']"
             style="width: 120px; text-align: center;"
           >
             {{ camelCaseToTitleCase(key) }}
@@ -36,7 +51,7 @@
       </div>
     </div>
     <div
-      v-for="(theme, themeKey) in graph.theme.value"
+      v-for="(theme, themeKey) in THEMES[graph.themeName.value]"
       class="my-2"
     >
       <div class="text-white mb-2">
@@ -53,18 +68,18 @@
         v-if="
           typeof theme === 'string' && themeKey.toLowerCase().includes('color')
         "
-        v-model="(graph.theme.value[themeKey] as string)"
+        v-model="(themes[themeKey] as string)"
         style="width: 100px; height: 30px"
       />
 
       <InputText
         v-else-if="typeof theme === 'string'"
-        v-model="(graph.theme.value[themeKey] as string)"
+        v-model="(themes[themeKey] as string)"
       />
 
       <InputRange
         v-else-if="typeof theme === 'number'"
-        v-model="(graph.theme.value[themeKey] as number)"
+        v-model="(themes[themeKey] as number)"
         style="width: 100%"
         :min="0"
         :max="100"

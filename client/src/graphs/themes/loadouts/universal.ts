@@ -1,7 +1,7 @@
-import type { GraphTheme } from "@graph/themes";
+import type { GraphThemeRaw } from "../types";
 
 export type NonColorGraphThemes = Pick<
-  GraphTheme,
+  GraphThemeRaw,
   'nodeShape' |
   'nodeSize' |
   'nodeBorderWidth' |

@@ -1,10 +1,10 @@
-import type { GraphTheme } from "@graph/themes";
 import colors from "@colors";
 import { NON_COLOR_THEMES } from "./universal";
+import type { GraphThemeRaw } from "../types";
 
 const REDDISH_GRAY = 'rgb(100, 60, 70)'
 
-export const DARK_THEME: GraphTheme = {
+export const DARK_THEME: GraphThemeRaw = {
   nodeBorderColor: colors.BLACK,
   nodeColor: colors.STONE_600,
   nodeTextColor: colors.WHITE,

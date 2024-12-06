@@ -1,6 +1,5 @@
 import { watch } from "vue"
 import { useDark } from "@vueuse/core"
-import { THEMES } from "@graph/themes"
 import type { BaseGraph } from "@graph/base"
 
 /**
@@ -11,11 +10,10 @@ import type { BaseGraph } from "@graph/base"
 export const useUserPreferredTheme = (graph: BaseGraph) => {
   const isDark = useDark()
   watch(isDark, () => {
-    const currTheme = graph.theme.value
     if (isDark.value) {
-      Object.assign(currTheme, THEMES.dark)
+      graph.themeName.value = 'dark'
     } else {
-      Object.assign(currTheme, THEMES.light)
+      graph.themeName.value = 'light'
     }
   }, { immediate: true })
 }

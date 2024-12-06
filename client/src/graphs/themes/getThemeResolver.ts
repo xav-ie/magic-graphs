@@ -1,8 +1,9 @@
 import type { Ref } from "vue"
-import type { GraphTheme } from "@graph/themes"
+import type { GraphTheme, GraphThemeName } from "@graph/themes"
 import type { FullThemeMap } from "@graph/themes/types"
 import { getValue } from "@utils/maybeGetter"
 import type { UnwrapMaybeGetter } from "@utils/maybeGetter"
+import { THEMES } from "@graph/themes"
 
 /**
  * slightly modified extract utility useful for replacing the never type with R.
@@ -28,7 +29,7 @@ type ResolvedThemeParams<T extends keyof GraphTheme> = ThemeParams<T> extends []
 
 
 export const getThemeResolver = (
-  theme: Ref<Partial<GraphTheme>>,
+  themeName: Ref<GraphThemeName>,
   themeMap: FullThemeMap,
 ) => <
   T extends keyof GraphTheme,
@@ -45,7 +46,7 @@ export const getThemeResolver = (
       ) as UnwrapMaybeGetter<GraphTheme[T]>
       return themeValue !== undefined
     })
-    const getter = themeMapEntry?.value ?? theme.value[prop]
+    const getter = themeMapEntry?.value ?? THEMES[themeName.value][prop]
     if (!getter) throw new Error(`Theme property "${prop}" not found`)
     return getValue<typeof getter, K>(getter, ...args) as UnwrapMaybeGetter<GraphTheme[T]>
   }

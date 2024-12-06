@@ -1,6 +1,5 @@
 import { computed } from "vue";
 import { useTheme } from "@graph/themes/useTheme";
-import { getValue } from "@utils/maybeGetter";
 import type { GEdge, Graph } from "@graph/types";
 import colors from "@utils/colors";
 import type { SimulationControls } from "@ui/product/sim/types";
@@ -45,7 +44,7 @@ export const useSimulationTheme = (graph: Graph, sim: SimulationControls<FlowTra
 
   const colorActiveEdges = (edge: GEdge) => {
     const isActive = activeEdgeIdsAtStep.value.includes(edge.id)
-    const focusColor = getValue(graph.theme.value.edgeFocusColor, edge)
+    const focusColor = graph.baseTheme.value.edgeFocusColor
     if (isActive) return focusColor
     else if (isResidual(edge.id)) return colors.ORANGE_400
   }

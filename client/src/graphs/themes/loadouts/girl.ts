@@ -1,8 +1,8 @@
 import colors from '@colors'
-import type { GraphTheme } from '@graph/themes'
 import { NON_COLOR_THEMES } from './universal'
+import type { GraphThemeRaw } from '../types'
 
-export const GIRL_THEME: GraphTheme = {
+export const GIRL_THEME: GraphThemeRaw = {
   nodeColor: colors.PINK_100,
   nodeBorderColor: colors.PINK_400,
   nodeFocusBorderColor: colors.PURPLE_600,
