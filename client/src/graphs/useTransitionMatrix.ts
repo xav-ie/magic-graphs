@@ -77,48 +77,11 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
   return matrix;
 };
 
-
-const getUnweightedTransitionMatrix = (graph: Graph) => {
-  const nodes = graph.nodes.value;
-  const nodeCount = nodes.length;
-  const adjacencyList = getAdjacencyList(graph);
-
-  const nodeIndexMap = nodes.reduce<Record<string, number>>(
-    (acc, node, index) => {
-      acc[node.id] = index;
-      return acc;
-    },
-    {}
-  );
-
-  const matrix = Array.from({ length: nodeCount }, () =>
-    Array(nodeCount).fill(0)
-  );
-
-  for (const [nodeId, neighbors] of Object.entries(adjacencyList)) {
-    const fromIndex = nodeIndexMap[nodeId];
-
-    for (const neighbor of neighbors) {
-      const toIndex = nodeIndexMap[neighbor];
-
-      matrix[fromIndex][toIndex] = 1;
-
-      if (adjacencyList[neighbor]?.includes(nodeId)) {
-        matrix[toIndex][fromIndex] = 1;
-      }
-    }
-  }
-  return matrix
-}
-
-
 export const useTransitionMatrix = (graph: Graph) => {
   const transitionMatrix = ref(getTransitionMatrix(graph));
-  const unweightedTransitionMatrix = ref(getUnweightedTransitionMatrix(graph));
 
   const update = () => {
     transitionMatrix.value = getTransitionMatrix(graph);
-    unweightedTransitionMatrix.value = getUnweightedTransitionMatrix(graph);
   };
 
   graph.subscribe("onStructureChange", update);
@@ -129,6 +92,5 @@ export const useTransitionMatrix = (graph: Graph) => {
 
   return {
     transitionMatrix,
-    unweightedTransitionMatrix,
   };
 };
