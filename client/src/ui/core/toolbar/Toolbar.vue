@@ -23,9 +23,11 @@
     >
       <slot></slot>
     </div>
-    <ToolbarHint
-      v-if="hint"
-      :tutorial="hint"
-    />
+    <slot name="hint">
+      <ToolbarHint
+        v-if="hint"
+        :tutorial="hint"
+      />
+    </slot>
   </div>
 </template>
