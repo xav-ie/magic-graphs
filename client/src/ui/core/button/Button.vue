@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed } from "vue";
+  import { computed, ref } from "vue";
   import tinycolor from "tinycolor2";
   import { twMerge } from "tailwind-merge";
   import { useClassAttrs } from "@ui/useClassAttrs";
@@ -29,6 +29,21 @@
     return tinycolorInstance;
   });
 
+  const hoverColor = computed(() => {
+    if (!color.value) return;
+    const isDark = color.value.isDark();
+    const newColor = color.value.clone();
+    return isDark ? newColor.lighten(10) : newColor.darken(10);
+  });
+
+  const bgColorHex = computed(() => {
+    if (hovered.value) {
+      return hoverColor.value?.toHexString();
+    } else {
+      return color.value?.toHexString();
+    }
+  });
+
   const parentClassList = useClassAttrs();
 
   const defaultButtonClasses = [
@@ -47,6 +62,11 @@
     "rounded-md",
     "cursor-pointer",
     "font-bold",
+
+    'transition',
+    'duration-100',
+
+    'select-none',
 
     "flex",
     "justify-center",
@@ -77,9 +97,8 @@
     } as const;
 
     const colorStyles = {
-      backgroundColor: color.value?.toHexString(),
+      backgroundColor: bgColorHex.value,
       color: textColor.value,
-      "--hover-color": color.value?.darken().toHexString(),
     } as const;
 
     return {
@@ -87,19 +106,17 @@
       ...(disabled.value ? disabledStyles : {}),
     };
   });
+
+  const hovered = ref(false);
 </script>
 
 <template>
   <button
+    @mouseenter="hovered = true"
+    @mouseleave="hovered = false"
     :class="classes"
     :style="styles"
   >
     <slot></slot>
   </button>
 </template>
-
-<style scoped>
-  .insert-hover-color:hover {
-    background-color: var(--hover-color) !important;
-  }
-</style>

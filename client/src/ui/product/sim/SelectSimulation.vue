@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import type { SimulationDeclaration } from "src/types";
+  import GButton from "@ui/graph/button/GButton.vue";
   import CPopover from "@ui/core/Popover.vue";
   import CIcon from "@ui/core/Icon.vue";
 
@@ -15,15 +16,15 @@
 <template>
   <CPopover>
     <template #activator="{ toggle }">
-      <button
+      <GButton
         @click="toggle"
-        class="bg-gray-800 hover:bg-gray-700 transition duration-100 grid place-items-center h-14 w-14 rounded-full"
+        class="h-14 w-14 rounded-full"
       >
         <CIcon
-          class="text-white text-3xl"
+          class="text-3xl"
           icon="play_arrow"
         />
-      </button>
+      </GButton>
     </template>
 
     <div class="bg-gray-800 flex flex-col text-white p-2 w-[400px] rounded-lg">
