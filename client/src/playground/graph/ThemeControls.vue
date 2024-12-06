@@ -8,6 +8,7 @@
   import CButton from "@ui/core/Button.vue";
   import { useTheme } from "@graph/themes/useTheme";
   import { ref, watch } from "vue";
+  import { GButtonTheme } from "@ui/graph/GButtonTheme";
 
   const props = defineProps<{
     graph: Graph;
@@ -43,6 +44,7 @@
           @click="graph.themeName.value = key"
         >
           <CButton
+            :color="GButtonTheme[key]"
             style="width: 120px; text-align: center;"
           >
             {{ camelCaseToTitleCase(key) }}

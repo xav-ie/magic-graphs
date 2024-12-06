@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import type { GButton } from "@graph/buttons/types";
+  import type { GraphPlaygroundButton } from "@graph/buttons/types";
   import CButton from "@ui/core/Button.vue";
 
   const { btns } = defineProps<{
-    btns: GButton[];
+    btns: GraphPlaygroundButton[];
   }>();
 
   const showBtn = (cond: (() => boolean) | undefined) => (cond ? cond() : true);
