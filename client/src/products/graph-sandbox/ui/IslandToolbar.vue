@@ -1,19 +1,11 @@
 <script setup lang="ts">
   import { graph } from "@graph/global";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
-<<<<<<< HEAD
-  import Toolbar from "./toolbar/Toolbar.vue";
-  import ToolbarButton from "./toolbar/ToolbarButton.vue";
-  import ToolbarButtonDivider from "./toolbar/ToolbarButtonDivider.vue";
-  import ToolbarButtonGroup from "./toolbar/ToolbarButtonGroup.vue";
-  import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
-=======
   import GToolbar from "@ui/graph/toolbar/GToolbarBase.vue";
   import GToolbarButton from "@ui/graph/toolbar/GToolbarButton.vue";
   import GToolbarDivider from "@ui/graph/toolbar/GToolbarDivider.vue";
   import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
-  import GraphInfoMenu from "./GraphInfoMenu.vue";
->>>>>>> graph-components
+  import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
 
   const hint = useGraphTutorial(graph.value, [

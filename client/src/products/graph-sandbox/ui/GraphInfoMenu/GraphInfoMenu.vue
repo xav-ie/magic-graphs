@@ -2,14 +2,9 @@
   import { computed } from "vue";
   import { graph } from "@graph/global";
   import CPopover from "@ui/core/Popover.vue";
-<<<<<<< HEAD:client/src/products/graph-sandbox/ui/GraphInfoMenu/GraphInfoMenu.vue
-  import AdjacencyList from "./AdjacencyList.vue";
-  import TransitionMatrix from "./TransitionMatrix.vue";
-=======
   import GWell from "@ui/graph/GWell.vue";
   import AdjacencyListDisplay from "./AdjacencyListDisplay.vue";
   import TransitionMatrixDisplay from "./TransitionMatrixDisplay.vue";
->>>>>>> graph-components:client/src/products/graph-sandbox/ui/GraphInfoMenu.vue
 
   const graphHasNodes = computed(() => graph.value.nodes.value.length > 0);
 </script>
@@ -24,10 +19,6 @@
       <h1 class="text-2xl mb-3">Graph Info</h1>
 
       <div v-if="graphHasNodes">
-<<<<<<< HEAD:client/src/products/graph-sandbox/ui/GraphInfoMenu/GraphInfoMenu.vue
-        <AdjacencyList />
-        <TransitionMatrix />
-=======
         <h2 class="mb-2">Adjacency List</h2>
 
         <GWell
@@ -45,7 +36,6 @@
         >
           <TransitionMatrixDisplay />
         </GWell>
->>>>>>> graph-components:client/src/products/graph-sandbox/ui/GraphInfoMenu.vue
       </div>
 
       <div v-else>
