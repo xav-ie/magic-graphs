@@ -7,7 +7,6 @@
 
   const { transitionMatrix } = useTransitionMatrix(graph.value)
 
-
   const brackets = {
     background: `
       linear-gradient(
