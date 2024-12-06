@@ -1,19 +1,22 @@
 <script setup lang="ts">
   import { computed } from "vue";
-  import colors from "@utils/colors";
+  import { graph } from "@graph/global";
+  import { GNodeTheme } from "./GNodeTheme";
 
   type NodeProps = {
     size?: number;
     borderSize?: number;
-    color?: string;
   };
+
+  const theme = computed(() => GNodeTheme[graph.value.themeName.value]);
 
   const props = withDefaults(defineProps<NodeProps>(), {
     size: 60,
-    color: colors.WHITE,
   });
 
-  const borderSize = computed(() => Math.round(Math.max(1, Math.log(props.size))));
+  const borderSize = computed(() =>
+    Math.round(Math.max(1, Math.log(props.size)))
+  );
 </script>
 
 <template>
@@ -26,8 +29,9 @@
       'rounded-full',
     ]"
     :style="{
-      color,
-      border: `${borderSize}px solid ${color}`,
+      color: theme.textColor,
+      border: `${borderSize}px solid ${theme.textColor}`,
+      backgroundColor: theme.color,
       height: `${size}px`,
       width: `${size}px`,
     }"

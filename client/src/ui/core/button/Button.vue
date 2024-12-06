@@ -75,7 +75,7 @@
 
   const classes = computed(() => {
     const twClasses = twMerge(defaultButtonClasses, parentClassList.value);
-    return twClasses + (color.value ? ' insert-hover-color' : '');
+    return twClasses;
   });
 
   const disabled = computed(() => props.disabled);

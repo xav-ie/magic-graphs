@@ -2,6 +2,7 @@
   import { computed } from "vue";
   import { graph } from "@graph/global";
   import CPopover from "@ui/core/Popover.vue";
+  import GWell from "@ui/graph/GWell.vue";
   import AdjacencyListDisplay from "./AdjacencyListDisplay.vue";
   import TransitionMatrixDisplay from "./TransitionMatrixDisplay.vue";
 
@@ -13,23 +14,33 @@
     <template #activator="props">
       <slot v-bind="props"></slot>
     </template>
-    <div
-      class="bg-gray-800 flex flex-col text-white p-3 w-[400px] rounded-lg gap-2"
-    >
-      <h1 class="text-2xl font-bold text-gray-200 mb-3">Graph Info</h1>
+
+    <GWell class="flex flex-col text-xl font-bold p-3 w-[400px] rounded-lg gap-2">
+      <h1 class="text-2xl mb-3">Graph Info</h1>
+
       <div v-if="graphHasNodes">
-        <h2 class="text-xl font-bold text-gray-200 mb-2">Adjacency List</h2>
-        <div class="bg-gray-700 p-4 rounded-lg max-h-[200px] overflow-auto">
+        <h2 class="mb-2">Adjacency List</h2>
+
+        <GWell
+          secondary
+          class="p-4 rounded-lg max-h-[200px] overflow-auto"
+        >
           <AdjacencyListDisplay />
-        </div>
-        <h2 class="text-xl font-bold text-gray-200 mb-2">Transition Matrix</h2>
-        <div class="bg-gray-700 p-4 rounded-lg max-h-[300px] overflow-auto">
+        </GWell>
+
+        <h2 class="my-2">Transition Matrix</h2>
+
+        <GWell
+          secondary
+          class="p-4 rounded-lg max-h-[300px] overflow-auto"
+        >
           <TransitionMatrixDisplay />
-        </div>
+        </GWell>
       </div>
+
       <div v-else>
-        <h2>Add some nodes to get started</h2>
+        <h2>Try adding some nodes first!</h2>
       </div>
-    </div>
+    </GWell>
   </CPopover>
 </template>

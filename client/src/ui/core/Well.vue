@@ -4,16 +4,21 @@
   withDefaults(
     defineProps<{
       color?: string;
+      textColor?: string;
     }>(),
     {
-      color: colors.BLUE_500,
+      color: colors.GRAY_800,
+      textColor: colors.WHITE,
     }
   );
 </script>
 
 <template>
   <div
-    :style="{ backgroundColor: color }"
+    :style="{
+      backgroundColor: color,
+      color: textColor,
+    }"
   >
     <slot><!-- optional fallback --></slot>
   </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import type { GNode } from "@graph/types";
-  import GraphNode from "@ui/graph/GraphNode.vue";
+  import GraphNode from "@ui/graph/GNode.vue";
   import CIcon from "@ui/core/Icon.vue";
   import CPopoverTooltip from "@ui/core/PopoverTooltip.vue";
 
