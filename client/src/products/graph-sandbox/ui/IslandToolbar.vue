@@ -5,7 +5,7 @@
   import ToolbarButton from "./toolbar/ToolbarButton.vue";
   import ToolbarButtonDivider from "./toolbar/ToolbarButtonDivider.vue";
   import ToolbarButtonGroup from "./toolbar/ToolbarButtonGroup.vue";
-  import GraphInfoMenu from "./GraphInfoMenu.vue";
+  import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
 
   const hint = useGraphTutorial(graph.value, [

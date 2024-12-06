@@ -2,8 +2,8 @@
   import { computed } from "vue";
   import { graph } from "@graph/global";
   import CPopover from "@ui/core/Popover.vue";
-  import AdjacencyListDisplay from "./AdjacencyListDisplay.vue";
-  import TransitionMatrixControls from "./TransitionMatrixControls.vue";
+  import AdjacencyList from "./AdjacencyList.vue";
+  import TransitionMatrix from "./TransitionMatrix.vue";
 
   const graphHasNodes = computed(() => graph.value.nodes.value.length > 0);
 </script>
@@ -18,14 +18,8 @@
     >
       <h1 class="text-2xl font-bold text-gray-200 mb-3">Graph Info</h1>
       <div v-if="graphHasNodes">
-        <h2 class="text-xl font-bold text-gray-200 mb-2">Adjacency List</h2>
-        <div class="bg-gray-700 p-4 rounded-lg max-h-[200px] overflow-auto">
-          <AdjacencyListDisplay />
-        </div>
-        <h2 class="text-xl font-bold text-gray-200 mb-2 mt-5">Transition Matrix</h2>
-        <div class="bg-gray-700 p-4 rounded-lg max-h-[300px] overflow-auto">
-          <TransitionMatrixControls />
-        </div>
+        <AdjacencyList />
+        <TransitionMatrix />
       </div>
       <div v-else>
         <h2>Add some nodes to get started</h2>
