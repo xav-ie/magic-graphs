@@ -1,13 +1,15 @@
 <script setup lang="ts">
+  import { computed, ref, toRef } from "vue";
   import CIcon from "@ui/core/Icon.vue";
   import { useTinycolor } from "@ui/useTinycolor";
   import colors from "@utils/colors";
-  import { computed, ref, toRef } from "vue";
+  import tinycolor from "tinycolor2";
 
   const props = withDefaults(
     defineProps<{
       color?: string;
       active?: boolean;
+      activeColor?: string;
       disabled?: boolean;
       icon?: string;
     }>(),
@@ -27,6 +29,7 @@
   });
 
   const activeColor = computed(() => {
+    if (props.activeColor) return props.activeColor;
     return color.value.darken(10).toHexString();
   });
 

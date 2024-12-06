@@ -9,9 +9,9 @@
 
 <template>
   <CRadioButton
+    v-bind="$attrs"
     :color="theme.color"
     :outline-color="theme.outlineColor"
-    v-bind="$attrs"
   >
     <slot></slot>
   </CRadioButton>

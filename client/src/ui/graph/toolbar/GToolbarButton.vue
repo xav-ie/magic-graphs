@@ -4,13 +4,14 @@
   import { GToolbarButtonTheme } from "./GToolbarButtonTheme";
   import { graph } from "@graph/global";
 
-  const color = computed(() => GToolbarButtonTheme[graph.value.themeName.value]);
+  const theme = computed(() => GToolbarButtonTheme[graph.value.themeName.value]);
 </script>
 
 <template>
   <CToolbarButton
     v-bind="$props"
-    :color="color"
+    :color="theme.color"
+    :active-color="theme.activeColor"
   >
     <slot></slot>
   </CToolbarButton>
