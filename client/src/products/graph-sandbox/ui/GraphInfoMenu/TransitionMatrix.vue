@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useTransitionMatrix } from "@graph/useTransitionMatrix";
-import TransitionMatrixDisplay from "./TransitionMatrixDisplay.vue";
 import { graph } from "@graph/global";
+import { useTransitionMatrix } from "@graph/useTransitionMatrix";
+import colors from "@utils/colors";
 import CButton from "@ui/core/Button.vue";
 import CIcon from "@ui/core/Icon.vue";
-import colors from "@utils/colors";
+import TransitionMatrixDisplay from "./TransitionMatrixDisplay.vue";
 
 const { transitionMatrix, unweightedTransitionMatrix } = useTransitionMatrix(graph.value);
 
