@@ -220,7 +220,7 @@ export const getEdgesAlongPath = (
  */
 export const getEdgeWeight = (
   edgeId: GEdge['id'],
-  graph: Pick<Graph, 'getTheme' | 'getEdge' | 'settings'>,
+  graph: Pick<Graph, 'getEdge' | 'getTheme' | 'settings'>,
   fallbackWeight = 1
 ) => {
 
@@ -271,7 +271,7 @@ export const getUndirectedWeightBetweenNodes = (
 export const getWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
-  graph: Pick<Graph, 'edges' | 'getTheme' | 'getEdge' | 'settings' >,
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme' | 'settings' >,
   fallbackWeight = 1
 ) => {
   const isDirected = graph.settings.value.isGraphDirected
