@@ -1,5 +1,5 @@
 import { ref, onUnmounted } from "vue";
-import type { GEdge, GNode, Graph } from "@graph/types";
+import type { Graph } from "@graph/types";
 import { getWeightedAdjacencyList } from "./useAdjacencyList";
 
 /**
@@ -37,7 +37,7 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
 
     for (const neighbor of neighbors) {
       const toIndex = nodeIndexMap[neighbor.id];
-      matrix[fromIndex][toIndex] = neighbor.weight
+      matrix[fromIndex][toIndex] = neighbor.weight;
     }
   }
 
