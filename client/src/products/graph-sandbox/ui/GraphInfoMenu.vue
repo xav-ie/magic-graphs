@@ -3,7 +3,7 @@
   import { graph } from "@graph/global";
   import CPopover from "@ui/core/Popover.vue";
   import AdjacencyListDisplay from "./AdjacencyListDisplay.vue";
-  import TransitionMatrixDisplay from "./TransitionMatrixDisplay.vue";
+  import TransitionMatrixControls from "./TransitionMatrixControls.vue";
 
   const graphHasNodes = computed(() => graph.value.nodes.value.length > 0);
 </script>
@@ -22,9 +22,9 @@
         <div class="bg-gray-700 p-4 rounded-lg max-h-[200px] overflow-auto">
           <AdjacencyListDisplay />
         </div>
-        <h2 class="text-xl font-bold text-gray-200 mb-2">Transition Matrix</h2>
+        <h2 class="text-xl font-bold text-gray-200 mb-2 mt-5">Transition Matrix</h2>
         <div class="bg-gray-700 p-4 rounded-lg max-h-[300px] overflow-auto">
-          <TransitionMatrixDisplay />
+          <TransitionMatrixControls />
         </div>
       </div>
       <div v-else>
