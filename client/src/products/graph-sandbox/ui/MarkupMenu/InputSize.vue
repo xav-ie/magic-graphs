@@ -2,20 +2,20 @@
   import { MARKUP_SIZES } from "@product/graph-sandbox/constants";
   import type { MarkupSize } from "@product/graph-sandbox/types";
   import ButtonGroup from "./ButtonGroup.vue";
-  import Button from "../../../../ui/core/button/RadioButton.vue";
+  import GRadioButton from "@ui/graph/button/GRadioButton.vue";
 
   const activeSize = defineModel<MarkupSize>();
 </script>
 
 <template>
   <ButtonGroup>
-    <Button
+    <GRadioButton
       v-for="size in MARKUP_SIZES"
       @click="activeSize = size"
       :key="size"
       :active="activeSize === size"
     >
       {{ size }}
-    </Button>
+    </GRadioButton>
   </ButtonGroup>
 </template>

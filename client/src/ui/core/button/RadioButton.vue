@@ -5,21 +5,35 @@
 
   const props = withDefaults(
     defineProps<{
+      outlineColor?: string;
       color?: string;
       active?: boolean;
     }>(),
     {
       active: false,
-      color: colors.WHITE,
+      outlineColor: colors.WHITE,
+      color: colors.GRAY_700,
     }
   );
 
+  const outlineColorRef = toRef(props, "outlineColor");
+  const outlineColor = useTinycolor(outlineColorRef);
+
+  const hoverColorHex = computed(() => {
+    const isDark = outlineColor.value.isDark();
+    const newColor = isDark ? outlineColor.value.lighten(30) : outlineColor.value.darken(30)
+    return newColor.toHexString();
+  });
+
   const colorRef = toRef(props, "color");
   const color = useTinycolor(colorRef);
-  const hoverColorHex = computed(() => color.value.darken(30).toHexString());
+
+  const textColorHex = computed(() => {
+    return color.value.isDark() ? colors.WHITE : colors.BLACK;
+  });
 
   const borderColorHex = computed(() => {
-    if (props.active) return props.color;
+    if (props.active) return props.outlineColor;
     if (hovered.value) return hoverColorHex.value;
     return colors.TRANSPARENT;
   })
@@ -47,10 +61,12 @@
         'flex',
         'items-center',
         'justify-center',
-        'text-white',
         'text-sm',
-        active ? 'bg-gray-800' : 'bg-gray-700',
       ]"
+      :style="{
+        backgroundColor: props.color,
+        color: textColorHex,
+      }"
     >
       <slot></slot>
     </div>
