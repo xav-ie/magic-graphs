@@ -14,9 +14,7 @@
   const graphEl = ref<HTMLCanvasElement>();
 
   const graph = useGraph(graphEl, {
-    settings: {
-      persistentStorageKey: "search-visualizer-graph"
-    },
+    persistentStorageKey: "search-visualizer-graph",
   });
 
   const { labelAdjacencyList } = useAdjacencyList(graph);
@@ -92,11 +90,10 @@
 
 <template>
   <div class="w-full h-full relative">
-
     <!-- graph -->
     <div class="h-[50%] relative">
       <Graph
-        @graph-ref="(el) => graphEl = el"
+        @graph-ref="(el) => (graphEl = el)"
         :graph="graph"
       />
       <!-- switch out algorithm -->

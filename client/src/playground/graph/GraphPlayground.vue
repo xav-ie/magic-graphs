@@ -17,11 +17,9 @@
   const graphElement = ref<HTMLCanvasElement>();
 
   const graph = useGraph(graphElement, {
-    settings: {
-      edgeInputToLabel: (str) => {
-        if (isFraction(str)) return str;
-        else if (!isNaN(Number(str))) return str;
-      },
+    edgeInputToLabel: (str) => {
+      if (isFraction(str)) return str;
+      else if (!isNaN(Number(str))) return str;
     },
   });
 

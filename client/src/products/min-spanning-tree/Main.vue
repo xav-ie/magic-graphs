@@ -5,9 +5,7 @@
   import { MST_GRAPH_SETTINGS } from "./settings";
 
   const graphEl = ref<HTMLCanvasElement>();
-  const graph = useGraph(graphEl, {
-    settings: MST_GRAPH_SETTINGS,
-  });
+  const graph = useGraph(graphEl, MST_GRAPH_SETTINGS);
 </script>
 
 <template>

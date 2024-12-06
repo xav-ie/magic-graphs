@@ -5,13 +5,6 @@ import { NON_COLOR_THEMES } from "./universal";
 const REDDISH_GRAY = 'rgb(100, 60, 70)'
 
 export const DARK_THEME: GraphTheme = {
-  primaryColor: colors.RED_700,
-  secondaryColor: colors.GRAY_900,
-  tertiaryColor: colors.RED_900,
-  primaryTextColor: colors.WHITE,
-  secondaryTextColor: colors.WHITE,
-  tertiaryTextColor: colors.WHITE,
-
   nodeBorderColor: colors.BLACK,
   nodeColor: colors.STONE_600,
   nodeTextColor: colors.WHITE,

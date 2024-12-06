@@ -9,9 +9,7 @@
   import { useMarkupSizer } from "./theme/useMarkupSizer";
 
   const graphEl = ref<HTMLCanvasElement>();
-  const graph = useGraph(graphEl, {
-    settings: SANDBOX_GRAPH_SETTINGS,
-  });
+  const graph = useGraph(graphEl, SANDBOX_GRAPH_SETTINGS);
 
   const { colorize, colorMap } = useMarkupColorizer(graph);
   colorize();

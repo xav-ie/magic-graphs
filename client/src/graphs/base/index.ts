@@ -10,7 +10,6 @@ import type {
   GNode,
   GEdge,
   SchemaItem,
-  GraphOptions,
   Aggregator,
 } from '@graph/types'
 import { prioritizeNode } from '@graph/helpers';
@@ -42,20 +41,16 @@ import { getCanvasCoords } from '@utils/components/useCanvasCoord';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
-  options: Partial<GraphOptions> = {},
+  startupSettings: Partial<GraphSettings> = {},
 ) => {
-
-  const theme = ref<GraphTheme>({
-    ...THEMES.light,
-    ...options.theme,
-  })
+  const theme = ref<GraphTheme>(THEMES.light)
 
   const themeMap = getInitialThemeMap()
   const getTheme = getThemeResolver(theme, themeMap)
 
   const settings = ref<GraphSettings>({
     ...DEFAULT_GRAPH_SETTINGS,
-    ...options.settings,
+    ...startupSettings,
   })
 
   const eventBus = getInitialEventBus()
