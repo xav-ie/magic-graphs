@@ -55,8 +55,8 @@
           :key="'col-' + colIndex"
         >
           <TransitionMatrixLabel
-            :toNode="nodes[rowIndex]"
-            :fromNode="nodes[colIndex]"
+            :to-node="nodes[rowIndex]"
+            :from-node="nodes[colIndex]"
             :weight="col"
           />
         </div>
