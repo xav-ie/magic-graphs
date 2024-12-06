@@ -2,10 +2,13 @@
   import { computed } from "vue";
   import colors from "@colors";
   import { graph } from "@graph/global";
-  import { useTransitionMatrix } from "@graph/useTransitionMatrix";
+  import type { TransitionMatrix } from "@graph/useTransitionMatrix";
   import TransitionMatrixLabel from "./TransitionMatrixLabel.vue";
 
-  const { transitionMatrix } = useTransitionMatrix(graph.value);
+
+  const props = defineProps<{ 
+    transitionMatrix: TransitionMatrix 
+  }>()
 
   const brackets = {
     background: `
