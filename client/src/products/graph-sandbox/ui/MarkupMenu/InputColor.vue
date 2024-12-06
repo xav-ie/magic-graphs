@@ -2,7 +2,7 @@
   import { MARKUP_COLORS } from "@product/graph-sandbox/constants";
   import type { Color } from "@utils/colors";
   import ButtonGroup from "./ButtonGroup.vue";
-  import Button from "./Button.vue";
+  import Button from "@ui/core/button/RadioButton.vue";
 
   const activeColor = defineModel<Color>();
 </script>

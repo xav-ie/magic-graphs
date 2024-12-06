@@ -11,7 +11,7 @@
   import GraphSandboxProductInfo from "../info";
   import CPopover from "@ui/core/Popover.vue";
   import CPopoverTooltip from "@ui/core/PopoverTooltip.vue";
-  import CButton from "@ui/core/Button.vue";
+  import CButton from "@ui/core/button/Button.vue";
   import CIcon from "@ui/core/Icon.vue";
 
   const router = useRouter();

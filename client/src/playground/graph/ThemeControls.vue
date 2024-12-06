@@ -5,7 +5,7 @@
   import InputText from "@ui/InputText.vue";
   import { camelCaseToTitleCase } from "@utils/string";
   import { THEMES } from "@graph/themes";
-  import CButton from "@ui/core/Button.vue";
+  import CButton from "@ui/core/button/Button.vue";
   import { useTheme } from "@graph/themes/useTheme";
   import { ref, watch } from "vue";
   import { GButtonTheme } from "@ui/graph/GButtonTheme";

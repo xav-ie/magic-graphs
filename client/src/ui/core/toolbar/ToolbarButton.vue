@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import CIcon from "@ui/core/Icon.vue";
+  import { useTinycolor } from "@ui/useTinycolor";
   import colors from "@utils/colors";
-  import tinycolor from "tinycolor2";
-  import { computed, ref } from "vue";
+  import { computed, ref, toRef } from "vue";
 
   const props = withDefaults(
     defineProps<{
@@ -19,13 +19,8 @@
     }
   );
 
-  const color = computed(() => {
-    const tinycolorInstance = tinycolor(props.color);
-    if (!tinycolorInstance.isValid()) {
-      throw new Error("invalid color provided to button");
-    }
-    return tinycolorInstance;
-  });
+  const colorRef = toRef(props, "color");
+  const color = useTinycolor(colorRef);
 
   const hoverColor = computed(() => {
     return color.value.darken(5).toHexString();
@@ -43,7 +38,9 @@
   });
 
   const textColor = computed(() => {
-    const standardTextColor = color.value.isDark() ? colors.WHITE : colors.BLACK;
+    const standardTextColor = color.value.isDark()
+      ? colors.WHITE
+      : colors.BLACK;
     if (props.disabled) return standardTextColor + "80";
     return standardTextColor;
   });
@@ -64,14 +61,7 @@
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
     :disabled="disabled"
-    :class="[
-      'p-1',
-      'rounded-md',
-      'grid',
-      'place-items-center',
-      'w-10',
-      'h-10',
-    ]"
+    :class="['p-1', 'rounded-md', 'grid', 'place-items-center', 'w-10', 'h-10']"
     :style="styles"
   >
     <slot>

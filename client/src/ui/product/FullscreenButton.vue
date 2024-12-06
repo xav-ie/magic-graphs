@@ -3,7 +3,7 @@
   import { useFullscreen } from "@vueuse/core";
   import { graph } from "@graph/global";
   import colors from "@utils/colors";
-  import CButton from "@ui/core/Button.vue";
+  import CButton from "@ui/core/button/Button.vue";
   import CIcon from "@ui/core/Icon.vue";
 
   const { toggle } = useFullscreen();

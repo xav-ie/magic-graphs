@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { computed } from "vue";
-  import CToolbar from "@ui/core/toolbar/Toolbar.vue";
+  import CToolbar from "@ui/core/toolbar/ToolbarBase.vue";
   import GToolbarHint from "./GToolbarHint.vue";
   import { GToolbarBaseTheme } from "./GToolbarBaseTheme";
   import { graph } from "@graph/global";

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import type { TutorialControls } from "@graph/tutorials/types";
-  import CButton from "@ui/core/Button.vue";
+  import CButton from "@ui/core/button/Button.vue";
   import colors from "@utils/colors";
 
   const { tutorial } = defineProps<{

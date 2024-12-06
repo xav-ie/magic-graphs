@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CButton from "@ui/core/Button.vue";
+import CButton from "@ui/core/button/Button.vue";
 import CIcon from "@ui/core/Icon.vue";
 
 defineProps<{

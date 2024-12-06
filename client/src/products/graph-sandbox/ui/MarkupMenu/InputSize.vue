@@ -2,7 +2,7 @@
   import { MARKUP_SIZES } from "@product/graph-sandbox/constants";
   import type { MarkupSize } from "@product/graph-sandbox/types";
   import ButtonGroup from "./ButtonGroup.vue";
-  import Button from "./Button.vue";
+  import Button from "../../../../ui/core/button/RadioButton.vue";
 
   const activeSize = defineModel<MarkupSize>();
 </script>

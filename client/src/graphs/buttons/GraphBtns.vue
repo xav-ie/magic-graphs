@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import type { GraphPlaygroundButton } from "@graph/buttons/types";
-  import CButton from "@ui/core/Button.vue";
+  import CButton from "@ui/core/button/Button.vue";
 
   const { btns } = defineProps<{
     btns: GraphPlaygroundButton[];
