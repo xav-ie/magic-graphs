@@ -3,7 +3,6 @@
   import CIcon from "@ui/core/Icon.vue";
   import { useTinycolor } from "@ui/useTinycolor";
   import colors from "@utils/colors";
-  import tinycolor from "tinycolor2";
 
   const props = withDefaults(
     defineProps<{

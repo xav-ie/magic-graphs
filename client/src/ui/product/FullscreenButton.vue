@@ -20,8 +20,11 @@
 <template>
   <GButton
     @click="toggle"
-    class="aspect-square"
+    class="h-12 w-12"
   >
-    <CIcon icon="fullscreen" />
+    <CIcon
+      class="text-3xl"
+      icon="fullscreen"
+    />
   </GButton>
 </template>

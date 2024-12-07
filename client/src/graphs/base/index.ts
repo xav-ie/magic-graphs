@@ -116,7 +116,6 @@ export const useBaseGraph = (
       emit('onDblClick', graphMouseEv(ev))
     },
     contextmenu: (ev: MouseEvent) => {
-      ev.preventDefault()
       emit('onContextMenu', graphMouseEv(ev))
     },
   }

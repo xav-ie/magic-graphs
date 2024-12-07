@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import { graph } from "@graph/global";
-  import GButton from "@ui/graph/GButton.vue";
+  import GButton from "@ui/graph/button/GButton.vue";
   import colors from "@utils/colors";
   import state from "../state";
 

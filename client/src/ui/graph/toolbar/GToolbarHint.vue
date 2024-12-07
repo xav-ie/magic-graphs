@@ -1,11 +1,9 @@
 <script setup lang="ts">
-  import { computed } from "vue";
   import CToolbarHint from "@ui/core/toolbar/ToolbarHint.vue";
-  import { GToolbarHintTheme } from "./GToolbarHintTheme";
-  import { graph } from "@graph/global";
   import type { TutorialControls } from "@graph/tutorials/types";
+  import { useGraphColors } from "@graph/themes/useGraphColors";
 
-  const color = computed(() => GToolbarHintTheme[graph.value.themeName.value]);
+  const colors = useGraphColors();
 
   defineProps<{
     tutorial: TutorialControls;
@@ -15,6 +13,6 @@
 <template>
   <CToolbarHint
     :tutorial="tutorial"
-    :color="color"
+    :color="colors.text + '75'"
   />
 </template>

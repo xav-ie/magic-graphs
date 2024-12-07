@@ -12,6 +12,7 @@
   import { getSimulationDeclarationsForProduct } from "@utils/product";
   import StopSimButton from "./StopSimButton.vue";
   import FullscreenButton from "./FullscreenButton.vue";
+  import ThemeToolbar from "./ThemeToolbar.vue";
 
   const props = defineProps<{
     graph: Graph;
@@ -136,7 +137,8 @@
     </div>
   </div>
 
-  <div class="absolute bottom-8 right-8">
+  <div class="absolute flex gap-2 bottom-8 right-8">
+    <ThemeToolbar />
     <FullscreenButton />
   </div>
 </template>

@@ -1,10 +1,26 @@
 <script setup lang="ts">
   import { computed } from "vue";
-  import { graph } from "@graph/global";
   import CButton from "@ui/core/button/Button.vue";
-  import { GButtonTheme } from "./GButtonTheme";
+  import { useGraphColors } from "@graph/themes/useGraphColors";
 
-  const color = computed(() => GButtonTheme[graph.value.themeName.value]);
+  const colors = useGraphColors();
+
+  const props = withDefaults(
+    defineProps<{
+      secondary?: boolean;
+      contrast?: boolean;
+    }>(),
+    {
+      secondary: false,
+      contrast: false,
+    }
+  );
+
+  const color = computed(() => {
+    if (props.secondary) return colors.value.secondary;
+    if (props.contrast) return colors.value.contrast;
+    return colors.value.primary;
+  });
 </script>
 
 <template>

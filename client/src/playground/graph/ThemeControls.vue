@@ -8,13 +8,12 @@
   import CButton from "@ui/core/button/Button.vue";
   import { useTheme } from "@graph/themes/useTheme";
   import { ref, watch } from "vue";
-  import { GButtonTheme } from "@ui/graph/GButtonTheme";
 
   const props = defineProps<{
     graph: Graph;
   }>();
 
-  const { setTheme } = useTheme(props.graph, 'playground-theme-controls');
+  const { setTheme } = useTheme(props.graph, "playground-theme-controls");
 
   const themes = ref(THEMES[props.graph.themeName.value]);
 
@@ -43,10 +42,7 @@
           v-for="(_, key) in THEMES"
           @click="graph.themeName.value = key"
         >
-          <CButton
-            :color="GButtonTheme[key]"
-            style="width: 120px; text-align: center;"
-          >
+          <CButton style="width: 120px; text-align: center">
             {{ camelCaseToTitleCase(key) }}
           </CButton>
         </div>

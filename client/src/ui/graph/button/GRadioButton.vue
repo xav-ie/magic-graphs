@@ -1,17 +1,15 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import { graph } from "@graph/global";
   import CRadioButton from "@ui/core/button/RadioButton.vue";
-  import { GRadioButtonTheme } from "./GRadioButtonTheme";
+  import { useGraphColors } from "@graph/themes/useGraphColors";
 
-  const theme = computed(() => GRadioButtonTheme[graph.value.themeName.value]);
+  const colors = useGraphColors();
 </script>
 
 <template>
   <CRadioButton
     v-bind="$attrs"
-    :color="theme.color"
-    :outline-color="theme.outlineColor"
+    :color="colors.secondary"
+    :outline-color="colors.text"
   >
     <slot></slot>
   </CRadioButton>
