@@ -4,9 +4,9 @@ import { useLocalStorage } from "@vueuse/core";
 import { getCtx } from "@utils/ctx";
 
 export const useStorePanZoomState = (canvasRef: Ref<HTMLCanvasElement | undefined | null>) => {
-  const scale = useLocalStorage("panZoomScale", 0)
-  const panX = useLocalStorage("panZoomPanX", 0)
-  const panY = useLocalStorage("panZoomPanY", 0)
+  const scale = useLocalStorage("pan-zoom-scale", 0)
+  const panX = useLocalStorage("pan-zoom-pan-x", 0)
+  const panY = useLocalStorage("pan-zoom-pan-y", 0)
 
   /**
    * tracks the current pan and zoom of the canvas

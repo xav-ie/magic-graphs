@@ -6,7 +6,7 @@
   import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
 
   const themeNameToIcon: Record<PreferredGraphTheme, string> = {
-    system: "settings_outline",
+    auto: "settings_outline",
     light: "light_mode_outline",
     dark: "dark_mode_outline",
     girl: "girl",

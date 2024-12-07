@@ -5,9 +5,9 @@ import { useLocalStorage } from "@vueuse/core"
 import type { GraphThemeName } from "."
 import type { Graph } from "@graph/types"
 
-export type PreferredGraphTheme = GraphThemeName | 'system'
+export type PreferredGraphTheme = GraphThemeName | 'auto'
 
-const DEFAULT_THEME: PreferredGraphTheme = 'system'
+const DEFAULT_THEME: PreferredGraphTheme = 'auto'
 
 /**
  * creates a `ref` that when changed updates the {@link Graph.themeName | graph theme} and saves the preference
@@ -18,15 +18,15 @@ const DEFAULT_THEME: PreferredGraphTheme = 'system'
  */
 export const usePreferredTheme = (graph: BaseGraph) => {
   const isDark = useDark()
-  const preferredTheme = useLocalStorage<PreferredGraphTheme>('selectedTheme', DEFAULT_THEME)
+  const preferredTheme = useLocalStorage<PreferredGraphTheme>('preferred-theme', DEFAULT_THEME)
 
   watch(isDark, () => {
-    if (preferredTheme.value !== 'system') return
+    if (preferredTheme.value !== 'auto') return
     graph.themeName.value = isDark.value ? 'dark' : 'light'
   }, { immediate: true })
 
   watch(preferredTheme, () => {
-    if (preferredTheme.value === 'system') {
+    if (preferredTheme.value === 'auto') {
       graph.themeName.value = isDark.value ? 'dark' : 'light'
     } else {
       graph.themeName.value = preferredTheme.value
