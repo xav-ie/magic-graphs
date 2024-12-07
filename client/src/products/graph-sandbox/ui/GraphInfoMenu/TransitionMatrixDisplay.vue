@@ -6,9 +6,7 @@
   import TransitionMatrixLabel from "./TransitionMatrixLabel.vue";
   import { useGraphColors } from "@graph/themes/useGraphColors";
 
-  defineProps<{
-    transitionMatrix: TransitionMatrix
-  }>()
+  const { transitionMatrix } = useTransitionMatrix(graph.value);
 
   const graphColors = useGraphColors();
 
