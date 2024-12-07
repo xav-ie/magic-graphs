@@ -77,7 +77,6 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
   return matrix;
 };
 
-
 const getUnweightedTransitionMatrix = (graph: Graph) => {
   const nodes = graph.nodes.value;
   const nodeCount = nodes.length;
@@ -110,7 +109,6 @@ const getUnweightedTransitionMatrix = (graph: Graph) => {
   }
   return matrix
 }
-
 
 export const useTransitionMatrix = (graph: Graph) => {
   const transitionMatrix = ref(getTransitionMatrix(graph));

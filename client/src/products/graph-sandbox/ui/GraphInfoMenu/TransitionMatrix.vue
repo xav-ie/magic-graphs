@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import { graph } from "@graph/global";
 import { useTransitionMatrix } from "@graph/useTransitionMatrix";
 import colors from "@utils/colors";
-import CButton from "@ui/core/Button.vue";
+import CButton from "@ui/core/button/Button.vue";
 import CIcon from "@ui/core/Icon.vue";
 import TransitionMatrixDisplay from "./TransitionMatrixDisplay.vue";
 
@@ -23,9 +23,9 @@ const currentTransitionMatrix = computed(() =>
 <template>
   <div class="flex items-end justify-between">
     <h2 class="text-xl font-bold text-gray-200 mb-2 mt-5">Transition Matrix</h2>
-    <CButton 
-      @click="toggle" 
-      :color="colors.GRAY_800" 
+    <CButton
+      @click="toggle"
+      :color="colors.GRAY_800"
       :text-color="colors.GRAY_300"
       class="aspect-square"
     >
@@ -33,7 +33,7 @@ const currentTransitionMatrix = computed(() =>
     </CButton>
   </div>
   <div class="bg-gray-700 p-4 rounded-lg max-h-[300px] overflow-auto">
-    <TransitionMatrixDisplay 
+    <TransitionMatrixDisplay
       :transition-matrix="currentTransitionMatrix"
     />
   </div>
