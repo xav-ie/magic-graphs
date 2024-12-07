@@ -36,7 +36,10 @@
 
       <div class="overflow-auto">
         <div class="flex items-center gap-4">
-          <div v-for="node in value">
+          <div 
+            v-for="node in value" 
+            :key="node.id"
+          >
             <GNode class="relative flex flex-col">
               <span class="leading-[15px]">
                 {{ node.label }}
