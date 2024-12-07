@@ -4,30 +4,32 @@
   import { graph } from "@graph/global";
   import type { TransitionMatrix } from "@graph/useTransitionMatrix";
   import TransitionMatrixLabel from "./TransitionMatrixLabel.vue";
+  import { useGraphColors } from "@graph/themes/useGraphColors";
 
-
-  const props = defineProps<{ 
-    transitionMatrix: TransitionMatrix 
+  defineProps<{
+    transitionMatrix: TransitionMatrix
   }>()
+
+  const graphColors = useGraphColors();
 
   const brackets = {
     background: `
       linear-gradient(
-        ${colors.GRAY_700},
-        ${colors.GRAY_700}
+        ${graphColors.value.secondary},
+        ${graphColors.value.secondary}
       )
       50%
       50%/calc(100% - 10px)
       calc(100% - 10px) no-repeat,
       linear-gradient(
         90deg,
-        ${colors.WHITE}
+        ${graphColors.value.text}
         10%,
         ${colors.TRANSPARENT}
         10%,
         ${colors.TRANSPARENT}
         90%,
-        ${colors.WHITE}
+        ${graphColors.value.text}
         90%
       )
       188%
@@ -64,6 +66,5 @@
         </div>
       </div>
     </div>
-    <div class="text-gray-700 select-none">block</div>
   </div>
 </template>
