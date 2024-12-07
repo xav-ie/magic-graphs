@@ -36,9 +36,9 @@ export const drawTextWithTextArea = (textArea: DeepRequired<TextArea>) => (ctx: 
       ...textArea,
       at,
     } as DeepRequired<TextArea>);
-    
+
     const textVerticalOffset = fontSize >= 50 ? 0.3 : 0.1;
-    
+
     ctx.fillText(
       content,
       at.x + width / 2,
