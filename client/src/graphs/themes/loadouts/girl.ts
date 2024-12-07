@@ -15,7 +15,7 @@ export const GIRL_THEME: GraphThemeRaw = {
   edgeFocusColor: colors.PURPLE_600,
   edgeFocusTextColor: colors.PURPLE_600,
 
-  graphBgColor: colors.PINK_200,
+  graphBgColor: colors.PINK_300,
   graphBgPatternColor: colors.PINK_900 + '15',
 
   nodeAnchorColor: colors.PINK_500,
