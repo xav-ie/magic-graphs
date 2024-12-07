@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import { useUserPreferredTheme } from '@graph/themes/useUserPreferredTheme'
+import { usePreferredTheme } from '@graph/themes/usePreferredTheme'
 import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
 import { useBaseGraph } from '@graph/base'
 import { useMarquee } from '@graph/plugins/marquee'
@@ -33,10 +33,10 @@ export const useGraph = (
   const nodeDragControls = useNodeDrag({ ...baseGraph, ...nodeAnchorControls })
   const annotationControls = useAnnotations(baseGraph)
   const persistentControls = usePersistent(baseGraph)
+  const preferredThemeControls = usePreferredTheme(baseGraph)
 
   useUserEditableGraph({ ...baseGraph, ...historyControls, ...focusControls })
 
-  useUserPreferredTheme(baseGraph)
 
   return {
     ...baseGraph,
@@ -47,6 +47,7 @@ export const useGraph = (
     ...nodeAnchorControls,
     ...annotationControls,
     ...persistentControls,
+    ...preferredThemeControls,
     helpers: useGraphHelpers(baseGraph),
   }
 }

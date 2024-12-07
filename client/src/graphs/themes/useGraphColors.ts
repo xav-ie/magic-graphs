@@ -1,14 +1,15 @@
+import { computed } from "vue";
 import { graph } from "@graph/global";
 import colors from "@utils/colors";
 import type { GraphThemeName } from ".";
-import { computed } from "vue";
 
 type GraphColors = {
   primary: string
   secondary: string
   tertiary: string
   contrast: string
-  text: string
+  text: string,
+  brand: string
 };
 
 export const ThemeToGraphColors: Record<GraphThemeName, GraphColors> = {
@@ -18,6 +19,7 @@ export const ThemeToGraphColors: Record<GraphThemeName, GraphColors> = {
     tertiary: colors.GRAY_400,
     contrast: colors.GRAY_800,
     text: colors.GRAY_900,
+    brand: 'magic'
   },
   dark: {
     primary: colors.GRAY_800,
@@ -25,13 +27,15 @@ export const ThemeToGraphColors: Record<GraphThemeName, GraphColors> = {
     tertiary: colors.GRAY_900,
     contrast: colors.GRAY_200,
     text: colors.GRAY_100,
+    brand: 'magic'
   },
   girl: {
-    primary: colors.PINK_600,
-    secondary: colors.PINK_500,
-    tertiary: colors.PINK_700,
+    primary: colors.PINK_700,
+    secondary: colors.PINK_600,
+    tertiary: colors.PINK_800,
     contrast: colors.PINK_200,
-    text: colors.PINK_900,
+    text: colors.WHITE,
+    brand: 'girl-magic'
   }
 }
 
