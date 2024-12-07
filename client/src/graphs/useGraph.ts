@@ -5,7 +5,7 @@ import { useBaseGraph } from '@graph/base'
 import { useMarquee } from '@graph/plugins/marquee'
 import { useNodeDrag } from '@graph/plugins/drag'
 import { useNodeAnchors } from '@graph/plugins/anchors'
-import { useUserEditableGraph } from '@graph/plugins/editable'
+import { useUserEditableGraph } from '@graph/plugins/shortcut'
 import { useAnnotations } from '@graph/plugins/annotations'
 import { useFocus } from '@graph/plugins/focus'
 import { useHistory } from '@graph/plugins/history'
@@ -36,7 +36,6 @@ export const useGraph = (
   const preferredThemeControls = usePreferredTheme(baseGraph)
 
   useUserEditableGraph({ ...baseGraph, ...historyControls, ...focusControls })
-
 
   return {
     ...baseGraph,
