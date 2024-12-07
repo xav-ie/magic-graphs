@@ -2,7 +2,7 @@
   import { computed } from "vue";
   import colors from "@colors";
   import { graph } from "@graph/global";
-  import type { TransitionMatrix } from "@graph/useTransitionMatrix";
+  import { useTransitionMatrix } from "@graph/useTransitionMatrix";
   import TransitionMatrixLabel from "./TransitionMatrixLabel.vue";
   import { useGraphColors } from "@graph/themes/useGraphColors";
 
@@ -59,8 +59,8 @@
           :key="'col-' + colIndex"
         >
           <TransitionMatrixLabel
-            :toNode="nodes[rowIndex]"
-            :fromNode="nodes[colIndex]"
+            :to-node="nodes[rowIndex]"
+            :from-node="nodes[colIndex]"
             :weight="col"
           />
         </div>
