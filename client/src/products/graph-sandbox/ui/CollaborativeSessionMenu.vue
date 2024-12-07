@@ -6,13 +6,14 @@
   import { debounce } from "@utils/debounce";
   import colors from "@utils/colors";
   import { productIdToProduct, useProductRouting } from "@utils/product";
-  import { darkenHex } from "@utils/colors";
   import { generateId } from "@utils/id";
   import GraphSandboxProductInfo from "../info";
   import CPopover from "@ui/core/Popover.vue";
-  import CPopoverTooltip from "@ui/core/PopoverTooltip.vue";
+  import GButton from "@ui/graph/button/GButton.vue";
   import CButton from "@ui/core/button/Button.vue";
   import CIcon from "@ui/core/Icon.vue";
+  import GWell from "@ui/graph/GWell.vue";
+import GInputText from "@ui/graph/input/GInputText.vue";
 
   const router = useRouter();
   const { navigate } = useProductRouting();
@@ -72,25 +73,26 @@
     <template #activator="props">
       <slot v-bind="props"></slot>
     </template>
-    <div class="bg-gray-800 flex flex-col text-white p-3 w-[400px] rounded-lg">
-      <h1 class="text-2xl font-bold text-gray-200 mb-3">Collaborate</h1>
 
-      <h2 class="text-xl font-bold text-gray-200 mb-2">My Name</h2>
+    <GWell class="flex flex-col p-3 w-[400px] rounded-lg">
+      <h1 class="text-2xl font-bold mb-3">Collaborate</h1>
+
+      <h2 class="text-xl font-bold mb-2">My Name</h2>
       <div class="rounded-lg mb-2">
-        <input
+        <GInputText
           v-model="myCollaboratorProfile.name"
           :disabled="isConnected || startingRoom"
-          type="text"
           id="collab-name"
-          class="bg-gray-700 text-white w-full p-2 rounded-lg outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-          placeholder="The name you want others to see"
+          class="w-full"
+          placeholder="Pick a name for others to see"
         />
       </div>
 
       <div class="w-full mt-2">
-        <CButton
+        <GButton
           v-if="!isConnected && !startingRoom"
           @click="startCollaboration"
+          contrast
           :disabled="!myCollaboratorProfile.name"
           class="w-full"
         >
@@ -99,7 +101,7 @@
             icon="link"
             class="ml-2"
           />
-        </CButton>
+        </GButton>
 
         <CButton
           v-else-if="startingRoom"
@@ -110,9 +112,10 @@
         </CButton>
 
         <div v-else>
-          <div
+          <GWell
+            tertiary
             @click="copyLink"
-            class="group p-2 bg-gray-900 bg-opacity-50 hover:bg-opacity-100 text-gray-300 rounded-lg cursor-pointer flex justify-between items-center"
+            class="group p-2 rounded-md cursor-pointer flex justify-between items-center"
           >
             <span>
               {{ link }}
@@ -120,14 +123,14 @@
             <CIcon
               v-if="!linkCopied"
               icon="content_copy"
-              class="text-gray-400 opacity-0 group-hover:opacity-100"
+              class="group-hover:opacity-100 opacity-0"
             />
             <CIcon
               v-if="linkCopied"
-              icon="check_underline"
-              class="text-green-400 opacity-0 group-hover:opacity-100"
+              icon="check"
+              class="text-green-400"
             />
-          </div>
+          </GWell>
         </div>
       </div>
 
@@ -145,7 +148,7 @@
       </div>
 
       <div v-if="isConnected && meAsACollaborator">
-        <h2 class="text-xl font-bold text-gray-200 mt-4 mb-2">
+        <h2 class="text-xl font-bold mt-4 mb-2">
           Collaborators ({{ collaboratorCount }})
         </h2>
         <div class="flex flex-wrap items-center gap-2">
@@ -155,7 +158,7 @@
                 productIdToProduct[meAsACollaborator.productId].name
               }`,
               pt: {
-                text: 'bg-magic'
+                text: 'bg-magic',
               },
             }"
             :style="{ backgroundColor: meAsACollaborator.color }"
@@ -179,6 +182,6 @@
           </button>
         </div>
       </div>
-    </div>
+    </GWell>
   </CPopover>
 </template>

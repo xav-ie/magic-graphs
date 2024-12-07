@@ -1,15 +1,13 @@
 <script setup lang="ts">
-  import { computed } from "vue";
   import CToolbarDivider from "@ui/core/toolbar/ToolbarDivider.vue";
-  import { GToolbarDividerTheme } from "./GToolbarDividerTheme";
-  import { graph } from "@graph/global";
+  import { useGraphColors } from "@graph/themes/useGraphColors";
 
-  const color = computed(() => GToolbarDividerTheme[graph.value.themeName.value]);
+  const colors = useGraphColors();
 </script>
 
 <template>
   <CToolbarDivider
     v-bind="$props"
-    :color="color"
+    :color="colors.text + '30'"
   />
 </template>

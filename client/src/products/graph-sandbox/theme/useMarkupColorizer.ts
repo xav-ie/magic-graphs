@@ -4,6 +4,7 @@ import type { GEdge, GNode, Graph } from "@graph/types";
 import colors, { adjustHex } from "@utils/colors";
 import type { Color } from "@utils/colors";
 import { MARKUP_USETHEME_ID } from "../constants";
+import type { GraphThemeName } from "@graph/themes";
 
 type ColorMapKey = GNode['id'] | GEdge['id'];
 type ColorMapValue = Color;
@@ -42,6 +43,16 @@ export const useMarkupColorizer = (graph: Graph) => {
     return color;
   };
 
+  const encapsulatedNodeBoxBorderColor = () => {
+    const themes: Record<GraphThemeName, Color> = {
+      dark: colors.WHITE,
+      light: colors.BLACK,
+      girl: colors.PURPLE_800,
+    }
+
+    return themes[graph.themeName.value] + '80';
+  }
+
   const colorize = () => {
     setTheme('nodeColor', colorNode);
 
@@ -52,7 +63,7 @@ export const useMarkupColorizer = (graph: Graph) => {
     setTheme('edgeColor', colorEdge);
 
     setTheme('marqueeSelectionBoxColor', colors.TRANSPARENT)
-    setTheme('marqueeEncapsulatedNodeBoxBorderColor', colors.WHITE + '80')
+    setTheme('marqueeEncapsulatedNodeBoxBorderColor', encapsulatedNodeBoxBorderColor)
     setTheme('marqueeEncapsulatedNodeBoxColor', colors.TRANSPARENT)
   }
 

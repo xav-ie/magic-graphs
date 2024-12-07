@@ -50,6 +50,7 @@
     :class="classes"
     :style="{
       borderColor: borderColorHex,
+      color: textColorHex,
     }"
   >
     <div
@@ -65,7 +66,6 @@
       ]"
       :style="{
         backgroundColor: props.color,
-        color: textColorHex,
       }"
     >
       <slot></slot>
