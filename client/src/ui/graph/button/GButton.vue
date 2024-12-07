@@ -1,12 +1,30 @@
 <script setup lang="ts">
+  import { computed } from "vue";
   import CButton from "@ui/core/button/Button.vue";
   import { useGraphColors } from "@graph/themes/useGraphColors";
 
   const colors = useGraphColors();
+
+  const props = withDefaults(
+    defineProps<{
+      secondary?: boolean;
+      contrast?: boolean;
+    }>(),
+    {
+      secondary: false,
+      contrast: false,
+    }
+  );
+
+  const color = computed(() => {
+    if (props.secondary) return colors.value.secondary;
+    if (props.contrast) return colors.value.contrast;
+    return colors.value.primary;
+  });
 </script>
 
 <template>
-  <CButton :color="colors.primary">
+  <CButton :color="color">
     <slot></slot>
   </CButton>
 </template>
