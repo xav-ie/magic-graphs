@@ -1,10 +1,8 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import { graph } from "@graph/global";
+  import { useGraphColors } from "@graph/themes/useGraphColors";
   import CWell from "@ui/core/Well.vue";
-  import { GWellTheme } from "./GWellTheme";
 
-  const theme = computed(() => GWellTheme[graph.value.themeName.value]);
+  const colors = useGraphColors();
 
   withDefaults(defineProps<{
     /**
@@ -20,8 +18,8 @@
 <template>
   <CWell
     v-bind="$attrs"
-    :color="secondary ? theme.secondaryColor : theme.color"
-    :text-color="theme.textColor"
+    :color="secondary ? colors.secondary : colors.primary"
+    :text-color="colors.text"
   >
     <slot></slot>
   </CWell>

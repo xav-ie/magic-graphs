@@ -1,17 +1,17 @@
 <script setup lang="ts">
   import { computed } from "vue";
   import CToolbarButton from "@ui/core/toolbar/ToolbarButton.vue";
-  import { GToolbarButtonTheme } from "./GToolbarButtonTheme";
   import { graph } from "@graph/global";
+  import { useGraphColors } from "@graph/themes/useGraphColors";
 
-  const theme = computed(() => GToolbarButtonTheme[graph.value.themeName.value]);
+  const colors = useGraphColors();
 </script>
 
 <template>
   <CToolbarButton
     v-bind="$props"
-    :color="theme.color"
-    :active-color="theme.activeColor"
+    :color="colors.primary"
+    :active-color="colors.tertiary"
   >
     <slot></slot>
   </CToolbarButton>

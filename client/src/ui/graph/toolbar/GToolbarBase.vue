@@ -1,12 +1,10 @@
 <script setup lang="ts">
-  import { computed } from "vue";
   import CToolbar from "@ui/core/toolbar/ToolbarBase.vue";
   import GToolbarHint from "./GToolbarHint.vue";
-  import { GToolbarBaseTheme } from "./GToolbarBaseTheme";
-  import { graph } from "@graph/global";
+  import { useGraphColors } from "@graph/themes/useGraphColors";
   import type { TutorialControls } from "@graph/tutorials/types";
 
-  const color = computed(() => GToolbarBaseTheme[graph.value.themeName.value]);
+  const colors = useGraphColors();
 
   defineProps<{
     hint?: TutorialControls;
@@ -16,7 +14,7 @@
 <template>
   <CToolbar
     :hint="hint"
-    :color="color"
+    :color="colors.primary"
   >
     <slot></slot>
     <template #hint>
