@@ -16,4 +16,8 @@ export const CANT_RUN_REASONS = {
   NOT_UNDIRECTED: 'Requires undirected graph',
   NOT_ENOUGH_NODES: minNodeText,
   NOT_ENOUGH_EDGES: minEdgeText,
+  NOT_CONNECTED: 'Requires connected graph',
+  NOT_ACYCLIC: 'Requires acyclic graph',
+  NOT_BIPARTITE: 'Requires bipartite graph',
+  NOT_PLANAR: 'Requires planar graph',
 } as const

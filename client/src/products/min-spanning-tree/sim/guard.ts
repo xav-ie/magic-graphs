@@ -8,5 +8,7 @@ export const canRunMST = (graph: Graph) => () => {
   if (!isWeighted) return CANT_RUN_REASONS.NOT_WEIGHTED
   const hasAtLeastOneEdge = graph.edges.value.length >= 1
   if (!hasAtLeastOneEdge) return CANT_RUN_REASONS.NOT_ENOUGH_EDGES(1)
+  const isConnected = graph.characteristics.isConnected.value
+  if (!isConnected) return CANT_RUN_REASONS.NOT_CONNECTED
   return true
 }
