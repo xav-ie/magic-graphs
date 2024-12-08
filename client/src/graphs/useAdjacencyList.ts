@@ -156,11 +156,17 @@ export const useAdjacencyList = (graph: BaseGraph) => {
   const fullNodeAdjacencyList = ref<FullNodeAdjacencyList>({});
   const weightedAdjacencyList = ref<WeightedAdjacencyList>({});
 
+  const directedAdjacencyList = ref<AdjacencyList>({});
+  const undirectedAdjacencyList = ref<AdjacencyList>({});
+
   const update = () => {
     adjacencyList.value = getAdjacencyList(graph);
     labelAdjacencyList.value = getLabelAdjacencyList(graph);
     fullNodeAdjacencyList.value = getFullNodeAdjacencyList(graph);
     weightedAdjacencyList.value = getWeightedAdjacencyList(graph);
+
+    directedAdjacencyList.value = getDirectedGraphAdjacencyList(graph);
+    undirectedAdjacencyList.value = getUndirectedGraphAdjacencyList(graph);
   }
 
   update();
@@ -194,5 +200,16 @@ export const useAdjacencyList = (graph: BaseGraph) => {
      * the adjacency list using node ids as keys and full node objects along with weights as values
      */
     weightedAdjacencyList,
+
+    /**
+     * the directed adjacency list using node ids as keys
+     */
+    directedAdjacencyList,
+    /**
+     * the undirected adjacency list using node ids as keys
+     */
+    undirectedAdjacencyList,
   };
 };
+
+export type AdjacencyLists = ReturnType<typeof useAdjacencyList>;

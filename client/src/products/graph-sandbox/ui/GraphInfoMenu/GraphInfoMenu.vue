@@ -5,6 +5,7 @@
   import GWell from "@ui/graph/GWell.vue";
   import AdjacencyList from "./AdjacencyList.vue";
   import TransitionMatrix from "./TransitionMatrix.vue";
+  import ConnectedInfo from "./ConnectedInfo.vue";
 
   const graphHasNodes = computed(() => graph.value.nodes.value.length > 0);
 </script>
@@ -19,6 +20,7 @@
       <h1 class="text-2xl mb-3">Graph Info</h1>
 
       <div v-if="graphHasNodes">
+        <ConnectedInfo />
         <AdjacencyList />
         <TransitionMatrix />
       </div>

@@ -12,6 +12,9 @@ import { useHistory } from '@graph/plugins/history'
 import { usePersistent } from '@graph/plugins/persistent'
 import type { GraphSettings } from './settings'
 import { useInteractive } from './plugins/interactive'
+import { useAdjacencyList } from './useAdjacencyList'
+import { useCharacteristics } from './plugins/characteristics'
+import { useTransitionMatrix } from './useTransitionMatrix'
 
 /**
  * a package full of tools for creating and managing graphs
@@ -41,6 +44,11 @@ export const useGraph = (
     ...annotationControls
   })
 
+  const adjacencyLists = useAdjacencyList(baseGraph)
+  const transitionMatrix = useTransitionMatrix(baseGraph)
+
+  const characteristics = useCharacteristics({ ...baseGraph, adjacencyLists })
+
   useInteractive(baseGraph)
 
   return {
@@ -54,6 +62,9 @@ export const useGraph = (
     ...persistentControls,
     ...preferredThemeControls,
     shortcutActions,
+    adjacencyLists,
+    transitionMatrix,
+    characteristics,
     helpers: useGraphHelpers(baseGraph),
   }
 }
