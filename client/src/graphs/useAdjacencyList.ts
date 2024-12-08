@@ -1,5 +1,6 @@
 import { onUnmounted, ref } from 'vue';
-import type { GNode, Graph } from '@graph/types';
+import type { GNode } from '@graph/types';
+import type { BaseGraph } from './base';
 import {
   getDirectedOutboundEdges,
   getUndirectedOutboundEdges,
@@ -14,14 +15,14 @@ import type { GraphSettings } from './settings';
  */
 export type AdjacencyList = Record<string, string[]>;
 
-export const getDirectedGraphAdjacencyList = (graph: Graph) => {
+export const getDirectedGraphAdjacencyList = (graph: BaseGraph) => {
   return graph.nodes.value.reduce<AdjacencyList>((acc, node) => {
     acc[node.id] = getDirectedOutboundEdges(node.id, graph.edges.value).map(edge => edge.to);
     return acc;
   }, {});
 }
 
-export const getUndirectedGraphAdjacencyList = (graph: Graph) => {
+export const getUndirectedGraphAdjacencyList = (graph: BaseGraph) => {
   return graph.nodes.value.reduce<AdjacencyList>((acc, node) => {
     acc[node.id] = getUndirectedOutboundEdges(node.id, graph.edges.value).map(edge => {
       return edge.from === node.id ? edge.to : edge.from;
@@ -38,7 +39,7 @@ export const getUndirectedGraphAdjacencyList = (graph: Graph) => {
  * @example getAdjacencyList(graph)
  * // { 'abc123': ['def456'], 'def456': ['abc123'] }
  */
-export const getAdjacencyList = (graph: Graph) => {
+export const getAdjacencyList = (graph: BaseGraph) => {
   const { isGraphDirected } = graph.settings.value;
   const fn = isGraphDirected ? getDirectedGraphAdjacencyList : getUndirectedGraphAdjacencyList;
   return fn(graph);
@@ -51,7 +52,7 @@ export const getAdjacencyList = (graph: Graph) => {
  * @example getLabelAdjacencyList(graph)
  * // { 'A': ['B'], 'B': ['A'] }
  */
-export const getLabelAdjacencyList = (graph: Graph) => {
+export const getLabelAdjacencyList = (graph: BaseGraph) => {
   const adjList = getAdjacencyList(graph);
   const adjListEntries = Object.entries(adjList);
 
@@ -84,7 +85,7 @@ export type FullNodeAdjacencyList = Record<GNode['id'], GNode[]>;
   * // 'def456': [{ id: 'abc123', label: 'A', x: 100, y: 100 }]
   * // }
  */
-export const getFullNodeAdjacencyList = (graph: Graph) => {
+export const getFullNodeAdjacencyList = (graph: BaseGraph) => {
   const adjList = getAdjacencyList(graph);
   const adjListEntries = Object.entries(adjList);
 
@@ -119,7 +120,7 @@ export type WeightedAdjacencyList = Record<GNode['id'], (GNode & {
  * //   'def456': [{ id: 'abc123', label: 'A', weight: 1, x: 100, y: 100 }]
  * // }
  */
-export const getWeightedAdjacencyList = (graph: Graph, fallbackWeight = 1) => {
+export const getWeightedAdjacencyList = (graph: BaseGraph, fallbackWeight = 1) => {
   const adjList = getAdjacencyList(graph);
   const adjListEntries = Object.entries(adjList);
 
@@ -149,7 +150,7 @@ export const getWeightedAdjacencyList = (graph: Graph, fallbackWeight = 1) => {
  *    'def456': [{ id: 'abc123', label: 'A', weight: 10, x: 100, y: 100 }]
  * }
  */
-export const useAdjacencyList = (graph: Graph) => {
+export const useAdjacencyList = (graph: BaseGraph) => {
   const adjacencyList = ref<AdjacencyList>({});
   const labelAdjacencyList = ref<AdjacencyList>({});
   const fullNodeAdjacencyList = ref<FullNodeAdjacencyList>({});

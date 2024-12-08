@@ -11,7 +11,9 @@ const minEdgeText = (minEdges: number) => {
 
 export const CANT_RUN_REASONS = {
   NOT_WEIGHTED: 'Requires weighted edges',
+  NOT_UNWEIGHTED: 'Requires unweighted edges',
   NOT_DIRECTED: 'Requires directed graph',
+  NOT_UNDIRECTED: 'Requires undirected graph',
   NOT_ENOUGH_NODES: minNodeText,
   NOT_ENOUGH_EDGES: minEdgeText,
 } as const

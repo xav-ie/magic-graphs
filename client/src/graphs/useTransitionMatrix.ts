@@ -1,5 +1,5 @@
 import { ref, onUnmounted } from "vue";
-import type { Graph } from "@graph/types";
+import type { BaseGraph } from "./base";
 import { getWeightedAdjacencyList } from "./useAdjacencyList";
 
 /**
@@ -15,7 +15,7 @@ export type TransitionMatrix = number[][];
  * @returns a 2D array (matrix) where matrix[i][j] represents the
  * absolute weight of transitioning from node i to node j
  */
-export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
+export const getTransitionMatrix = (graph: BaseGraph): TransitionMatrix => {
   const nodes = graph.nodes.value;
   const nodeCount = nodes.length;
   const adjacencyList = getWeightedAdjacencyList(graph);
@@ -44,7 +44,7 @@ export const getTransitionMatrix = (graph: Graph): TransitionMatrix => {
   return matrix;
 };
 
-export const useTransitionMatrix = (graph: Graph) => {
+export const useTransitionMatrix = (graph: BaseGraph) => {
   const transitionMatrix = ref(getTransitionMatrix(graph));
 
   const update = () => {
