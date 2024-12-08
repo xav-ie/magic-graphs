@@ -16,7 +16,7 @@
       <slot v-bind="props"></slot>
     </template>
 
-    <GWell class="flex flex-col text-xl font-bold p-3 w-[400px] rounded-lg gap-2">
+    <GWell class="flex flex-col text-xl font-bold p-3 w-[400px] h-[600px] overflow-auto rounded-lg gap-2">
       <h1 class="text-2xl mb-3">Graph Info</h1>
 
       <div v-if="graphHasNodes">
