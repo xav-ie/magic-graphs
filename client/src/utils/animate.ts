@@ -1,4 +1,5 @@
 import type { Coordinate } from "@shape/types";
+import tinycolor from "tinycolor2";
 
 /**
  *
@@ -24,7 +25,6 @@ export type EasingFunction =
    * @returns {number} the new progress
    */
   | ((progress: number) => number);
-
 
 /**
  *
@@ -52,6 +52,36 @@ export const easeFunction = (progress: number, ease: EasingFunction) => {
 };
 
 /**
+ * @description Gets an intermediate color value between two colors.
+ *
+ * @param startColor - CSS color string of the start color.
+ * @param endColor - CSS color string of the end color.
+ * @param progress - Number between 0 and 1.
+ * @returns tinycolor instance representing the interpolated color.
+ */
+export const interpolateColor = (
+  startColor: string,
+  endColor: string,
+  progress: number
+) => {
+  const start = tinycolor(startColor);
+  const end = tinycolor(endColor);
+
+  if (!start.isValid || !end.isValid) {
+    throw new Error("Invalid color provided");
+  }
+
+  const startRgb = start.toRgb();
+  const endRgb = end.toRgb();
+
+  const r = startRgb.r + (endRgb.r - startRgb.r) * progress;
+  const g = startRgb.g + (endRgb.g - startRgb.g) * progress;
+  const b = startRgb.b + (endRgb.b - startRgb.b) * progress;
+
+  return tinycolor({ r: Math.round(r), g: Math.round(g), b: Math.round(b) });
+};
+
+/**
  *
  * @param {number} startPosition the start position of the element
  * @param {number} endPosition the end position of the element
@@ -74,8 +104,8 @@ export const pointInterpolation = (
   steps: number,
   easing: EasingFunction = "linear"
 ) => {
-  if (steps < 1) throw new Error('Steps must be greater than 0')
-  if (steps % 1 !== 0) throw new Error('Step must be integer')
+  if (steps < 1) throw new Error("Steps must be greater than 0");
+  if (steps % 1 !== 0) throw new Error("Step must be integer");
 
   const result: Coordinate[] = [];
 
@@ -83,8 +113,12 @@ export const pointInterpolation = (
     const progress = i / steps;
     const easedProgress = easeFunction(progress, easing);
 
-    const x = Math.round(startPosition.x + (endPosition.x - startPosition.x) * easedProgress);
-    const y = Math.round(startPosition.y + (endPosition.y - startPosition.y) * easedProgress);
+    const x = Math.round(
+      startPosition.x + (endPosition.x - startPosition.x) * easedProgress
+    );
+    const y = Math.round(
+      startPosition.y + (endPosition.y - startPosition.y) * easedProgress
+    );
 
     result.push({ x, y });
   }
