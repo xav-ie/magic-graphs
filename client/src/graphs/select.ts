@@ -82,7 +82,7 @@ export const selectFromGraph = (graph: Graph, {
     resolve(topItem);
   }
 
-  const initialUserEditable = graph.settings.value.userEditable;
+  const initialInteractive = graph.settings.value.interactive;
   const initialFocusable = graph.settings.value.focusable;
 
   /**
@@ -90,7 +90,7 @@ export const selectFromGraph = (graph: Graph, {
    */
   const init = () => {
     graph.subscribe('onClick', onClick);
-    graph.settings.value.userEditable = false;
+    graph.settings.value.interactive = false;
     graph.settings.value.focusable = false;
     const cursorPredicate = predicate === DEFAULT_PREDICATE ? ((item: SchemaItem) => !!item) : predicate;
     graph.activateCursorSelectMode(cursorPredicate);
@@ -101,7 +101,7 @@ export const selectFromGraph = (graph: Graph, {
    */
   const cleanup = () => {
     graph.unsubscribe('onClick', onClick);
-    graph.settings.value.userEditable = initialUserEditable;
+    graph.settings.value.interactive = initialInteractive;
     graph.settings.value.focusable = initialFocusable;
     graph.deactivateCursorSelectMode();
   }

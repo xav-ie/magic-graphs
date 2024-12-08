@@ -126,14 +126,15 @@ export const DEFAULT_MARQUEE_SETTINGS: MarqueeGraphSettings = {
 }
 
 /**
- * USER EDITABLE GRAPH SETTINGS
+ * INTERACTIVE GRAPH SETTINGS
  */
-export type UserEditableGraphSettings = {
+export type InteractiveGraphSettings = {
   /**
-   * whether the user can edit the graph
+   * whether the user can create, edit and delete nodes and edges.
+   * when disabled, also disables graph settings: `nodeAnchors` and `edgeLabelsEditable`
    * @default true
    */
-  userEditable: boolean;
+  interactive: boolean;
   /**
    * the default {@link GEdge.label | label} assigned to edges when created using the UI
    * @default '1'
@@ -153,8 +154,8 @@ export type UserEditableGraphSettings = {
   userAddedEdgeRuleOneEdgePerPath: boolean,
 }
 
-export const DEFAULT_USER_EDITABLE_SETTINGS: UserEditableGraphSettings = {
-  userEditable: true,
+export const DEFAULT_INTERACTIVE_SETTINGS: InteractiveGraphSettings = {
+  interactive: true,
   userAddedEdgeLabel: '1',
   userAddedEdgeRuleNoSelfLoops: false,
   userAddedEdgeRuleOneEdgePerPath: false,
@@ -187,12 +188,62 @@ export const DEFAULT_PERSISTENT_SETTINGS: PersistentGraphSettings = {
   persistentBlacklist: new Set()
 }
 
-/**
- * COLLABORATIVE GRAPH SETTINGS
- */
-export type CollaborativeGraphSettings = {}
+export type ShortcutGraphSettings = {
+  /**
+   * whether to enable keyboard shortcuts for the graph
+   * @default true
+   */
+  shortcuts: boolean;
+  /**
+   * BINDING: Mac: Meta+Z, Windows: Control+Z
+   *
+   * if false, the undo shortcut will be disabled, if set to a function,
+   * the function will be called when the undo shortcut is pressed
+   * @default true
+   */
+  shortcutUndo: boolean | (() => void);
+  /**
+   * BINDING: Mac: Shift+Meta+Z, Windows: Shift+Control+Z
+   *
+   * if false, the redo shortcut will be disabled, if set to a function,
+   * the function will be called when the redo shortcut is pressed
+   * @default true
+   */
+  shortcutRedo: boolean | (() => void);
+  /**
+   * BINDING: Mac: Meta+A, Windows: Control+A
+   *
+   * if false, the select all shortcut will be disabled, if set to a function,
+   * the function will be called when the select all shortcut is pressed
+   * @default true
+   */
+  shortcutSelectAll: boolean | (() => void);
+  /**
+   * BINDING: Mac: Backspace, Windows: Backspace
+   *
+   * if false, the delete shortcut will be disabled, if set to a function,
+   * the function will be called when the delete shortcut is pressed
+   * @default true
+   */
+  shortcutDelete: boolean | (() => void);
+  /**
+   * BINDING: Mac: Escape, Windows: Escape
+   *
+   * if false, the escape shortcut will be disabled, if set to a function,
+   * the function will be called when the escape shortcut is pressed
+   * @default true
+   */
+  shortcutEscape: boolean | (() => void);
+}
 
-export const DEFAULT_COLLABORATIVE_SETTINGS: CollaborativeGraphSettings = {}
+export const DEFAULT_SHORTCUT_SETTINGS: ShortcutGraphSettings = {
+  shortcuts: true,
+  shortcutUndo: true,
+  shortcutRedo: true,
+  shortcutSelectAll: true,
+  shortcutDelete: true,
+  shortcutEscape: true,
+}
 
 /**
  * represents all settings on a graph instance
@@ -203,9 +254,9 @@ export type GraphSettings = (
   DraggableGraphSettings &
   NodeAnchorGraphSettings &
   MarqueeGraphSettings &
-  UserEditableGraphSettings &
+  InteractiveGraphSettings &
   PersistentGraphSettings &
-  CollaborativeGraphSettings
+  ShortcutGraphSettings
 )
 
 /**
@@ -217,7 +268,7 @@ export const DEFAULT_GRAPH_SETTINGS = {
   ...DEFAULT_DRAGGABLE_SETTINGS,
   ...DEFAULT_NODE_ANCHOR_SETTINGS,
   ...DEFAULT_MARQUEE_SETTINGS,
-  ...DEFAULT_USER_EDITABLE_SETTINGS,
+  ...DEFAULT_INTERACTIVE_SETTINGS,
   ...DEFAULT_PERSISTENT_SETTINGS,
-  ...DEFAULT_COLLABORATIVE_SETTINGS,
+  ...DEFAULT_SHORTCUT_SETTINGS,
 } as const satisfies GraphSettings

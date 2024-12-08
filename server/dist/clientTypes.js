@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pointInterpolation = exports.easeFunction = exports.PROGRESS_DEFAULTS = exports.triangle = exports.TRIANGLE_DEFAULTS = exports.scribble = exports.ERASER_BRUSH_WEIGHT = exports.SCRIBBLE_DEFAULTS = exports.useSimulationRunner = exports.useMSTSimulationRunner = exports.kruskal = exports.useMarkupSizer = exports.useMarkupColorizer = exports.dijkstras = exports.INF = exports.getWeightedAdjacencyList = exports.TUTORIAL_THEME_ID = exports.DELAY_UNTIL_NEXT_STEP = exports.NON_COLOR_THEMES = exports.resolveThemeForEdge = exports.resolveThemeForNode = exports.THEMES = exports.getThemeResolver = exports.DEFAULT_GRAPH_SETTINGS = exports.selectFromGraph = exports.getInitialEventBus = exports.useGraphCursor = void 0;
+exports.pointInterpolation = exports.easeFunction = exports.PROGRESS_DEFAULTS = exports.triangle = exports.TRIANGLE_DEFAULTS = exports.scribble = exports.ERASER_BRUSH_WEIGHT = exports.SCRIBBLE_DEFAULTS = exports.useSimulationRunner = exports.useMSTSimulationRunner = exports.kruskal = exports.useMarkupSizer = exports.useMarkupColorizer = exports.dijkstras = exports.INF = exports.getWeightedAdjacencyList = exports.TUTORIAL_THEME_ID = exports.DELAY_UNTIL_NEXT_STEP = exports.ThemeToGraphColors = exports.NON_COLOR_THEMES = exports.resolveThemeForEdge = exports.resolveThemeForNode = exports.THEMES = exports.getThemeResolver = exports.DEFAULT_GRAPH_SETTINGS = exports.selectFromGraph = exports.getInitialEventBus = exports.useGraphCursor = void 0;
 // @ts-ignore
 // @ts-ignore
 /**
@@ -249,6 +249,9 @@ const getInitialEventBus = () => {
         // @ts-ignore
         onNodeHoverChange: new Set(),
         // @ts-ignore
+        // @ts-ignore
+        onGraphLoaded: new Set(),
+        // @ts-ignore
         onGraphReset: new Set(),
         // @ts-ignore
         // @ts-ignore
@@ -392,7 +395,7 @@ predicate = DEFAULT_PREDICATE,
     };
     // @ts-ignore
     // @ts-ignore
-    const initialUserEditable = graph.settings.value.userEditable;
+    const initialInteractive = graph.settings.value.interactive;
     // @ts-ignore
     const initialFocusable = graph.settings.value.focusable;
     // @ts-ignore
@@ -407,7 +410,7 @@ predicate = DEFAULT_PREDICATE,
         // @ts-ignore
         graph.subscribe('onClick', onClick);
         // @ts-ignore
-        graph.settings.value.userEditable = false;
+        graph.settings.value.interactive = false;
         // @ts-ignore
         graph.settings.value.focusable = false;
         // @ts-ignore
@@ -428,7 +431,7 @@ predicate = DEFAULT_PREDICATE,
         // @ts-ignore
         graph.unsubscribe('onClick', onClick);
         // @ts-ignore
-        graph.settings.value.userEditable = initialUserEditable;
+        graph.settings.value.interactive = initialInteractive;
         // @ts-ignore
         graph.settings.value.focusable = initialFocusable;
         // @ts-ignore
@@ -508,11 +511,11 @@ exports.DEFAULT_GRAPH_SETTINGS = {
     // @ts-ignore
     ...DEFAULT_MARQUEE_SETTINGS,
     // @ts-ignore
-    ...DEFAULT_USER_EDITABLE_SETTINGS,
+    ...DEFAULT_INTERACTIVE_SETTINGS,
     // @ts-ignore
     ...DEFAULT_PERSISTENT_SETTINGS,
     // @ts-ignore
-    ...DEFAULT_COLLABORATIVE_SETTINGS,
+    ...DEFAULT_SHORTCUT_SETTINGS,
     // @ts-ignore
 };
 // @ts-ignore
@@ -520,7 +523,7 @@ exports.DEFAULT_GRAPH_SETTINGS = {
 // @ts-ignore
 const getThemeResolver = (
 // @ts-ignore
-theme, 
+themeName, 
 // @ts-ignore
 themeMap) => (
 // @ts-ignore
@@ -546,7 +549,7 @@ prop,
         // @ts-ignore
     });
     // @ts-ignore
-    const getter = themeMapEntry?.value ?? theme.value[prop];
+    const getter = themeMapEntry?.value ?? exports.THEMES[themeName.value][prop];
     // @ts-ignore
     if (!getter)
         throw new Error(`Theme property "${prop}" not found`);
@@ -667,6 +670,58 @@ exports.NON_COLOR_THEMES = {
     edgeTextFontWeight: 'bold',
     // @ts-ignore
     linkPreviewWidth: 10,
+};
+// @ts-ignore
+// @ts-ignore
+exports.ThemeToGraphColors = {
+    // @ts-ignore
+    light: {
+        // @ts-ignore
+        primary: colors.GRAY_300,
+        // @ts-ignore
+        secondary: colors.GRAY_200,
+        // @ts-ignore
+        tertiary: colors.GRAY_400,
+        // @ts-ignore
+        contrast: colors.GRAY_800,
+        // @ts-ignore
+        text: colors.GRAY_900,
+        // @ts-ignore
+        brand: 'magic'
+        // @ts-ignore
+    },
+    // @ts-ignore
+    dark: {
+        // @ts-ignore
+        primary: colors.GRAY_800,
+        // @ts-ignore
+        secondary: colors.GRAY_700,
+        // @ts-ignore
+        tertiary: colors.GRAY_900,
+        // @ts-ignore
+        contrast: colors.GRAY_200,
+        // @ts-ignore
+        text: colors.GRAY_100,
+        // @ts-ignore
+        brand: 'magic'
+        // @ts-ignore
+    },
+    // @ts-ignore
+    girl: {
+        // @ts-ignore
+        primary: colors.PINK_700,
+        // @ts-ignore
+        secondary: colors.PINK_600,
+        // @ts-ignore
+        tertiary: colors.PINK_800,
+        // @ts-ignore
+        contrast: colors.PINK_200,
+        // @ts-ignore
+        text: colors.WHITE,
+        // @ts-ignore
+        brand: 'girl-magic'
+        // @ts-ignore
+    }
 };
 // @ts-ignore
 // @ts-ignore
@@ -950,7 +1005,7 @@ const useMarkupColorizer = (graph) => {
         if (!color)
             return;
         // @ts-ignore
-        return getValue(graph.theme.value.nodeColor, node);
+        return graph.baseTheme.value.nodeColor;
         // @ts-ignore
     };
     // @ts-ignore
@@ -985,6 +1040,24 @@ const useMarkupColorizer = (graph) => {
     };
     // @ts-ignore
     // @ts-ignore
+    const encapsulatedNodeBoxBorderColor = () => {
+        // @ts-ignore
+        const themes = {
+            // @ts-ignore
+            dark: colors.WHITE,
+            // @ts-ignore
+            light: colors.BLACK,
+            // @ts-ignore
+            girl: colors.PURPLE_800,
+            // @ts-ignore
+        };
+        // @ts-ignore
+        // @ts-ignore
+        return themes[graph.themeName.value] + '80';
+        // @ts-ignore
+    };
+    // @ts-ignore
+    // @ts-ignore
     const colorize = () => {
         // @ts-ignore
         setTheme('nodeColor', colorNode);
@@ -1003,7 +1076,7 @@ const useMarkupColorizer = (graph) => {
         // @ts-ignore
         setTheme('marqueeSelectionBoxColor', colors.TRANSPARENT);
         // @ts-ignore
-        setTheme('marqueeEncapsulatedNodeBoxBorderColor', colors.WHITE + '80');
+        setTheme('marqueeEncapsulatedNodeBoxBorderColor', encapsulatedNodeBoxBorderColor);
         // @ts-ignore
         setTheme('marqueeEncapsulatedNodeBoxColor', colors.TRANSPARENT);
         // @ts-ignore

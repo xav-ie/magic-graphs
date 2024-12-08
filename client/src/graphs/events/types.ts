@@ -188,8 +188,6 @@ export type MarqueeGraphEventMap = {
 
 export type AnnotationGraphEventMap = {}
 
-export type UserEditableGraphEventMap = {}
-
 export type PersistentGraphEventMap = {}
 
 export type GraphEventMap = (
@@ -199,6 +197,5 @@ export type GraphEventMap = (
   DraggableGraphEventMap &
   NodeAnchorGraphEventMap &
   MarqueeGraphEventMap &
-  UserEditableGraphEventMap &
   PersistentGraphEventMap
 )

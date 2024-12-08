@@ -37,7 +37,7 @@ export const useSimulationControls = <T extends any[]>(
   const start = () => {
     if (active.value) return
 
-    graph.value.settings.value.userEditable = allowEditingDuringPlayback
+    graph.value.settings.value.interactive = allowEditingDuringPlayback
 
     paused.value = false
     active.value = true
@@ -50,7 +50,7 @@ export const useSimulationControls = <T extends any[]>(
 
   const stop = () => {
     if (interval.value) clearInterval(interval.value)
-    graph.value.settings.value.userEditable = true
+    graph.value.settings.value.interactive = true
     active.value = false
   }
 

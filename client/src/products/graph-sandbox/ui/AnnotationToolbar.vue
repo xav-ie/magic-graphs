@@ -73,12 +73,12 @@
 
     <GToolbarButtonDivider />
 
-    <ToolbarButtonGroup class="gap-1">
-      <!-- <ToolbarButton
+    <ToolbarButtonGroup>
+      <GToolbarButton
         @click="toggleErasing"
         :active="graph.annotationErasing.value"
-        icon="ink_eraser"
-      /> -->
+        icon="backspace_outline"
+      />
 
       <GToolbarButton
         @click="clearAnnotations"

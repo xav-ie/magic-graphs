@@ -48,26 +48,6 @@ export const useGraphBtns = (graph: Graph) => {
     id: GRAPH_BUTTON_ID.edgeLabelsEditable,
   };
 
-  const toggleUserEditable: GraphPlaygroundButton = {
-    label: () => graph.settings.value.userEditable ? 'Editable' : 'Not Editable',
-    action: () => graph.settings.value.userEditable = !graph.settings.value.userEditable,
-    color: () => graph.settings.value.userEditable ? colors.GREEN_600 : colors.ORANGE_600,
-    id: GRAPH_BUTTON_ID.userEditable,
-  };
-
-  const changeEdgeWeight: GraphPlaygroundButton = {
-    cond: () => !!graph.settings.value.userEditable,
-    label: () => {
-      const { userAddedEdgeLabel } = graph.settings.value;
-      return `Change Added Edge Weight (${userAddedEdgeLabel})`;
-    },
-    action: () => {
-      graph.settings.value.userAddedEdgeLabel = getRandomInRange(1, 10).toString();
-    },
-    color: () => colors.GREEN_600,
-    id: GRAPH_BUTTON_ID.edgeWeight,
-  };
-
   const changeStorageKey: GraphPlaygroundButton = {
     label: () => {
       const { persistentStorageKey } = graph.settings.value;
@@ -132,10 +112,6 @@ export const useGraphBtns = (graph: Graph) => {
 
     // node anchor
     toggleNodeAnchors,
-
-    // user editable
-    toggleUserEditable,
-    changeEdgeWeight,
 
     // persistent
     changeStorageKey,
