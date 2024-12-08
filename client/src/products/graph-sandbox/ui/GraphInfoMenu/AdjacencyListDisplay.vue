@@ -3,7 +3,10 @@
   import { useAdjacencyList } from "@graph/useAdjacencyList";
   import GNode from "@ui/graph/GNode.vue";
   import { graph } from "@graph/global";
+  import { getCommaList } from "@utils/string";
+  import CPopoverTooltip from "@ui/core/PopoverTooltip.vue";
   import CIcon from "@ui/core/Icon.vue";
+  import GWell from "@ui/graph/GWell.vue";
 
   const { weightedAdjacencyList } = useAdjacencyList(graph.value);
 
@@ -24,9 +27,19 @@
       class="flex items-center"
     >
       <div>
-        <GNode>
-          {{ getLabel(key) }}
-        </GNode>
+        <CPopoverTooltip>
+          <GNode>
+            {{ getLabel(key) }}
+          </GNode>
+
+          <template #content>
+            <GWell class="px-3 py-2 rounded-md">
+              <b>{{ getLabel(key) }}</b>
+              links to
+              <b>{{ getCommaList(value.map(n => n.label)) || 'nothing' }}</b>
+            </GWell>
+          </template>
+        </CPopoverTooltip>
       </div>
 
       <CIcon
@@ -36,21 +49,35 @@
 
       <div class="overflow-auto">
         <div class="flex items-center gap-4">
-          <div 
-            v-for="node in value" 
+          <div
+            v-for="node in value"
             :key="node.id"
           >
-            <GNode class="relative flex flex-col">
-              <span class="leading-[15px]">
-                {{ node.label }}
-              </span>
-              <span
-                v-if="isWeighted"
-                class="leading-[15px] text-[8px]"
-              >
-                Cost {{ node.weight }}
-              </span>
-            </GNode>
+            <CPopoverTooltip>
+              <GNode class="relative flex flex-col">
+                <span class="leading-[15px]">
+                  {{ node.label }}
+                </span>
+                <span
+                  v-if="isWeighted"
+                  class="leading-[15px] text-[8px]"
+                >
+                  Cost {{ node.weight }}
+                </span>
+              </GNode>
+
+              <template #content>
+                <GWell class="p-2 rounded-md">
+                  <b>{{ node.label }}</b>
+                  links to
+                  <b>{{ getLabel(key) }}</b>
+                  <span v-if="isWeighted">
+                    with a cost of
+                    <b>{{ node.weight }}</b>
+                  </span>
+                </GWell>
+              </template>
+            </CPopoverTooltip>
           </div>
           <h2
             v-if="value.length === 0"
