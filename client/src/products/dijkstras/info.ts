@@ -2,6 +2,7 @@ import type { ProductInfo } from 'src/types'
 import type { Graph } from '@graph/types'
 import { useSimulationRunner } from './sim/runner'
 import state from './state'
+import { canRunDijkstras } from './sim/guard'
 
 const info: ProductInfo = {
   route: {
@@ -20,6 +21,7 @@ const info: ProductInfo = {
     name: 'Dijkstras Algorithm',
     description: 'Finds the shortest path from a source node to all other nodes in a graph',
     thumbnail: '/products/thumbnails/dijkstras.png',
+    canRun: canRunDijkstras(graph),
     runner: useSimulationRunner(graph),
   }],
   state,
