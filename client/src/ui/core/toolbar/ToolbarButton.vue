@@ -55,6 +55,16 @@
     };
   });
 
+  const classes = [
+    "p-1",
+    "rounded-md",
+    "grid",
+    "place-items-center",
+    "w-10",
+    "h-10",
+    "outline-none",
+  ]
+
   const hovered = ref(false);
 </script>
 
@@ -63,7 +73,7 @@
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
     :disabled="disabled"
-    :class="['p-1', 'rounded-md', 'grid', 'place-items-center', 'w-10', 'h-10']"
+    :class="classes"
     :style="styles"
   >
     <slot>

@@ -130,7 +130,8 @@ export const DEFAULT_MARQUEE_SETTINGS: MarqueeGraphSettings = {
  */
 export type InteractiveGraphSettings = {
   /**
-   * whether the user can create, edit and delete nodes and edges
+   * whether the user can create, edit and delete nodes and edges.
+   * when disabled, also disables graph settings: `nodeAnchors` and `edgeLabelsEditable`
    * @default true
    */
   interactive: boolean;
@@ -235,6 +236,15 @@ export type ShortcutGraphSettings = {
   shortcutEscape: boolean | (() => void);
 }
 
+export const DEFAULT_SHORTCUT_SETTINGS: ShortcutGraphSettings = {
+  shortcuts: true,
+  shortcutUndo: true,
+  shortcutRedo: true,
+  shortcutSelectAll: true,
+  shortcutDelete: true,
+  shortcutEscape: true,
+}
+
 /**
  * represents all settings on a graph instance
  */
@@ -245,7 +255,8 @@ export type GraphSettings = (
   NodeAnchorGraphSettings &
   MarqueeGraphSettings &
   InteractiveGraphSettings &
-  PersistentGraphSettings
+  PersistentGraphSettings &
+  ShortcutGraphSettings
 )
 
 /**
@@ -259,4 +270,5 @@ export const DEFAULT_GRAPH_SETTINGS = {
   ...DEFAULT_MARQUEE_SETTINGS,
   ...DEFAULT_INTERACTIVE_SETTINGS,
   ...DEFAULT_PERSISTENT_SETTINGS,
+  ...DEFAULT_SHORTCUT_SETTINGS,
 } as const satisfies GraphSettings

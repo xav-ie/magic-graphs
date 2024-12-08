@@ -15,7 +15,7 @@
 
 <template>
   <GToolbar>
-    <ToolbarButtonGroup class="gap-1">
+    <ToolbarButtonGroup>
       <GToolbarButton
         v-for="(val, key) in themeNameToIcon"
         @click="graph.preferredTheme.value = key"

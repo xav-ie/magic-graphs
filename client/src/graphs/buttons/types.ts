@@ -7,7 +7,6 @@ export const GRAPH_BUTTON_ID = {
   nodeAnchors: 'node-anchors',
   edgeLabels: 'edge-labels',
   edgeLabelsEditable: 'edge-labels-editable',
-  userEditable: 'user-editable',
   edgeWeight: 'edge-weight',
   nodeSize: 'node-size',
   storageKey: 'storage-key',

@@ -66,8 +66,6 @@ export type MarqueeGraphTheme = {
 
 export type AnnotationGraphTheme = {}
 
-export type UserEditableGraphTheme = {}
-
 export type PersistentGraphTheme = {}
 
 export type GraphTheme = (
@@ -77,7 +75,6 @@ export type GraphTheme = (
   DraggableGraphTheme &
   NodeAnchorGraphTheme &
   MarqueeGraphTheme &
-  UserEditableGraphTheme &
   PersistentGraphTheme
 )
 

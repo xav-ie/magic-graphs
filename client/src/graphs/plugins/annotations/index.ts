@@ -179,9 +179,12 @@ export const useAnnotations = (graph: BaseGraph) => {
     if (!graph.canvas.value) return;
 
     isActive.value = true;
-    graph.settings.value.userEditable = false;
+
+    graph.settings.value.interactive = false;
     graph.settings.value.marquee = false;
     graph.settings.value.focusable = false;
+    graph.settings.value.draggable = false;
+
     graph.graphCursorDisabled.value = true;
 
     graph.canvas.value.style.cursor = 'crosshair';
@@ -197,9 +200,11 @@ export const useAnnotations = (graph: BaseGraph) => {
     isActive.value = false;
     erasing.value = false;
 
-    graph.settings.value.userEditable = true;
+    graph.settings.value.interactive = true;
     graph.settings.value.marquee = true;
     graph.settings.value.focusable = true;
+    graph.settings.value.draggable = true
+
     graph.graphCursorDisabled.value = false;
 
     graph.canvas.value.style.cursor = 'default';

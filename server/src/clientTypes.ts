@@ -1,197 +1,4 @@
 // @ts-ignore
-type GraphButtonIdMap = typeof GRAPH_BUTTON_ID;
-// @ts-ignore
-type GraphButtonId = GraphButtonIdMap[keyof GraphButtonIdMap];
-// @ts-ignore
-
-// @ts-ignore
-/**
-// @ts-ignore
- * @describes a button that can be added to the graph toolbar
-// @ts-ignore
- */
-// @ts-ignore
-export type GButton = {
-// @ts-ignore
-  cond?: () => boolean,
-// @ts-ignore
-  label: () => string,
-// @ts-ignore
-  action: () => void,
-// @ts-ignore
-  color: () => string,
-// @ts-ignore
-  id: GraphButtonId,
-}
-
-// @ts-ignore
-type ConnectOptions = {
-// @ts-ignore
-  /**
-// @ts-ignore
-   * graph instance for the collab system to write new nodes/edges to when received
-// @ts-ignore
-   * and to read from when sending new nodes/edges to other collaborators
-// @ts-ignore
-   */
-// @ts-ignore
-  graph: Graph,
-// @ts-ignore
-  /**
-// @ts-ignore
-   * room id to connect to
-// @ts-ignore
-   */
-// @ts-ignore
-  roomId: string,
-// @ts-ignore
-  /**
-// @ts-ignore
-   * product id that the graph belongs to
-// @ts-ignore
-   */
-// @ts-ignore
-  productId: ProductInfo['productId']
-}
-
-// @ts-ignore
-type SocketListenOptions = {
-// @ts-ignore
-  graph: Graph,
-// @ts-ignore
-  collaborators: Ref<CollaboratorMap>
-}
-
-// @ts-ignore
-export type CollaboratorProfile = {
-// @ts-ignore
-  /**
-// @ts-ignore
-   * the display name of the collaborator
-// @ts-ignore
-   */
-// @ts-ignore
-  name: string
-// @ts-ignore
-  /**
-// @ts-ignore
-   * the display color of the collaborator
-// @ts-ignore
-   */
-// @ts-ignore
-  color: string
-}
-
-// @ts-ignore
-export type Collaborator = {
-// @ts-ignore
-  /**
-// @ts-ignore
-   * unique id for the collaborator, tied to their socket id
-// @ts-ignore
-   */
-// @ts-ignore
-  id: string
-// @ts-ignore
-  /**
-// @ts-ignore
-   * the current mouse coordinates of the collaborator on the canvas
-// @ts-ignore
-   */
-// @ts-ignore
-  mousePosition: { x: number, y: number }
-// @ts-ignore
-  /**
-// @ts-ignore
-   * the id of the product that the collaborator is currently active on
-// @ts-ignore
-   */
-// @ts-ignore
-  productId: ProductInfo['productId']
-// @ts-ignore
-} & CollaboratorProfile
-// @ts-ignore
-
-// @ts-ignore
-export type CollaboratorMove = {
-// @ts-ignore
-  id: Collaborator['id']
-// @ts-ignore
-  x: number
-// @ts-ignore
-  y: number
-}
-
-// @ts-ignore
-export type CollaboratorMap = Record<Collaborator['id'], Collaborator>
-
-// @ts-ignore
-export type GraphState = {
-// @ts-ignore
-  nodes: GNode[],
-// @ts-ignore
-  edges: GEdge[]
-}
-
-// @ts-ignore
-export type GraphSocketEvents = {
-// @ts-ignore
-  nodeAdded: (node: GNode) => void
-// @ts-ignore
-  nodeRemoved: (nodeId: GNode['id']) => void
-// @ts-ignore
-  nodeMoved: (node: GNode) => void
-// @ts-ignore
-
-// @ts-ignore
-  edgeAdded: (edge: GEdge) => void
-// @ts-ignore
-  edgeRemoved: (edgeId: GEdge['id']) => void
-// @ts-ignore
-  edgeLabelEdited: (edgeId: GEdge['id'], label: string) => void
-}
-
-// @ts-ignore
-export type CollabSocketEvents = {
-// @ts-ignore
-  collaboratorJoined: (collaborator: Collaborator) => void
-// @ts-ignore
-  collaboratorLeft: (collaboratorId: Collaborator['id']) => void
-// @ts-ignore
-  collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
-}
-
-// @ts-ignore
-export type ConnectionSocketEvents = {
-// @ts-ignore
-  joinRoom: (
-// @ts-ignore
-    joinOptions: {
-// @ts-ignore
-      roomId: string,
-// @ts-ignore
-      me: Collaborator,
-// @ts-ignore
-      graphState: GraphState
-// @ts-ignore
-    },
-// @ts-ignore
-    mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
-// @ts-ignore
-  ) => void
-// @ts-ignore
-
-// @ts-ignore
-  leaveRoom: (confirmationCallback: () => void) => void
-}
-
-// @ts-ignore
-export type SocketEvents = GraphSocketEvents & CollabSocketEvents & ConnectionSocketEvents
-
-// @ts-ignore
-export type GraphSocket = Socket<SocketEvents, SocketEvents>
-
-// @ts-ignore
 export type BaseGraph = ReturnType<typeof useBaseGraph>
 
 // @ts-ignore
@@ -601,128 +408,197 @@ export type NodeMap = ReturnType<UseNodeEdgeMap>['nodeIdToNodeMap']
 export type EdgeMap = ReturnType<UseNodeEdgeMap>['edgeIdToEdgeMap']
 
 // @ts-ignore
-export type ActiveDragNode = {
+type GraphButtonIdMap = typeof GRAPH_BUTTON_ID;
 // @ts-ignore
-  node: GNode,
+type GraphButtonId = GraphButtonIdMap[keyof GraphButtonIdMap];
 // @ts-ignore
-  coords: Coordinate,
+
+// @ts-ignore
+/**
+// @ts-ignore
+ * @describes a button that can be added to the graph toolbar
+// @ts-ignore
+ */
+// @ts-ignore
+export type GraphPlaygroundButton = {
+// @ts-ignore
+  cond?: () => boolean,
+// @ts-ignore
+  label: () => string,
+// @ts-ignore
+  action: () => void,
+// @ts-ignore
+  color: () => string,
+// @ts-ignore
+  id: GraphButtonId,
 }
 
 // @ts-ignore
-export type GNodeRecord = {
+type ConnectOptions = {
 // @ts-ignore
-  graphType: 'node',
+  /**
 // @ts-ignore
-  data: GNode
+   * graph instance for the collab system to write new nodes/edges to when received
+// @ts-ignore
+   * and to read from when sending new nodes/edges to other collaborators
+// @ts-ignore
+   */
+// @ts-ignore
+  graph: Graph,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * room id to connect to
+// @ts-ignore
+   */
+// @ts-ignore
+  roomId: string,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * product id that the graph belongs to
+// @ts-ignore
+   */
+// @ts-ignore
+  productId: ProductInfo['productId']
 }
 
 // @ts-ignore
-export type GNodeMoveRecord = {
+type SocketListenOptions = {
 // @ts-ignore
-  graphType: 'node',
+  graph: Graph,
 // @ts-ignore
-  data: {
-// @ts-ignore
-    id: string,
-// @ts-ignore
-    from: { x: number, y: number },
-// @ts-ignore
-    to: { x: number, y: number }
-// @ts-ignore
-  }
+  collaborators: Ref<CollaboratorMap>
 }
 
 // @ts-ignore
-export type GEdgeRecord = {
+export type CollaboratorProfile = {
 // @ts-ignore
-  graphType: 'edge',
+  /**
 // @ts-ignore
-  data: GEdge
+   * the display name of the collaborator
+// @ts-ignore
+   */
+// @ts-ignore
+  name: string
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the display color of the collaborator
+// @ts-ignore
+   */
+// @ts-ignore
+  color: string
 }
 
 // @ts-ignore
-export type AddRemoveRecord = {
+export type Collaborator = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * the action that was taken in order to create this record.
+   * unique id for the collaborator, tied to their socket id
 // @ts-ignore
    */
 // @ts-ignore
-  action: 'add' | 'remove',
+  id: string
 // @ts-ignore
   /**
 // @ts-ignore
-   * the items that were affected by the action.
+   * the current mouse coordinates of the collaborator on the canvas
 // @ts-ignore
    */
 // @ts-ignore
-  affectedItems: (GNodeRecord | GEdgeRecord)[];
+  mousePosition: { x: number, y: number }
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the id of the product that the collaborator is currently active on
+// @ts-ignore
+   */
+// @ts-ignore
+  productId: ProductInfo['productId']
+// @ts-ignore
+} & CollaboratorProfile
+// @ts-ignore
+
+// @ts-ignore
+export type CollaboratorMove = {
+// @ts-ignore
+  id: Collaborator['id']
+// @ts-ignore
+  x: number
+// @ts-ignore
+  y: number
 }
 
 // @ts-ignore
-export type MoveRecord = {
+export type CollaboratorMap = Record<Collaborator['id'], Collaborator>
+
 // @ts-ignore
-  /**
+export type GraphState = {
 // @ts-ignore
-   * the action that was taken in order to create this record.
+  nodes: GNode[],
 // @ts-ignore
-   */
-// @ts-ignore
-  action: 'move',
-// @ts-ignore
-  /**
-// @ts-ignore
-   * the items that were affected by the action.
-// @ts-ignore
-   */
-// @ts-ignore
-  affectedItems: GNodeMoveRecord[];
+  edges: GEdge[]
 }
 
 // @ts-ignore
-export type HistoryRecord = AddRemoveRecord | MoveRecord;
+export type GraphSocketEvents = {
+// @ts-ignore
+  nodeAdded: (node: GNode) => void
+// @ts-ignore
+  nodeRemoved: (nodeId: GNode['id']) => void
+// @ts-ignore
+  nodeMoved: (node: GNode) => void
+// @ts-ignore
 
 // @ts-ignore
-export type RedoHistoryOptions = FocusOption;
-
+  edgeAdded: (edge: GEdge) => void
 // @ts-ignore
-export type NodeAnchor = {
+  edgeRemoved: (edgeId: GEdge['id']) => void
 // @ts-ignore
-  /**
-// @ts-ignore
-   * the x-coordinate of the anchor
-// @ts-ignore
-   */
-// @ts-ignore
-  x: number,
-// @ts-ignore
-  /**
-// @ts-ignore
-   * the y-coordinate of the anchor
-// @ts-ignore
-   */
-// @ts-ignore
-  y: number,
-// @ts-ignore
-  /**
-// @ts-ignore
-   * the direction of the anchor relative to the parent node.
-// @ts-ignore
-   * ie the north anchor is the one that spawns above the node
-// @ts-ignore
-   */
-// @ts-ignore
-  direction: 'north' | 'east' | 'south' | 'west',
-// @ts-ignore
-  /**
-// @ts-ignore
-   * the unique id of the anchor
-// @ts-ignore
-   */
-// @ts-ignore
-  id: string,
+  edgeLabelEdited: (edgeId: GEdge['id'], label: string) => void
 }
+
+// @ts-ignore
+export type CollabSocketEvents = {
+// @ts-ignore
+  collaboratorJoined: (collaborator: Collaborator) => void
+// @ts-ignore
+  collaboratorLeft: (collaboratorId: Collaborator['id']) => void
+// @ts-ignore
+  collaboratorMoved: (collaboratorMove: CollaboratorMove) => void
+}
+
+// @ts-ignore
+export type ConnectionSocketEvents = {
+// @ts-ignore
+  joinRoom: (
+// @ts-ignore
+    joinOptions: {
+// @ts-ignore
+      roomId: string,
+// @ts-ignore
+      me: Collaborator,
+// @ts-ignore
+      graphState: GraphState
+// @ts-ignore
+    },
+// @ts-ignore
+    mapCallback: (collabMap: CollaboratorMap, graphState: GraphState) => void
+// @ts-ignore
+  ) => void
+// @ts-ignore
+
+// @ts-ignore
+  leaveRoom: (confirmationCallback: () => void) => void
+}
+
+// @ts-ignore
+export type SocketEvents = GraphSocketEvents & CollabSocketEvents & ConnectionSocketEvents
+
+// @ts-ignore
+export type GraphSocket = Socket<SocketEvents, SocketEvents>
 
 // @ts-ignore
 export type GraphEventMap = ImportedGraphEventMap
@@ -827,6 +703,10 @@ export const getInitialEventBus = () => {
 // @ts-ignore
     onNodeHoverChange: new Set(),
 // @ts-ignore
+
+// @ts-ignore
+    onGraphLoaded: new Set(),
+// @ts-ignore
     onGraphReset: new Set(),
 // @ts-ignore
 
@@ -927,19 +807,23 @@ export type BaseGraphEventMap = {
 // @ts-ignore
    * when one of the following occurs:
 // @ts-ignore
-   * - a node is added or removed
+   * - a node is {@link Graph.addNode | added} or {@link Graph.removeNode | removed}
 // @ts-ignore
-   * - an edge is added or removed
+   * - an edge is {@link Graph.addEdge | added} or {@link Graph.removeEdge | removed}
 // @ts-ignore
-   * - an edge label is changed (usually indicating a change to the weight of the edge)
+   * - an edge label is {@link Graph.editEdgeLabel | edited}
+// @ts-ignore
+   * - the {@link Graph.load | graph load} api is invoked with new nodes and edges
+// @ts-ignore
+   * - the {@link Graph.reset | graph reset} api is invoked clearing all nodes and edges
 // @ts-ignore
    */
 // @ts-ignore
-  onStructureChange: (nodes: GNode[], edges: GEdge[]) => void;
+  onStructureChange: () => void;
 // @ts-ignore
   /**
 // @ts-ignore
-   * when a node is added to the graph
+   * when a node is {@link Graph.addNode | added} to the graph
 // @ts-ignore
    */
 // @ts-ignore
@@ -955,7 +839,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * when a node is removed from the graph
+   * when a node is {@link Graph.removeNode | removed} from the graph
 // @ts-ignore
    */
 // @ts-ignore
@@ -971,7 +855,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * when a node is moved to a new position on the canvas
+   * when a node is {@link Graph.moveNode | moved} to a new position on the canvas
 // @ts-ignore
    */
 // @ts-ignore
@@ -987,7 +871,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * when an edge is added to the graph
+   * when an edge is {@link Graph.addEdge | added} to the graph
 // @ts-ignore
    */
 // @ts-ignore
@@ -1003,7 +887,7 @@ export type BaseGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * when an edge is removed from the graph
+   * when an edge is {@link Graph.removeEdge | removed} from the graph
 // @ts-ignore
    */
 // @ts-ignore
@@ -1019,11 +903,11 @@ export type BaseGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * when an edge's text label is changed
+   * when an edge's text label is {@link Graph.editEdgeLabel | edited}
 // @ts-ignore
    */
 // @ts-ignore
-  onEdgeLabelEdited: (edge: GEdge, options: EditEdgeLabelOptions) => void;
+  onEdgeLabelEdited: (edge: GEdge, oldLabel: GEdge['label'], options: EditEdgeLabelOptions) => void;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -1031,9 +915,9 @@ export type BaseGraphEventMap = {
 // @ts-ignore
    *
 // @ts-ignore
-   * WARNING: items drawn to the canvas using ctx won't be tied to graphs internal state.
+   * **WARNING** items drawn to the canvas using ctx won't be tied to graphs internal state.
 // @ts-ignore
-   * Use updateAggregator if you need drawn item to integrate with graph APIs
+   * see {@link Graph.updateAggregator | `updateAggregator`} if you need drawn item to integrate with graph APIs
 // @ts-ignore
    */
 // @ts-ignore
@@ -1051,7 +935,15 @@ export type BaseGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * when the reset process is triggered
+   * when the graph is {@link Graph.load | loaded} with new nodes and edges.
+// @ts-ignore
+   */
+// @ts-ignore
+  onGraphLoaded: () => void;
+// @ts-ignore
+  /**
+// @ts-ignore
+   * when the graph has {@link Graph.reset | reset} and all nodes and edges have been removed
 // @ts-ignore
    */
 // @ts-ignore
@@ -1123,15 +1015,15 @@ export type BaseGraphEventMap = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * when the graph theme is changed
+   * when the {@link Graph.themeName | theme} of the graph has changed
 // @ts-ignore
    */
 // @ts-ignore
-  onThemeChange: (diff: DeepPartial<GraphTheme>) => void;
+  onThemeChange: (newTheme: GraphThemeName, oldTheme: GraphThemeName) => void;
 // @ts-ignore
   /**
 // @ts-ignore
-   * when the settings of the graph are changed
+   * when the {@link Graph.settings | settings} of the graph have changed
 // @ts-ignore
    */
 // @ts-ignore
@@ -1234,13 +1126,218 @@ export type MarqueeGraphEventMap = {
 export type AnnotationGraphEventMap = {}
 
 // @ts-ignore
-export type PersistentGraphEventMap = {}
-
+export type GraphEventMap = (
 // @ts-ignore
-type PersistentGraph = ReturnType<typeof usePersistentGraph>
+  BaseGraphEventMap &
+// @ts-ignore
+  HistoryGraphEventMap &
+// @ts-ignore
+  FocusGraphEventMap &
+// @ts-ignore
+  DraggableGraphEventMap &
+// @ts-ignore
+  NodeAnchorGraphEventMap &
+// @ts-ignore
+  MarqueeGraphEventMap &
+// @ts-ignore
+  PersistentGraphEventMap
+// @ts-ignore
+)
 
 // @ts-ignore
 export type LabelledItem = { label: string };
+
+// @ts-ignore
+export type NodeAnchorControls = ReturnType<typeof useNodeAnchors>
+
+// @ts-ignore
+export type NodeAnchor = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the x-coordinate of the anchor
+// @ts-ignore
+   */
+// @ts-ignore
+  x: number,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the y-coordinate of the anchor
+// @ts-ignore
+   */
+// @ts-ignore
+  y: number,
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the direction of the anchor relative to the parent node.
+// @ts-ignore
+   * ie the north anchor is the one that spawns above the node
+// @ts-ignore
+   */
+// @ts-ignore
+  direction: 'north' | 'east' | 'south' | 'west',
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the unique id of the anchor
+// @ts-ignore
+   */
+// @ts-ignore
+  id: string,
+}
+
+// @ts-ignore
+type AnnotationHistoryRecord = {
+// @ts-ignore
+  action: 'add' | 'remove',
+// @ts-ignore
+  annotations: Annotation[]
+}
+
+// @ts-ignore
+export type GraphAnnotationControls = ReturnType<typeof useAnnotations>
+
+// @ts-ignore
+export type Annotation = Scribble & { id: string }
+
+// @ts-ignore
+export type GraphNodeDragControls = ReturnType<typeof useNodeDrag>
+
+// @ts-ignore
+export type ActiveDragNode = {
+// @ts-ignore
+  node: GNode,
+// @ts-ignore
+  coords: Coordinate,
+}
+
+// @ts-ignore
+export type GraphFocusControls = ReturnType<typeof useFocus>
+
+// @ts-ignore
+export type GraphHistoryControls = ReturnType<typeof useHistory>;
+
+// @ts-ignore
+export type GNodeMoveRecord = {
+// @ts-ignore
+  graphType: 'node',
+// @ts-ignore
+  data: {
+// @ts-ignore
+    id: string,
+// @ts-ignore
+    from: { x: number, y: number },
+// @ts-ignore
+    to: { x: number, y: number }
+// @ts-ignore
+  }
+}
+
+// @ts-ignore
+export type GEdgeLabelEditRecord = {
+// @ts-ignore
+  graphType: 'edge',
+// @ts-ignore
+  data: {
+// @ts-ignore
+    id: GEdge['id'],
+// @ts-ignore
+    from: GEdge['label'],
+// @ts-ignore
+    to: GEdge['label']
+// @ts-ignore
+  }
+}
+
+// @ts-ignore
+export type GNodeRecord = {
+// @ts-ignore
+  graphType: 'node',
+// @ts-ignore
+  data: GNode
+}
+
+// @ts-ignore
+export type GEdgeRecord = {
+// @ts-ignore
+  graphType: 'edge',
+// @ts-ignore
+  data: GEdge
+}
+
+// @ts-ignore
+export type AddRemoveRecord = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the action that was taken in order to create this record.
+// @ts-ignore
+   */
+// @ts-ignore
+  action: 'add' | 'remove',
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the items that were affected by the action.
+// @ts-ignore
+   */
+// @ts-ignore
+  affectedItems: (GNodeRecord | GEdgeRecord)[];
+}
+
+// @ts-ignore
+export type MoveRecord = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the action that was taken in order to create this record.
+// @ts-ignore
+   */
+// @ts-ignore
+  action: 'move',
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the items that were affected by the action.
+// @ts-ignore
+   */
+// @ts-ignore
+  affectedItems: GNodeMoveRecord[];
+}
+
+// @ts-ignore
+export type EditRecord = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the action that was taken in order to create this record.
+// @ts-ignore
+   */
+// @ts-ignore
+  action: 'edit',
+// @ts-ignore
+  /**
+// @ts-ignore
+   * the items that were affected by the action.
+// @ts-ignore
+   */
+// @ts-ignore
+  affectedItems: GEdgeLabelEditRecord[];
+}
+
+// @ts-ignore
+export type HistoryRecord = AddRemoveRecord | MoveRecord | EditRecord;
+
+// @ts-ignore
+export type RedoHistoryOptions = FocusOption;
+
+// @ts-ignore
+export type GraphMarqueeControls = ReturnType<typeof useMarquee>
+
+// @ts-ignore
+export type GraphPersistentControls = ReturnType<typeof usePersistent>;
 
 // @ts-ignore
 type PropsNeededFromGraph = 'edges' | 'getNode' | 'getEdge' | 'getTheme' | 'settings'
@@ -1327,7 +1424,7 @@ export const selectFromGraph = (graph: Graph, {
 // @ts-ignore
 
 // @ts-ignore
-  const initialUserEditable = graph.settings.value.userEditable;
+  const initialInteractive = graph.settings.value.interactive;
 // @ts-ignore
   const initialFocusable = graph.settings.value.focusable;
 // @ts-ignore
@@ -1343,7 +1440,7 @@ export const selectFromGraph = (graph: Graph, {
 // @ts-ignore
     graph.subscribe('onClick', onClick);
 // @ts-ignore
-    graph.settings.value.userEditable = false;
+    graph.settings.value.interactive = false;
 // @ts-ignore
     graph.settings.value.focusable = false;
 // @ts-ignore
@@ -1365,7 +1462,7 @@ export const selectFromGraph = (graph: Graph, {
 // @ts-ignore
     graph.unsubscribe('onClick', onClick);
 // @ts-ignore
-    graph.settings.value.userEditable = initialUserEditable;
+    graph.settings.value.interactive = initialInteractive;
 // @ts-ignore
     graph.settings.value.focusable = initialFocusable;
 // @ts-ignore
@@ -1574,17 +1671,19 @@ export type MarqueeGraphSettings = {
 }
 
 // @ts-ignore
-export type UserEditableGraphSettings = {
+export type InteractiveGraphSettings = {
 // @ts-ignore
   /**
 // @ts-ignore
-   * whether the user can edit the graph
+   * whether the user can create, edit and delete nodes and edges.
+// @ts-ignore
+   * when disabled, also disables graph settings: `nodeAnchors` and `edgeLabelsEditable`
 // @ts-ignore
    * @default true
 // @ts-ignore
    */
 // @ts-ignore
-  userEditable: boolean;
+  interactive: boolean;
 // @ts-ignore
   /**
 // @ts-ignore
@@ -1656,7 +1755,98 @@ export type PersistentGraphSettings = {
 }
 
 // @ts-ignore
-export type CollaborativeGraphSettings = {}
+export type ShortcutGraphSettings = {
+// @ts-ignore
+  /**
+// @ts-ignore
+   * whether to enable keyboard shortcuts for the graph
+// @ts-ignore
+   * @default true
+// @ts-ignore
+   */
+// @ts-ignore
+  shortcuts: boolean;
+// @ts-ignore
+  /**
+// @ts-ignore
+   * BINDING: Mac: Meta+Z, Windows: Control+Z
+// @ts-ignore
+   *
+// @ts-ignore
+   * if false, the undo shortcut will be disabled, if set to a function,
+// @ts-ignore
+   * the function will be called when the undo shortcut is pressed
+// @ts-ignore
+   * @default true
+// @ts-ignore
+   */
+// @ts-ignore
+  shortcutUndo: boolean | (() => void);
+// @ts-ignore
+  /**
+// @ts-ignore
+   * BINDING: Mac: Shift+Meta+Z, Windows: Shift+Control+Z
+// @ts-ignore
+   *
+// @ts-ignore
+   * if false, the redo shortcut will be disabled, if set to a function,
+// @ts-ignore
+   * the function will be called when the redo shortcut is pressed
+// @ts-ignore
+   * @default true
+// @ts-ignore
+   */
+// @ts-ignore
+  shortcutRedo: boolean | (() => void);
+// @ts-ignore
+  /**
+// @ts-ignore
+   * BINDING: Mac: Meta+A, Windows: Control+A
+// @ts-ignore
+   *
+// @ts-ignore
+   * if false, the select all shortcut will be disabled, if set to a function,
+// @ts-ignore
+   * the function will be called when the select all shortcut is pressed
+// @ts-ignore
+   * @default true
+// @ts-ignore
+   */
+// @ts-ignore
+  shortcutSelectAll: boolean | (() => void);
+// @ts-ignore
+  /**
+// @ts-ignore
+   * BINDING: Mac: Backspace, Windows: Backspace
+// @ts-ignore
+   *
+// @ts-ignore
+   * if false, the delete shortcut will be disabled, if set to a function,
+// @ts-ignore
+   * the function will be called when the delete shortcut is pressed
+// @ts-ignore
+   * @default true
+// @ts-ignore
+   */
+// @ts-ignore
+  shortcutDelete: boolean | (() => void);
+// @ts-ignore
+  /**
+// @ts-ignore
+   * BINDING: Mac: Escape, Windows: Escape
+// @ts-ignore
+   *
+// @ts-ignore
+   * if false, the escape shortcut will be disabled, if set to a function,
+// @ts-ignore
+   * the function will be called when the escape shortcut is pressed
+// @ts-ignore
+   * @default true
+// @ts-ignore
+   */
+// @ts-ignore
+  shortcutEscape: boolean | (() => void);
+}
 
 // @ts-ignore
 export type GraphSettings = (
@@ -1671,11 +1861,11 @@ export type GraphSettings = (
 // @ts-ignore
   MarqueeGraphSettings &
 // @ts-ignore
-  UserEditableGraphSettings &
+  InteractiveGraphSettings &
 // @ts-ignore
   PersistentGraphSettings &
 // @ts-ignore
-  CollaborativeGraphSettings
+  ShortcutGraphSettings
 // @ts-ignore
 )
 // @ts-ignore
@@ -1699,11 +1889,11 @@ export const DEFAULT_GRAPH_SETTINGS = {
 // @ts-ignore
   ...DEFAULT_MARQUEE_SETTINGS,
 // @ts-ignore
-  ...DEFAULT_USER_EDITABLE_SETTINGS,
+  ...DEFAULT_INTERACTIVE_SETTINGS,
 // @ts-ignore
   ...DEFAULT_PERSISTENT_SETTINGS,
 // @ts-ignore
-  ...DEFAULT_COLLABORATIVE_SETTINGS,
+  ...DEFAULT_SHORTCUT_SETTINGS,
 // @ts-ignore
 } as const satisfies GraphSettings
 
@@ -1727,7 +1917,7 @@ type ResolvedThemeParams<T extends keyof GraphTheme> = ThemeParams<T> extends []
 // @ts-ignore
 export const getThemeResolver = (
 // @ts-ignore
-  theme: Ref<Partial<GraphTheme>>,
+  themeName: Ref<GraphThemeName>,
 // @ts-ignore
   themeMap: FullThemeMap,
 // @ts-ignore
@@ -1761,7 +1951,7 @@ export const getThemeResolver = (
 // @ts-ignore
     })
 // @ts-ignore
-    const getter = themeMapEntry?.value ?? theme.value[prop]
+    const getter = themeMapEntry?.value ?? THEMES[themeName.value][prop]
 // @ts-ignore
     if (!getter) throw new Error(`Theme property "${prop}" not found`)
 // @ts-ignore
@@ -1795,6 +1985,10 @@ export const THEMES = {
   girl: GIRL_THEME,
 // @ts-ignore
 } as const satisfies Record<string, GraphTheme>
+// @ts-ignore
+
+// @ts-ignore
+export type GraphThemeName = keyof typeof THEMES
 // @ts-ignore
 
 // @ts-ignore
@@ -1867,7 +2061,7 @@ export const resolveThemeForEdge = (getTheme: ThemeGetter, edge: GEdge): BaseGra
 // @ts-ignore
 export type NonColorGraphThemes = Pick<
 // @ts-ignore
-  GraphTheme,
+  GraphThemeRaw,
 // @ts-ignore
   'nodeShape' |
 // @ts-ignore
@@ -1926,22 +2120,6 @@ export const NON_COLOR_THEMES: NonColorGraphThemes = {
   edgeTextFontWeight: 'bold',
 // @ts-ignore
   linkPreviewWidth: 10,
-}
-
-// @ts-ignore
-export type UITheme = {
-// @ts-ignore
-  primaryColor: string,
-// @ts-ignore
-  primaryTextColor: string,
-// @ts-ignore
-  secondaryColor: string,
-// @ts-ignore
-  secondaryTextColor: string,
-// @ts-ignore
-  tertiaryColor: string,
-// @ts-ignore
-  tertiaryTextColor: string,
 }
 
 // @ts-ignore
@@ -2010,7 +2188,38 @@ export type MarqueeGraphTheme = {
 export type AnnotationGraphTheme = {}
 
 // @ts-ignore
-export type PersistentGraphTheme = {}
+export type GraphTheme = (
+// @ts-ignore
+  BaseGraphTheme &
+// @ts-ignore
+  HistoryGraphTheme &
+// @ts-ignore
+  FocusGraphTheme &
+// @ts-ignore
+  DraggableGraphTheme &
+// @ts-ignore
+  NodeAnchorGraphTheme &
+// @ts-ignore
+  MarqueeGraphTheme &
+// @ts-ignore
+  PersistentGraphTheme
+// @ts-ignore
+)
+// @ts-ignore
+
+// @ts-ignore
+/**
+// @ts-ignore
+ * the raw theme object without any getters
+// @ts-ignore
+ */
+// @ts-ignore
+export type GraphThemeRaw = {
+// @ts-ignore
+  // nodeText and edgeText are special cases which must remain as getters
+// @ts-ignore
+  [K in keyof GraphTheme]: K extends 'nodeText' | 'edgeText' ? GraphTheme[K] : UnwrapMaybeGetter<GraphTheme[K]>
+}
 
 // @ts-ignore
 export type MaybeGetterOrVoid<T> = MaybeGetter<UnwrapMaybeGetter<T> | void, MaybeGetterParams<T>>
@@ -2037,6 +2246,79 @@ export type FullThemeMap = {
 
 // @ts-ignore
 export type PartialThemeMap = Partial<FullThemeMap>
+
+// @ts-ignore
+type GraphColors = {
+// @ts-ignore
+  primary: string
+// @ts-ignore
+  secondary: string
+// @ts-ignore
+  tertiary: string
+// @ts-ignore
+  contrast: string
+// @ts-ignore
+  text: string,
+// @ts-ignore
+  brand: string
+// @ts-ignore
+};
+// @ts-ignore
+
+// @ts-ignore
+export const ThemeToGraphColors: Record<GraphThemeName, GraphColors> = {
+// @ts-ignore
+  light: {
+// @ts-ignore
+    primary: colors.GRAY_300,
+// @ts-ignore
+    secondary: colors.GRAY_200,
+// @ts-ignore
+    tertiary: colors.GRAY_400,
+// @ts-ignore
+    contrast: colors.GRAY_800,
+// @ts-ignore
+    text: colors.GRAY_900,
+// @ts-ignore
+    brand: 'magic'
+// @ts-ignore
+  },
+// @ts-ignore
+  dark: {
+// @ts-ignore
+    primary: colors.GRAY_800,
+// @ts-ignore
+    secondary: colors.GRAY_700,
+// @ts-ignore
+    tertiary: colors.GRAY_900,
+// @ts-ignore
+    contrast: colors.GRAY_200,
+// @ts-ignore
+    text: colors.GRAY_100,
+// @ts-ignore
+    brand: 'magic'
+// @ts-ignore
+  },
+// @ts-ignore
+  girl: {
+// @ts-ignore
+    primary: colors.PINK_700,
+// @ts-ignore
+    secondary: colors.PINK_600,
+// @ts-ignore
+    tertiary: colors.PINK_800,
+// @ts-ignore
+    contrast: colors.PINK_200,
+// @ts-ignore
+    text: colors.WHITE,
+// @ts-ignore
+    brand: 'girl-magic'
+// @ts-ignore
+  }
+}
+
+// @ts-ignore
+export type PreferredGraphTheme = GraphThemeName | 'auto'
 
 // @ts-ignore
 type ThemeableGraph = Pick<Graph, 'themeMap'>
@@ -2386,14 +2668,6 @@ export type UseGraph = typeof useGraph
 
 // @ts-ignore
 export type Graph = ReturnType<UseGraph>
-
-// @ts-ignore
-export type GraphOptions = {
-// @ts-ignore
-  theme: Partial<GraphTheme>;
-// @ts-ignore
-  settings: Partial<GraphSettings>;
-}
 
 // @ts-ignore
 export type GNode = {
@@ -2870,7 +3144,7 @@ export const useMarkupColorizer = (graph: Graph) => {
 // @ts-ignore
     if (!color) return;
 // @ts-ignore
-    return getValue(graph.theme.value.nodeColor, node);
+    return graph.baseTheme.value.nodeColor;
 // @ts-ignore
   }
 // @ts-ignore
@@ -2904,6 +3178,26 @@ export const useMarkupColorizer = (graph: Graph) => {
 // @ts-ignore
 
 // @ts-ignore
+  const encapsulatedNodeBoxBorderColor = () => {
+// @ts-ignore
+    const themes: Record<GraphThemeName, Color> = {
+// @ts-ignore
+      dark: colors.WHITE,
+// @ts-ignore
+      light: colors.BLACK,
+// @ts-ignore
+      girl: colors.PURPLE_800,
+// @ts-ignore
+    }
+// @ts-ignore
+
+// @ts-ignore
+    return themes[graph.themeName.value] + '80';
+// @ts-ignore
+  }
+// @ts-ignore
+
+// @ts-ignore
   const colorize = () => {
 // @ts-ignore
     setTheme('nodeColor', colorNode);
@@ -2924,7 +3218,7 @@ export const useMarkupColorizer = (graph: Graph) => {
 // @ts-ignore
     setTheme('marqueeSelectionBoxColor', colors.TRANSPARENT)
 // @ts-ignore
-    setTheme('marqueeEncapsulatedNodeBoxBorderColor', colors.WHITE + '80')
+    setTheme('marqueeEncapsulatedNodeBoxBorderColor', encapsulatedNodeBoxBorderColor)
 // @ts-ignore
     setTheme('marqueeEncapsulatedNodeBoxColor', colors.TRANSPARENT)
 // @ts-ignore
@@ -3963,6 +4257,14 @@ export type ProductInfo = {
    */
 // @ts-ignore
   state?: { reset: () => void },
+}
+
+// @ts-ignore
+type GNodeTheme = {
+// @ts-ignore
+  color: Color;
+// @ts-ignore
+  textColor: Color;
 }
 
 // @ts-ignore

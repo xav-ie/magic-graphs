@@ -7,6 +7,7 @@
   import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
   import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
+  import { computed } from "vue";
 
   const hint = useGraphTutorial(graph.value, [
     {
@@ -29,12 +30,32 @@
     } = graph.value;
 
     isActive.value ? deactivate() : activate();
+    graph.value.canvasFocused.value = true;
   };
+
+  const undo = () => graph.value.shortcutActions.undo.value();
+  const redo = () => graph.value.shortcutActions.redo.value();
+
+  const canUndo = computed(() => {
+    const { annotationActive, canUndo, canUndoAnnotation, settings } =
+      graph.value;
+    if (annotationActive.value) return canUndoAnnotation.value;
+    if (!settings.value.interactive) return false;
+    return canUndo.value;
+  });
+
+  const canRedo = computed(() => {
+    const { annotationActive, canRedo, canRedoAnnotation, settings } =
+      graph.value;
+    if (annotationActive.value) return canRedoAnnotation.value;
+    if (!settings.value.interactive) return false;
+    return canRedo.value;
+  });
 </script>
 
 <template>
   <GToolbar :hint="hint">
-    <ToolbarButtonGroup>
+    <ToolbarButtonGroup class="gap-0">
       <GToolbarButton
         @click="graph.settings.value.displayEdgeLabels = true"
         :active="graph.settings.value.displayEdgeLabels"
@@ -50,7 +71,7 @@
       />
     </ToolbarButtonGroup>
 
-    <ToolbarButtonGroup>
+    <ToolbarButtonGroup class="gap-0">
       <GToolbarButton
         @click="graph.settings.value.isGraphDirected = true"
         :active="graph.settings.value.isGraphDirected"
@@ -66,18 +87,18 @@
       />
     </ToolbarButtonGroup>
 
-    <ToolbarButtonGroup>
+    <ToolbarButtonGroup class="gap-0">
       <GToolbarButton
-        @click="graph.undo()"
-        :disabled="!graph.canUndo.value"
+        @click="undo"
+        :disabled="!canUndo"
         icon="undo"
       />
 
       <GToolbarDivider />
 
       <GToolbarButton
-        @click="graph.redo()"
-        :disabled="!graph.canRedo.value"
+        @click="redo"
+        :disabled="!canRedo"
         icon="redo"
       />
     </ToolbarButtonGroup>
@@ -88,9 +109,7 @@
         :active="graph.annotationActive.value"
         icon="edit"
       />
-    </ToolbarButtonGroup>
 
-    <ToolbarButtonGroup>
       <GraphInfoMenu v-slot="{ toggle, isOpen }">
         <GToolbarButton
           @click="toggle"
@@ -98,9 +117,7 @@
           icon="info_outline"
         />
       </GraphInfoMenu>
-    </ToolbarButtonGroup>
 
-    <ToolbarButtonGroup>
       <CollaborativeSessionMenu v-slot="{ toggle, isOpen }">
         <GToolbarButton
           @click="toggle"

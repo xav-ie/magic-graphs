@@ -5,13 +5,13 @@ import { useBaseGraph } from '@graph/base'
 import { useMarquee } from '@graph/plugins/marquee'
 import { useNodeDrag } from '@graph/plugins/drag'
 import { useNodeAnchors } from '@graph/plugins/anchors'
-import { useUserEditableGraph } from '@graph/plugins/shortcut'
+import { useShortcuts } from '@graph/plugins/shortcut'
 import { useAnnotations } from '@graph/plugins/annotations'
 import { useFocus } from '@graph/plugins/focus'
 import { useHistory } from '@graph/plugins/history'
 import { usePersistent } from '@graph/plugins/persistent'
-import { clone } from '@utils/clone'
 import type { GraphSettings } from './settings'
+import { useInteractive } from './plugins/interactive'
 
 /**
  * a package full of tools for creating and managing graphs
@@ -34,8 +34,14 @@ export const useGraph = (
   const annotationControls = useAnnotations(baseGraph)
   const persistentControls = usePersistent(baseGraph)
   const preferredThemeControls = usePreferredTheme(baseGraph)
+  const shortcutActions = useShortcuts({
+    ...baseGraph,
+    ...historyControls,
+    ...focusControls,
+    ...annotationControls
+  })
 
-  useUserEditableGraph({ ...baseGraph, ...historyControls, ...focusControls })
+  useInteractive(baseGraph)
 
   return {
     ...baseGraph,
@@ -47,6 +53,7 @@ export const useGraph = (
     ...annotationControls,
     ...persistentControls,
     ...preferredThemeControls,
+    shortcutActions,
     helpers: useGraphHelpers(baseGraph),
   }
 }
