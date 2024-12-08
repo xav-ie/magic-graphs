@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import { computed } from "vue";
   import { graph } from "@graph/global";
-  import GWell from "@ui/graph/GWell.vue";
   import ConnectedInfoBox from "./ConnectedInfoBox.vue";
+  import { useSCCColorizer } from "./useSCCColorizer";
 
   const isConnected = computed(
     () => graph.value.characteristics.isConnected.value
@@ -12,63 +12,54 @@
   );
   const isDirected = computed(() => graph.value.settings.value.isGraphDirected);
 
-  const definitions = {
-    isConnected: "A graph is <b>connected</b> if there is a path between every pair of nodes/vertices.",
-    isWeaklyConnected: "A directed graph is <b>weakly connected</b> if replacing all of its directed edges with undirected edges produces a connected (undirected) graph.",
-    isStronglyConnected: "A directed graph is <b>strongly connected</b> if there is a directed path from every vertex to every other vertex.",
+  const SCCs = computed(() => {
+    const components =
+      graph.value.characteristics.stronglyConnectedComponents.value;
+    return components.map((nodes) => nodes.map((node) => node.label));
+  });
+
+  const { colorize: colorizeSCCs, decolorize: decolorizeSCCs } = useSCCColorizer(graph.value);
+
+  const explanations = {
+    isConnected:
+      "A graph is <b>connected</b> if there is a path between every pair of nodes/vertices.",
+    isWeaklyConnected:
+      "A directed graph is <b>weakly connected</b> if replacing all of its directed edges with undirected edges produces a connected (undirected) graph.",
+    isStronglyConnected:
+      "A directed graph is <b>strongly connected</b> if there is a directed path from every vertex to every other vertex.",
+    stronglyConnectedComponents:
+      "A <b>strongly connected component</b> or SCC in a directed graph is a maximal group of vertices where every vertex is reachable from every other vertex within the group. If you can travel between any two vertices in both directions (following the edges), they belong to the same SCC.",
   } as const;
 </script>
 
 <template>
-  <div class="mb-2 text-lg">
+  <div class="mb-2 text-sm">
     <div
       v-if="isDirected"
       class="flex flex-wrap gap-2"
     >
-      <ConnectedInfoBox
-        v-if="isConnected"
-        :tooltip="definitions.isStronglyConnected"
-      >
-        Strongly Connected
+      <ConnectedInfoBox :tooltip="explanations.isStronglyConnected">
+        Strongly Connected? {{ isConnected ? "Yes" : "No" }}
+      </ConnectedInfoBox>
+
+      <ConnectedInfoBox :tooltip="explanations.isWeaklyConnected">
+        Weakly Connected? {{ isWeaklyConnected ? "Yes" : "No" }}
       </ConnectedInfoBox>
 
       <ConnectedInfoBox
-        v-else
-        :tooltip="definitions.isStronglyConnected"
+        @mouseenter="colorizeSCCs"
+        @mouseleave="decolorizeSCCs"
+        :tooltip="explanations.stronglyConnectedComponents"
       >
-        Not Strongly Connected
-      </ConnectedInfoBox>
-
-      <ConnectedInfoBox
-        v-if="isWeaklyConnected"
-        :tooltip="definitions.isWeaklyConnected"
-      >
-        Weakly Connected
-      </ConnectedInfoBox>
-
-      <ConnectedInfoBox
-        v-else
-        :tooltip="definitions.isWeaklyConnected"
-      >
-        Not Weakly Connected
+        Strongly Connected Components: {{ SCCs.length }}
       </ConnectedInfoBox>
     </div>
     <div
       v-else
       class="flex flex-wrap gap-2"
     >
-      <ConnectedInfoBox
-        v-if="isConnected"
-        :tooltip="definitions.isConnected"
-      >
-        Connected
-      </ConnectedInfoBox>
-
-      <ConnectedInfoBox
-        v-else
-        :tooltip="definitions.isConnected"
-      >
-        Not Connected
+      <ConnectedInfoBox :tooltip="explanations.isConnected">
+        Connected? {{ isConnected ? "Yes" : "No" }}
       </ConnectedInfoBox>
     </div>
   </div>

@@ -21,4 +21,5 @@ export const CANT_RUN_REASONS = {
   NOT_BIPARTITE: 'Requires bipartite graph',
   NOT_PLANAR: 'Requires planar graph',
   NEGATIVE_EDGE_WEIGHTS: 'Requires non-negative edge weights',
+  NOT_BIDIRECTIONAL: 'Requires no bidirectional edges',
 } as const
