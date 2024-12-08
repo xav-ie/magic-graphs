@@ -2,7 +2,6 @@
   import GButton from "@ui/graph/button/GButton.vue";
   import CPopoverTooltip from "@ui/core/PopoverTooltip.vue";
   import GWell from "@ui/graph/GWell.vue";
-  import CButton from "@ui/core/button/Button.vue";
   import CIcon from "@ui/core/Icon.vue";
 
   defineProps<{
@@ -13,6 +12,7 @@
 <template>
   <CPopoverTooltip>
     <GButton
+      v-bind="$attrs"
       tertiary
       class="px-2 py-1 flex items-center gap-1 rounded-lg"
     >

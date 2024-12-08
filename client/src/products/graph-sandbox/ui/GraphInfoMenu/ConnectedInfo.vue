@@ -2,6 +2,7 @@
   import { computed } from "vue";
   import { graph } from "@graph/global";
   import ConnectedInfoBox from "./ConnectedInfoBox.vue";
+  import { useSCCColorizer } from "./useSCCColorizer";
 
   const isConnected = computed(
     () => graph.value.characteristics.isConnected.value
@@ -16,6 +17,8 @@
       graph.value.characteristics.stronglyConnectedComponents.value;
     return components.map((nodes) => nodes.map((node) => node.label));
   });
+
+  const { colorize: colorizeSCCs, decolorize: decolorizeSCCs } = useSCCColorizer(graph.value);
 
   const explanations = {
     isConnected:
@@ -43,7 +46,11 @@
         Weakly Connected? {{ isWeaklyConnected ? "Yes" : "No" }}
       </ConnectedInfoBox>
 
-      <ConnectedInfoBox :tooltip="explanations.stronglyConnectedComponents">
+      <ConnectedInfoBox
+        @mouseenter="colorizeSCCs"
+        @mouseleave="decolorizeSCCs"
+        :tooltip="explanations.stronglyConnectedComponents"
+      >
         Strongly Connected Components: {{ SCCs.length }}
       </ConnectedInfoBox>
     </div>

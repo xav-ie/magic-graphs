@@ -3,6 +3,7 @@ import type { BaseGraph } from "@graph/base";
 import { useConnected } from "./useConnected";
 import type { AdjacencyLists } from "@graph/useAdjacencyList";
 import { getStronglyConnectedComponents } from "./getConnectedComponents";
+import type { GNode } from "@graph/types";
 
 export const useCharacteristics = (graph: BaseGraph & {
   adjacencyLists: AdjacencyLists,
@@ -22,6 +23,14 @@ export const useCharacteristics = (graph: BaseGraph & {
     return getStronglyConnectedComponents(graph.nodes.value, graph.edges.value)
   });
 
+  const nodeIdToStronglyConnectedComponent = computed(() => {
+    const sccs = stronglyConnectedComponents.value;
+    return sccs.reduce((acc, scc, i) => {
+      for (const { id } of scc) acc.set(id, i);
+      return acc;
+    }, new Map<GNode['id'], number>());
+  })
+
   const hasBidirectionalEdges = computed(() => {
     return bidirectionalEdges.value.length > 0
   })
@@ -30,6 +39,7 @@ export const useCharacteristics = (graph: BaseGraph & {
     bidirectionalEdges,
     hasBidirectionalEdges,
     stronglyConnectedComponents,
+    nodeIdToStronglyConnectedComponent,
     ...connectedState,
   }
 }
