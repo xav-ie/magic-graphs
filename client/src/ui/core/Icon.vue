@@ -9,12 +9,18 @@
     return props.icon.endsWith("_outline");
   });
 
+  const defaultClasses = ['select-none']
+
   const iconClass = computed(() => {
     if (isOutlined.value) {
       return "material-icons-outlined";
     }
 
     return "material-icons";
+  });
+
+  const classes = computed(() => {
+    return [...defaultClasses, iconClass.value];
   });
 
   const icon = computed(() => {
@@ -24,7 +30,7 @@
 </script>
 
 <template>
-  <span :class="iconClass">
+  <span :class="classes">
     {{ icon }}
   </span>
 </template>

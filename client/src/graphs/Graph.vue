@@ -2,7 +2,6 @@
   import { ref } from "vue";
   import type { Graph } from "@graph/types";
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
-import { THEMES, type GraphThemeName } from "./themes";
 
   const props = defineProps<{
     graph: Graph;
