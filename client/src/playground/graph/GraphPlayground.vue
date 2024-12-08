@@ -34,6 +34,8 @@
     buttons: true,
   });
 
+  graph.annotationActive.value
+
   watch(
     controls,
     () => {
@@ -58,7 +60,7 @@
 
     <div
       v-if="controls.buttons"
-      class="absolute flex gap-2 m-2 flex flex-wrap w-[85%]"
+      class="absolute flex gap-2 m-2 flex-wrap w-[85%]"
     >
       <GraphBtns :btns="btnArr" />
     </div>
