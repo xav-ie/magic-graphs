@@ -37,7 +37,7 @@
     :style="{
       backgroundColor: bgColor,
     }"
-    class="p-2 rounded-md cursor-pointer text-left flex gap-4"
+    class="p-2 cursor-pointer text-left flex gap-4"
   >
     <img
       v-if="imageSrc"
