@@ -64,7 +64,3 @@ export const useCharacteristics = (graph: BaseGraph & {
     ...connectedState,
   }
 }
-
-function isBipartite(adjacencyLists: { adjacencyList: import("vue").Ref<import("@graph/useAdjacencyList").AdjacencyList, import("@graph/useAdjacencyList").AdjacencyList>; labelAdjacencyList: import("vue").Ref<import("@graph/useAdjacencyList").AdjacencyList, import("@graph/useAdjacencyList").AdjacencyList>; fullNodeAdjacencyList: import("vue").Ref<import("@graph/useAdjacencyList").FullNodeAdjacencyList, import("@graph/useAdjacencyList").FullNodeAdjacencyList>; weightedAdjacencyList: import("vue").Ref<import("@graph/useAdjacencyList").WeightedAdjacencyList, import("@graph/useAdjacencyList").WeightedAdjacencyList>; directedAdjacencyList: import("vue").Ref<import("@graph/useAdjacencyList").AdjacencyList, import("@graph/useAdjacencyList").AdjacencyList>; undirectedAdjacencyList: import("vue").Ref<import("@graph/useAdjacencyList").AdjacencyList, import("@graph/useAdjacencyList").AdjacencyList>; }): any {
-  throw new Error("Function not implemented.");
-}
