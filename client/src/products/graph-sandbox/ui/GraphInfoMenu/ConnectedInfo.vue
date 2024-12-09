@@ -26,6 +26,10 @@
 
   const isAcyclic = computed(() => graph.value.characteristics.isAcyclic.value);
 
+  const isComplete = computed(
+    () => graph.value.characteristics.isComplete.value
+  );
+
   const { colorize: colorizeSCCs, decolorize: decolorizeSCCs } =
     useSCCColorizer(graph.value);
 
@@ -48,6 +52,7 @@
       "A graph is <b>bipartite</b> if its vertices can be divided into two disjoint sets U and V such that every edge connects a vertex in U to one in V.",
     acyclic:
       "A graph is <b>acyclic</b> if it has no cycles (loops). For example, A -> B -> C -> A is a cycle.",
+    complete: "A graph is <b>complete</b> if every pair of distinct vertices is connected by a unique edge or if the graph is directed, by a pair of unique edges (one in each direction).",
   } as const;
 </script>
 
@@ -88,6 +93,10 @@
       >
         Acyclic? {{ isAcyclic ? "Yes" : "No" }}
       </ConnectedInfoBox>
+
+      <ConnectedInfoBox :tooltip="explanations.complete">
+        Complete? {{ isComplete ? "Yes" : "No" }}
+      </ConnectedInfoBox>
     </div>
     <div
       v-else
@@ -103,6 +112,18 @@
         :tooltip="explanations.bipartite"
       >
         Bipartite? {{ isBipartite ? "Yes" : "No" }}
+      </ConnectedInfoBox>
+
+      <ConnectedInfoBox
+        @mouseenter="colorizeCycles"
+        @mouseleave="decolorizeCycles"
+        :tooltip="explanations.acyclic"
+      >
+        Acyclic? {{ isAcyclic ? "Yes" : "No" }}
+      </ConnectedInfoBox>
+
+      <ConnectedInfoBox :tooltip="explanations.complete">
+        Complete? {{ isComplete ? "Yes" : "No" }}
       </ConnectedInfoBox>
     </div>
   </div>

@@ -5,6 +5,7 @@ import type { AdjacencyLists } from "@graph/useAdjacencyList";
 import { getStronglyConnectedComponents } from "./getConnectedComponents";
 import type { GNode } from "@graph/types";
 import { getBipartitePartition } from "./getBipartite";
+import { findAllCycles } from "./getCycles";
 
 export const useCharacteristics = (graph: BaseGraph & {
   adjacencyLists: AdjacencyLists,
@@ -52,18 +53,32 @@ export const useCharacteristics = (graph: BaseGraph & {
   })
 
   const cycles = computed(() => {
-    return stronglyConnectedComponents.value.filter(scc => scc.length > 1)
+    const isDirected = graph.settings.value.isGraphDirected
+    if (!isDirected) {
+      const res = findAllCycles(graph.adjacencyLists.adjacencyList.value)
+      return res.sort((a, b) => a.length - b.length)
+    }
+    return stronglyConnectedComponents.value
+      .filter(scc => scc.length > 1)
+      .map(scc => scc.map(node => node.id))
   })
 
   const nodeIdToCycle = computed(() => {
     return cycles.value.reduce((acc, cycle, i) => {
-      for (const { id } of cycle) acc.set(id, i);
+      for (const nodeId of cycle) acc.set(nodeId, i);
       return acc;
     }, new Map<GNode['id'], number>());
   })
 
   const isAcyclic = computed(() => {
     return cycles.value.length === 0
+  });
+
+  const isComplete = computed(() => {
+    const isDirected = graph.settings.value.isGraphDirected
+    const n = graph.nodes.value.length
+    const m = graph.edges.value.length
+    return m === (isDirected ? (n * (n - 1)) : (n * (n - 1) / 2))
   });
 
   const isBipartite = computed(() => !!bipartitePartition.value)
@@ -79,6 +94,7 @@ export const useCharacteristics = (graph: BaseGraph & {
     cycles,
     nodeIdToCycle,
     isAcyclic,
+    isComplete,
     ...connectedState,
   }
 }
