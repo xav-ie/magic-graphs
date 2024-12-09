@@ -3,6 +3,7 @@
   import { graph } from "@graph/global";
   import ConnectedInfoBox from "./ConnectedInfoBox.vue";
   import { useSCCColorizer } from "./useSCCColorizer";
+  import { useBipartiteColorizer } from "./useBipartiteColorizer";
 
   const isConnected = computed(
     () => graph.value.characteristics.isConnected.value
@@ -18,7 +19,15 @@
     return components.map((nodes) => nodes.map((node) => node.label));
   });
 
-  const { colorize: colorizeSCCs, decolorize: decolorizeSCCs } = useSCCColorizer(graph.value);
+  const isBipartite = computed(
+    () => graph.value.characteristics.isBipartite.value
+  );
+
+  const { colorize: colorizeSCCs, decolorize: decolorizeSCCs } =
+    useSCCColorizer(graph.value);
+
+  const { colorize: colorizeBipartite, decolorize: decolorizeBipartite } =
+    useBipartiteColorizer(graph.value);
 
   const explanations = {
     isConnected:
@@ -29,6 +38,8 @@
       "A directed graph is <b>strongly connected</b> if there is a directed path from every vertex to every other vertex.",
     stronglyConnectedComponents:
       "A <b>strongly connected component</b> or SCC in a directed graph is a maximal group of vertices where every vertex is reachable from every other vertex within the group. If you can travel between any two vertices in both directions (following the edges), they belong to the same SCC.",
+    bipartite:
+      "A graph is <b>bipartite</b> if its vertices can be divided into two disjoint sets U and V such that every edge connects a vertex in U to one in V.",
   } as const;
 </script>
 
@@ -53,6 +64,14 @@
       >
         Strongly Connected Components: {{ SCCs.length }}
       </ConnectedInfoBox>
+
+      <ConnectedInfoBox
+        @mouseenter="colorizeBipartite"
+        @mouseleave="decolorizeBipartite"
+        :tooltip="explanations.bipartite"
+      >
+        Bipartite? {{ isBipartite ? "Yes" : "No" }}
+      </ConnectedInfoBox>
     </div>
     <div
       v-else
@@ -60,6 +79,14 @@
     >
       <ConnectedInfoBox :tooltip="explanations.isConnected">
         Connected? {{ isConnected ? "Yes" : "No" }}
+      </ConnectedInfoBox>
+
+      <ConnectedInfoBox
+        @mouseenter="colorizeBipartite"
+        @mouseleave="decolorizeBipartite"
+        :tooltip="explanations.bipartite"
+      >
+        Bipartite? {{ isBipartite ? "Yes" : "No" }}
       </ConnectedInfoBox>
     </div>
   </div>
