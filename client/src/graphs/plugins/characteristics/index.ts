@@ -4,6 +4,7 @@ import { useConnected } from "./useConnected";
 import type { AdjacencyLists } from "@graph/useAdjacencyList";
 import { getStronglyConnectedComponents } from "./getConnectedComponents";
 import type { GNode } from "@graph/types";
+import { getBipartitePartition } from "./getBipartite";
 
 export const useCharacteristics = (graph: BaseGraph & {
   adjacencyLists: AdjacencyLists,
@@ -35,11 +36,31 @@ export const useCharacteristics = (graph: BaseGraph & {
     return bidirectionalEdges.value.length > 0
   })
 
+  const bipartitePartition = computed(() => {
+    const adjList = graph.adjacencyLists.adjacencyList.value
+    return getBipartitePartition(adjList)
+  })
+
+  const nodeIdToBipartitePartition = computed(() => {
+    const partition = bipartitePartition.value
+    const map = new Map<GNode['id'], 0 | 1>()
+    if (!partition) return map
+    const [left, right] = partition
+    for (const nodeId of left) map.set(nodeId, 0)
+    for (const nodeId of right) map.set(nodeId, 1)
+    return map
+  })
+
+  const isBipartite = computed(() => !!bipartitePartition.value)
+
   return {
     bidirectionalEdges,
     hasBidirectionalEdges,
     stronglyConnectedComponents,
     nodeIdToStronglyConnectedComponent,
+    bipartitePartition,
+    nodeIdToBipartitePartition,
+    isBipartite,
     ...connectedState,
   }
 }

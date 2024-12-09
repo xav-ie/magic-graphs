@@ -34,6 +34,7 @@ export const getTransitionMatrix = (graph: BaseGraph): TransitionMatrix => {
 
   for (const [nodeId, neighbors] of Object.entries(adjacencyList)) {
     const fromIndex = nodeIndexMap[nodeId];
+    matrix[fromIndex][fromIndex] = 1;
 
     for (const neighbor of neighbors) {
       const toIndex = nodeIndexMap[neighbor.id];
