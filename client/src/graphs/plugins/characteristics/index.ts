@@ -51,6 +51,21 @@ export const useCharacteristics = (graph: BaseGraph & {
     return map
   })
 
+  const cycles = computed(() => {
+    return stronglyConnectedComponents.value.filter(scc => scc.length > 1)
+  })
+
+  const nodeIdToCycle = computed(() => {
+    return cycles.value.reduce((acc, cycle, i) => {
+      for (const { id } of cycle) acc.set(id, i);
+      return acc;
+    }, new Map<GNode['id'], number>());
+  })
+
+  const isAcyclic = computed(() => {
+    return cycles.value.length === 0
+  });
+
   const isBipartite = computed(() => !!bipartitePartition.value)
 
   return {
@@ -61,6 +76,9 @@ export const useCharacteristics = (graph: BaseGraph & {
     bipartitePartition,
     nodeIdToBipartitePartition,
     isBipartite,
+    cycles,
+    nodeIdToCycle,
+    isAcyclic,
     ...connectedState,
   }
 }
