@@ -88,6 +88,7 @@ export const engageTextarea = (
     input.onblur = null;
     handler(input.value);
     document.removeEventListener("mousedown", handleMouseDown);
+    document.removeEventListener("wheel", removeInput);
 
     setTimeout(() => {
       // setTimeout to allow canvas time to update
@@ -110,6 +111,7 @@ export const engageTextarea = (
   }
 
   document.addEventListener("mousedown", handleMouseDown);
+  document.addEventListener("wheel", removeInput, { passive: true });
 
   const responsiveCanvas = document.getElementById(
     "responsive-canvas-container"
@@ -120,5 +122,5 @@ export const engageTextarea = (
   setTimeout(() => {
     input.focus();
     input.setSelectionRange(0, input.value.length);
-  }, 10);
+  }, 5);
 };
