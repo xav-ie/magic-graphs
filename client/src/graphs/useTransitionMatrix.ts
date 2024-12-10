@@ -1,6 +1,8 @@
 import { ref, onUnmounted } from "vue";
 import type { BaseGraph } from "./base";
 import { getWeightedAdjacencyList } from "./useAdjacencyList";
+import type { DeepPartial } from "@utils/types";
+import type { GraphSettings } from "./settings";
 
 /**
  * a 2D array (matrix) where matrix[i][j] represents the absolute weight of
@@ -34,7 +36,6 @@ export const getTransitionMatrix = (graph: BaseGraph): TransitionMatrix => {
 
   for (const [nodeId, neighbors] of Object.entries(adjacencyList)) {
     const fromIndex = nodeIndexMap[nodeId];
-    matrix[fromIndex][fromIndex] = 1;
 
     for (const neighbor of neighbors) {
       const toIndex = nodeIndexMap[neighbor.id];
@@ -52,10 +53,18 @@ export const useTransitionMatrix = (graph: BaseGraph) => {
     transitionMatrix.value = getTransitionMatrix(graph);
   };
 
+  const checkForUpdate = (diff: DeepPartial<GraphSettings>) => {
+    // TODO investigate why this is being invoked twice when the graph settings
+    // change from directed to undirected
+    if (diff.isGraphDirected !== undefined) update();
+  }
+
   graph.subscribe("onStructureChange", update);
+  graph.subscribe("onSettingsChange", checkForUpdate);
 
   onUnmounted(() => {
     graph.unsubscribe("onStructureChange", update);
+    graph.unsubscribe("onSettingsChange", checkForUpdate);
   });
 
   return {

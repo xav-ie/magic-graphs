@@ -10,7 +10,7 @@
     controls: UnwrapRef<SimulationControls>;
   }>();
 
-  const { isOver, paused, step, trace, hasBegun } = toRefs(
+  const { isOver, paused, step, hasBegun, lastStep } = toRefs(
     props.controls
   );
 
@@ -66,7 +66,7 @@
   <div class="flex flex-col gap-5 items-center justify-center">
     <ProgressBar
       @mouseleave="onProgressMouseLeave"
-      :range="[0, trace.length]"
+      :range="[0, lastStep]"
       :progress="step"
       :on-progress-set="goToStep"
       :preview-progress="previewedProgress"

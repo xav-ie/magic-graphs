@@ -1,104 +1,173 @@
-import type { GNode, Graph } from "@graph/types";
+import type { TransitionMatrix } from "@graph/useTransitionMatrix";
 
-export type DijkstrasTrace = ReturnType<typeof dijkstras>;
-type TraceNodeDistance = { id: string; distance: number };
-type TraceExploredNode = { id: string; distance: number };
+export type DijkstrasResult = number[];
 
 /**
- * serializable infinity value for node distance
+ * matrix trace because "nodes" correspond to the indices of the
+ * nodes in graph.nodes
  */
-export const INF = 999999;
+export type DijkstrasMatrixTrace = {
+  queue: {node: number, distance: number}[];
+  currentNode?: number;
+  distances: number[];
+}[];
 
-export const dijkstras = (graph: Graph, startingNodeId: GNode['id']) => {
-  const { getInboundEdges, getOutboundEdges } = graph.helpers;
+class PriorityQueue {
+  private heap: {node: number, distance: number}[] = [];
 
-  const distanceArr = graph.nodes.value.map(
-    (n) =>
-    ({
-      id: n.id,
-      distance: INF,
-    } satisfies TraceNodeDistance)
-  );
+  constructor() {}
 
-  // assign distance 0 to source
-  distanceArr.filter((n) => n.id === startingNodeId)[0].distance = 0;
-
-  let priorityQueue = [...distanceArr];
-  const exploredNodes: TraceExploredNode[] = [{ id: startingNodeId, distance: 0 }];
-  const nodeParentMap = new Map<string, string>();
-
-  // initialize trace with first source without any nodes explored
-  const trace = [
-    {
-      source: { id: startingNodeId, distance: 0 },
-      exploredNodes: JSON.parse(
-        JSON.stringify(exploredNodes)
-      ) as TraceExploredNode[],
-      distances: JSON.parse(JSON.stringify(distanceArr)) as TraceNodeDistance[],
-      nodeParentMap: new Map(nodeParentMap),
-    },
-  ];
-
-  // iterate through priority queue
-  while (priorityQueue.length !== 0) {
-    // grab node with least-distance
-    const sourceNode = priorityQueue.reduce(
-      (acc, cur) => (cur.distance < acc.distance ? cur : acc),
-      { id: "", distance: Infinity }
-    );
-
-    // remove that node
-    priorityQueue = priorityQueue.filter((e) => e.id !== sourceNode.id);
-
-    // don't iterate through nodes with no ingoing edges
-    if (
-      getInboundEdges(sourceNode.id).length === 0 &&
-      sourceNode.id !== startingNodeId
-    )
-      continue;
-
-    // iterate through source's neighbors
-    getOutboundEdges(sourceNode.id).forEach((edge) => {
-      // updates distance of neighbor if new distance is less than old
-      const newDistanceIsLess =
-        distanceArr.filter((e) => e.id === edge.from)[0].distance +
-        Number(edge.label) <
-        distanceArr.filter((e) => e.id === edge.to)[0].distance;
-      if (newDistanceIsLess) {
-        const newDistance =
-          distanceArr.filter((e) => e.id === edge.from)[0].distance +
-          Number(edge.label);
-        distanceArr.filter((e) => e.id === edge.to)[0].distance = newDistance;
-
-        // idk if this should be outside if or not
-        const neighborAlreadyExplored = exploredNodes
-          .map((n) => n.id)
-          .includes(edge.to);
-        if (!neighborAlreadyExplored)
-          exploredNodes.push({ id: edge.to, distance: newDistance });
-
-        nodeParentMap.set(edge.to, sourceNode.id);
-      }
-    });
-    trace.push({
-      source: sourceNode,
-      exploredNodes: JSON.parse(
-        JSON.stringify(exploredNodes)
-      ) as TraceExploredNode[],
-      distances: JSON.parse(JSON.stringify(distanceArr)) as TraceNodeDistance[],
-      nodeParentMap: new Map(nodeParentMap),
-    });
+  enqueue(node: number, distance: number) {
+    this.heap.push({ node, distance });
+    this.bubbleUp(this.heap.length - 1);
   }
 
-  // push an empty source to give the impression that there are no more nodes to check
-  trace.push({
-    source: { id: "", distance: 0 },
-    exploredNodes: JSON.parse(
-      JSON.stringify(exploredNodes)
-    ) as TraceExploredNode[],
-    distances: JSON.parse(JSON.stringify(distanceArr)) as TraceNodeDistance[],
-    nodeParentMap: new Map(nodeParentMap),
-  });
+  dequeue(): {node: number, distance: number} | undefined {
+    if (this.heap.length === 0) return undefined;
 
-  return trace;
+    const min = this.heap[0];
+    const last = this.heap.pop()!;
+
+    if (this.heap.length > 0) {
+      this.heap[0] = last;
+      this.bubbleDown(0);
+    }
+
+    return min;
+  }
+
+  private bubbleUp(index: number) {
+    const element = this.heap[index];
+
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+      const parent = this.heap[parentIndex];
+
+      if (element.distance >= parent.distance) break;
+
+      this.heap[parentIndex] = element;
+      this.heap[index] = parent;
+      index = parentIndex;
+    }
+  }
+
+  private bubbleDown(index: number) {
+    const length = this.heap.length;
+    const element = this.heap[index];
+
+    while (true) {
+      let swap: number | null = null;
+      const leftChildIndex = 2 * index + 1;
+      const rightChildIndex = 2 * index + 2;
+
+      if (leftChildIndex < length) {
+        const leftChild = this.heap[leftChildIndex];
+        if (leftChild.distance < element.distance) {
+          swap = leftChildIndex;
+        }
+      }
+
+      if (rightChildIndex < length) {
+        const rightChild = this.heap[rightChildIndex];
+        if (
+          (swap === null && rightChild.distance < element.distance) ||
+          (swap !== null && rightChild.distance < this.heap[leftChildIndex].distance)
+        ) {
+          swap = rightChildIndex;
+        }
+      }
+
+      if (swap === null) break;
+
+      this.heap[index] = this.heap[swap];
+      this.heap[swap] = element;
+      index = swap;
+    }
+  }
+
+  isEmpty(): boolean {
+    return this.heap.length === 0;
+  }
+
+  peek(): {node: number, distance: number} | undefined {
+    return this.heap[0];
+  }
+
+  getHeap(): Array<{node: number, distance: number}> {
+    return [...this.heap];
+  }
+}
+
+export const dijkstras = (graph: TransitionMatrix, source: number) => {
+  const trace: DijkstrasMatrixTrace = [];
+
+  const runDijkstras = (graph: TransitionMatrix, source: number) => {
+    const nodeCount = graph.length;
+
+    // Distances array to store shortest distances from source
+    const distances: number[] = new Array(nodeCount).fill(Number.POSITIVE_INFINITY);
+
+    // Previous node to reconstruct path
+    const previousNode: (number | null)[] = new Array(nodeCount).fill(null);
+
+    // Priority queue to efficiently find minimum distance node
+    const pq = new PriorityQueue();
+
+    // Trace initial queue state
+    trace.push({
+      queue: pq.getHeap(),
+      distances: distances.slice(),
+    });
+
+    // Distance to source node is always 0
+    distances[source] = 0;
+    pq.enqueue(source, 0);
+
+    // Find shortest path for all nodes
+    while (!pq.isEmpty()) {
+      // Select the node with minimum distance
+      const { node: currentNode } = pq.dequeue()!;
+
+      // Trace current node and queue state
+      trace.push({
+        currentNode,
+        queue: pq.getHeap(),
+        distances: distances.slice(),
+      });
+
+      // Update distances for adjacent nodes
+      for (let adjacentNode = 0; adjacentNode < nodeCount; adjacentNode++) {
+        const edgeWeight = graph[currentNode][adjacentNode];
+
+        // Check if there's an edge and path through current node is shorter
+        if (
+          edgeWeight > 0 &&
+          distances[currentNode] !== Number.POSITIVE_INFINITY &&
+          distances[currentNode] + edgeWeight < distances[adjacentNode]
+        ) {
+          // Update distance
+          distances[adjacentNode] = distances[currentNode] + edgeWeight;
+          previousNode[adjacentNode] = currentNode;
+
+          // Add to priority queue
+          pq.enqueue(adjacentNode, distances[adjacentNode]);
+        }
+      }
+    }
+
+    // Trace final queue state
+    trace.push({
+      queue: pq.getHeap(),
+      distances: distances.slice(),
+    });
+
+    return distances
+  };
+
+  const res = runDijkstras(graph, source);
+
+  return {
+    res,
+    trace,
+  };
 };
