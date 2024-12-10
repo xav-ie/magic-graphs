@@ -87,6 +87,8 @@ export const engageTextarea = (
   const removeInput = () => {
     input.onblur = null;
     handler(input.value);
+    document.removeEventListener("mousedown", handleMouseDown);
+
     setTimeout(() => {
       // setTimeout to allow canvas time to update
       input.remove();
@@ -103,11 +105,11 @@ export const engageTextarea = (
     }
   };
 
-  document.addEventListener("mousedown", (event) => {
-    if (isClickOutsideInput(input, event)) {
-      removeInput();
-    }
-  });
+  const handleMouseDown = (event: MouseEvent) => {
+    if (isClickOutsideInput(input, event)) removeInput();
+  }
+
+  document.addEventListener("mousedown", handleMouseDown);
 
   const responsiveCanvas = document.getElementById(
     "responsive-canvas-container"
