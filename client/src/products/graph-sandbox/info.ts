@@ -12,6 +12,7 @@ export const info: ProductInfo = {
     name: "Graph Sandbox",
     description: "Build a graph and run algorithms on it",
     thumbnail: "/products/thumbnails/graph-sandbox.png",
+    category: "sandbox",
   }
 }
 

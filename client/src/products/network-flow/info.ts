@@ -16,6 +16,7 @@ const info: ProductInfo = {
     name: 'Network Flow',
     description: 'Visualize Network Flow',
     thumbnail: '/products/thumbnails/network-flow.png',
+    category: 'algorithms',
   },
   simulations: (graph: Graph) => ([
     {

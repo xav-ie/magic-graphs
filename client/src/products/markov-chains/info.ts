@@ -12,6 +12,7 @@ export const info: ProductInfo = {
     name: "Markov Chains",
     description: "Build and analyze your very own Markov Chains",
     thumbnail: "/products/thumbnails/markov-chains.png",
+    category: "math",
   }
 }
 
