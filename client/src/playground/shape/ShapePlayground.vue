@@ -84,11 +84,12 @@
       })
     );
 
-    const lineTest = shapes.line({
+    const lineTest = shapes.arrow({
       start: { x: 100, y: 100 },
       end: { x: 600, y: 900 },
       color: colors.GRAY_900,
       width: 10,
+      arrowHeadSize: (() => {return {arrowHeadHeight: 100, perpLineLength: 50}}),
       textArea: {
         color: colors.PURPLE_500,
         activeColor: colors.PURPLE_600,
