@@ -110,3 +110,8 @@ export const PRODUCT_CATEGORY_RANK = [
 ] as const
 
 export type ProductCategory = typeof PRODUCT_CATEGORY_RANK[number]
+
+export const getCurrentProduct = () => {
+  const route = useRoute();
+  return routeToProduct[route.path];
+}
