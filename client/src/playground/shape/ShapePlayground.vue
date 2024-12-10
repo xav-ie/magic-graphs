@@ -49,9 +49,9 @@
 
     items.value.push(
       triangle({
-        point1: { x: 800, y: 100 },
-        point2: { x: 900, y: 200 },
-        point3: { x: 700, y: 200 },
+        pointA: { x: 800, y: 100 },
+        pointB: { x: 900, y: 200 },
+        pointC: { x: 700, y: 200 },
         color: colors.BLUE_500,
         textArea: {
           text: {

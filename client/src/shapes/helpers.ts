@@ -159,8 +159,8 @@ export const calculateArrowHeadCorners = (options: Required<Pick<Arrow, 'start' 
   };
 
   return {
-    point1: tip,
-    point2: baseLeft,
-    point3: baseRight,
+    pointA: tip,
+    pointB: baseLeft,
+    pointC: baseRight,
   };
 };

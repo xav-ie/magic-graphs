@@ -20,9 +20,9 @@ import { drawTriangleWithCtx } from "./draw";
 
 export type Triangle = {
   id?: string;
-  point1: Coordinate;
-  point2: Coordinate;
-  point3: Coordinate;
+  pointA: Coordinate;
+  pointB: Coordinate;
+  pointC: Coordinate;
   color?: string;
   stroke?: Stroke;
   textArea?: TextAreaNoLocation;

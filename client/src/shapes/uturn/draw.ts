@@ -67,9 +67,9 @@ export const drawUTurnWithCtx = (options: UTurn) => {
   };
 
   const drawHead = drawTriangleWithCtx({
-    point1: trianglePt1,
-    point2: trianglePt2,
-    point3: trianglePt3,
+    pointA: trianglePt1,
+    pointB: trianglePt2,
+    pointC: trianglePt3,
     color
   });
 

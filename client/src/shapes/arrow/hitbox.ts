@@ -4,14 +4,25 @@ import {
   lineEfficientHitbox,
   getLineBoundingBox,
 } from "@shape/line/hitbox";
-import type { Arrow } from ".";
+import { type Arrow } from ".";
+import { ARROW_DEFAULTS } from '.'
 import { triangleEfficientHitbox, triangleHitbox } from "@shape/triangle/hitbox";
 import { calculateArrowHeadCorners } from "@shape/helpers";
 
 export const arrowHitbox = (arrow: Arrow) => {
-  const isInLine = lineHitbox(arrow);
+  const {
+    start,
+    end,
+    width,
+    arrowHeadSize
+  } = {
+    ...ARROW_DEFAULTS,
+    ...arrow
+  }
 
-  const arrowHeadTriangle = calculateArrowHeadCorners(arrow);
+  const isInLine = lineHitbox(arrow);
+  
+  const arrowHeadTriangle = calculateArrowHeadCorners({ start, end, width, arrowHeadSize });
   const isInArrowHead = triangleHitbox(arrowHeadTriangle);
 
   return (point: Coordinate) => isInLine(point) || isInArrowHead(point);
@@ -22,31 +33,42 @@ export const getArrowBoundingBox = (arrow: Arrow) => () => {
     topLeft: lineTopLeft, 
     bottomRight: lineBottomRight 
   } = getLineBoundingBox(arrow)();
-  const arrowHeadTriangle = calculateArrowHeadCorners(arrow);
+
+  const {
+    start,
+    end,
+    width,
+    arrowHeadSize
+  } = {
+    ...ARROW_DEFAULTS,
+    ...arrow
+  }
+  const arrowHeadTriangle = calculateArrowHeadCorners({ start, end, width, arrowHeadSize });
+
 
   const minX = Math.min(
     lineTopLeft.x,
-    arrowHeadTriangle.point1.x,
-    arrowHeadTriangle.point2.x,
-    arrowHeadTriangle.point3.x
+    arrowHeadTriangle.pointA.x,
+    arrowHeadTriangle.pointB.x,
+    arrowHeadTriangle.pointC.x
   );
   const maxX = Math.max(
     lineTopLeft.x,
-    arrowHeadTriangle.point1.x,
-    arrowHeadTriangle.point2.x,
-    arrowHeadTriangle.point3.x
+    arrowHeadTriangle.pointA.x,
+    arrowHeadTriangle.pointB.x,
+    arrowHeadTriangle.pointC.x
   );
   const minY = Math.min(
     lineBottomRight.y,
-    arrowHeadTriangle.point1.y,
-    arrowHeadTriangle.point2.y,
-    arrowHeadTriangle.point3.y
+    arrowHeadTriangle.pointA.y,
+    arrowHeadTriangle.pointB.y,
+    arrowHeadTriangle.pointC.y
   );
   const maxY = Math.max(
     lineBottomRight.y,
-    arrowHeadTriangle.point1.y,
-    arrowHeadTriangle.point2.y,
-    arrowHeadTriangle.point3.y
+    arrowHeadTriangle.pointA.y,
+    arrowHeadTriangle.pointB.y,
+    arrowHeadTriangle.pointC.y
   );
 
   return {
@@ -57,7 +79,16 @@ export const getArrowBoundingBox = (arrow: Arrow) => () => {
 
 export const arrowEfficientHitbox = (arrow: Arrow) => {
   const isInLineEfficientHitbox = lineEfficientHitbox(arrow);
-  const arrowHeadTriangle = calculateArrowHeadCorners(arrow);
+  const {
+    start,
+    end,
+    width,
+    arrowHeadSize
+  } = {
+    ...ARROW_DEFAULTS,
+    ...arrow
+  }
+  const arrowHeadTriangle = calculateArrowHeadCorners({ start, end, width, arrowHeadSize });
   const isInArrowHeadEfficientHitbox = triangleEfficientHitbox(arrowHeadTriangle);
   return (boxToCheck: BoundingBox) => isInLineEfficientHitbox(boxToCheck) || isInArrowHeadEfficientHitbox(boxToCheck);
 };

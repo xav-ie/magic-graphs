@@ -13,9 +13,9 @@ import { lineHitbox } from "@shape/line/hitbox";
 export const triangleHitbox = (triangle: Triangle) => (point: Coordinate) => {
 
   const {
-    point1: a,
-    point2: b,
-    point3: c,
+    pointA: a,
+    pointB: b,
+    pointC: c,
     stroke,
   } = triangle;
 
@@ -42,9 +42,9 @@ export const triangleHitbox = (triangle: Triangle) => (point: Coordinate) => {
 
 export const getTriangleBoundingBox = (triangle: Triangle) => () => {
   const {
-    point1: a,
-    point2: b,
-    point3: c
+    pointA: a,
+    pointB: b,
+    pointC: c
   } = triangle;
 
   const minX = Math.min(a.x, b.x, c.x)
