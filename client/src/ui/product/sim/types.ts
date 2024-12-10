@@ -8,7 +8,7 @@ import type { ComputedRef, Ref } from "vue";
 export type SimulationControls<T extends any[] = any[]> = {
   /**
    * skip forward to the next step.
-   * wont do anything if the current step is trace.length
+   * wont do anything if the current step is `lastStep`
    */
   nextStep: () => void
   /**
@@ -24,13 +24,13 @@ export type SimulationControls<T extends any[] = any[]> = {
   /**
    * the current step of the simulation.
    * ranges from 0 to trace.length where 0 is the state before the algorithm has begun
-   * and trace.length is the state after the algorithm has completed.
+   * and `lastStep` is the state after the algorithm has completed.
    */
   step: ComputedRef<number>
   /**
    * set the current step of the simulation
    * @param step the step to set the simulation to
-   * @throws if step is not within the bounds of the trace (0 to trace.length)
+   * @throws if step is not between 0 and `lastStep`
    */
   setStep: (step: number) => void
 
@@ -58,7 +58,7 @@ export type SimulationControls<T extends any[] = any[]> = {
   isActive: ComputedRef<boolean>
   /**
    * whether the simulation is over.
-   * true when the step is trace.length
+   * true when the step is equal to `lastStep` (trace.length by default)
    */
   isOver: ComputedRef<boolean>
   /**
@@ -66,6 +66,10 @@ export type SimulationControls<T extends any[] = any[]> = {
    * true when the step is greater than 0
    */
   hasBegun: ComputedRef<boolean>
+  /**
+   * the last step of the simulation. defaults to trace.length
+   */
+  lastStep: ComputedRef<number>
 }
 
 /**

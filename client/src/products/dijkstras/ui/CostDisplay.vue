@@ -21,12 +21,12 @@
   };
 
   const isExplored = (node: GNode) => getTheme("nodeBorderColor", node) === SIM_COLORS.EXPLORED;
-  const isExploring = (node: GNode) => getTheme("nodeBorderColor", node) === SIM_COLORS.EXPLORING;
+  const isQueued = (node: GNode) => getTheme("nodeBorderColor", node) === SIM_COLORS.QUEUED;
   const isSource = (node: GNode) => getTheme("nodeBorderColor", node) === SIM_COLORS.SOURCE;
 
   const exploreStateColor = (node: GNode) => {
     if (isExplored(node)) return SIM_COLORS.EXPLORED;
-    if (isExploring(node)) return SIM_COLORS.EXPLORING;
+    if (isQueued(node)) return SIM_COLORS.QUEUED;
     if (isSource(node)) return SIM_COLORS.SOURCE;
     if (isFocused(node.id)) return getTheme("nodeBorderColor", node);
     return colors.GRAY_600;
@@ -34,7 +34,7 @@
 
   const exploreStateText = (node: GNode) => {
     if (isExplored(node)) return "Explored";
-    if (isExploring(node)) return "Exploring";
+    if (isQueued(node)) return "Queued";
     if (isSource(node)) return "Source";
     if (isFocused(node.id)) return "Highlighted";
     return "Unexplored";

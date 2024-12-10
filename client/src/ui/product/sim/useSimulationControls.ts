@@ -1,5 +1,5 @@
 import { computed, ref } from "vue"
-import type { ComputedRef } from "vue"
+import type { ComputedRef, Ref } from "vue"
 import { graph } from "@graph/global";
 import type { SimulationControls } from "@ui/product/sim/types";
 
@@ -9,10 +9,15 @@ type SimulationControlsOptions = {
    * @default true
    */
   allowEditingDuringPlayback?: boolean
+  /**
+   * if set, the simulation will stop when the step reaches this value
+   * @default trace.length
+   */
+  lastStep?: Ref<number>
 }
 
 const DEFAULT_OPTIONS = {
-  allowEditingDuringPlayback: true
+  allowEditingDuringPlayback: true,
 } as const
 
 export const useSimulationControls = <T extends any[]>(
@@ -20,18 +25,21 @@ export const useSimulationControls = <T extends any[]>(
   options: SimulationControlsOptions = {}
 ): SimulationControls<T> => {
   const {
-    allowEditingDuringPlayback
+    allowEditingDuringPlayback,
+    lastStep,
   } = {
     ...DEFAULT_OPTIONS,
     ...options
   }
+
+  const simLastStep = computed(() => lastStep?.value ?? trace.value.length)
 
   const step = ref(0);
   const paused = ref(true);
   const playbackSpeed = ref(1_500);
   const active = ref(false);
   const interval = ref<NodeJS.Timeout | undefined>()
-  const isOver = computed(() => step.value === trace.value.length)
+  const isOver = computed(() => step.value === simLastStep.value)
   const hasBegun = computed(() => step.value > 0)
 
   const start = () => {
@@ -65,7 +73,7 @@ export const useSimulationControls = <T extends any[]>(
   }
 
   const setStep = (newStep: number) => {
-    if (newStep < 0 || newStep > trace.value.length) return
+    if (newStep < 0 || newStep > simLastStep.value) return
     step.value = newStep
   }
 
@@ -85,5 +93,6 @@ export const useSimulationControls = <T extends any[]>(
     isOver,
     hasBegun,
     isActive: computed(() => active.value),
+    lastStep: simLastStep,
   }
 }
