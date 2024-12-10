@@ -1,15 +1,8 @@
 <script setup lang="ts">
-  import {
-    products,
-    useProductRouting,
-    getCurrentProduct,
-    PRODUCT_CATEGORY_RANK,
-  } from "@utils/product";
+  import { products, PRODUCT_CATEGORY_RANK } from "@utils/product";
   import type { ProductInfoWithMenu, ProductCategory } from "@utils/product";
   import GWell from "@ui/graph/GWell.vue";
-  import GVerticalCardButton from "@ui/graph/button/GVerticalCardButton.vue";
-
-  const { navigate } = useProductRouting();
+  import ProductItem from "./ProductItem.vue";
 
   const productsWithMenu = products.filter(
     (info) => info?.menu
@@ -36,14 +29,10 @@
         {{ category }}
       </GWell>
       <div class="flex flex-col gap-2">
-        <GVerticalCardButton
+        <ProductItem
           v-for="product in categoryRecord[category]"
-          @click="navigate(product)"
           :key="product.productId"
-          :image-src="product.menu.thumbnail"
-          :title="product.menu.name"
-          :description="product.menu.description"
-          class="rounded-md"
+          :product="product"
         />
       </div>
     </div>
