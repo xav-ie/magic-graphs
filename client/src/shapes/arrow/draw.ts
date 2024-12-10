@@ -28,14 +28,14 @@ export const drawArrowWithCtx = (options: Arrow) => {
     y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
   }
 
-  const trianglePt1 = lineEnd;
+  const trianglePtA = lineEnd;
 
-  const trianglePt2 = {
+  const trianglePtB = {
     x: shaftEnd.x + perpLineLength * Math.cos(angle + Math.PI / 2),
     y: shaftEnd.y + perpLineLength * Math.sin(angle + Math.PI / 2),
   }
 
-  const trianglePt3 = {
+  const trianglePtC = {
     x: shaftEnd.x - perpLineLength * Math.cos(angle + Math.PI / 2),
     y: shaftEnd.y - perpLineLength * Math.sin(angle + Math.PI / 2),
   }
@@ -53,9 +53,9 @@ export const drawArrowWithCtx = (options: Arrow) => {
 
   const drawShaft = drawLineWithCtx(shaft);
   const drawHead = drawTriangleWithCtx({
-    point1: trianglePt1,
-    point2: trianglePt2,
-    point3: trianglePt3,
+    pointA: trianglePtA,
+    pointB: trianglePtB,
+    pointC: trianglePtC,
     color,
   });
 

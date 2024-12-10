@@ -122,17 +122,13 @@ export const getArrowHeadSize = (
  * @returns the triangle that makes up the arrow tip
  */
 
-export const calculateArrowHeadCorners = (options: Arrow) => {
+export const calculateArrowHeadCorners = (options: Required<Pick<Arrow, 'start' | 'end' | 'width' | 'arrowHeadSize'>>) => {
   const { 
+    start,
+    end, 
     width, 
     arrowHeadSize, 
-    end, 
-    start 
-  } = {
-    ...LINE_DEFAULTS,
-    arrowHeadSize: getArrowHeadSize, // work around due to mounting issues
-    ...options,
-  };
+  } = options
 
   const { 
     arrowHeadHeight, 
