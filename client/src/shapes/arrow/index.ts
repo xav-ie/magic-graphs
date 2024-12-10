@@ -13,10 +13,20 @@ import {
   getTextAreaLocationOnArrow
 } from "./text";
 import { getFullTextArea } from "@shape/text";
+import { getArrowHeadSize } from "@shape/helpers";
 
-export type Arrow = Line
 
-export const ARROW_DEFAULTS = LINE_DEFAULTS
+export type Arrow = Line & {
+  arrowHeadSize?: ((width: number) => {
+    arrowHeadHeight: number,
+    perpLineLength: number,
+  })
+}
+
+export const ARROW_DEFAULTS = {
+  ...LINE_DEFAULTS,
+  arrowHeadSize: getArrowHeadSize
+} as const
 
 export const arrow = (options: Arrow): Shape => {
 
