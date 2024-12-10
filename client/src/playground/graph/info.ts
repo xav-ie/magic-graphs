@@ -12,6 +12,7 @@ const info: ProductInfo = {
     name: 'Graph Playground',
     description: 'A playground for magic graphs',
     thumbnail: '/products/thumbnails/graph-playground.png',
+    category: 'developer tools',
   },
 }
 

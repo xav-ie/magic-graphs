@@ -15,6 +15,7 @@ const info: ProductInfo = {
     name: 'Minimum Spanning Trees',
     description: 'Visualize Minimum Spanning Trees',
     thumbnail: '/products/thumbnails/mst.png',
+    category: 'algorithms',
   },
   simulations: (graph: Graph) => ([
     {

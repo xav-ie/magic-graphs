@@ -16,6 +16,7 @@ const info: ProductInfo = {
     name: 'Dijkstras Algorithm',
     description: 'Visualize Dijkstras Algorithm',
     thumbnail: '/products/thumbnails/dijkstras.png',
+    category: 'algorithms',
   },
   simulations: (graph: Graph) => [{
     name: 'Dijkstras Algorithm',

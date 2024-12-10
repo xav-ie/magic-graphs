@@ -97,3 +97,21 @@ export const useProductRouting = () => {
     productLink,
   };
 }
+
+/**
+ * products are ranked by category in this order on the product dropdown menu
+ */
+export const PRODUCT_CATEGORY_RANK = [
+  'sandbox',
+  'algorithms',
+  'data structures',
+  'math',
+  'developer tools',
+] as const
+
+export type ProductCategory = typeof PRODUCT_CATEGORY_RANK[number]
+
+export const getCurrentProduct = () => {
+  const route = useRoute();
+  return routeToProduct[route.path];
+}

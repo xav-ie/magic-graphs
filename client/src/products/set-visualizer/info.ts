@@ -12,6 +12,7 @@ const info: ProductInfo = {
     name: "Set Visualizer",
     description: "A visualizer for set theory",
     thumbnail: "/products/thumbnails/set-visualizer.png",
+    category: "math",
   },
 };
 

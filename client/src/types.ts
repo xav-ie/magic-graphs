@@ -1,23 +1,28 @@
 import type { RouteRecordRaw } from "vue-router"
 import type { Graph } from "@graph/types"
 import type { SimulationRunner } from "@ui/product/sim/types"
+import type { ProductCategory } from "@utils/product"
 
 /**
- * options for exposing a product to the main page
+ * options for exposing a product to the product dropdown menu
  */
-export type MainPageInfo = {
+export type ProductDropdownInfo = {
   /**
    * the name of the menu item
    */
   name: string,
   /**
-   *
+   * the description of the menu item
    */
   description: string,
   /**
    * an image to display in the menu
    */
   thumbnail: string,
+  /**
+   * the category of the product
+   */
+  category: ProductCategory,
 }
 
 /**
@@ -76,7 +81,7 @@ export type ProductInfo = {
    * if defined, the product will be added to the main menu
    * with the properties defined here
    */
-  menu?: MainPageInfo,
+  menu?: ProductDropdownInfo,
   /**
    * if defined, this products simulations will be exposed to other products
    */
