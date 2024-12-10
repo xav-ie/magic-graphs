@@ -10,7 +10,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
     end: lineEnd,
     width,
     color,
-    arrowHeadSize
+    arrowHeadSize,
   } = {
     ...ARROW_DEFAULTS,
     ...options
@@ -21,9 +21,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
   const { 
     arrowHeadHeight, 
     perpLineLength 
-  } = typeof arrowHeadSize === 'function' ? 
-    arrowHeadSize(width) : 
-    arrowHeadSize
+  } = arrowHeadSize(width)
   
   const shaftEnd = {
     x: lineEnd.x - arrowHeadHeight * Math.cos(angle),

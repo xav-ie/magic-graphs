@@ -17,10 +17,7 @@ import { getArrowHeadSize } from "@shape/helpers";
 
 
 export type Arrow = Line & {
-  arrowHeadSize: {
-    arrowHeadHeight: number,
-    perpLineLength: number,
-  } | ((width: number) => {
+  arrowHeadSize?: ((width: number) => {
     arrowHeadHeight: number,
     perpLineLength: number,
   })
@@ -28,7 +25,7 @@ export type Arrow = Line & {
 
 export const ARROW_DEFAULTS = {
   ...LINE_DEFAULTS,
-  arrowHeadSize: getArrowHeadSize()
+  arrowHeadSize: getArrowHeadSize
 } as const
 
 export const arrow = (options: Arrow): Shape => {
