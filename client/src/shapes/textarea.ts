@@ -93,7 +93,7 @@ export const engageTextarea = (
     setTimeout(() => {
       // setTimeout to allow canvas time to update
       input.remove();
-    }, 50);
+    }, 5);
   };
 
   input.onblur = removeInput;
