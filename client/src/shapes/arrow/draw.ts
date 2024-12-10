@@ -2,7 +2,6 @@ import { drawLineWithCtx } from "@shape/line/draw";
 import { drawTriangleWithCtx } from "@shape/triangle/draw";
 import { ARROW_DEFAULTS } from ".";
 import type { Arrow } from ".";
-import { getArrowHeadSize } from "@shape/helpers";
 
 export const drawArrowWithCtx = (options: Arrow) => {
 
@@ -11,6 +10,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
     end: lineEnd,
     width,
     color,
+    arrowHeadSize
   } = {
     ...ARROW_DEFAULTS,
     ...options
@@ -18,10 +18,12 @@ export const drawArrowWithCtx = (options: Arrow) => {
 
   const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
 
-  const {
-    arrowHeadHeight,
-    perpLineLength
-  } = getArrowHeadSize(width)
+  const { 
+    arrowHeadHeight, 
+    perpLineLength 
+  } = typeof arrowHeadSize === 'function' ? 
+    arrowHeadSize(width) : 
+    arrowHeadSize
   
   const shaftEnd = {
     x: lineEnd.x - arrowHeadHeight * Math.cos(angle),

@@ -1,6 +1,6 @@
 import type { Coordinate } from "@shape/types"
 import type { Arrow } from "./arrow"
-import { ARROW_DEFAULTS } from "./arrow"
+import { LINE_DEFAULTS } from "./line"
 
 /**
  * @description rotates a point around a center point by a given angle in radians
@@ -90,7 +90,7 @@ export const getLargestAngularSpace = (center: Coordinate, points: Coordinate[])
  * @returns the arrowhead height and the arrowhead base length
  */
 
-export const getArrowHeadSize = (arrowWidth: Arrow['width'] = ARROW_DEFAULTS.width) => {
+export const getArrowHeadSize = (arrowWidth: Arrow['width'] = LINE_DEFAULTS.width) => {
   const arrowHeadHeight = arrowWidth * 2.5;
   const perpLineLength = arrowHeadHeight / 1.75;
   return {
