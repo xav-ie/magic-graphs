@@ -1,35 +1,47 @@
 <script setup lang="ts">
-  import { computed } from "vue";
+  import { computed, onUnmounted, ref } from "vue";
   import { graph } from "@graph/global";
   import { resolveThemeForNode } from '@graph/themes'
-import type { GNode } from "@graph/types";
+  import type { GNode } from "@graph/types";
 
   type NodeProps = {
     size?: number;
-    borderSize?: number;
     node: GNode
   };
 
-  
   const props = withDefaults(defineProps<NodeProps>(), {
     size: 60,
   });
   
-  const theme = resolveThemeForNode(graph.value.getTheme, props.node);
+  const theme = ref(resolveThemeForNode(graph.value.getTheme, props.node))
 
   const borderSize = computed(() =>
     Math.round(Math.max(1, Math.log(props.size)))
   );
+
+  const setFocus = () => {
+    graph.value.setFocus([props.node.id])
+  };
+
+  const updateTheme = setInterval(() => {
+    theme.value = resolveThemeForNode(graph.value.getTheme, props.node)
+  }, 100);
+
+  onUnmounted(() => {
+    clearInterval(updateTheme)
+  })
 </script>
 
 <template>
   <div
+    @click="setFocus"
     :class="[
       'flex',
       'font-bold',
       'items-center',
       'justify-center',
       'rounded-full',
+      'cursor-pointer',
     ]"
     :style="{
       color: theme.nodeTextColor,
