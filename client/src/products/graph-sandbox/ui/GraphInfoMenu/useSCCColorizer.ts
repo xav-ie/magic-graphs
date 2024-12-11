@@ -25,6 +25,7 @@ export const useSCCColorizer = (graph: Graph) => {
 
   const colorize = () => {
     setTheme('nodeBorderColor', colorNodeBorders);
+    setTheme('nodeAnchorColor', colorNodeBorders);
   }
 
   const decolorize = () => {
