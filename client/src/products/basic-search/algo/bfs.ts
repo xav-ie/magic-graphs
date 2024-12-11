@@ -1,19 +1,14 @@
 import type { GNode } from "@graph/types"
 import type { AdjacencyList } from "@graph/useAdjacencyList"
-
-export type BFSTrace = {
-  currentNodeId?: GNode['id'],
-  visited: Set<GNode['id']>,
-  queue: Set<GNode['id']>
-}[]
+import type { BasicSearchTrace } from "./types"
 
 export const bfs = (adjList: AdjacencyList, startNode: GNode['id']) => {
-  const trace: BFSTrace = []
+  const trace: BasicSearchTrace = []
 
   const runBfs = () => {
     trace.push({
       visited: new Set(),
-      queue: new Set(),
+      nextToExplore: new Set(),
     })
 
     const visited = new Set<GNode['id']>()
@@ -26,7 +21,7 @@ export const bfs = (adjList: AdjacencyList, startNode: GNode['id']) => {
       trace.push({
         currentNodeId: currentNode,
         visited: new Set(visited),
-        queue: new Set(queue),
+        nextToExplore: new Set(queue),
       })
 
       for (const neighbor of adjList[currentNode]) {
@@ -36,7 +31,7 @@ export const bfs = (adjList: AdjacencyList, startNode: GNode['id']) => {
 
     trace.push({
       visited: new Set(visited),
-      queue: new Set(),
+      nextToExplore: new Set(),
     })
   }
 

@@ -1,11 +1,12 @@
 import { computed, ref, watch } from "vue";
 import type { GNode, Graph } from "@graph/types";
-import { bfs, type BFSTrace } from "./bfs";
+import { bfs } from "./bfs";
 import state from "../state";
 import { useAdjacencyList } from "@graph/useAdjacencyList";
+import type { BasicSearchTrace } from "./types";
 
 export const useBFS = (graph: Graph) => {
-  const trace = ref<BFSTrace>([]);
+  const trace = ref<BasicSearchTrace>([]);
   const { startNode } = state;
 
   const { adjacencyList } = useAdjacencyList(graph);

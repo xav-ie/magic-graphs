@@ -3,7 +3,7 @@ import type { GNode, Graph } from "@graph/types";
 import type { SimulationControls } from "@ui/product/sim/types";
 import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
-import type { BFSTrace } from "../algo/bfs";
+import type { BasicSearchTrace } from "../algo/types";
 
 export const SIM_COLORS = {
   CURRENT: colors.AMBER_600,
@@ -15,7 +15,7 @@ export const USETHEME_ID = 'basic-search'
 
 export const useSimulationTheme = (
   graph: Graph,
-  sim: SimulationControls<BFSTrace>
+  sim: SimulationControls<BasicSearchTrace>
 ) => {
   const { trace, step } = sim;
   const { setTheme, removeAllThemes } = useTheme(graph, USETHEME_ID)
@@ -26,7 +26,7 @@ export const useSimulationTheme = (
     if (graph.isFocused(node.id)) return
     if (traceAtStep.value?.currentNodeId === node.id) return SIM_COLORS.CURRENT
     if (traceAtStep.value.visited.has(node.id)) return SIM_COLORS.VISITED
-    if (traceAtStep.value.queue.has(node.id)) return SIM_COLORS.QUEUED
+    if (traceAtStep.value.nextToExplore?.has(node.id)) return SIM_COLORS.QUEUED
   }
 
   const activate = () => {
