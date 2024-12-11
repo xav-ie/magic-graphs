@@ -1,37 +1,35 @@
-import {
-  computed,
-  type Ref,
-} from 'vue';
+import { computed } from 'vue';
+import type { Ref } from 'vue';
 import type { GNode, Graph } from '@graph/types';
 import { useAdjacencyList } from '@graph/useAdjacencyList';
 
-// node id -> bfs level
-export type BFSLevelRecord = Record<GNode['id'], number>;
+// node id -> depth in a BFS tree
+export type NodeIdToDepth = Map<GNode['id'], number>;
 
 /**
- * reactive BFS level computation for a graph
+ * reactive {@link NodeIdToDepth | node depth} computation using BFS
  *
- * @param graph useGraph instance to compute BFS levels on
- * @param startNode start node to compute BFS levels from
- * @returns bfsLevelRecord reactive record of node id -> bfs level
+ * @param graph useGraph instance
+ * @param startNode the root node of the tree
+ * @returns reactive map of node id to depth and the depth of the tree
  */
-export const useBFSLevels = (graph: Graph, startNode: Ref<GNode>) => {
+export const useNodeDepth = (graph: Graph, startNode: Ref<GNode>) => {
   const { adjacencyList } = useAdjacencyList(graph);
 
   return computed(() => {
-    const bfsLevelRecord: BFSLevelRecord = {};
+    const nodeIdToDepth: NodeIdToDepth = new Map();
     if (!adjacencyList.value[startNode.value.id]) return;
 
     let queue = [startNode.value.id];
     const visited = new Set(queue);
 
-    let currentLevel = 0;
+    let currentDepth = 0;
 
     while (queue.length > 0) {
       const nextQueue = [];
 
       for (const nodeId of queue) {
-        bfsLevelRecord[nodeId] = currentLevel;
+        nodeIdToDepth.set(nodeId, currentDepth);
 
         for (const neighbor of adjacencyList.value[nodeId]) {
           if (!visited.has(neighbor)) {
@@ -43,7 +41,12 @@ export const useBFSLevels = (graph: Graph, startNode: Ref<GNode>) => {
 
       queue = [];
       queue.push(...nextQueue);
-      currentLevel++;
+      currentDepth++;
     }
+
+    return {
+      nodeIdToDepth,
+      depth: currentDepth - 1,
+    };
   })
 }
