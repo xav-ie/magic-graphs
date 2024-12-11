@@ -64,12 +64,6 @@ export const useMarquee = (graph: BaseGraph & GraphFocusControls) => {
     groupDragCoordinates.value = undefined
   }
 
-  const initializeEncapsulatedNodeBox = () => encapsulatedNodeBox.value = {
-    at: { x: Infinity, y: Infinity },
-    width: 0,
-    height: 0,
-  }
-
   const engageMarqueeBox = (startingCoords: { x: number, y: number }) => {
     hideNodeAnchors()
     graph.graphCursorDisabled.value = true
@@ -78,7 +72,6 @@ export const useMarquee = (graph: BaseGraph & GraphFocusControls) => {
       width: 0,
       height: 0,
     }
-    initializeEncapsulatedNodeBox()
   }
 
   const disengageMarqueeBox = () => {
@@ -104,8 +97,13 @@ export const useMarquee = (graph: BaseGraph & GraphFocusControls) => {
   }
 
   const updateEncapsulatedNodeBox = () => {
-    if (!encapsulatedNodeBox.value) return
-    if (graph.focusedNodes.value.length < 2) return initializeEncapsulatedNodeBox()
+    encapsulatedNodeBox.value = {
+      at: { x: Infinity, y: Infinity },
+      width: 0,
+      height: 0,
+    }
+
+    if (graph.focusedNodes.value.length < 2) return
 
     let minX = Infinity, minY = Infinity;
     let maxX = -Infinity, maxY = -Infinity;

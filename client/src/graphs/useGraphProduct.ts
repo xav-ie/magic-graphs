@@ -4,7 +4,7 @@ import type { Graph } from "@graph/types";
 import { collabControls } from "@graph/collab";
 import type { ProductInfo } from "src/types";
 import { routeToProduct } from "@utils/product";
-import { graph as globalGraph } from "@graph/global";
+import { graph as globalGraph, queuedGraphStateLoadout } from "@graph/global";
 
 /**
  * bootstraps and breaks down a graph centric product, connecting to a room if a room id is provided
@@ -30,7 +30,14 @@ export const useGraphProduct = (graph: Graph, product?: ProductInfo) => {
 
   globalGraph.value = graph;
 
+  setTimeout(() => {
+    if (!queuedGraphStateLoadout.value) return
+    graph.load(queuedGraphStateLoadout.value);
+    queuedGraphStateLoadout.value = undefined;
+  }, 5)
+
   onMounted(() => {
+
     if (!roomId) return;
     if (typeof roomId !== 'string') return console.error('room id must be a string');
 
