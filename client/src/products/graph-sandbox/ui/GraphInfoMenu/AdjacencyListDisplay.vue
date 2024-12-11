@@ -10,8 +10,10 @@
 
   const { weightedAdjacencyList } = useAdjacencyList(graph.value);
 
-  const getLabel = (nodeId: string) => {
-    return graph.value.getNode(nodeId)?.label;
+  const getNode = (nodeId: string) => {
+    const node = graph.value.getNode(nodeId);
+    if (node === undefined) throw new Error('node not found')
+    return node
   };
 
   const isWeighted = computed(
@@ -28,13 +30,10 @@
     >
       <div>
         <CPopoverTooltip>
-          <GNode>
-            {{ getLabel(key) }}
-          </GNode>
-
+          <GNode :node="getNode(key)" />
           <template #content>
             <GWell class="px-3 py-2 rounded-md">
-              <b>{{ getLabel(key) }}</b>
+              <b>{{ getNode(key).label }}</b>
               links to
               <b>{{ getCommaList(value.map(n => n.label)) || 'nothing' }}</b>
             </GWell>
@@ -54,7 +53,10 @@
             :key="node.id"
           >
             <CPopoverTooltip>
-              <GNode class="relative flex flex-col">
+              <GNode 
+                :node="node"
+                class="relative flex flex-col"
+              >
                 <span class="leading-[15px]">
                   {{ node.label }}
                 </span>
@@ -70,7 +72,7 @@
                 <GWell class="p-2 rounded-md">
                   <b>{{ node.label }}</b>
                   links to
-                  <b>{{ getLabel(key) }}</b>
+                  <b>{{ getNode(key).label }}</b>
                   <span v-if="isWeighted">
                     with a cost of
                     <b>{{ node.weight }}</b>

@@ -26,16 +26,18 @@
       </GButton>
       <template #content>
         <GWell class="flex items-center py-2 px-3 rounded-md">
-          <GraphNode :size="30">
-            {{ toNode.label }}
-          </GraphNode>
+          <GraphNode 
+            :node="toNode"
+            :size="30"
+          />
           <CIcon
             class="text-2xl"
             icon="arrow_right"
           />
-          <GraphNode :size="30">
-            {{ fromNode.label }}
-          </GraphNode>
+          <GraphNode 
+            :node="fromNode"
+            :size="30"
+          />
         </GWell>
       </template>
     </CPopoverTooltip>
