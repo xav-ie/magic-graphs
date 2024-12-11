@@ -15,21 +15,21 @@ const info: ProductInfo = {
   menu: {
     name: 'Basic Search',
     description: 'Visualize basic search algorithms like BFS and DFS',
-    thumbnail: '/products/thumbnails/dijkstras.png',
+    thumbnail: '/products/thumbnails/basic-search.png',
     category: 'algorithms',
   },
   simulations: (graph: Graph) => [
     {
       name: 'Breadth First Search',
       description: 'Explore all neighbors of a node before moving to the next level',
-      thumbnail: '/products/thumbnails/dijkstras.png',
+      thumbnail: '/products/sim-thumbnails/bfs.png',
       canRun: canRunBasicSearch(graph),
       runner: useBFSSimulationRunner(graph),
     },
     {
       name: 'Depth First Search',
       description: 'Explore as far as possible along each branch before backtracking',
-      thumbnail: '/products/thumbnails/dijkstras.png',
+      thumbnail: '/products/sim-thumbnails/dfs.png',
       canRun: canRunBasicSearch(graph),
       runner: useDFSSimulationRunner(graph),
     }

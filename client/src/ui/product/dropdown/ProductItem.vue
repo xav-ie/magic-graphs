@@ -7,7 +7,7 @@
   import GButton from "@ui/graph/button/GButton.vue";
   import type { ProductInfo } from "src/types";
   import CIcon from "@ui/core/Icon.vue";
-import GWell from "@ui/graph/GWell.vue";
+  import GWell from "@ui/graph/GWell.vue";
 
   const { navigate } = useProductRouting();
   const currentProduct = getCurrentProduct();
@@ -72,16 +72,16 @@ import GWell from "@ui/graph/GWell.vue";
       <GWell
         v-else
         tertiary
-        class="flex items-center gap-2 p-1 rounded-md text-xl font-bold overflow-hidden"
+        class="flex items-center gap-2 px-2 py-1 rounded-md text-xl font-bold overflow-hidden"
       >
         <CIcon
           icon="star"
-          class="text-[50px] text-yellow-500 animate-bounce"
+          class="text-xl"
         />
-        you are here!
+        you are here
         <CIcon
           icon="star"
-          class="text-[50px] text-yellow-500 animate-bounce"
+          class="text-xl"
         />
       </GWell>
     </div>
