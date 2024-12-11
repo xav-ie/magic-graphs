@@ -1,19 +1,22 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import { graph, queuedGraphStateLoadout } from "@graph/global";
-  import { useProductRouting } from "@utils/product";
+  import { useProductRouting, getCurrentProduct } from "@utils/product";
   import type { ProductInfoWithMenu } from "@utils/product";
   import GVerticalCardButton from "@ui/graph/button/GVerticalCardButton.vue";
   import GButton from "@ui/graph/button/GButton.vue";
   import type { ProductInfo } from "src/types";
+  import CIcon from "@ui/core/Icon.vue";
+import GWell from "@ui/graph/GWell.vue";
 
   const { navigate } = useProductRouting();
+  const currentProduct = getCurrentProduct();
 
   const navigateWithGraph = (product: ProductInfo) => {
     queuedGraphStateLoadout.value = {
       nodes: graph.value.nodes.value,
       edges: graph.value.edges.value,
-    }
+    };
     navigate(product);
   };
 
@@ -36,7 +39,10 @@
         opacity: hovered ? 1 : 0,
       }"
     >
-      <div class="flex items-center gap-3">
+      <div
+        v-if="currentProduct.productId !== product.productId"
+        class="flex items-center gap-3"
+      >
         <GButton
           @click="navigate(product)"
           tertiary
@@ -63,6 +69,21 @@
           go with graph
         </GButton>
       </div>
+      <GWell
+        v-else
+        tertiary
+        class="flex items-center gap-2 p-1 rounded-md text-xl font-bold overflow-hidden"
+      >
+        <CIcon
+          icon="star"
+          class="text-[50px] text-yellow-500 animate-bounce"
+        />
+        you are here!
+        <CIcon
+          icon="star"
+          class="text-[50px] text-yellow-500 animate-bounce"
+        />
+      </GWell>
     </div>
     <GVerticalCardButton
       :image-src="product.menu.thumbnail"
