@@ -1,3 +1,4 @@
+import type { DeepPartial, DeepReadonly } from "ts-essentials";
 import type { GEdge, GNode, Graph } from "@graph/types";
 import type { GraphSettings } from "@graph/settings";
 import type {
@@ -9,8 +10,7 @@ import type {
   EditEdgeLabelOptions,
 } from "@graph/base/types";
 import type { NodeAnchor } from "@graph/plugins/anchors/types";
-import type { GraphTheme, GraphThemeName } from "@graph/themes";
-import type { DeepPartial } from "@utils/types";
+import type { GraphThemeName } from "@graph/themes";
 import type {
   HistoryRecord,
   RedoHistoryOptions,
@@ -32,47 +32,71 @@ export type BaseGraphEventMap = {
   /**
    * when a node is {@link Graph.addNode | added} to the graph
    */
-  onNodeAdded: (node: GNode, options: AddNodeOptions) => void;
+  onNodeAdded: (node: GNode, options: DeepReadonly<AddNodeOptions>) => void;
   /**
    * when multiple nodes are added to the graph as a group
    */
-  onBulkNodeAdded: (nodes: GNode[], options: AddNodeOptions) => void;
+  onBulkNodeAdded: (
+    nodes: Readonly<GNode[]>,
+    options: DeepReadonly<AddNodeOptions>
+  ) => void;
   /**
    * when a node is {@link Graph.removeNode | removed} from the graph
    */
-  onNodeRemoved: (removedNode: GNode, removedEdges: GEdge[], options: RemoveNodeOptions) => void;
+  onNodeRemoved: (
+    removedNode: GNode,
+    removedEdges: Readonly<GEdge[]>,
+    options: DeepReadonly<RemoveNodeOptions>
+  ) => void;
   /**
    * when multiple nodes are removed from the graph as a group
    */
-  onBulkNodeRemoved: (removedNodes: GNode[], removedEdges: GEdge[], options: RemoveNodeOptions) => void;
+  onBulkNodeRemoved: (
+    removedNodes: Readonly<GNode[]>,
+    removedEdges: Readonly<GEdge[]>,
+    options: DeepReadonly<RemoveNodeOptions>
+  ) => void;
   /**
    * when a node is {@link Graph.moveNode | moved} to a new position on the canvas
    */
-  onNodeMoved: (node: GNode, options: MoveNodeOptions) => void;
+  onNodeMoved: (node: GNode, options: DeepReadonly<MoveNodeOptions>) => void;
   /**
    * when multiple nodes are moved to new positions on the canvas in as a group
    */
-  onBulkNodeMoved: (nodes: GNode[], options: MoveNodeOptions) => void;
+  onBulkNodeMoved: (
+    nodes: Readonly<GNode[]>,
+    options: DeepReadonly<MoveNodeOptions>
+  ) => void;
   /**
    * when an edge is {@link Graph.addEdge | added} to the graph
    */
-  onEdgeAdded: (edge: GEdge, options: AddEdgeOptions) => void;
+  onEdgeAdded: (edge: GEdge, options: DeepReadonly<AddEdgeOptions>) => void;
   /**
    * when multiple edges are added to the graph as a group
    */
-  onBulkEdgeAdded: (edges: GEdge[], options: AddEdgeOptions) => void;
+  onBulkEdgeAdded: (
+    edges: Readonly<GEdge[]>,
+    options: DeepReadonly<AddEdgeOptions>
+  ) => void;
   /**
    * when an edge is {@link Graph.removeEdge | removed} from the graph
    */
-  onEdgeRemoved: (edge: GEdge, options: RemoveEdgeOptions) => void;
+  onEdgeRemoved: (edge: GEdge, options: DeepReadonly<RemoveEdgeOptions>) => void;
   /**
    * when multiple edges are removed from the graph as a group
    */
-  onBulkEdgeRemoved: (edges: GEdge[], options: RemoveEdgeOptions) => void;
+  onBulkEdgeRemoved: (
+    edges: Readonly<GEdge[]>,
+    options: DeepReadonly<RemoveEdgeOptions>
+  ) => void;
   /**
    * when an edge's text label is {@link Graph.editEdgeLabel | edited}
    */
-  onEdgeLabelEdited: (edge: GEdge, oldLabel: GEdge['label'], options: EditEdgeLabelOptions) => void;
+  onEdgeLabelEdited: (
+    edge: GEdge,
+    oldLabel: GEdge['label'],
+    options: DeepReadonly<EditEdgeLabelOptions>
+  ) => void;
   /**
    * when the canvas is repainted
    *
@@ -139,18 +163,27 @@ export type HistoryGraphEventMap = {
   /**
    * when the undo action is triggered
    */
-  onUndo: (historyRecord: HistoryRecord, options: UndoHistoryOptions) => void;
+  onUndo: (
+    historyRecord: DeepReadonly<HistoryRecord>,
+    options: DeepReadonly<UndoHistoryOptions>
+  ) => void;
   /**
    * when the redo action is triggered
    */
-  onRedo: (historyRecord: HistoryRecord, options: RedoHistoryOptions) => void;
+  onRedo: (
+    historyRecord: DeepReadonly<HistoryRecord>,
+    options: DeepReadonly<RedoHistoryOptions>
+  ) => void;
 }
 
 export type FocusGraphEventMap = {
   /**
    * when the set of focused items changes
    */
-  onFocusChange: (newItemIds: Set<string>, oldItemId: Set<string>) => void;
+  onFocusChange: (
+    newItemIds: Readonly<Set<string>>,
+    oldItemIds: Readonly<Set<string>>
+  ) => void;
 }
 
 export type DraggableGraphEventMap = {
@@ -168,22 +201,34 @@ export type NodeAnchorGraphEventMap = {
   /**
    * when the user initiates a drag on a node anchor
    */
-  onNodeAnchorDragStart: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
+  onNodeAnchorDragStart: (
+    parentNode: GNode,
+    nodeAnchor: Readonly<NodeAnchor>
+  ) => void;
   /**
    * when the user drops a node anchor
    */
-  onNodeAnchorDrop: (parentNode: GNode, nodeAnchor: NodeAnchor) => void;
+  onNodeAnchorDrop: (
+    parentNode: GNode,
+    nodeAnchor: Readonly<NodeAnchor>
+  ) => void;
 }
 
 export type MarqueeGraphEventMap = {
   /**
    * when the user starts a marquee drag
    */
-  onGroupDragStart: (nodes: GNode[], startingCoordinates: Coordinate) => void;
+  onGroupDragStart: (
+    nodes: Readonly<GNode[]>,
+    startingCoordinates: Readonly<Coordinate>
+  ) => void;
   /**
    * when the user drops a marquee drag
    */
-  onGroupDrop: (nodes: GNode[], endCoordinates: Coordinate) => void;
+  onGroupDrop: (
+    nodes: Readonly<GNode[]>,
+    endCoordinates: Readonly<Coordinate>
+  ) => void;
 }
 
 export type AnnotationGraphEventMap = {}

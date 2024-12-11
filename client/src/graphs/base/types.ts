@@ -3,9 +3,9 @@
  * such as addNode, removeNode, etc.
  */
 
+import type { DeepReadonly } from "vue"
 import type { SchemaItem } from "@graph/types"
 import type { Coordinate } from "@shape/types"
-import type { DeepReadonly } from "vue"
 
 export type FocusOption = {
   /**

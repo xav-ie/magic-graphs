@@ -1,14 +1,3 @@
-
-/**
- * make every key in an object optional including nested objects
- * @example DeepPartial<{ a: number, b: { c: string } }> // { a?: number, b?: { c?: string } }
- */
-export type DeepPartial<T> = {
-  [K in keyof T]?: K extends Record<any, any>
-  ? DeepPartial<T[K]>
-  : T[K];
-};
-
 /**
  * make every key in an object required including nested objects
  * @example DeepRequired<{ a?: number, b?: { c?: string } }> // { a: number, b: { c: string } }

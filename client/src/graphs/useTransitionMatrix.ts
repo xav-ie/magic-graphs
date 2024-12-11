@@ -1,7 +1,7 @@
 import { ref, onUnmounted } from "vue";
+import type { DeepPartial } from "ts-essentials";
 import type { BaseGraph } from "./base";
 import { getWeightedAdjacencyList } from "./useAdjacencyList";
-import type { DeepPartial } from "@utils/types";
 import type { GraphSettings } from "./settings";
 
 /**
