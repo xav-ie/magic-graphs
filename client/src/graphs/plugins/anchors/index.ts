@@ -7,6 +7,7 @@ import type { GraphFocusControls } from '@graph/plugins/focus';
 import type { NodeAnchor } from '@graph/plugins/anchors/types';
 import { generateId } from '@utils/id';
 import { circle, line } from '@shapes';
+import tinycolor from 'tinycolor2';
 
 /**
  * node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
@@ -41,6 +42,15 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
     activeAnchor.value = undefined
   }
 
+  const hoveredNodeAnchorId = ref<NodeAnchor['id']>()
+
+  const updateHoveredNodeAnchorId = ({ items }: GraphMouseEvent) => {
+    const topItem = items.at(-1)
+    if (!topItem) return hoveredNodeAnchorId.value = undefined
+
+    hoveredNodeAnchorId.value = topItem.id
+  }
+
   const getAnchorSchemas = (node: GNode) => {
     const { getTheme } = graph
 
@@ -49,12 +59,17 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
 
     const anchorSchemas: SchemaItem[] = []
     for (const anchor of nodeAnchors.value) {
-      const { x, y } = anchor
+      const { x, y, id } = anchor
+
+      const isHoveredOrActive = id === hoveredNodeAnchorId.value || id === activeAnchor.value?.id
+      const colorObj = tinycolor(color)
+      const adjustedColorObj = colorObj.isDark() ? colorObj.lighten(20) : colorObj.darken(20)
+      const nodeAnchorColor = isHoveredOrActive ? adjustedColorObj.toHexString() : color
 
       const circleTemplate = {
         at: { x, y },
         radius,
-        color
+        color: nodeAnchorColor
       }
 
       if (activeAnchor.value && activeAnchor.value.direction === anchor.direction) {
@@ -267,6 +282,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
     graph.subscribe('onNodeDrop', updateNodeAnchors)
     graph.subscribe('onMouseMove', updateParentNode)
     graph.subscribe('onMouseMove', updateActiveAnchorPosition)
+    graph.subscribe('onMouseMove', updateHoveredNodeAnchorId)
     graph.subscribe('onMouseDown', setActiveAnchor)
     graph.subscribe('onMouseUp', dropAnchor)
     graph.subscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
@@ -278,6 +294,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
     graph.unsubscribe('onNodeDrop', updateNodeAnchors)
     graph.unsubscribe('onMouseMove', updateParentNode)
     graph.unsubscribe('onMouseMove', updateActiveAnchorPosition)
+    graph.subscribe('onMouseMove', updateHoveredNodeAnchorId)
     graph.unsubscribe('onMouseDown', setActiveAnchor)
     graph.unsubscribe('onMouseUp', dropAnchor)
     graph.unsubscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
