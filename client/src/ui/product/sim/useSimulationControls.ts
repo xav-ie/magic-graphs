@@ -1,4 +1,4 @@
-import { computed, ref } from "vue"
+import { computed, ref, watch, watchEffect } from "vue"
 import type { ComputedRef, Ref } from "vue"
 import { graph } from "@graph/global";
 import type { SimulationControls } from "@ui/product/sim/types";
@@ -34,6 +34,7 @@ export const useSimulationControls = <T extends any[]>(
 
   const simLastStep = computed(() => lastStep?.value ?? trace.value.length)
 
+
   const step = ref(0);
   const paused = ref(true);
   const playbackSpeed = ref(1_500);
@@ -44,23 +45,33 @@ export const useSimulationControls = <T extends any[]>(
 
   const start = () => {
     if (active.value) return
-
+  
     graph.value.settings.value.interactive = allowEditingDuringPlayback
-
+  
     paused.value = false
     active.value = true
     step.value = 0
-    interval.value = setInterval(() => {
-      if (isOver.value || paused.value) return
-      nextStep()
-    }, playbackSpeed.value)
+  
+    setupPlaybackInterval()
   }
-
+  
   const stop = () => {
     if (interval.value) clearInterval(interval.value)
     graph.value.settings.value.interactive = true
     active.value = false
   }
+  
+  const setupPlaybackInterval = () => {
+    if (interval.value) clearInterval(interval.value) 
+    interval.value = setInterval(() => {
+      if (isOver.value || paused.value) return
+      nextStep()
+    }, playbackSpeed.value)
+  }
+  
+  watch(playbackSpeed, () => {
+    if (active.value) setupPlaybackInterval() 
+  })
 
   const nextStep = () => {
     if (isOver.value) return
