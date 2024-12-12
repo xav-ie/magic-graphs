@@ -35,7 +35,7 @@ export const useTreeShaper = (graph: Graph) => {
     }
 
     graph.trackGraphState();
-    graph.setFocus([])
+    graph.updateEncapsulatedNodeBox()
   }
 
   return {
