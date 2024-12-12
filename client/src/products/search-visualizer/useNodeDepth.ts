@@ -46,6 +46,15 @@ export const useNodeDepth = (graph: Graph, startNode: Ref<GNode>) => {
 
     return {
       nodeIdToDepth,
+      depthToNodeIds: Array
+        .from(nodeIdToDepth)
+        .reduce<GNode['id'][][]>((acc, [nodeId, depth]) => {
+          if (!acc[depth]) {
+            acc[depth] = [];
+          }
+          acc[depth].push(nodeId);
+          return acc;
+        }, []),
       depth: currentDepth - 1,
     };
   })
