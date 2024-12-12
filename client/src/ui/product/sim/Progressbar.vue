@@ -2,9 +2,12 @@
   import { computed } from "vue";
   import { PROGRESS_DEFAULTS } from "./progressTypes";
   import type { ProgressOptions } from "./progressTypes";
-  import colors from "@utils/colors";
+  import { useGraphColors } from "@graph/themes/useGraphColors";
 
-  const props = withDefaults(defineProps<ProgressOptions>(), PROGRESS_DEFAULTS);
+  const colors = useGraphColors()
+
+  const props = withDefaults(
+    defineProps<ProgressOptions>(), PROGRESS_DEFAULTS);
 
   const range = computed(() => {
     const [start, end] = props.range;
@@ -53,7 +56,7 @@
     <div
       :class="`absolute top-0 left-0 h-full z-0`"
       :style="{
-        backgroundColor: props.color,
+        backgroundColor: props.color ?? colors.tertiary,
         width: `${progressPercentage(progress)}%`,
         transition: `width ${props.transitionTimeMs}ms ${props.transitionEasing}`,
       }"
@@ -61,7 +64,7 @@
     <div
       :class="`absolute top-0 left-0 h-full z-10`"
       :style="{
-        backgroundColor: colors.GRAY_400 + '90',
+        backgroundColor: colors.primary + '90',
         width: `${progressPercentage(previewProgress ?? props.range[0])}%`,
         transition: `width ${props.transitionTimeMs}ms ${props.transitionEasing}`,
       }"

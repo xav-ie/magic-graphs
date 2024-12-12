@@ -1,5 +1,3 @@
-import colors from "@utils/colors";
-
 /**
  * props for the Progress component.
  */
@@ -45,5 +43,4 @@ export type ProgressOptions = {
 export const PROGRESS_DEFAULTS = {
   transitionTimeMs: 250,
   transitionEasing: "ease-in-out",
-  color: colors.GRAY_200,
 } as const;
