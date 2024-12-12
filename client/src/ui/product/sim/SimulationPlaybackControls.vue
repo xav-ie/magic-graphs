@@ -64,8 +64,6 @@
   onUnmounted(() => {
     graph.value.unsubscribe('onStructureChange', pause);
   });
-
-  
 </script>
 
 <template>
