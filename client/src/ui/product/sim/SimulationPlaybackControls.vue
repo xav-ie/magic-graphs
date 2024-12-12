@@ -7,7 +7,6 @@
   import ProgressBar from "./Progressbar.vue";
   import { useGraphColors } from "@graph/themes/useGraphColors";
   import Select from 'primevue/select';
-  import Icon from "@ui/core/Icon.vue";
 
   const colors = useGraphColors()
 
