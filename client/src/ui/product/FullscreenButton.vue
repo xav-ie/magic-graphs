@@ -5,7 +5,7 @@
   import GButton from "@ui/graph/button/GButton.vue";
   import CIcon from "@ui/core/Icon.vue";
 
-  const { toggle } = useFullscreen();
+  const { toggle, isFullscreen } = useFullscreen();
 
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.key.toLowerCase() === "f") {
@@ -24,7 +24,7 @@
   >
     <CIcon
       class="text-3xl"
-      icon="fullscreen"
+      :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'"
     />
   </GButton>
 </template>
