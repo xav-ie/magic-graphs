@@ -3,13 +3,13 @@ import tinycolor from "tinycolor2";
 
 /**
  *
- * @param {number} frameRate in frames per second
  * @param {number} duration in milliseconds
+ * @param {number} frameRate in frames per second
  * @returns {number} number of steps
  */
 export const calculateSteps = (
-  frameRate: number = 60,
-  duration: number = 1000
+  duration = 1000,
+  frameRate = 60,
 ) => {
   const seconds = duration / 1000;
   return Math.floor(frameRate * seconds);
@@ -30,7 +30,6 @@ export type EasingFunction =
  *
  * @param {number} progress the current progress
  * @param {EasingFunction} ease the easing function
- * @returns
  */
 export const easeFunction = (progress: number, ease: EasingFunction) => {
   if (typeof ease === "function") return ease(progress);
@@ -52,7 +51,7 @@ export const easeFunction = (progress: number, ease: EasingFunction) => {
 };
 
 /**
- * @description Gets an intermediate color value between two colors.
+ * gets an intermediate color value between two colors.
  *
  * @param startColor - CSS color string of the start color.
  * @param endColor - CSS color string of the end color.

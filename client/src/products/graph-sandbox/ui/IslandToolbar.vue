@@ -53,7 +53,7 @@
     return canRedo.value;
   });
 
-  const { shapeGraph } = useTreeShaper(graph.value);
+  const { shapeGraph, reshapingActive } = useTreeShaper(graph.value);
 </script>
 
 <template>
@@ -131,7 +131,8 @@
 
       <GToolbarButton
         @click="shapeGraph"
-        icon="forest_outline"
+        :active="reshapingActive"
+        :icon="reshapingActive ? 'forest' : 'forest_outline'"
       />
     </ToolbarButtonGroup>
   </GToolbar>
