@@ -1,8 +1,6 @@
 import type { Graph } from "@graph/types";
 import { GRAPH_BUTTON_ID } from "@graph/buttons/types";
 import type { GraphPlaygroundButton } from "@graph/buttons/types";
-import { useBFSColorizer } from "@product/search-visualizer/useBFSColorizer";
-import { getRandomInRange } from "@utils/random";
 import colors from "@utils/colors";
 
 /**
@@ -85,20 +83,6 @@ export const useGraphBtns = (graph: Graph) => {
     id: GRAPH_BUTTON_ID.log,
   };
 
-  const { toggleColorize, isColorized, startNode } = useBFSColorizer(graph);
-
-  const bfsColorize: GraphPlaygroundButton = {
-    label: () => {
-      const startText = 'Colorize';
-      const node = graph.getNode(startNode.value!);
-      const stopText = `Stop Colorizing (${node?.label})`;
-      return isColorized.value ? stopText : startText;
-    },
-    color: () => isColorized.value ? colors.GREEN_600 : colors.BLUE_600,
-    action: toggleColorize,
-    id: "toggle-bfs-colorize",
-  };
-
   const btnObj = {
     reset,
     clearLocalStorage,
@@ -116,9 +100,6 @@ export const useGraphBtns = (graph: Graph) => {
     // persistent
     changeStorageKey,
     persistentGraphClone,
-
-    // search visualizer - product
-    bfsColorize,
 
     log,
   };

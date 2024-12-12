@@ -8,7 +8,7 @@
   import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
   import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
-  import { useTreeShaper } from "./useTreeShaper";
+  import { useMoveNodesIntoTreeFormation } from "./useTreeShaper";
 
   const hint = useGraphTutorial(graph.value, [
     {
@@ -53,7 +53,7 @@
     return canRedo.value;
   });
 
-  const { shapeGraph, reshapingActive } = useTreeShaper(graph.value);
+  const { shapeGraph, reshapingActive } = useMoveNodesIntoTreeFormation(graph.value);
 </script>
 
 <template>
