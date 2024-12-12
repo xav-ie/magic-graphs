@@ -7,7 +7,7 @@ import type { GNode, Graph } from '@graph/types';
 import { useTheme } from '@graph/themes/useTheme';
 import colors from '@colors';
 import { SEARCH_VISUALIZER_THEME_ID } from './types';
-import { useBFSLevels } from './useBFSLevels';
+import { useNodeDepth } from './useBFSLevels';
 
 const defaultColorPalette = [
   colors.RED_600,
@@ -24,7 +24,7 @@ export const useBFSColorizer = (graph: Graph) => {
 
   const isColorized = ref(false);
   const { setTheme, removeTheme } = useTheme(graph, SEARCH_VISUALIZER_THEME_ID);
-  const { bfsLevelRecord, startNode } = useBFSLevels(graph, graph.nodes.value[0]?.id);
+  const { bfsLevelRecord, startNode } = useNodeDepth(graph, graph.nodes.value[0]?.id);
 
   const shiftStartNodeIfNecessary = () => {
     if (startNode.value === undefined) {

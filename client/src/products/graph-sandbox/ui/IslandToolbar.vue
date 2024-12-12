@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { computed } from "vue";
   import { graph } from "@graph/global";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
   import GToolbar from "@ui/graph/toolbar/GToolbarBase.vue";
@@ -7,7 +8,7 @@
   import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
   import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
-  import { computed } from "vue";
+  import { useTreeShaper } from "./useTreeShaper";
 
   const hint = useGraphTutorial(graph.value, [
     {
@@ -51,6 +52,8 @@
     if (!settings.value.interactive) return false;
     return canRedo.value;
   });
+
+  const { shapeGraph } = useTreeShaper(graph.value);
 </script>
 
 <template>
@@ -125,6 +128,11 @@
           icon="group"
         />
       </CollaborativeSessionMenu>
+
+      <GToolbarButton
+        @click="shapeGraph"
+        icon="forest_outline"
+      />
     </ToolbarButtonGroup>
   </GToolbar>
 </template>
