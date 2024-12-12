@@ -55,21 +55,19 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
     const { getTheme } = graph
 
     const color = getTheme('nodeAnchorColor', node)
+    const focusColor = getTheme('nodeAnchorColorWhenParentFocused', node)
     const radius = getTheme('nodeAnchorRadius', node)
 
     const anchorSchemas: SchemaItem[] = []
     for (const anchor of nodeAnchors.value) {
       const { x, y, id } = anchor
 
-      const isHoveredOrActive = id === hoveredNodeAnchorId.value || id === activeAnchor.value?.id
-      const colorObj = tinycolor(color)
-      const adjustedColorObj = colorObj.isDark() ? colorObj.lighten(20) : colorObj.darken(20)
-      const nodeAnchorColor = isHoveredOrActive ? adjustedColorObj.toHexString() : color
+      const isHovered = id === hoveredNodeAnchorId.value
 
       const circleTemplate = {
         at: { x, y },
         radius,
-        color: nodeAnchorColor
+        color: isHovered ? focusColor : color
       }
 
       if (activeAnchor.value && activeAnchor.value.direction === anchor.direction) {
