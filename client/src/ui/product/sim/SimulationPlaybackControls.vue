@@ -6,6 +6,8 @@
   import PlaybackButton from "./PlaybackButton.vue";
   import ProgressBar from "./Progressbar.vue";
   import { useGraphColors } from "@graph/themes/useGraphColors";
+  import Select from 'primevue/select';
+  import Icon from "@ui/core/Icon.vue";
 
   const colors = useGraphColors()
 
@@ -13,7 +15,7 @@
     controls: UnwrapRef<SimulationControls>;
   }>();
 
-  const { isOver, paused, step, hasBegun, lastStep } = toRefs(
+  const { isOver, paused, step, hasBegun, lastStep, playbackSpeed, playbackSpeedToMs } = toRefs(
     props.controls
   );
 
@@ -63,6 +65,8 @@
   onUnmounted(() => {
     graph.value.unsubscribe('onStructureChange', pause);
   });
+
+  
 </script>
 
 <template>
@@ -77,6 +81,16 @@
       class="w-full border-2 rounded-lg"
       :style="{ borderColor: colors.tertiary }"
     />
+
+    <Select
+      v-model="playbackSpeed"
+      :options="playbackSpeedToMs"
+      placeholder="1x"
+      optionValue="value"
+      optionLabel="label"
+      size="small"
+      class="-my-2"
+    ></Select>
 
     <div class="flex gap-4 fill-white dark:fill-black">
       <PlaybackButton
