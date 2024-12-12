@@ -4,7 +4,10 @@
   import { graph } from "@graph/global";
   import type { SimulationControls } from "./types";
   import PlaybackButton from "./PlaybackButton.vue";
-  import ProgressBar from "./ProgressBar.vue";
+  import ProgressBar from "./Progressbar.vue";
+  import { useGraphColors } from "@graph/themes/useGraphColors";
+
+  const colors = useGraphColors()
 
   const props = defineProps<{
     controls: UnwrapRef<SimulationControls>;
@@ -71,7 +74,8 @@
       :on-progress-set="goToStep"
       :preview-progress="previewedProgress"
       :on-hover="onProgressBarHover"
-      class="w-full border-gray-200 border-2 rounded-lg"
+      class="w-full border-2 rounded-lg"
+      :style="{ borderColor: colors.tertiary }"
     />
 
     <div class="flex gap-4 fill-white dark:fill-black">
