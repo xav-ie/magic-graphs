@@ -23,9 +23,7 @@ const { modelValue, items, itemValue, itemLabel } = toRefs(props);
 const isMenuOpen = ref(false);
 const selectedItem = ref(modelValue.value);
 
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-};
+const toggleMenu = () => isMenuOpen.value = !isMenuOpen.value;
 
 onClickOutside(target, () => isMenuOpen.value = false)
 
@@ -49,10 +47,11 @@ const emit = defineEmits(['update:modelValue']);
 </script>
 
 <template>
-  <div ref="target" class="w-full flex justify-center">
+  <div class="w-full flex justify-center">
     <!-- spread menu -->
     <div
       v-if="isMenuOpen"
+      ref="target"
       class="flex gap-2 justify-center "
     >
       <GButton
