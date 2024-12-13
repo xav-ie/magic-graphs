@@ -117,8 +117,8 @@ export const useMoveNodesIntoTreeFormation = (
     await new Promise((res) => setTimeout(res, treeOptions.durationMs + 50));
 
     if (affectedItems.length > 0) {
-      graph.trackGraphState();
-      graph.addToUndoStack({
+      graph.persistent.trackGraphState();
+      graph.history.addToUndoStack({
         action: 'move',
         affectedItems,
       })

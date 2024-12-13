@@ -11,7 +11,7 @@ const createResidualId = (edgeId: string) => `${RESIDUAL_ID}-${edgeId}`
 export const useResidualEdges = (graph: Graph) => {
   const cleanupResidualEdges = () => {
     graph.edges.value = graph.edges.value.filter((e) => !e.id.startsWith(RESIDUAL_ID))
-    graph.trackGraphState()
+    graph.persistent.trackGraphState()
   }
 
   const createResidualEdges = () => {

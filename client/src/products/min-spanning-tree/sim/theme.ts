@@ -19,7 +19,7 @@ export const useSimulationTheme = (
   const mstAtStep = computed(() => sim.trace.value.slice(0, sim.step.value));
 
   const colorEdge = (edge: GEdge) => {
-    if (graph.isFocused(edge.id)) return;
+    if (graph.focus.isFocused(edge.id)) return;
 
     const color = graph.baseTheme.value.edgeColor;
     const inMST = mstAtStep.value.some((e) => e.id === edge.id);
@@ -28,7 +28,7 @@ export const useSimulationTheme = (
   }
 
   const colorEdgeText = (edge: GEdge) => {
-    if (graph.isFocused(edge.id)) return;
+    if (graph.focus.isFocused(edge.id)) return;
 
     const color = graph.baseTheme.value.edgeTextColor;
     const inMST = mstAtStep.value.some((e) => e.id === edge.id);
