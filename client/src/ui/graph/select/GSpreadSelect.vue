@@ -9,16 +9,16 @@ const props = withDefaults(
   defineProps<{
     items: any[],
     modelValue: any,
-    optionValue?: string,
-    optionLabel?: string,
+    itemValue?: string,
+    itemLabel?: string,
   }>(),
   {
-    optionValue: 'value',
-    optionLabel: 'label',
+    itemValue: 'value',
+    itemLabel: 'label',
   }
 );
 
-const { modelValue, items, optionValue, optionLabel } = toRefs(props);
+const { modelValue, items, itemValue, itemLabel } = toRefs(props);
 
 const isMenuOpen = ref(false);
 const selectedItem = ref(modelValue.value);
@@ -29,20 +29,20 @@ const toggleMenu = () => {
 
 onClickOutside(target, () => isMenuOpen.value = false)
 
-const getOptionValue = (item: any) => item[optionValue.value];
-const getOptionLabel = (item: any) => item[optionLabel.value];
+const getItemValue = (item: any) => itemValue.value === undefined ? item : item[itemValue.value];
+const getItemLabel = (item: any) => itemValue.value === undefined ? item : item[itemLabel.value];
 
 const selectItem = (item: any) => {
-  selectedItem.value = getOptionValue(item);
+  selectedItem.value = getItemValue(item);
   isMenuOpen.value = false;
   emit('update:modelValue', selectedItem.value);
 };
 
-const isSelected = (item: any) => getOptionValue(item) === selectedItem.value;
+const isSelected = (item: any) => getItemValue(item) === selectedItem.value;
 
 const selectedLabel = computed(() => {
-  const found = items.value.find((item) => getOptionValue(item) === selectedItem.value);
-  return found ? getOptionLabel(found) : 'Select an item';
+  const found = items.value.find((item) => getItemValue(item) === selectedItem.value);
+  return found ? getItemLabel(found) : 'Select an item';
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -54,11 +54,10 @@ const emit = defineEmits(['update:modelValue']);
     <div
       v-if="isMenuOpen"
       class="flex gap-2 justify-center "
-      style="flex: 1;"
     >
       <GButton
         v-for="item in items"
-        :key="getOptionValue(item)"
+        :key="getItemValue(item)"
         @click="selectItem(item)"
         :class="[
           'w-[50px]',
@@ -66,7 +65,7 @@ const emit = defineEmits(['update:modelValue']);
         ]"
       >
         <slot name="menu-item" :item="item">
-          {{ getOptionLabel(item) }}
+          {{ getItemLabel(item) }}
         </slot>
       </GButton>
     </div>

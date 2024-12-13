@@ -82,8 +82,8 @@
     <GSpreadSelect
       v-model="playbackSpeed"
       :items="playbackSpeedToMs"
-      optionValue="value"
-      optionLabel="label"
+      itemValue="value"
+      itemLabel="label"
       class="-my-2"
     ></GSpreadSelect>
 
