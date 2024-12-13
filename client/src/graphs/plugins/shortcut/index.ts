@@ -25,8 +25,8 @@ export const useShortcuts = (
     if (settings.value.interactive) graph.history.redo()
   }
 
-  const defaultShortcutEscape = () => graph.focus.resetFocus()
-  const defaultShortcutSelectAll = () => graph.focus.focusAll()
+  const defaultShortcutEscape = () => graph.focus.reset()
+  const defaultShortcutSelectAll = () => graph.focus.all()
   const defaultShortcutDelete = () => {
     if (settings.value.interactive === false) return
     graph.bulkRemoveNode([...graph.focus.focusedItemIds.value])

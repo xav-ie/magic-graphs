@@ -2,9 +2,9 @@ import { ref, computed } from 'vue'
 import type { GraphMouseEvent } from '@graph/base/types';
 import type { ActiveDragNode } from './types';
 import type { BaseGraph } from '@graph/base';
-import type { NodeAnchorControls } from '../anchors';
+import type { NodeAnchorPlugin } from '../anchors';
 
-export const useNodeDrag = (graph: BaseGraph & NodeAnchorControls) => {
+export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
   const activeDragNode = ref<ActiveDragNode | undefined>()
 
   const beginDrag = ({ items, coords }: GraphMouseEvent) => {
@@ -24,7 +24,7 @@ export const useNodeDrag = (graph: BaseGraph & NodeAnchorControls) => {
     if (!activeDragNode.value) return
     graph.emit('onNodeDrop', activeDragNode.value.node)
     graph.settings.value.nodeAnchors = true
-    graph.nodeAnchorSetParentNode(activeDragNode.value.node.id)
+    graph.nodeAnchors.setParentNode(activeDragNode.value.node.id)
     activeDragNode.value = undefined;
   }
 

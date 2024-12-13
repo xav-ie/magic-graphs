@@ -3,24 +3,21 @@ import { prioritizeNode } from "@graph/helpers";
 import type { BaseGraph } from '@graph/base';
 import type { GraphMouseEvent } from '@graph/base/types';
 import type { SchemaItem, GNode } from "@graph/types";
-import type { GraphFocusControls } from '@graph/plugins/focus';
+import type { GraphFocusPlugin } from '@graph/plugins/focus';
 import type { NodeAnchor } from '@graph/plugins/anchors/types';
 import { generateId } from '@utils/id';
 import { circle, line } from '@shapes';
-import tinycolor from 'tinycolor2';
 
 /**
  * node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
  * when hovered over.
  *
  * helpful definitions:
- * - Parent Node: The node that the anchors are spawned around.
  * - Node Anchor/Anchor: A draggable handle that spawns around the parent node.
+ * - Parent Node: The node that the anchors are spawned around.
  * - Link Preview: The line that appears between the parent node and the anchor when the anchor is being dragged.
- * - Active Anchor: The anchor that is currently being dragged.
- * - Anchor Node Graph: A graph that supports the creation and event propagation of anchors around nodes.
  */
-export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
+export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   /**
    * The node that the anchors are spawned around.
    */
@@ -28,7 +25,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
   /**
    * The anchor that is currently being dragged.
    */
-  const activeAnchor = ref<NodeAnchor | undefined>()
+  const currentDraggingAnchor = ref<NodeAnchor | undefined>()
 
   const setParentNode = (nodeId: GNode['id']) => {
     const node = graph.getNode(nodeId)
@@ -39,7 +36,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
 
   const resetParentNode = () => {
     parentNode.value = undefined
-    activeAnchor.value = undefined
+    currentDraggingAnchor.value = undefined
   }
 
   const hoveredNodeAnchorId = ref<NodeAnchor['id']>()
@@ -70,9 +67,9 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
         color: isHovered ? focusColor : color
       }
 
-      if (activeAnchor.value && activeAnchor.value.direction === anchor.direction) {
-        circleTemplate.at.x = activeAnchor.value.x
-        circleTemplate.at.y = activeAnchor.value.y
+      if (currentDraggingAnchor.value && currentDraggingAnchor.value.direction === anchor.direction) {
+        circleTemplate.at.x = currentDraggingAnchor.value.x
+        circleTemplate.at.y = currentDraggingAnchor.value.y
       }
 
       const nodeAnchorShape = circle(circleTemplate)
@@ -143,14 +140,14 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
   }
 
   const getUnprioritizedLinkPreviewSchema = () => {
-    if (!parentNode.value || !activeAnchor.value) return
-    const { x, y } = activeAnchor.value
+    if (!parentNode.value || !currentDraggingAnchor.value) return
+    const { x, y } = currentDraggingAnchor.value
     const start = { x: parentNode.value.x, y: parentNode.value.y }
     const end = { x, y }
     const { getTheme } = graph
 
-    const color = getTheme('linkPreviewColor', parentNode.value, activeAnchor.value)
-    const width = getTheme('linkPreviewWidth', parentNode.value, activeAnchor.value)
+    const color = getTheme('linkPreviewColor', parentNode.value, currentDraggingAnchor.value)
+    const width = getTheme('linkPreviewWidth', parentNode.value, currentDraggingAnchor.value)
 
     const shape = line({
       start,
@@ -172,7 +169,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
    * updates which node is the parent node based on the mouse event
    */
   const updateParentNode = ({ items }: GraphMouseEvent) => {
-    if (activeAnchor.value) return
+    if (currentDraggingAnchor.value) return
 
     const topItem = items.at(-1)
     if (!topItem) return resetParentNode()
@@ -187,8 +184,8 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
     const perspectiveNode = graph.getNode(topItem.id)
     if (!perspectiveNode) throw new Error('node in aggregator but not in graph')
 
-    const perspectiveNodeFocused = graph.isFocused(perspectiveNode.id)
-    const moreThanOneNodeFocused = graph.focusedNodes.value.length > 1
+    const perspectiveNodeFocused = graph.focus.isFocused(perspectiveNode.id)
+    const moreThanOneNodeFocused = graph.focus.focusedNodes.value.length > 1
 
     if (perspectiveNodeFocused && moreThanOneNodeFocused) return resetParentNode()
 
@@ -196,7 +193,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
     updateNodeAnchors(perspectiveNode)
   }
 
-  const setActiveAnchor = (ev: GraphMouseEvent) => {
+  const setCurrentlyDraggingAnchor = (ev: GraphMouseEvent) => {
     if (!parentNode.value) return
     /**
      * TODO shouldn't getAnchor be unnecessary here because the top item in this event should
@@ -204,27 +201,24 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
      */
     const anchor = getAnchor(ev)
     if (!anchor) return
-    activeAnchor.value = anchor
+    currentDraggingAnchor.value = anchor
     graph.emit('onNodeAnchorDragStart', parentNode.value, anchor)
   }
 
-  /**
-   * updates the position of the active anchor based on the mouse event
-   */
-  const updateActiveAnchorPosition = ({ coords }: GraphMouseEvent) => {
-    if (!activeAnchor.value) return
+  const updateCurrentlyDraggingAnchorPosition = ({ coords }: GraphMouseEvent) => {
+    if (!currentDraggingAnchor.value) return
     const { x, y } = coords
-    activeAnchor.value.x = x
-    activeAnchor.value.y = y
+    currentDraggingAnchor.value.x = x
+    currentDraggingAnchor.value.y = y
   }
 
   /**
    * drops the active anchor and triggers graph events
    */
   const dropAnchor = () => {
-    if (!activeAnchor.value) return
+    if (!currentDraggingAnchor.value) return
     else if (!parentNode.value) throw new Error('active anchor without parent node')
-    graph.emit('onNodeAnchorDrop', parentNode.value, activeAnchor.value)
+    graph.emit('onNodeAnchorDrop', parentNode.value, currentDraggingAnchor.value)
     resetParentNode()
   }
 
@@ -236,7 +230,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
   }
 
   const insertLinkPreviewIntoAggregator = (aggregator: SchemaItem[]) => {
-    if (!parentNode.value || !activeAnchor.value) return aggregator
+    if (!parentNode.value || !currentDraggingAnchor.value) return aggregator
 
     const { id: parentNodeId } = parentNode.value
 
@@ -269,8 +263,8 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
 
   const disallowNodesInFocusGroupFromBeingParents = () => {
     if (!parentNode.value) return
-    const parentFocused = graph.isFocused(parentNode.value.id)
-    const moreThanOneNodeFocused = graph.focusedNodes.value.length > 1
+    const parentFocused = graph.focus.isFocused(parentNode.value.id)
+    const moreThanOneNodeFocused = graph.focus.focusedNodes.value.length > 1
     if (parentFocused && moreThanOneNodeFocused) resetParentNode()
   }
 
@@ -279,9 +273,9 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
     graph.subscribe('onNodeMoved', resetParentNode)
     graph.subscribe('onNodeDrop', updateNodeAnchors)
     graph.subscribe('onMouseMove', updateParentNode)
-    graph.subscribe('onMouseMove', updateActiveAnchorPosition)
+    graph.subscribe('onMouseMove', updateCurrentlyDraggingAnchorPosition)
     graph.subscribe('onMouseMove', updateHoveredNodeAnchorId)
-    graph.subscribe('onMouseDown', setActiveAnchor)
+    graph.subscribe('onMouseDown', setCurrentlyDraggingAnchor)
     graph.subscribe('onMouseUp', dropAnchor)
     graph.subscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
   }
@@ -291,9 +285,9 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
     graph.unsubscribe('onNodeMoved', resetParentNode)
     graph.unsubscribe('onNodeDrop', updateNodeAnchors)
     graph.unsubscribe('onMouseMove', updateParentNode)
-    graph.unsubscribe('onMouseMove', updateActiveAnchorPosition)
+    graph.unsubscribe('onMouseMove', updateCurrentlyDraggingAnchorPosition)
     graph.subscribe('onMouseMove', updateHoveredNodeAnchorId)
-    graph.unsubscribe('onMouseDown', setActiveAnchor)
+    graph.unsubscribe('onMouseDown', setCurrentlyDraggingAnchor)
     graph.unsubscribe('onMouseUp', dropAnchor)
     graph.unsubscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
     resetParentNode()
@@ -310,16 +304,22 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusControls) => {
     /**
      * the node anchor that is currently being dragged by the user
      */
-    nodeAnchorActiveAnchor: readonly(activeAnchor),
+    currentDraggingAnchor: readonly(currentDraggingAnchor),
     /**
      * the parent node of the active anchor
      */
-    nodeAnchorParentNode: readonly(parentNode),
+    parentNode: readonly(parentNode),
     /**
      * set the parent node and spawn anchors around it
      */
-    nodeAnchorSetParentNode: setParentNode,
+    setParentNode,
   }
 }
 
 export type NodeAnchorControls = ReturnType<typeof useNodeAnchors>
+export type NodeAnchorPlugin = {
+  /**
+   * controls for managing node anchors in the graph
+   */
+  nodeAnchors: NodeAnchorControls
+}

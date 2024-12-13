@@ -7,9 +7,9 @@ import { rect } from '@shapes'
 import type { BoundingBox, Coordinate } from "@shape/types";
 import type { BaseGraph } from '@graph/base'
 import type { GraphMouseEvent } from '@graph/base/types'
-import type { GraphFocusControls } from '../focus'
+import type { GraphFocusPlugin } from '../focus'
 
-export const useMarquee = (graph: BaseGraph & GraphFocusControls) => {
+export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
   const marqueeBox = ref<BoundingBox | undefined>()
   const encapsulatedNodeBox = ref<BoundingBox | undefined>()
 
@@ -41,7 +41,7 @@ export const useMarquee = (graph: BaseGraph & GraphFocusControls) => {
     const dx = coords.x - groupDragCoordinates.value.x
     const dy = coords.y - groupDragCoordinates.value.y
     groupDragCoordinates.value = coords
-    for (const node of graph.focusedNodes.value) {
+    for (const node of graph.focus.focusedNodes.value) {
       graph.moveNode(node.id, {
         x: node.x + dx,
         y: node.y + dy
@@ -55,12 +55,12 @@ export const useMarquee = (graph: BaseGraph & GraphFocusControls) => {
     const topItem = items.at(-1)
     if (topItem?.graphType !== 'encapsulated-node-box') return
     groupDragCoordinates.value = coords
-    graph.emit('onGroupDragStart', graph.focusedNodes.value, coords)
+    graph.emit('onGroupDragStart', graph.focus.focusedNodes.value, coords)
   }
 
   const groupDrop = () => {
     if (!groupDragCoordinates.value) return
-    graph.emit('onGroupDrop', graph.focusedNodes.value, groupDragCoordinates.value)
+    graph.emit('onGroupDrop', graph.focus.focusedNodes.value, groupDragCoordinates.value)
     groupDragCoordinates.value = undefined
   }
 
@@ -93,7 +93,7 @@ export const useMarquee = (graph: BaseGraph & GraphFocusControls) => {
       if (inSelectionBox) targetedItems.push(id)
     }
 
-    graph.setFocus(targetedItems)
+    graph.focus.set(targetedItems)
   }
 
   const updateEncapsulatedNodeBox = () => {
@@ -103,12 +103,12 @@ export const useMarquee = (graph: BaseGraph & GraphFocusControls) => {
       height: 0,
     }
 
-    if (graph.focusedNodes.value.length < 2) return
+    if (graph.focus.focusedNodes.value.length < 2) return
 
     let minX = Infinity, minY = Infinity;
     let maxX = -Infinity, maxY = -Infinity;
 
-    for (const node of graph.focusedNodes.value) {
+    for (const node of graph.focus.focusedNodes.value) {
       const nodeRadius = graph.getTheme('nodeSize', node);
       const nodeBorderWidth = graph.getTheme('nodeBorderWidth', node);
       const nodeArea = nodeRadius + (nodeBorderWidth / 2);
@@ -244,3 +244,9 @@ export const useMarquee = (graph: BaseGraph & GraphFocusControls) => {
 }
 
 export type GraphMarqueeControls = ReturnType<typeof useMarquee>
+export type GraphMarqueePlugin = {
+  /**
+   * controls for the marquee plugin
+   */
+  marquee: GraphMarqueeControls
+}

@@ -8,32 +8,32 @@
   import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
 
   const {
-    clear: clearAnnotations,
-    brushWeight: annotationBrushWeight,
-    erasing: annotationErasing,
-    color: annotationColor,
+    clear,
+    brushWeight,
+    erasing,
+    color,
   } = graph.value.annotation;
 
-  const selectColor = (color: Color) => {
-    annotationColor.value = color;
-    annotationErasing.value = false;
+  const selectColor = (newColor: Color) => {
+    color.value = newColor;
+    erasing.value = false;
   };
 
-  const selectBrushWeight = (brushWeight: number) => {
-    annotationBrushWeight.value = brushWeight;
+  const selectBrushWeight = (newBrushWeight: number) => {
+    brushWeight.value = newBrushWeight;
   };
 
-  const isColorActive = (color: Color) => {
-    if (annotationErasing.value) return false;
-    return annotationColor.value === color;
+  const isColorActive = (newColor: Color) => {
+    if (erasing.value) return false;
+    return color.value === newColor;
   };
 
-  const isBrushWeightActive = (brushWeight: number) => {
-    return annotationBrushWeight.value === brushWeight;
+  const isBrushWeightActive = (newBrushWeight: number) => {
+    return brushWeight.value === newBrushWeight;
   };
 
   const toggleErasing = () => {
-    annotationErasing.value = !annotationErasing.value;
+    erasing.value = !erasing.value;
   };
 </script>
 
@@ -76,12 +76,12 @@
     <ToolbarButtonGroup>
       <GToolbarButton
         @click="toggleErasing"
-        :active="annotationErasing"
+        :active="erasing"
         icon="backspace_outline"
       />
 
       <GToolbarButton
-        @click="clearAnnotations"
+        @click="clear"
         icon="delete_outline"
       />
     </ToolbarButtonGroup>

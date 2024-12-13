@@ -163,36 +163,42 @@ export const useFocus = (graph: BaseGraph) => {
 
   return {
     /**
-     * The id of the focused item in the graph, if any
+     * Sets the focus to the item with the given ids
+     *
+     * @param ids the ids of the items to focus
      */
-    focusedItemIds: readonly(focusedItemIds),
-    /**
-     * Sets the focus to the item with the given id
-     */
-    setFocus,
+    set: setFocus,
     /**
      * Resets the focus back to none
      */
-    resetFocus,
+    reset: resetFocus,
     /**
-     * Adds item with the given id to the focus
+     * Adds an item to the current focus
+     *
+     * @param id the id of the item to add to the focus
      */
-    addToFocus,
+    add: addToFocus,
     /**
-     * @param id a node or edge id
+     * Focus all nodes and edges
+     */
+    all: focusAll,
+    /**
+     * asks if the item with the given id is focused
+     *
+     * @param id the id of the item to check
      * @returns true if the item is focused
      */
     isFocused,
     /**
-     * Focus all nodes and edges
+     * The ids of the focused item in the graph
      */
-    focusAll,
+    focusedItemIds: readonly(focusedItemIds),
     /**
-     * all the nodes that are currently focused
+     * all the nodes that are focused
      */
     focusedNodes: computed(() => graph.nodes.value.filter(node => isFocused(node.id))),
     /**
-     * all the edges that are currently focused
+     * all the edges that are focused
      */
     focusedEdges: computed(() => graph.edges.value.filter(edge => isFocused(edge.id))),
   }

@@ -20,7 +20,7 @@
   );
 
   const setFocus = () => {
-    graph.value.focus.setFocus([props.node.id])
+    graph.value.focus.set([props.node.id])
   };
 
   const updateTheme = setInterval(() => {

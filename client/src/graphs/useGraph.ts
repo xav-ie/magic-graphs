@@ -33,9 +33,9 @@ export const useGraph = (
 
   const focus = useFocus(base)
   const history = useHistory(base)
-  const marquee = useMarquee({ ...base, ...focus })
-  const nodeAnchor = useNodeAnchors({ ...base, ...focus })
-  const nodeDrag = useNodeDrag({ ...base, ...nodeAnchor })
+  const marquee = useMarquee({ ...base, focus })
+  const nodeAnchors = useNodeAnchors({ ...base, focus })
+  const nodeDrag = useNodeDrag({ ...base, nodeAnchors })
   const annotation = useAnnotations(base)
   const persistent = usePersistent(base)
   const preferredTheme = usePreferredTheme(base)
@@ -70,7 +70,7 @@ export const useGraph = (
     history,
     marquee,
     nodeDrag,
-    nodeAnchor,
+    nodeAnchors,
     annotation,
     persistent,
     animate,
