@@ -5,7 +5,7 @@ import type { BaseGraph } from '@graph/base';
 import type { NodeAnchorPlugin } from '../anchors';
 
 export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
-  const activeDragNode = ref<ActiveDragNode | undefined>()
+  const currentlyDraggingNode = ref<ActiveDragNode | undefined>()
 
   const beginDrag = ({ items, coords }: GraphMouseEvent) => {
     const topItem = items.at(-1)
@@ -16,28 +16,28 @@ export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
     const node = graph.getNode(topItem.id)
     if (!node) return
 
-    activeDragNode.value = { node, coords }
+    currentlyDraggingNode.value = { node, coords }
     graph.emit('onNodeDragStart', node)
   }
 
   const drop = () => {
-    if (!activeDragNode.value) return
-    graph.emit('onNodeDrop', activeDragNode.value.node)
+    if (!currentlyDraggingNode.value) return
+    graph.emit('onNodeDrop', currentlyDraggingNode.value.node)
     graph.settings.value.nodeAnchors = true
-    graph.nodeAnchors.setParentNode(activeDragNode.value.node.id)
-    activeDragNode.value = undefined;
+    graph.nodeAnchors.setParentNode(currentlyDraggingNode.value.node.id)
+    currentlyDraggingNode.value = undefined;
   }
 
   const drag = ({ coords: evCoords }: GraphMouseEvent) => {
-    if (!activeDragNode.value) return
-    const { node, coords } = activeDragNode.value;
+    if (!currentlyDraggingNode.value) return
+    const { node, coords } = currentlyDraggingNode.value;
     const dx = evCoords.x - coords.x;
     const dy = evCoords.y - coords.y;
     graph.moveNode(node.id, {
       x: node.x + dx,
       y: node.y + dy
     });
-    activeDragNode.value.coords = evCoords;
+    currentlyDraggingNode.value.coords = evCoords;
   }
 
   const activate = () => {
@@ -50,7 +50,7 @@ export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
     graph.unsubscribe('onMouseDown', beginDrag)
     graph.unsubscribe('onMouseUp', drop)
     graph.unsubscribe('onMouseMove', drag)
-    if (activeDragNode.value) drop()
+    if (currentlyDraggingNode.value) drop()
   }
 
   graph.subscribe('onSettingsChange', (diff) => {
@@ -64,7 +64,7 @@ export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
     /**
      * the node that is currently being dragged or undefined if no node is being dragged
      */
-    activeDragNode: computed(() => activeDragNode.value?.node),
+    currentlyDraggingNode: computed(() => currentlyDraggingNode.value?.node),
   }
 }
 
