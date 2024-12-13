@@ -1,11 +1,13 @@
 <script setup lang="ts">
+  import { computed, toRef } from "vue";
   import { graph } from "@graph/global";
   import type { AutoTreeControls } from "./useTreeShaper";
   import GraphNode from "@ui/graph/GNode.vue";
   import CPopover from "@ui/core/Popover.vue";
   import GWell from "@ui/graph/GWell.vue";
+  import CWell from "@ui/core/Well.vue";
   import GButton from "@ui/graph/button/GButton.vue";
-  import { toRef } from "vue";
+  import colors from "@utils/colors";
   import type { GNode } from "@graph/types";
 
   const props = defineProps<{
@@ -14,13 +16,18 @@
 
   const treeControls = toRef(props, "controls");
 
-  const { isActive, activate, deactivate, updateShape, rootNode } =
+  const { isActive, activate, deactivate, updateShape, rootNodeId } =
     treeControls.value;
 
   const nodeSelected = (node: GNode) => {
-    rootNode.value = node;
+    rootNodeId.value = node.id;
     if (!isActive.value) updateShape();
   };
+
+  const rootNode = computed(() => {
+    if (!rootNodeId.value) return;
+    return graph.value.getNode(rootNodeId.value);
+  })
 </script>
 
 <template>
@@ -33,6 +40,13 @@
       class="p-2 flex flex-col gap-2 max-h-72 max-w-72 overflow-auto rounded-lg"
     >
       <h1 class="font-bold text-xl">Pick A Root Node</h1>
+      <CWell
+        v-if="isActive && rootNode"
+        :color="colors.RED_600"
+        class="rounded-md px-2 py-1 font-bold text-xs animate-pulse"
+      >
+        <h2>Actively Tracking Node {{ rootNode.label }}</h2>
+      </CWell>
       <GWell
         secondary
         class="py-3 flex flex-wrap justify-center gap-2 rounded-md overflow-auto"

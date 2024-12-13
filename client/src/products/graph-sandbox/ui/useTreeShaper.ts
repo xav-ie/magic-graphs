@@ -4,6 +4,7 @@ import { getNodeDepths } from "@product/search-visualizer/useNodeDepth";
 import type { Coordinate } from "@shape/types";
 import type { GNodeMoveRecord } from "@graph/plugins/history/types";
 import { roundToNearestN } from "@utils/math";
+import { debounce } from "@utils/debounce";
 
 export type TreeFormationOptions = {
   /**
@@ -129,53 +130,77 @@ export const useMoveNodesIntoTreeFormation = (
   }
 };
 
+export type AutoTreeOptions = TreeFormationOptions & {
+  /**
+   * debounce time in milliseconds to wait before reshaping the graph
+   * @default 500 // half a second
+   */
+  debounceMs?: number,
+}
+
+export const AUTO_TREE_OPTIONS_DEFAULTS = {
+  debounceMs: 500,
+} as const
+
 /**
  * automatically reshapes the graph into a tree formation
  * whenever the graph structure changes
  */
 export const useAutoTree = (
   graph: Graph,
-  options: TreeFormationOptions = {},
+  options: AutoTreeOptions = {},
 ) => {
-  const rootNode = ref<GNode>();
-  const isActive = ref(false);
-
-  const treeControls = useMoveNodesIntoTreeFormation(graph, options);
-
-  const updateShape = () => {
-    if (!rootNode.value) return;
-    treeControls.shapeGraph(rootNode.value);
+  const {
+    debounceMs,
+    ...treeOptions
+  } = {
+    ...AUTO_TREE_OPTIONS_DEFAULTS,
+    ...options,
   }
 
+  const rootNodeId = ref<GNode['id']>();
+  const isActive = ref(false);
+
+  const treeControls = useMoveNodesIntoTreeFormation(graph, treeOptions);
+
+  const updateShape = () => {
+    if (!rootNodeId.value) return;
+    const rootNode = graph.getNode(rootNodeId.value);
+    if (!rootNode) return;
+    treeControls.shapeGraph(rootNode);
+  }
+
+  const debouncedUpdateShape = debounce(updateShape, debounceMs);
+
   const activate = () => {
-    graph.subscribe('onStructureChange', updateShape);
-    graph.subscribe('onNodeDrop', updateShape);
-    graph.subscribe('onGroupDrop', updateShape);
+    graph.subscribe('onStructureChange', debouncedUpdateShape);
+    graph.subscribe('onNodeDrop', debouncedUpdateShape);
+    graph.subscribe('onGroupDrop', debouncedUpdateShape);
     isActive.value = true;
   }
 
   const deactivate = () => {
-    graph.unsubscribe('onStructureChange', updateShape);
-    graph.unsubscribe('onNodeDrop', updateShape);
-    graph.unsubscribe('onGroupDrop', updateShape);
+    graph.unsubscribe('onStructureChange', debouncedUpdateShape);
+    graph.unsubscribe('onNodeDrop', debouncedUpdateShape);
+    graph.unsubscribe('onGroupDrop', debouncedUpdateShape);
     isActive.value = false;
   }
 
   // eagerly shape the graph when the root node changes
-  watch(rootNode, () => {
-    if (!isActive.value || !rootNode.value) return;
-    treeControls.shapeGraph(rootNode.value);
+  watch(rootNodeId, () => {
+    if (isActive.value) updateShape();
   })
 
   onUnmounted(deactivate);
 
   return {
-    ...treeControls,
-    rootNode,
+    rootNodeId,
     activate,
     deactivate,
     isActive,
     updateShape,
+    debouncedUpdateShape,
+    ...treeControls,
   };
 }
 

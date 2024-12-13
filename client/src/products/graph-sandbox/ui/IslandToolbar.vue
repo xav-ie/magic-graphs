@@ -9,7 +9,6 @@
   import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
   import TreeShapeMenu from "./TreeShapeMenu.vue";
-  import type { GNode } from "@graph/types";
   import { useAutoTree } from "./useTreeShaper";
 
   const hint = useGraphTutorial(graph.value, [
