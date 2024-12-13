@@ -23,14 +23,14 @@ export const useSimulationTheme = (
   const traceAtStep = computed(() => trace.value[step.value])
 
   const colorBorders = (node: GNode) => {
-    if (graph.isFocused(node.id)) return
+    if (graph.focus.isFocused(node.id)) return
     if (traceAtStep.value.currentNode?.id === node.id) return SIM_COLORS.SOURCE
     if (traceAtStep.value.queue.has(node.id)) return SIM_COLORS.QUEUED
     if (traceAtStep.value.distances[node.id] !== Infinity) return SIM_COLORS.EXPLORED
   }
 
   const nodeDistanceText = (node: GNode) => {
-    if (graph.isFocused(node.id)) return
+    if (graph.focus.isFocused(node.id)) return
     const distance = traceAtStep.value.distances[node.id]
     return distance === Infinity ? INF_STR : distance.toString()
   }

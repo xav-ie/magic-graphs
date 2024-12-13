@@ -17,7 +17,7 @@
   }>();
 
   const getSize = () => {
-    const highlightedIds = Array.from(props.graph.focusedItemIds.value);
+    const highlightedIds = Array.from(props.graph.focus.focusedItemIds.value);
     const itemSizes = new Set(
       highlightedIds.map((id) => props.sizeMap.get(id))
     );
@@ -31,11 +31,11 @@
   const activeSize = ref(getSize());
 
   const setActiveSize = (value: MarkupSize) => {
-    for (const id of props.graph.focusedItemIds.value) {
+    for (const id of props.graph.focus.focusedItemIds.value) {
       props.sizeMap.set(id, value);
     }
     activeSize.value = value;
-    props.graph.updateEncapsulatedNodeBox();
+    props.graph.marquee.updateEncapsulatedNodeBox();
   };
 
   const sizeAddedItem = ({ id }: { id: string }) => {
@@ -44,7 +44,7 @@
   };
 
   const recalculateActiveSize = async () => {
-    if (props.graph.focusedItemIds.value.size === 0) return;
+    if (props.graph.focus.focusedItemIds.value.size === 0) return;
     /**
      * wait for the next tick to ensure that onNodeAdded and onEdgeAdded
      * have a chance to set the size of the just added node or edge
@@ -59,6 +59,7 @@
 
   const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID + "-preview");
   const sizeLinkPreview = () =>
+  // @ts-ignore the weirdest ghost error ever!
     SIZE_TO_WIDTH[activeSize.value ?? DEFAULT_MARKUP_SIZE];
   setTheme("linkPreviewWidth", sizeLinkPreview);
 </script>

@@ -53,7 +53,7 @@ export const useMoveNodesIntoTreeFormation = (
     const roundToNearest10 = roundToNearestN(10);
     const newPositions: Map<GNode['id'], Coordinate> = new Map();
 
-    const { depthToNodeIds } = getNodeDepths(rootNode, graph.adjacencyLists.adjacencyList.value);
+    const { depthToNodeIds } = getNodeDepths(rootNode, graph.adjacencyList.adjacencyList.value);
     const { x: rootNodeX, y: rootNodeY } = rootNode;
 
     for (let i = 1; i < depthToNodeIds.length; i++) {
@@ -117,8 +117,8 @@ export const useMoveNodesIntoTreeFormation = (
     await new Promise((res) => setTimeout(res, treeOptions.durationMs + 50));
 
     if (affectedItems.length > 0) {
-      graph.trackGraphState();
-      graph.addToUndoStack({
+      graph.persistent.trackGraphState();
+      graph.history.addToUndoStack({
         action: 'move',
         affectedItems,
       })

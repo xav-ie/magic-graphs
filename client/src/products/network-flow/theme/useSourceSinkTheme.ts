@@ -12,7 +12,7 @@ export const useSourceSinkTheme = (graph: Graph, themeId = FLOW_USETHEME_ID) => 
   const { sourceNode, sinkNode } = state
 
   const colorSourceSink = (node: GNode) => {
-    if (graph.isFocused(node.id)) return
+    if (graph.focus.isFocused(node.id)) return
     const isSource = sourceNode.value?.id === node.id;
     const isSink = sinkNode.value?.id === node.id;
     if (isSource) return colors.BLUE_600;

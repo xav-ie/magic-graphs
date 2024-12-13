@@ -161,7 +161,7 @@ export const useHistory = (graph: BaseGraph) => {
 
   const groupDrag = ref<{
     startingCoordinates: Coordinate,
-    nodes: GNode[],
+    nodes: Readonly<GNode[]>,
   }>();
 
   graph.subscribe('onGroupDragStart', (nodes, startingCoordinates) => {

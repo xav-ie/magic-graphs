@@ -34,8 +34,6 @@
     buttons: true,
   });
 
-  graph.annotationActive.value
-
   watch(
     controls,
     () => {

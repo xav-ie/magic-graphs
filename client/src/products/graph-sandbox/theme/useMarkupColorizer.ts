@@ -32,14 +32,14 @@ export const useMarkupColorizer = (graph: Graph) => {
   const colorNodeBorder = (node: GNode) => {
     const color = colorMap.value.get(node.id);
     if (!color) return;
-    if (graph.isFocused(node.id)) return adjustHex(color, 30);
+    if (graph.focus.isFocused(node.id)) return adjustHex(color, 30);
     return color;
   }
 
   const colorEdge = (edge: GEdge) => {
     const color = colorMap.value.get(edge.id);
     if (!color) return;
-    if (graph.isFocused(edge.id)) return adjustHex(color, 30);
+    if (graph.focus.isFocused(edge.id)) return adjustHex(color, 30);
     return color;
   };
 

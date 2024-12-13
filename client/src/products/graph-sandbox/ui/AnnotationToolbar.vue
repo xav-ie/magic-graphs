@@ -7,30 +7,34 @@
   import GToolbarButtonDivider from "@ui/graph/toolbar/GToolbarDivider.vue";
   import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
 
-  const { clearAnnotations } = graph.value;
+  const {
+    clearAnnotations,
+    annotationBrushWeight,
+    annotationErasing,
+    annotationColor,
+  } = graph.value.annotation;
 
-  const selectColor = (color: string) => {
-    graph.value.annotationColor.value = color;
-    graph.value.annotationErasing.value = false;
+  const selectColor = (color: Color) => {
+    annotationColor.value = color;
+    annotationErasing.value = false;
   };
 
   const selectBrushWeight = (brushWeight: number) => {
-    graph.value.annotationBrushWeight.value = brushWeight;
+    annotationBrushWeight.value = brushWeight;
   };
 
   const isColorActive = (color: Color) => {
-    const erasing = graph.value.annotationErasing.value;
-    if (erasing) return false;
-    return graph.value.annotationColor.value === color;
-  }
+    if (annotationErasing.value) return false;
+    return annotationColor.value === color;
+  };
 
   const isBrushWeightActive = (brushWeight: number) => {
-    return graph.value.annotationBrushWeight.value === brushWeight;
-  }
+    return annotationBrushWeight.value === brushWeight;
+  };
 
   const toggleErasing = () => {
-    graph.value.annotationErasing.value = !graph.value.annotationErasing.value;
-  }
+    annotationErasing.value = !annotationErasing.value;
+  };
 </script>
 
 <template>
@@ -61,11 +65,7 @@
         :key="weight"
       >
         <div
-          :class="[
-            'bg-gray-400',
-            'rounded-md',
-            'w-[15px]',
-          ]"
+          :class="['bg-gray-400', 'rounded-md', 'w-[15px]']"
           :style="{ height: `${index * 5 + 1}px` }"
         ></div>
       </GToolbarButton>
@@ -76,7 +76,7 @@
     <ToolbarButtonGroup>
       <GToolbarButton
         @click="toggleErasing"
-        :active="graph.annotationErasing.value"
+        :active="annotationErasing"
         icon="backspace_outline"
       />
 
