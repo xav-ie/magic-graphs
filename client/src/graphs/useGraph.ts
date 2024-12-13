@@ -1,7 +1,8 @@
 import type { Ref } from 'vue'
-import { usePreferredTheme } from '@graph/themes/usePreferredTheme'
-import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
+
 import { useBaseGraph } from '@graph/base'
+import type { GraphSettings } from '@graph/settings'
+
 import { useMarquee } from '@graph/plugins/marquee'
 import { useNodeDrag } from '@graph/plugins/drag'
 import { useNodeAnchors } from '@graph/plugins/anchors'
@@ -10,11 +11,14 @@ import { useAnnotations } from '@graph/plugins/annotations'
 import { useFocus } from '@graph/plugins/focus'
 import { useHistory } from '@graph/plugins/history'
 import { usePersistent } from '@graph/plugins/persistent'
-import { useAnimation } from './plugins/animation'
-import type { GraphSettings } from './settings'
-import { useInteractive } from './plugins/interactive'
+import { useAnimation } from '@graph/plugins/animate'
+import { useInteractive } from '@graph/plugins/interactive'
+import { useCharacteristics } from '@graph/plugins/characteristics'
+
+import { usePreferredTheme } from '@graph/themes/usePreferredTheme'
+import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
+
 import { useAdjacencyList } from './useAdjacencyList'
-import { useCharacteristics } from './plugins/characteristics'
 import { useTransitionMatrix } from './useTransitionMatrix'
 
 /**
@@ -52,10 +56,10 @@ export const useGraph = (
   const characteristics = useCharacteristics({ ...base, adjacencyList })
   const animate = useAnimation({
     ...base,
-    ...history,
-    ...focus,
-    ...marquee,
-    ...persistent
+    history,
+    focus,
+    marquee,
+    persistent
   })
 
   useInteractive(base)

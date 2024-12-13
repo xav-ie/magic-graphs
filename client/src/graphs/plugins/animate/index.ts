@@ -1,43 +1,18 @@
 import type { BaseGraph } from "@graph/base";
-import type { BroadcastOption, HistoryOption, PersistOption } from "@graph/base/types";
-import type { GNode, Graph } from "@graph/types";
-import type { Coordinate } from "@shape/types";
-import type { GraphHistoryControls } from "../history";
+import type { GraphHistoryPlugin } from "../history";
 import { interpolateCoordinatesOverTime } from "@utils/animate";
-import type { GraphFocusControls } from "../focus";
-import type { GraphMarqueeControls } from "../marquee";
-import type { GraphPersistentControls } from "../persistent";
-
-export type AnimateNodeMoveOptions = {
-  /**
-   * the id of the node to move
-   */
-  nodeId: GNode['id'],
-  /**
-   * the coordinates of the node after the move
-   */
-  endCoords: Coordinate,
-  /**
-   * the duration of the animation in milliseconds.
-   * must be greater than 100
-   * @default 300
-   */
-  durationMs?: number,
-} & Partial<HistoryOption & BroadcastOption & PersistOption>
-
-export const ANIMATE_NODE_MOVE_OPTIONS_DEFAULTS = {
-  durationMs: 300,
-  broadcast: true,
-  history: true,
-  persist: true,
-} as const
+import type { GraphFocusPlugin } from "../focus";
+import type { GraphMarqueePlugin } from "../marquee";
+import type { GraphPersistentPlugin } from "../persistent";
+import { ANIMATE_NODE_MOVE_OPTIONS_DEFAULTS } from "./types";
+import type { AnimateNodeMoveOptions } from "./types";
 
 export const useAnimation = (
   graph: BaseGraph
-    & GraphHistoryControls
-    & GraphFocusControls
-    & GraphMarqueeControls
-    & GraphPersistentControls
+    & GraphHistoryPlugin
+    & GraphFocusPlugin
+    & GraphMarqueePlugin
+    & GraphPersistentPlugin
 ) => {
 
   const animateNode = async (options: AnimateNodeMoveOptions) => {
@@ -69,11 +44,11 @@ export const useAnimation = (
     for (let i = 0; i < coords.length; i++) {
       await new Promise((res) => setTimeout(res, timePerFrameMs));
       graph.moveNode(node.id, coords[i], { broadcast });
-      if (graph.isFocused(node.id)) graph.updateEncapsulatedNodeBox();
+      if (graph.focus.isFocused(node.id)) graph.marquee.updateEncapsulatedNodeBox();
     }
 
     if (history) {
-      graph.addToUndoStack({
+      graph.history.addToUndoStack({
         action: 'move',
         affectedItems: [{
           graphType: 'node',
@@ -86,7 +61,7 @@ export const useAnimation = (
       })
     }
 
-    if (persist) await graph.trackGraphState();
+    if (persist) await graph.persistent.trackGraphState();
   }
 
   return {

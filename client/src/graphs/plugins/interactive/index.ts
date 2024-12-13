@@ -8,7 +8,8 @@ import type { NodeAnchor } from "@graph/plugins/anchors/types"
  */
 export const useInteractive = (graph: BaseGraph) => {
   const handleNodeCreation = ({ coords, event }: GraphMouseEvent) => {
-    graph.addNode(coords)
+    const nodeAdded = graph.addNode(coords)
+    if (!nodeAdded) return
     setTimeout(() => graph.updateGraphAtMousePosition(event), 10)
   }
 

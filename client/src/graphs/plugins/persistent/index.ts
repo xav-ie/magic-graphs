@@ -110,3 +110,9 @@ export const usePersistent = (graph: BaseGraph) => {
 };
 
 export type GraphPersistentControls = ReturnType<typeof usePersistent>;
+export type GraphPersistentPlugin = {
+  /**
+   * controls for persisting the graph state to local storage
+   */
+  persistent: GraphPersistentControls;
+};
