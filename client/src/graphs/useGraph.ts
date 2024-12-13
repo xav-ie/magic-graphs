@@ -10,6 +10,7 @@ import { useAnnotations } from '@graph/plugins/annotations'
 import { useFocus } from '@graph/plugins/focus'
 import { useHistory } from '@graph/plugins/history'
 import { usePersistent } from '@graph/plugins/persistent'
+import { useAnimation } from './plugins/animation'
 import type { GraphSettings } from './settings'
 import { useInteractive } from './plugins/interactive'
 import { useAdjacencyList } from './useAdjacencyList'
@@ -48,6 +49,13 @@ export const useGraph = (
   const transitionMatrix = useTransitionMatrix(baseGraph)
 
   const characteristics = useCharacteristics({ ...baseGraph, adjacencyLists })
+  const animate = useAnimation({
+    ...baseGraph,
+    ...historyControls,
+    ...focusControls,
+    ...marqueeControls,
+    ...persistentControls
+  })
 
   useInteractive(baseGraph)
 
@@ -65,6 +73,7 @@ export const useGraph = (
     adjacencyLists,
     transitionMatrix,
     characteristics,
+    animate,
     helpers: useGraphHelpers(baseGraph),
   }
 }

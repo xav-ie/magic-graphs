@@ -12,7 +12,7 @@
   const props = withDefaults(defineProps<NodeProps>(), {
     size: 60,
   });
-  
+
   const theme = ref(resolveThemeForNode(graph.value.getTheme, props.node))
 
   const borderSize = computed(() =>

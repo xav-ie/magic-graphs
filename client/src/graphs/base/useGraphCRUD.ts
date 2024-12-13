@@ -205,9 +205,9 @@ export const useGraphCRUD = ({
   /**
    * move a node to a new position (in place mutation)
    *
-   * @param id - the id of the node to move
-   * @param coords - the new coordinates (x, y)
-   * @param options - override default effects (onNodeMoved event)
+   * @param id the id of the node to move
+   * @param coords the new coordinates (x, y)
+   * @param options override default effects (onNodeMoved event)
    * @returns void
    */
   const moveNode = (
