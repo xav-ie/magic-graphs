@@ -40,6 +40,9 @@ export const useMoveNodesIntoTreeFormation = (
     ...options,
   }
 
+  const treeOffsetX = ref(treeOptions.xOffset);
+  const treeOffsetY = ref(treeOptions.yOffset);
+
   /**
    * whether nodes of the graph are currently
    * being animated to their new positions
@@ -55,13 +58,13 @@ export const useMoveNodesIntoTreeFormation = (
 
     for (let i = 1; i < depthToNodeIds.length; i++) {
       const nodeIds = depthToNodeIds[i];
-      const yOffset = i * treeOptions.yOffset;
+      const yOffset = i * treeOffsetY.value;
 
       for (let j = 0; j < nodeIds.length; j++) {
         const node = graph.getNode(nodeIds[j]);
         if (!node) throw new Error(`Node with id ${nodeIds[j]} not found`);
 
-        const x = rootNodeX + (j - nodeIds.length / 2) * treeOptions.xOffset;
+        const x = rootNodeX + (j - nodeIds.length / 2) * treeOffsetX.value;
         const y = rootNodeY + yOffset;
 
         newPositions.set(node.id, {
@@ -127,6 +130,8 @@ export const useMoveNodesIntoTreeFormation = (
   return {
     shapeGraph,
     reshapingActive,
+    treeOffsetX,
+    treeOffsetY,
   }
 };
 
