@@ -1,12 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { interpolateCoordinates } from "./animate";
-import type { EasingFunction } from "@vueuse/core";
 
 describe("pointInterpolation", () => {
   const startPosition = { x: 0, y: 0 };
   const endPosition = { x: 10, y: 10 };
 
-  it("should return correct number of steps with linear easing", () => {
+  it("returns correct number of steps with 'linear' easing function", () => {
     const result = interpolateCoordinates({
       start: startPosition,
       end: endPosition,
@@ -17,7 +16,7 @@ describe("pointInterpolation", () => {
     expect(result.length).toBe(5);
   });
 
-  it("should interpolate correctly with linear easing", () => {
+  it("interpolates correctly with 'linear' easing function", () => {
     const result = interpolateCoordinates({
       start: startPosition,
       end: endPosition,
@@ -32,7 +31,7 @@ describe("pointInterpolation", () => {
     ]);
   });
 
-  it("should interpolate correctly with 'in' easing", () => {
+  it("interpolates correctly with 'in' easing function", () => {
     const result = interpolateCoordinates({
       start: startPosition,
       end: endPosition,
@@ -47,7 +46,7 @@ describe("pointInterpolation", () => {
     ]);
   });
 
-  it("should interpolate correctly with 'out' easing", () => {
+  it("interpolates correctly with 'out' easing function", () => {
     const result = interpolateCoordinates({
       start: startPosition,
       end: endPosition,
@@ -62,7 +61,7 @@ describe("pointInterpolation", () => {
     ]);
   });
 
-  it("should interpolate correctly with 'in-out' easing", () => {
+  it("interpolates correctly with 'in-out' easing function", () => {
     const result = interpolateCoordinates({
       start: startPosition,
       end: endPosition,
@@ -78,7 +77,7 @@ describe("pointInterpolation", () => {
     ]);
   });
 
-  it("should use a custom easing function", () => {
+  it("interpolates correctly with custom easing function", () => {
     const result = interpolateCoordinates({
       start: startPosition,
       end: endPosition,
