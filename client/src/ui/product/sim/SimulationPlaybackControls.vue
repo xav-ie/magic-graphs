@@ -6,7 +6,7 @@
   import PlaybackButton from "./PlaybackButton.vue";
   import ProgressBar from "./Progressbar.vue";
   import { useGraphColors } from "@graph/themes/useGraphColors";
-  import Select from 'primevue/select';
+  import GSpreadSelect from "@ui/graph/select/GSpreadSelect.vue";
 
   const colors = useGraphColors()
 
@@ -79,15 +79,13 @@
       :style="{ borderColor: colors.tertiary }"
     />
 
-    <Select
+    <GSpreadSelect
       v-model="playbackSpeed"
-      :options="playbackSpeedToMs"
-      placeholder="1x"
+      :items="playbackSpeedToMs"
       optionValue="value"
       optionLabel="label"
-      size="small"
       class="-my-2"
-    ></Select>
+    ></GSpreadSelect>
 
     <div class="flex gap-4 fill-white dark:fill-black">
       <PlaybackButton
