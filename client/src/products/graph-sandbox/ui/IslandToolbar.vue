@@ -29,7 +29,7 @@
       activateAnnotation: activate,
       deactivateAnnotation: deactivate,
       annotationActive: isActive,
-    } = graph.value;
+    } = graph.value.annotation;
 
     isActive.value ? deactivate() : activate();
     graph.value.canvasFocused.value = true;
@@ -39,16 +39,18 @@
   const redo = () => graph.value.shortcutActions.redo.value();
 
   const canUndo = computed(() => {
-    const { annotationActive, canUndo, canUndoAnnotation, settings } =
-      graph.value;
+    const { annotationActive, canUndoAnnotation } = graph.value.annotation;
+    const { canUndo } = graph.value.history;
+    const { settings } = graph.value;
     if (annotationActive.value) return canUndoAnnotation.value;
     if (!settings.value.interactive) return false;
     return canUndo.value;
   });
 
   const canRedo = computed(() => {
-    const { annotationActive, canRedo, canRedoAnnotation, settings } =
-      graph.value;
+    const { annotationActive, canRedoAnnotation } = graph.value.annotation;
+    const { canRedo } = graph.value.history;
+    const { settings } = graph.value;
     if (annotationActive.value) return canRedoAnnotation.value;
     if (!settings.value.interactive) return false;
     return canRedo.value;
@@ -110,7 +112,7 @@
     <ToolbarButtonGroup>
       <GToolbarButton
         @click="toggleAnnotation"
-        :active="graph.annotationActive.value"
+        :active="graph.annotation.annotationActive.value"
         icon="edit"
       />
 
@@ -137,7 +139,9 @@
         <GToolbarButton
           @click="toggle"
           :active="isOpen || treeControls.isActive.value"
-          :icon="isOpen || treeControls.isActive.value ? 'forest' : 'forest_outline'"
+          :icon="
+            isOpen || treeControls.isActive.value ? 'forest' : 'forest_outline'
+          "
         />
       </TreeShapeMenu>
     </ToolbarButtonGroup>

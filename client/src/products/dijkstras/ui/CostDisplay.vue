@@ -4,7 +4,8 @@
   import colors from "@colors";
   import { SIM_COLORS, INF_STR } from "../sim/theme";
 
-  const { getTheme, isFocused } = graph.value;
+  const { getTheme, focus } = graph.value;
+  const { isFocused } = focus;
 
   const getNodeCosts = (node: GNode) => getTheme("nodeText", node);
 
@@ -44,7 +45,7 @@
 <template>
   <div
     v-for="node in graph.nodes.value"
-    @click="graph.setFocus([node.id])"
+    @click="graph.focus.setFocus([node.id])"
     class="text-white flex items-center gap-3 p-2 hover:bg-gray-900 cursor-pointer rounded-lg"
   >
     <span class="text-2xl w-6 text-center font-bold">

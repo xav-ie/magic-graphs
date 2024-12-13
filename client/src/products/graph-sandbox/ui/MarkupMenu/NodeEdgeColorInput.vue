@@ -13,7 +13,7 @@
   }>();
 
   const getColor = () => {
-    const highlightedIds = Array.from(props.graph.focusedItemIds.value);
+    const highlightedIds = Array.from(props.graph.focus.focusedItemIds.value);
     const itemColors = new Set(
       highlightedIds.map((id) => props.colorMap.get(id))
     );
@@ -27,7 +27,7 @@
   const activeColor = ref(getColor());
 
   const setActiveColor = (value: Color) => {
-    for (const id of props.graph.focusedItemIds.value) {
+    for (const id of props.graph.focus.focusedItemIds.value) {
       props.colorMap.set(id, value);
     }
     activeColor.value = value;
@@ -39,7 +39,7 @@
   };
 
   const recalculateActiveColor = async () => {
-    if (props.graph.focusedItemIds.value.size === 0) return;
+    if (props.graph.focus.focusedItemIds.value.size === 0) return;
     await new Promise((resolve) => setTimeout(resolve, 0));
     /**
      * wait for the next tick to ensure that onNodeAdded and onEdgeAdded
