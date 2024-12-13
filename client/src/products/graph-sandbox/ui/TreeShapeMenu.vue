@@ -27,7 +27,7 @@
   const rootNode = computed(() => {
     if (!rootNodeId.value) return;
     return graph.value.getNode(rootNodeId.value);
-  })
+  });
 </script>
 
 <template>
@@ -37,44 +37,64 @@
     </template>
 
     <GWell
-      class="p-2 flex flex-col gap-2 max-h-72 max-w-72 overflow-auto rounded-lg"
+      class="p-3 flex flex-col gap-2 w-72 rounded-lg"
     >
-      <h1 class="font-bold text-xl">Pick A Root Node</h1>
-      <CWell
-        v-if="isActive && rootNode"
-        :color="colors.RED_600"
-        class="rounded-md px-2 py-1 font-bold text-xs animate-pulse"
+
+      <div
+        v-if="graph.nodes.value.length > 0"
+        class="flex flex-col gap-2"
       >
-        <h2>Actively Tracking Node {{ rootNode.label }}</h2>
-      </CWell>
-      <GWell
-        secondary
-        class="py-3 flex flex-wrap justify-center gap-2 rounded-md overflow-auto"
-      >
-        <GraphNode
-          v-for="node in graph.nodes.value"
-          @click="nodeSelected(node)"
-          :key="node.id"
-          :node="node"
-          :size="55"
-        />
-      </GWell>
-      <div class="text-sm">
-        <GButton
-          v-if="isActive"
-          @click="deactivate"
-          contrast
+
+        <h1 class="font-bold text-xl">Pick A Root Node</h1>
+        <CWell
+          v-if="isActive && rootNode"
+          :color="colors.RED_600"
+          class="rounded-md px-2 py-1 font-bold text-xs animate-pulse"
         >
-          Disable Auto Format
-        </GButton>
-        <GButton
-          v-else
-          @click="activate"
-          tertiary
+          <h2>Actively Tracking Node {{ rootNode.label }}</h2>
+        </CWell>
+        <GWell
+          secondary
+          class="py-3 flex flex-wrap justify-center gap-2 max-h-48 rounded-md overflow-auto"
         >
-          Enable Auto Format
-        </GButton>
+          <GraphNode
+            v-for="node in graph.nodes.value"
+            @click="nodeSelected(node)"
+            :key="node.id"
+            :node="node"
+            :size="55"
+          />
+        </GWell>
+        <div class="text-sm">
+          <GButton
+            v-if="isActive"
+            @click="deactivate"
+            contrast
+          >
+            Disable Auto Format
+          </GButton>
+          <GButton
+            v-else
+            @click="activate"
+            tertiary
+          >
+            Enable Auto Format
+          </GButton>
+        </div>
+
       </div>
+
+      <div
+        v-else
+        class="flex flex-col gap-2"
+      >
+        <h1 class="font-bold text-xl">Where Are The Nodes?!</h1>
+        <p class="text-base">
+          Add some nodes to the graph, then come back to check out how we
+          can <span class="text-magic">magically</span> shape them into a tree!
+        </p>
+      </div>
+
     </GWell>
   </CPopover>
 </template>
