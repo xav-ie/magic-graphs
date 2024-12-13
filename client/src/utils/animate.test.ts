@@ -1,19 +1,29 @@
 import { describe, it, expect } from "vitest";
 import { interpolateCoordinates } from "./animate";
+import type { EasingFunction } from "@vueuse/core";
 
 describe("pointInterpolation", () => {
   const startPosition = { x: 0, y: 0 };
   const endPosition = { x: 10, y: 10 };
 
   it("should return correct number of steps with linear easing", () => {
-    const steps = 5;
-    const result = interpolateCoordinates(startPosition, endPosition, steps, "linear");
-    expect(result.length).toBe(steps);
+    const result = interpolateCoordinates({
+      start: startPosition,
+      end: endPosition,
+      numberOfSteps: 5,
+      easeFn: "linear",
+    })
+
+    expect(result.length).toBe(5);
   });
 
   it("should interpolate correctly with linear easing", () => {
-    const steps = 4;
-    const result = interpolateCoordinates(startPosition, endPosition, steps, "linear");
+    const result = interpolateCoordinates({
+      start: startPosition,
+      end: endPosition,
+      numberOfSteps: 4,
+      easeFn: "linear",
+    })
     expect(result).toEqual([
       { x: 3, y: 3 },
       { x: 5, y: 5 },
@@ -23,8 +33,13 @@ describe("pointInterpolation", () => {
   });
 
   it("should interpolate correctly with 'in' easing", () => {
-    const steps = 3;
-    const result = interpolateCoordinates(startPosition, endPosition, steps, "in");
+    const result = interpolateCoordinates({
+      start: startPosition,
+      end: endPosition,
+      numberOfSteps: 3,
+      easeFn: "in",
+    })
+
     expect(result).toEqual([
       { x: 1, y: 1 },
       { x: 4, y: 4 },
@@ -33,8 +48,13 @@ describe("pointInterpolation", () => {
   });
 
   it("should interpolate correctly with 'out' easing", () => {
-    const steps = 3;
-    const result = interpolateCoordinates(startPosition, endPosition, steps, "out");
+    const result = interpolateCoordinates({
+      start: startPosition,
+      end: endPosition,
+      numberOfSteps: 3,
+      easeFn: "out",
+    })
+
     expect(result).toEqual([
       { x: 6, y: 6 },
       { x: 9, y: 9 },
@@ -43,8 +63,13 @@ describe("pointInterpolation", () => {
   });
 
   it("should interpolate correctly with 'in-out' easing", () => {
-    const steps = 4;
-    const result = interpolateCoordinates(startPosition, endPosition, steps, "in-out");
+    const result = interpolateCoordinates({
+      start: startPosition,
+      end: endPosition,
+      numberOfSteps: 4,
+      easeFn: "in-out",
+    })
+
     expect(result).toEqual([
       { x: 1, y: 1 },
       { x: 5, y: 5 },
@@ -54,9 +79,13 @@ describe("pointInterpolation", () => {
   });
 
   it("should use a custom easing function", () => {
-    const steps = 3;
-    const customEasing = (progress: number) => progress ** 3;
-    const result = interpolateCoordinates(startPosition, endPosition, steps, customEasing);
+    const result = interpolateCoordinates({
+      start: startPosition,
+      end: endPosition,
+      numberOfSteps: 3,
+      easeFn: n => n ** 3,
+    })
+
     expect(result).toEqual([
       { x: 0, y: 0 },
       { x: 3, y: 3 },
@@ -64,21 +93,32 @@ describe("pointInterpolation", () => {
     ]);
   });
 
-  it("should handle edge case with steps = 1", () => {
-    const steps = 1;
-    const result = interpolateCoordinates(startPosition, endPosition, steps);
+  it("handles edge case: numberOfSteps = 1", () => {
+    const result = interpolateCoordinates({
+      start: startPosition,
+      end: endPosition,
+      numberOfSteps: 1,
+      easeFn: "linear",
+    })
+
     expect(result).toEqual([{ x: 10, y: 10 }]);
   });
 
-  it("should handle edge case with start and end position being the same", () => {
-    const steps = 5;
-    const identicalPosition = { x: 5, y: 5 };
-    const result = interpolateCoordinates(identicalPosition, identicalPosition, steps);
-    expect(result).toEqual(Array(steps).fill({ x: 5, y: 5 }));
+  it("handles edge case: start = end", () => {
+    const result = interpolateCoordinates({
+      start: { x: 5, y: 5 },
+      end: { x: 5, y: 5 },
+      numberOfSteps: 3,
+    })
+
+    expect(result).toEqual(Array(3).fill({ x: 5, y: 5 }));
   });
 
-  it("should throw an error if steps is a float value", () => {
-    expect(() => interpolateCoordinates(startPosition, endPosition, 2.5))
-      .toThrow("Step must be integer");
+  it("throws if numberOfSteps is not an integer", () => {
+    expect(() => interpolateCoordinates({
+      start: startPosition,
+      end: endPosition,
+      numberOfSteps: 1.5,
+    })).toThrow();
   });
 });
