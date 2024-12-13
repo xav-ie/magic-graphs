@@ -28,6 +28,13 @@ export type BroadcastOption = {
   broadcast: boolean
 }
 
+export type PersistOption = {
+  /**
+   * whether this action will be tracked in local storage
+   */
+  persist: boolean
+}
+
 export type AddNodeOptions = FocusOption & BroadcastOption & HistoryOption
 
 export const ADD_NODE_OPTIONS_DEFAULTS: AddNodeOptions = {

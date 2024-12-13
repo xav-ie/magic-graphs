@@ -8,7 +8,7 @@
   import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
   import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
-  import { useMoveNodesIntoTreeFormation } from "./useTreeShaper";
+  import TreeShapeMenu from "./TreeShapeMenu.vue";
 
   const hint = useGraphTutorial(graph.value, [
     {
@@ -52,8 +52,6 @@
     if (!settings.value.interactive) return false;
     return canRedo.value;
   });
-
-  const { shapeGraph, reshapingActive } = useMoveNodesIntoTreeFormation(graph.value);
 </script>
 
 <template>
@@ -129,11 +127,13 @@
         />
       </CollaborativeSessionMenu>
 
-      <GToolbarButton
-        @click="shapeGraph"
-        :active="reshapingActive"
-        :icon="reshapingActive ? 'forest' : 'forest_outline'"
-      />
+      <TreeShapeMenu v-slot="{ toggle, isOpen }">
+        <GToolbarButton
+          @click="toggle"
+          :active="isOpen"
+          :icon="isOpen ? 'forest' : 'forest_outline'"
+        />
+      </TreeShapeMenu>
     </ToolbarButtonGroup>
   </GToolbar>
 </template>
