@@ -132,7 +132,7 @@
       <SimulationPlaybackControls :controls="simRunner.simControls" />
     </div>
 
-    <div v-show="graph.annotation.annotationActive.value">
+    <div v-show="graph.annotation.isActive.value">
       <AnnotationToolbar />
     </div>
   </div>

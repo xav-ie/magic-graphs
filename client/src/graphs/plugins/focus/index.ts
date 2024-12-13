@@ -199,3 +199,9 @@ export const useFocus = (graph: BaseGraph) => {
 }
 
 export type GraphFocusControls = ReturnType<typeof useFocus>
+export type GraphFocusPlugin = {
+  /**
+   * controls for focusing items in the graph
+   */
+  focus: GraphFocusControls
+}

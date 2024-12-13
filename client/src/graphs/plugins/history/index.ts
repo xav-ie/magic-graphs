@@ -368,3 +368,10 @@ export const useHistory = (graph: BaseGraph) => {
 };
 
 export type GraphHistoryControls = ReturnType<typeof useHistory>;
+export type GraphHistoryPlugin = {
+  /**
+   * controls for undoing and redoing actions in the graph
+   * such as adding, removing, moving, and editing nodes and edges
+   */
+  history: GraphHistoryControls
+}

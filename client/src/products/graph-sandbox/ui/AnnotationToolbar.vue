@@ -8,10 +8,10 @@
   import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
 
   const {
-    clearAnnotations,
-    annotationBrushWeight,
-    annotationErasing,
-    annotationColor,
+    clear: clearAnnotations,
+    brushWeight: annotationBrushWeight,
+    erasing: annotationErasing,
+    color: annotationColor,
   } = graph.value.annotation;
 
   const selectColor = (color: Color) => {

@@ -215,21 +215,27 @@ export const useAnnotations = (graph: BaseGraph) => {
   }
 
   return {
-    clearAnnotations: clear,
-    annotationActive: isActive,
+    clear: clear,
+    isActive: isActive,
 
-    annotationErasing: erasing,
-    annotationColor: selectedColor,
-    annotationBrushWeight: selectedBrushWeight,
+    erasing: erasing,
+    color: selectedColor,
+    brushWeight: selectedBrushWeight,
 
-    activateAnnotation: activate,
-    deactivateAnnotation: deactivate,
+    activate: activate,
+    deactivate: deactivate,
 
-    undoAnnotation: history.undo,
-    redoAnnotation: history.redo,
-    canUndoAnnotation: history.canUndo,
-    canRedoAnnotation: history.canRedo,
+    undo: history.undo,
+    redo: history.redo,
+    canUndo: history.canUndo,
+    canRedo: history.canRedo,
   }
 }
 
 export type GraphAnnotationControls = ReturnType<typeof useAnnotations>
+export type GraphAnnotationPlugin = {
+  /**
+   * controls for facilitating the "marking up" or drawing over the graph
+   */
+  annotation: GraphAnnotationControls
+}

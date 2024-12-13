@@ -41,9 +41,9 @@ export const useGraph = (
   const preferredTheme = usePreferredTheme(base)
   const shortcutActions = useShortcuts({
     ...base,
-    ...history,
-    ...focus,
-    ...annotation
+    history,
+    focus,
+    annotation,
   })
 
   const adjacencyList = useAdjacencyList(base)

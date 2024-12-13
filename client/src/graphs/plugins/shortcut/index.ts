@@ -1,9 +1,9 @@
 import { computed } from "vue"
 import type { BaseGraph } from "@graph/base"
 import { useShortcutPressed } from './useShortcutPressed'
-import type { GraphHistoryControls } from "../history"
-import type { GraphFocusControls } from "../focus"
-import type { GraphAnnotationControls } from "../annotations"
+import type { GraphHistoryPlugin } from "../history"
+import type { GraphFocusPlugin } from "../focus"
+import type { GraphAnnotationPlugin } from "../annotations"
 
 const USER_PLATFORM = window.navigator.userAgent.includes('Mac') ? 'Mac' : 'Windows'
 
@@ -11,26 +11,26 @@ const USER_PLATFORM = window.navigator.userAgent.includes('Mac') ? 'Mac' : 'Wind
  * a plugin that allows users to use keyboard shortcuts to interact with the graph
  */
 export const useShortcuts = (
-  graph: BaseGraph & GraphHistoryControls & GraphFocusControls & GraphAnnotationControls,
+  graph: BaseGraph & GraphHistoryPlugin & GraphFocusPlugin & GraphAnnotationPlugin,
 ) => {
   const { settings } = graph
 
   const defaultShortcutUndo = () => {
-    if (graph.annotationActive.value) graph.undoAnnotation()
-    if (settings.value.interactive) graph.undo()
+    if (graph.annotation.isActive.value) graph.annotation.undo()
+    if (settings.value.interactive) graph.history.undo()
   }
 
   const defaultShortcutRedo = () => {
-    if (graph.annotationActive.value) graph.redoAnnotation()
-    if (settings.value.interactive) graph.redo()
+    if (graph.annotation.isActive.value) graph.annotation.redo()
+    if (settings.value.interactive) graph.history.redo()
   }
 
-  const defaultShortcutEscape = () => graph.resetFocus()
-  const defaultShortcutSelectAll = () => graph.focusAll()
+  const defaultShortcutEscape = () => graph.focus.resetFocus()
+  const defaultShortcutSelectAll = () => graph.focus.focusAll()
   const defaultShortcutDelete = () => {
     if (settings.value.interactive === false) return
-    graph.bulkRemoveNode([...graph.focusedItemIds.value])
-    graph.bulkRemoveEdge([...graph.focusedItemIds.value])
+    graph.bulkRemoveNode([...graph.focus.focusedItemIds.value])
+    graph.bulkRemoveEdge([...graph.focus.focusedItemIds.value])
   }
 
   /**

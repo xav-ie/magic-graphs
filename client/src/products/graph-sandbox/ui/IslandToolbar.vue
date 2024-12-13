@@ -26,9 +26,9 @@
 
   const toggleAnnotation = () => {
     const {
-      activateAnnotation: activate,
-      deactivateAnnotation: deactivate,
-      annotationActive: isActive,
+      activate: activate,
+      deactivate: deactivate,
+      isActive: isActive,
     } = graph.value.annotation;
 
     isActive.value ? deactivate() : activate();
@@ -39,7 +39,7 @@
   const redo = () => graph.value.shortcutActions.redo.value();
 
   const canUndo = computed(() => {
-    const { annotationActive, canUndoAnnotation } = graph.value.annotation;
+    const { isActive: annotationActive, canUndo: canUndoAnnotation } = graph.value.annotation;
     const { canUndo } = graph.value.history;
     const { settings } = graph.value;
     if (annotationActive.value) return canUndoAnnotation.value;
@@ -48,7 +48,7 @@
   });
 
   const canRedo = computed(() => {
-    const { annotationActive, canRedoAnnotation } = graph.value.annotation;
+    const { isActive: annotationActive, canRedo: canRedoAnnotation } = graph.value.annotation;
     const { canRedo } = graph.value.history;
     const { settings } = graph.value;
     if (annotationActive.value) return canRedoAnnotation.value;
@@ -112,7 +112,7 @@
     <ToolbarButtonGroup>
       <GToolbarButton
         @click="toggleAnnotation"
-        :active="graph.annotation.annotationActive.value"
+        :active="graph.annotation.isActive.value"
         icon="edit"
       />
 
