@@ -18,62 +18,79 @@ import { useCharacteristics } from './plugins/characteristics'
 import { useTransitionMatrix } from './useTransitionMatrix'
 
 /**
- * a package full of tools for creating and managing graphs
+ * a package brimming with tools for creating and managing graphs bringing
+ * light and joy to the world
  *
- * @param canvas - the HTML canvas element to render the graph on
- * @param settings - settings for the graph
+ * @param canvas the HTML canvas element to render the graph onto
+ * @param settings default settings for the graph
  * @returns a graph instance with APIs for managing the graph
  */
 export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   settings: Partial<GraphSettings> = {},
 ) => {
-  const baseGraph = useBaseGraph(canvas, settings)
+  const base = useBaseGraph(canvas, settings)
 
-  const focusControls = useFocus(baseGraph)
-  const historyControls = useHistory(baseGraph)
-  const marqueeControls = useMarquee({ ...baseGraph, ...focusControls })
-  const nodeAnchorControls = useNodeAnchors({ ...baseGraph, ...focusControls })
-  const nodeDragControls = useNodeDrag({ ...baseGraph, ...nodeAnchorControls })
-  const annotationControls = useAnnotations(baseGraph)
-  const persistentControls = usePersistent(baseGraph)
-  const preferredThemeControls = usePreferredTheme(baseGraph)
+  const focus = useFocus(base)
+  const history = useHistory(base)
+  const marquee = useMarquee({ ...base, ...focus })
+  const nodeAnchor = useNodeAnchors({ ...base, ...focus })
+  const nodeDrag = useNodeDrag({ ...base, ...nodeAnchor })
+  const annotation = useAnnotations(base)
+  const persistent = usePersistent(base)
+  const preferredTheme = usePreferredTheme(base)
   const shortcutActions = useShortcuts({
-    ...baseGraph,
-    ...historyControls,
-    ...focusControls,
-    ...annotationControls
+    ...base,
+    ...history,
+    ...focus,
+    ...annotation
   })
 
-  const adjacencyLists = useAdjacencyList(baseGraph)
-  const transitionMatrix = useTransitionMatrix(baseGraph)
+  const adjacencyList = useAdjacencyList(base)
+  const transitionMatrix = useTransitionMatrix(base)
 
-  const characteristics = useCharacteristics({ ...baseGraph, adjacencyLists })
+  const characteristics = useCharacteristics({ ...base, adjacencyList })
   const animate = useAnimation({
-    ...baseGraph,
-    ...historyControls,
-    ...focusControls,
-    ...marqueeControls,
-    ...persistentControls
+    ...base,
+    ...history,
+    ...focus,
+    ...marquee,
+    ...persistent
   })
 
-  useInteractive(baseGraph)
+  useInteractive(base)
 
   return {
-    ...baseGraph,
-    ...focusControls,
-    ...historyControls,
-    ...marqueeControls,
-    ...nodeDragControls,
-    ...nodeAnchorControls,
-    ...annotationControls,
-    ...persistentControls,
-    ...preferredThemeControls,
-    shortcutActions,
-    adjacencyLists,
+    ...base,
+
+    /**
+     * plugin controllers
+     */
+    focus,
+    history,
+    marquee,
+    nodeDrag,
+    nodeAnchor,
+    annotation,
+    persistent,
+    animate,
+
+    /**
+     * theme and style
+     */
+    ...preferredTheme,
+
+    /**
+     * reactive data structures and algorithms
+     */
+    adjacencyList,
     transitionMatrix,
     characteristics,
-    animate,
-    helpers: useGraphHelpers(baseGraph),
+
+    /**
+     * helper functions
+    */
+    shortcutActions,
+    helpers: useGraphHelpers(base),
   }
 }

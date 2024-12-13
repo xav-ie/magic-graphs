@@ -8,9 +8,9 @@ import { getBipartitePartition } from "./getBipartite";
 import { findAllCycles } from "./getCycles";
 
 export const useCharacteristics = (graph: BaseGraph & {
-  adjacencyLists: AdjacencyLists,
+  adjacencyList: AdjacencyLists,
 }) => {
-  const connectedState = useConnected(graph.adjacencyLists);
+  const connectedState = useConnected(graph.adjacencyList);
 
   const bidirectionalEdges = computed(() => {
     const edges = graph.edges.value
@@ -38,7 +38,7 @@ export const useCharacteristics = (graph: BaseGraph & {
   })
 
   const bipartitePartition = computed(() => {
-    const adjList = graph.adjacencyLists.adjacencyList.value
+    const adjList = graph.adjacencyList.adjacencyList.value
     return getBipartitePartition(adjList)
   })
 
@@ -55,7 +55,7 @@ export const useCharacteristics = (graph: BaseGraph & {
   const cycles = computed(() => {
     const isDirected = graph.settings.value.isGraphDirected
     if (!isDirected) {
-      const res = findAllCycles(graph.adjacencyLists.adjacencyList.value)
+      const res = findAllCycles(graph.adjacencyList.adjacencyList.value)
       return res.sort((a, b) => a.length - b.length)
     }
     return stronglyConnectedComponents.value
