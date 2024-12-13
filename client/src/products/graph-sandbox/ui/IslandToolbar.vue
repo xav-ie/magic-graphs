@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed } from "vue";
+  import { computed, ref } from "vue";
   import { graph } from "@graph/global";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
   import GToolbar from "@ui/graph/toolbar/GToolbarBase.vue";
@@ -9,6 +9,8 @@
   import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
   import TreeShapeMenu from "./TreeShapeMenu.vue";
+  import type { GNode } from "@graph/types";
+  import { useAutoTree } from "./useTreeShaper";
 
   const hint = useGraphTutorial(graph.value, [
     {
@@ -52,6 +54,8 @@
     if (!settings.value.interactive) return false;
     return canRedo.value;
   });
+
+  const treeControls = useAutoTree(graph.value);
 </script>
 
 <template>
@@ -127,11 +131,14 @@
         />
       </CollaborativeSessionMenu>
 
-      <TreeShapeMenu v-slot="{ toggle, isOpen }">
+      <TreeShapeMenu
+        v-slot="{ toggle, isOpen }"
+        :controls="treeControls"
+      >
         <GToolbarButton
           @click="toggle"
-          :active="isOpen"
-          :icon="isOpen ? 'forest' : 'forest_outline'"
+          :active="isOpen || treeControls.isActive.value"
+          :icon="isOpen || treeControls.isActive.value ? 'forest' : 'forest_outline'"
         />
       </TreeShapeMenu>
     </ToolbarButtonGroup>

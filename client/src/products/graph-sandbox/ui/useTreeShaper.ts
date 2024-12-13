@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { onUnmounted, ref, watch } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { getNodeDepths } from "@product/search-visualizer/useNodeDepth";
 import type { Coordinate } from "@shape/types";
@@ -133,4 +133,50 @@ export const useMoveNodesIntoTreeFormation = (
  * automatically reshapes the graph into a tree formation
  * whenever the graph structure changes
  */
-export const useAutoTree = (graph: Graph) => {}
+export const useAutoTree = (
+  graph: Graph,
+  options: TreeFormationOptions = {},
+) => {
+  const rootNode = ref<GNode>();
+  const isActive = ref(false);
+
+  const treeControls = useMoveNodesIntoTreeFormation(graph, options);
+
+  const updateShape = () => {
+    if (!rootNode.value) return;
+    treeControls.shapeGraph(rootNode.value);
+  }
+
+  const activate = () => {
+    graph.subscribe('onStructureChange', updateShape);
+    graph.subscribe('onNodeDrop', updateShape);
+    graph.subscribe('onGroupDrop', updateShape);
+    isActive.value = true;
+  }
+
+  const deactivate = () => {
+    graph.unsubscribe('onStructureChange', updateShape);
+    graph.unsubscribe('onNodeDrop', updateShape);
+    graph.unsubscribe('onGroupDrop', updateShape);
+    isActive.value = false;
+  }
+
+  // eagerly shape the graph when the root node changes
+  watch(rootNode, () => {
+    if (!isActive.value || !rootNode.value) return;
+    treeControls.shapeGraph(rootNode.value);
+  })
+
+  onUnmounted(deactivate);
+
+  return {
+    ...treeControls,
+    rootNode,
+    activate,
+    deactivate,
+    isActive,
+    updateShape,
+  };
+}
+
+export type AutoTreeControls = ReturnType<typeof useAutoTree>;

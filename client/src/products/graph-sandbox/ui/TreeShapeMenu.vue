@@ -1,15 +1,26 @@
 <script setup lang="ts">
-  import { ref } from "vue";
   import { graph } from "@graph/global";
-  import { useMoveNodesIntoTreeFormation } from "./useTreeShaper";
-  import GNode from "@ui/graph/GNode.vue";
+  import type { AutoTreeControls } from "./useTreeShaper";
+  import GraphNode from "@ui/graph/GNode.vue";
   import CPopover from "@ui/core/Popover.vue";
   import GWell from "@ui/graph/GWell.vue";
   import GButton from "@ui/graph/button/GButton.vue";
+  import { toRef } from "vue";
+  import type { GNode } from "@graph/types";
 
-  const { shapeGraph } = useMoveNodesIntoTreeFormation(graph.value);
+  const props = defineProps<{
+    controls: AutoTreeControls;
+  }>();
 
-  const autoFormatActive = ref(false);
+  const treeControls = toRef(props, "controls");
+
+  const { isActive, activate, deactivate, updateShape, rootNode } =
+    treeControls.value;
+
+  const nodeSelected = (node: GNode) => {
+    rootNode.value = node;
+    if (!isActive.value) updateShape();
+  };
 </script>
 
 <template>
@@ -26,9 +37,9 @@
         secondary
         class="py-3 flex flex-wrap justify-center gap-2 rounded-md overflow-auto"
       >
-        <GNode
+        <GraphNode
           v-for="node in graph.nodes.value"
-          @click="shapeGraph(node)"
+          @click="nodeSelected(node)"
           :key="node.id"
           :node="node"
           :size="55"
@@ -36,15 +47,15 @@
       </GWell>
       <div class="text-sm">
         <GButton
-          v-if="autoFormatActive"
-          @click="autoFormatActive = false"
+          v-if="isActive"
+          @click="deactivate"
           contrast
         >
           Disable Auto Format
         </GButton>
         <GButton
           v-else
-          @click="autoFormatActive = true"
+          @click="activate"
           tertiary
         >
           Enable Auto Format
