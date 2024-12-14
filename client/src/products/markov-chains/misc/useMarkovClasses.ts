@@ -1,7 +1,7 @@
 import { computed } from "vue"
 import type { Ref } from "vue"
-import type { ComponentAdjacencyMap } from "./useComponentAdjacencyMap"
 import type { GNode, Graph } from "@graph/types"
+import type { ComponentAdjacencyMap } from "./useComponentAdjacencyMap"
 
 export const getMarkovClasses = (
   connectedComponents: Graph['characteristics']['stronglyConnectedComponents']['value'],
@@ -23,8 +23,20 @@ export const getMarkovClasses = (
 }
 
 export const useMarkovClasses = (graph: Graph, componentMap: Ref<ComponentAdjacencyMap>) => {
-  return computed(() => getMarkovClasses(
-    graph.characteristics.stronglyConnectedComponents.value,
-    componentMap.value
-  ))
+  const { stronglyConnectedComponents: sccs } = graph.characteristics;
+
+  const transientClasses = computed(() => {
+    const { transient } = getMarkovClasses(sccs.value, componentMap.value)
+    return transient;
+  });
+
+  const recurrentClasses = computed(() => {
+    const { recurrent } = getMarkovClasses(sccs.value, componentMap.value)
+    return recurrent;
+  });
+
+  return {
+    transientClasses,
+    recurrentClasses,
+  };
 }

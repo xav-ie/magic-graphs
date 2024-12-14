@@ -2,6 +2,7 @@ import { computed } from "vue";
 import type { Graph } from "@graph/types";
 import { useComponentAdjacencyMap } from "./useComponentAdjacencyMap";
 import { useMarkovClasses } from "./useMarkovClasses";
+import { useMarkovPeriodicity } from "./useMarkovPeriodicity";
 
 /**
  * reduce an array of sets into a single set
@@ -14,17 +15,30 @@ export const reduceSet = <T>(sets: Set<T>[]) => {
   return sets.reduce((acc, set) => new Set([...acc, ...set]), new Set<T>())
 }
 
-export const useMarkovState = (graph: Graph) => {
+/**
+ * reactive markov chain characteristics
+ *
+ *
+ */
+export const useMarkovCharacteristics = (graph: Graph) => {
   const componentMap = useComponentAdjacencyMap(graph);
-  const classes = useMarkovClasses(graph, componentMap);
+  const { recurrentClasses, transientClasses } = useMarkovClasses(graph, componentMap);
 
-  const recurrentStates = computed(() => reduceSet(classes.value.recurrent));
-  const transientStates = computed(() => reduceSet(classes.value.transient));
+  const recurrentStates = computed(() => reduceSet(recurrentClasses.value));
+  const transientStates = computed(() => reduceSet(transientClasses.value));
+
+  const { isPeriodic, recurrentClassPeriods } = useMarkovPeriodicity(graph, recurrentClasses);
 
   return {
     componentMap,
-    classes,
+
+    recurrentClasses,
     recurrentStates,
+
+    transientClasses,
     transientStates,
+
+    isPeriodic,
+    recurrentClassPeriods,
   }
 }

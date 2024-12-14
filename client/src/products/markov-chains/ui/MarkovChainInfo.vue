@@ -1,27 +1,29 @@
 <script setup lang="ts">
+  import { computed } from "vue";
+  import type { GNode } from "@graph/types";
   import { graph } from "@graph/global";
   import GWell from "@ui/graph/GWell.vue";
-  import { useMarkovState } from "../misc/useMarkovState";
-  import GraphNode from "@ui/graph/GNode.vue";
-  import { computed } from "vue";
+  import { useMarkovCharacteristics } from "../misc/useMarkovCharacteristics";
   import MarkovClassNodes from "./MarkovClassNodes.vue";
 
-  const markovState = useMarkovState(graph.value);
+  const markov = useMarkovCharacteristics(graph.value);
 
-  const recurrentClasses = computed(() => {
-    return markovState.classes.value.recurrent.map((nodeIds) => {
-      return Array.from(nodeIds).map((nodeId) => {
-        return graph.value.getNode(nodeId)!;
-      });
-    });
-  });
-
-  const transientClasses = computed(() => {
-    return markovState.classes.value.transient.map((nodeId) => {
+  /**
+   * goes through classes and replaces node ids with full nodes
+   */
+  const populateClasses = (classes: Set<GNode["id"]>[]) =>
+    classes.map((nodeId) => {
       return Array.from(nodeId).map((nodeId) => {
         return graph.value.getNode(nodeId)!;
       });
     });
+
+  const recurrentClasses = computed(() => {
+    return populateClasses(markov.recurrentClasses.value);
+  });
+
+  const transientClasses = computed(() => {
+    return populateClasses(markov.transientClasses.value);
   });
 </script>
 
