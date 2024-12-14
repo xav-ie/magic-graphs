@@ -68,12 +68,11 @@
 
 <template>
   <div class="flex flex-col gap-5 items-center justify-center">
-    
+
     <GSpreadSelect
       v-model="playbackSpeed"
       :items="playbackSpeedToMs"
       :initial-item-index="2"
-      class="-my-2"
     ></GSpreadSelect>
 
     <ProgressBar
