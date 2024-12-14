@@ -22,21 +22,27 @@ export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
 
   const drop = () => {
     if (!currentlyDraggingNode.value) return
+
     graph.emit('onNodeDrop', currentlyDraggingNode.value.node)
     graph.settings.value.nodeAnchors = true
+
     graph.nodeAnchors.setParentNode(currentlyDraggingNode.value.node.id)
     currentlyDraggingNode.value = undefined;
   }
 
   const drag = ({ coords: evCoords }: GraphMouseEvent) => {
     if (!currentlyDraggingNode.value) return
+
     const { node, coords } = currentlyDraggingNode.value;
+
     const dx = evCoords.x - coords.x;
     const dy = evCoords.y - coords.y;
+
     graph.moveNode(node.id, {
       x: node.x + dx,
       y: node.y + dy
     });
+
     currentlyDraggingNode.value.coords = evCoords;
   }
 

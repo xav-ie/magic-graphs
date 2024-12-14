@@ -1,12 +1,12 @@
 import { useTheme } from "@graph/themes/useTheme";
 import type { GNode, Graph } from "@graph/types";
 import { useSCCColorizer } from "@product/graph-sandbox/ui/GraphInfoMenu/useSCCColorizer";
-import { useMarkovState } from "../misc/useMarkovState";
+import { useMarkovCharacteristics } from "../misc/useMarkovCharacteristics";
 
 export const USETHEME_ID = 'markov-chains';
 
 export const useMarkovColorizer = (graph: Graph) => {
-  const markovState = useMarkovState(graph);
+  const markovState = useMarkovCharacteristics(graph);
   const sccColorizer = useSCCColorizer(graph);
 
   const { setTheme, removeTheme } = useTheme(graph, USETHEME_ID);
