@@ -70,6 +70,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     const edgeBetweenToAndFrom = graph.edges.value
       .find((edge) => edge.from === fromNode.id && edge.to === toNode.id)
 
+    // except this
     if (
       graph.settings.value.isGraphDirected &&
       edgeBetweenToAndFrom
@@ -103,7 +104,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
 
       const circleTemplate = {
         at: { x, y },
-        radius: isAnchorDroppable ? radius * 1.5 : radius,
+        radius: isAnchorDroppable ? radius * 1.25 : radius,
         color: isHoveredOrDragged ? focusColor : color
       }
 
