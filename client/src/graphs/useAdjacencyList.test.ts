@@ -5,30 +5,30 @@ import {
   getAdjacencyList,
   getFullNodeAdjacencyList,
   getLabelAdjacencyList,
-  useAdjacencyList
 } from './useAdjacencyList';
+
+const nodeA = { id: '1', label: 'a', x: 0, y: 0 }
+const nodeB = { id: '2', label: 'b', x: 0, y: 0 }
+const nodeC = { id: '3', label: 'c', x: 0, y: 0 }
+
+const getGraph = () => {
+  const graph = useGraph(ref())
+
+  graph.addNode(nodeA)
+  graph.addNode(nodeB)
+  graph.addNode(nodeC)
+
+  graph.addEdge({ from: nodeA.id, to: nodeB.id })
+  graph.addEdge({ from: nodeB.id, to: nodeC.id })
+  graph.addEdge({ from: nodeC.id, to: nodeC.id })
+
+  return graph
+}
 
 describe('adjacency lists', () => {
 
-  const graph = useGraph(ref())
-
-  const nodeA = graph.addNode({ id: '1', label: 'a', x: 0, y: 0 })
-  const nodeB = graph.addNode({ id: '2', label: 'b', x: 0, y: 0 })
-  const nodeC = graph.addNode({ id: '3', label: 'c', x: 0, y: 0 })
-
-  if (!nodeA || !nodeB || !nodeC) {
-    throw new Error('Failed to create nodes')
-  }
-
-  const edge1 = graph.addEdge({ from: nodeA.id, to: nodeB.id })
-  const edge2 = graph.addEdge({ from: nodeB.id, to: nodeC.id })
-  const edge3 = graph.addEdge({ from: nodeC.id, to: nodeC.id })
-
-  if (!edge1 || !edge2 || !edge3) {
-    throw new Error('Failed to create edges')
-  }
-
   test('get adjacency list', () => {
+    const graph = getGraph()
     graph.settings.value.isGraphDirected = true
     const adjacencyList = getAdjacencyList(graph)
     expect(adjacencyList).toEqual({
@@ -39,6 +39,7 @@ describe('adjacency lists', () => {
   })
 
   test('get adjacency list - undirected', () => {
+    const graph = getGraph()
     graph.settings.value.isGraphDirected = false
     const adjacencyList = getAdjacencyList(graph)
     expect(adjacencyList).toEqual({
@@ -48,7 +49,8 @@ describe('adjacency lists', () => {
     })
   })
 
-  test('get label adjacency list', () => {
+  test('get label adjacency list', async () => {
+    const graph = getGraph()
     graph.settings.value.isGraphDirected = true
     const adjacencyList = getLabelAdjacencyList(graph)
     expect(adjacencyList).toEqual({
@@ -59,6 +61,7 @@ describe('adjacency lists', () => {
   })
 
   test('get full node adjacency list', () => {
+    const graph = getGraph()
     graph.settings.value.isGraphDirected = true
     const fullNodeAdjacencyList = getFullNodeAdjacencyList(graph)
     expect(fullNodeAdjacencyList).toEqual({
