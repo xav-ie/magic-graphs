@@ -7,7 +7,7 @@ export const info: ProductInfo = {
   },
   name: "Markov Chains (Legacy)",
   description: "Markov chains are a type of stochastic process that models a sequence of possible events in which the probability of each event depends only on the state attained in the previous event.",
-  productId: "markov-chains",
+  productId: "markov-chains-legacy",
   menu: {
     name: "Markov Chains (Legacy)",
     description: "Build and analyze your very own Markov Chains.",
