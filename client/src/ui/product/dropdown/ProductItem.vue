@@ -1,7 +1,11 @@
 <script setup lang="ts">
   import { ref } from "vue";
   import { graph, queuedGraphStateLoadout } from "@graph/global";
-  import { useProductRouting, getCurrentProduct } from "@utils/product";
+  import {
+    useProductRouting,
+    getCurrentProduct,
+    isExternal,
+  } from "@utils/product";
   import type { ProductInfoWithMenu } from "@utils/product";
   import GVerticalCardButton from "@ui/graph/button/GVerticalCardButton.vue";
   import GButton from "@ui/graph/button/GButton.vue";
@@ -57,6 +61,7 @@
           go
         </GButton>
         <GButton
+          v-if="!isExternal(product)"
           @click="navigateWithGraph(product)"
           tertiary
           class="grid place-items-center w-[120px] text-sm"

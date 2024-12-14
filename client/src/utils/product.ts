@@ -111,7 +111,17 @@ export const PRODUCT_CATEGORY_RANK = [
 
 export type ProductCategory = typeof PRODUCT_CATEGORY_RANK[number]
 
+/**
+ * get the product at the current route
+ */
 export const getCurrentProduct = () => {
   const route = useRoute();
   return routeToProduct[route.path];
+}
+
+/**
+ * true if the product is external and will be opened in a new tab
+ */
+export const isExternal = (product: ProductInfo) => {
+  return 'redirect' in product.route;
 }
