@@ -49,7 +49,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   }
 
   const checkIfEdgeFormsOnAnchorDrop = (fromNode: GNode, anchor: NodeAnchor) => {
-    // most of this copied directly from client\src\graphs\plugins\interactive\index.ts
 
     if (
       anchor.id !== hoveredNodeAnchorId.value ||
@@ -70,7 +69,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     const edgeBetweenToAndFrom = graph.edges.value
       .find((edge) => edge.from === fromNode.id && edge.to === toNode.id)
 
-    // except this
     if (
       graph.settings.value.isGraphDirected &&
       edgeBetweenToAndFrom
