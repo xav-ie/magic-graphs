@@ -16,9 +16,11 @@ import GWell from "@ui/graph/GWell.vue";
     <GWell secondary class="p-2 rounded-md flex gap-3">
       <div v-for="nodes in classes">
         <div class="flex flex-row gap-1">
-          <div v-for="node in nodes">
+          <div
+            v-for="node in nodes"
+            :key="node.id"
+          >
             <GraphNode
-              :key="node.id"
               :node="node"
               :size="40"
             />
