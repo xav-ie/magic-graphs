@@ -48,6 +48,45 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     hoveredNodeAnchorId.value = topItem.id
   }
 
+  const checkIfNodeAnchorDroppable = (fromNode: GNode, anchor: NodeAnchor) => {
+    // most of this copied directly from client\src\graphs\plugins\interactive\index.ts
+
+    if (
+      anchor.id !== hoveredNodeAnchorId.value ||
+      anchor.id !== currentDraggingAnchor.value?.id
+    ) return false
+
+    const itemStack = graph.getSchemaItemsByCoordinates(anchor)
+    const toNodeSchema = itemStack.findLast((item) => item.graphType === 'node')
+    if (!toNodeSchema) return false
+    const toNode = graph.getNode(toNodeSchema.id)
+    if (!toNode) return false
+
+    if (graph.settings.value.userAddedEdgeRuleNoSelfLoops) {
+      const violatesRule = fromNode.id === toNode.id
+      if (violatesRule) return false
+    }
+
+    const edgeBetweenFromAndTo = graph.edges.value
+      .find((edge) => edge.from === toNode.id && edge.to === fromNode.id)
+
+    const edgeBetweenToAndFrom = graph.edges.value
+      .find((edge) => edge.from === fromNode.id && edge.to === toNode.id)
+
+    if (graph.settings.value.userAddedEdgeRuleOneEdgePerPath) {
+      const violatesRule = edgeBetweenToAndFrom || edgeBetweenFromAndTo
+      if (violatesRule) return false
+    }
+
+    // except for this
+    if (
+      graph.settings.value.isGraphDirected &&
+      edgeBetweenToAndFrom
+    ) return false
+
+    return true
+  }
+
   const getAnchorSchemas = (node: GNode) => {
     const { getTheme } = graph
 
@@ -60,10 +99,12 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
       const { x, y, id } = anchor
 
       const isHoveredOrDragged = id === hoveredNodeAnchorId.value || id === currentDraggingAnchor.value?.id
+      
+      const isAnchorDroppable = checkIfNodeAnchorDroppable(node, anchor)
 
       const circleTemplate = {
         at: { x, y },
-        radius,
+        radius: isAnchorDroppable ? radius * 1.5 : radius,
         color: isHoveredOrDragged ? focusColor : color
       }
 
