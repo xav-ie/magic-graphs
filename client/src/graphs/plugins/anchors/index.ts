@@ -49,7 +49,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   }
 
   const checkIfEdgeFormsOnAnchorDrop = (fromNode: GNode, anchor: NodeAnchor) => {
-
     if (
       anchor.id !== hoveredNodeAnchorId.value ||
       anchor.id !== currentDraggingAnchor.value?.id
