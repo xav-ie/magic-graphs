@@ -70,6 +70,11 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     const edgeBetweenToAndFrom = graph.edges.value
       .find((edge) => edge.from === fromNode.id && edge.to === toNode.id)
 
+    if (
+      graph.settings.value.isGraphDirected &&
+      edgeBetweenToAndFrom
+    ) return false
+
     if (graph.settings.value.userAddedEdgeRuleOneEdgePerPath) {
       const edgeBetweenFromAndTo = graph.edges.value
         .find((edge) => edge.from === toNode.id && edge.to === fromNode.id)
@@ -77,12 +82,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
       const violatesRule = edgeBetweenToAndFrom || edgeBetweenFromAndTo
       if (violatesRule) return false
     }
-
-    // except for this
-    if (
-      graph.settings.value.isGraphDirected &&
-      edgeBetweenToAndFrom
-    ) return false
 
     return true
   }
