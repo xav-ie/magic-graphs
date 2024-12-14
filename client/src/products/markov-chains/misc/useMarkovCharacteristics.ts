@@ -29,8 +29,22 @@ export const useMarkovCharacteristics = (graph: Graph) => {
 
   const { isPeriodic, recurrentClassPeriods } = useMarkovPeriodicity(graph, recurrentClasses);
 
+  // TODO check with a pro to see if this is correct.
+  // i am 99% sure it is though
+  const isAbsorbing = computed(() => {
+    if (recurrentClassPeriods.value.length === 0) return false;
+    return recurrentClasses.value.every(recurrentClass => {
+      return recurrentClass.size === 1;
+    })
+  });
+
+  const communicatingClasses = computed(() => {
+    return graph.characteristics.stronglyConnectedComponents.value
+  })
+
   return {
     componentMap,
+    communicatingClasses,
 
     recurrentClasses,
     recurrentStates,
@@ -40,5 +54,7 @@ export const useMarkovCharacteristics = (graph: Graph) => {
 
     isPeriodic,
     recurrentClassPeriods,
+
+    isAbsorbing,
   }
 }
