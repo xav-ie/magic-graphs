@@ -13,8 +13,8 @@ const COLORS = [
   colors.ORANGE_500,
 ]
 
-export const useSCCColorizer = (graph: Graph) => {
-  const { setTheme, removeAllThemes } = useTheme(graph, SCC_THEME_ID);
+export const useSCCColorizer = (graph: Graph, themeId = SCC_THEME_ID) => {
+  const { setTheme, removeAllThemes } = useTheme(graph, themeId);
 
   const colorNodeBorders = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return;

@@ -7,12 +7,19 @@
   import MarkovClassNodes from "./MarkovClassNodes.vue";
   import ConnectedInfoBox from "@product/graph-sandbox/ui/GraphInfoMenu/ConnectedInfoBox.vue";
   import { usePeriodicityLabels } from "./usePeriodicityLabels";
+  import { useSCCColorizer } from "@product/graph-sandbox/ui/GraphInfoMenu/useSCCColorizer";
 
   const props = defineProps<{
     markov: MarkovChain;
   }>();
 
-  const { label, unlabel } = usePeriodicityLabels(graph.value, props.markov);
+  const { label: labelPeriods, unlabel: unlabelPeriods } = usePeriodicityLabels(
+    graph.value,
+    props.markov
+  );
+
+  const { colorize: colorizeCommClass, decolorize: decolorizeCommClass } =
+    useSCCColorizer(graph.value, 'markov-communicating-class');
 
   /**
    * goes through classes and replaces node ids with full nodes
@@ -55,8 +62,8 @@
 
       <div class="self-start flex flex-wrap max-w-80 gap-2">
         <ConnectedInfoBox
-          @mouseenter="label"
-          @mouseleave="unlabel"
+          @mouseenter="labelPeriods"
+          @mouseleave="unlabelPeriods"
           :tooltip="definitions.periodic"
         >
           Periodic? {{ markov.isPeriodic.value ? "Yes" : "No" }}
@@ -66,8 +73,13 @@
           Absorbing? {{ markov.isAbsorbing.value ? "Yes" : "No" }}
         </ConnectedInfoBox>
 
-        <ConnectedInfoBox :tooltip="definitions.communicatingClasses">
-          Communicating Classes: {{ recurrentClasses.length + transientClasses.length }}
+        <ConnectedInfoBox
+          @mouseenter="colorizeCommClass"
+          @mouseleave="decolorizeCommClass"
+          :tooltip="definitions.communicatingClasses"
+        >
+          Communicating Classes:
+          {{ recurrentClasses.length + transientClasses.length }}
         </ConnectedInfoBox>
       </div>
     </div>
