@@ -1,13 +1,21 @@
 import { computed } from "vue";
 import type { Graph } from "@graph/types";
 
-export type ComponentMap = Map<number, Set<number>>
+/**
+ * a adjacency map for strongly connected components.
+ * @see {@link getComponentAdjMap}
+ */
+export type ComponentAdjacencyMap = Map<number, Set<number>>
 
 /**
- * get a map of connected components to the components it can reach
+ * get a map that maps each strongly connected component in the graph to the
+ * components it can reach and are adjacent to it.
  *
  * @param graph graph instance
  * @returns component adjacency map
+ * @example const map = getComponentAdjMap(graph)
+ * map.get(2) // Set(3, 4, 5) -> component 2 is connected to components 3, 4, 5
+ * map.get(1) // Set() -> component 1 is not connected to any other component
  */
 export const getComponentAdjMap = (graph: Graph) => {
   const nodeToComponentMap = graph.characteristics.nodeIdToStronglyConnectedComponent.value
@@ -17,7 +25,7 @@ export const getComponentAdjMap = (graph: Graph) => {
   /**
    * index of graph connected component -> indices of connected components adjacent to it
    */
-  const componentAdjMap: ComponentMap = new Map();
+  const componentAdjMap: ComponentAdjacencyMap = new Map();
 
   connectedComponents.forEach((component, componentIndex) => {
     const componentChildren = component
@@ -37,8 +45,12 @@ export const getComponentAdjMap = (graph: Graph) => {
 }
 
 /**
- * reactive {@link ComponentMap | component map} for markov chain components
+ * reactive {@link ComponentAdjacencyMap | component adjacency map}
+ *
+ * @param graph graph instance
+ * @returns reactive component adjacency map
+ * @see {@link getComponentAdjMap}
  */
-export const useMarkovComponents = (graph: Graph) => {
+export const useComponentAdjacencyMap = (graph: Graph) => {
   return computed(() => getComponentAdjMap(graph));
 }
