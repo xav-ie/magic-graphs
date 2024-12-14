@@ -48,7 +48,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     hoveredNodeAnchorId.value = topItem.id
   }
 
-  const checkIfNodeAnchorDroppable = (fromNode: GNode, anchor: NodeAnchor) => {
+  const checkIfEdgeFormsOnAnchorDrop = (fromNode: GNode, anchor: NodeAnchor) => {
     // most of this copied directly from client\src\graphs\plugins\interactive\index.ts
 
     if (
@@ -67,13 +67,13 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
       if (violatesRule) return false
     }
 
-    const edgeBetweenFromAndTo = graph.edges.value
-      .find((edge) => edge.from === toNode.id && edge.to === fromNode.id)
-
     const edgeBetweenToAndFrom = graph.edges.value
       .find((edge) => edge.from === fromNode.id && edge.to === toNode.id)
 
     if (graph.settings.value.userAddedEdgeRuleOneEdgePerPath) {
+      const edgeBetweenFromAndTo = graph.edges.value
+        .find((edge) => edge.from === toNode.id && edge.to === fromNode.id)
+
       const violatesRule = edgeBetweenToAndFrom || edgeBetweenFromAndTo
       if (violatesRule) return false
     }
@@ -100,7 +100,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
 
       const isHoveredOrDragged = id === hoveredNodeAnchorId.value || id === currentDraggingAnchor.value?.id
       
-      const isAnchorDroppable = checkIfNodeAnchorDroppable(node, anchor)
+      const isAnchorDroppable = checkIfEdgeFormsOnAnchorDrop(node, anchor)
 
       const circleTemplate = {
         at: { x, y },
