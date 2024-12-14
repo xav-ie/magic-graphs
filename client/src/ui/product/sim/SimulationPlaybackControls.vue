@@ -72,7 +72,7 @@
     <GSpreadSelect
       v-model="playbackSpeed"
       :items="playbackSpeedToMs"
-      :initial-item-index="1"
+      :initial-item-index="2"
       class="-my-2"
     ></GSpreadSelect>
 

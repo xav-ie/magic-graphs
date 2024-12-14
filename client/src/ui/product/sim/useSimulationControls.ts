@@ -42,6 +42,10 @@ export const useSimulationControls = <T extends any[]>(
 
   const playbackSpeedToMs = [
     { 
+      label: "0.25x", 
+      value: DEFAULT_PLAYBACK_SPEED / 0.25 
+    },
+    { 
       label: "0.5x", 
       value: DEFAULT_PLAYBACK_SPEED / 0.5 
     },
@@ -52,6 +56,10 @@ export const useSimulationControls = <T extends any[]>(
     { 
       label: "2x", 
       value: DEFAULT_PLAYBACK_SPEED / 2
+    },
+    { 
+      label: "4x", 
+      value: DEFAULT_PLAYBACK_SPEED / 4
     },
   ];
 
