@@ -17,12 +17,22 @@ export const useShortcuts = (
 
   const defaultShortcutUndo = () => {
     if (graph.annotation.isActive.value) graph.annotation.undo()
-    if (settings.value.interactive) graph.history.undo()
+    if (settings.value.interactive) {
+      const action = graph.history.undo()
+      if (!action) return
+      // TODO focus the edges that were affected by move
+      // actions as well
+      graph.focus.set(action.affectedItems.map((item) => item.data.id))
+    }
   }
 
   const defaultShortcutRedo = () => {
     if (graph.annotation.isActive.value) graph.annotation.redo()
-    if (settings.value.interactive) graph.history.redo()
+    if (settings.value.interactive) {
+      const action = graph.history.redo()
+      if (!action) return
+      graph.focus.set(action.affectedItems.map((item) => item.data.id))
+    }
   }
 
   const defaultShortcutEscape = () => graph.focus.reset()
