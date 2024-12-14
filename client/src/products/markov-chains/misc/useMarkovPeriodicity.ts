@@ -80,7 +80,7 @@ const getPeriod = (adjacencyList: AdjacencyList, recurrentClass: Set<GNode['id']
 }
 
 /**
- * determines the periodicity of a markov chain
+ * reactive periodicity of a markov chain
  *
  * @param graph the graph to analyze
  * @param recurrentClasses the recurrent classes of the graph

@@ -79,7 +79,7 @@
           :tooltip="definitions.communicatingClasses"
         >
           Communicating Classes:
-          {{ recurrentClasses.length + transientClasses.length }}
+          {{ markov.communicatingClasses.value.length }}
         </ConnectedInfoBox>
       </div>
     </div>
