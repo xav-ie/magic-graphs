@@ -20,6 +20,11 @@ const DEFAULT_OPTIONS = {
   allowEditingDuringPlayback: true,
 } as const;
 
+/**
+ * the playback speed in ms per step of the simulation
+ */
+const DEFAULT_PLAYBACK_SPEED = 1000;
+
 export const useSimulationControls = <T extends any[]>(
   trace: ComputedRef<T>,
   options: SimulationControlsOptions = {}
@@ -28,8 +33,6 @@ export const useSimulationControls = <T extends any[]>(
     ...DEFAULT_OPTIONS,
     ...options,
   };
-
-  const DEFAULT_PLAYBACK_SPEED = 1_500;
 
   const simLastStep = computed(() => lastStep?.value ?? trace.value.length);
   const step = ref(0);
@@ -41,24 +44,24 @@ export const useSimulationControls = <T extends any[]>(
   const hasBegun = computed(() => step.value > 0);
 
   const playbackSpeedToMs = [
-    { 
-      label: "0.25x", 
-      value: DEFAULT_PLAYBACK_SPEED / 0.25 
+    {
+      label: "0.25x",
+      value: DEFAULT_PLAYBACK_SPEED / 0.25
     },
-    { 
-      label: "0.5x", 
-      value: DEFAULT_PLAYBACK_SPEED / 0.5 
+    {
+      label: "0.5x",
+      value: DEFAULT_PLAYBACK_SPEED / 0.5
     },
-    { 
-      label: "1x", 
-      value: DEFAULT_PLAYBACK_SPEED 
+    {
+      label: "1x",
+      value: DEFAULT_PLAYBACK_SPEED
     },
-    { 
-      label: "2x", 
+    {
+      label: "2x",
       value: DEFAULT_PLAYBACK_SPEED / 2
     },
-    { 
-      label: "4x", 
+    {
+      label: "4x",
       value: DEFAULT_PLAYBACK_SPEED / 4
     },
   ];

@@ -1,64 +1,91 @@
-<script setup lang="ts" generic="TValue, TItem extends { value: TValue, label: string }">
-import { computed, ref } from 'vue';
-import { onClickOutside } from '@vueuse/core'
-import GButton from '../button/GButton.vue';
+<script
+  setup
+  lang="ts"
+  generic="TValue, TItem extends { value: TValue, label: string }"
+>
+  import { computed, ref } from "vue";
+  import { onClickOutside } from "@vueuse/core";
+  import GButton from "@ui/graph/button/GButton.vue";
 
-const target = ref(null)
+  const target = ref<HTMLDivElement>();
 
-const props = withDefaults(defineProps<{
-  items: TItem[],
-  initialItemIndex: number
-}>(), {
-  initialItemIndex: 0,
-})
+  const props = withDefaults(
+    defineProps<{
+      /**
+       * the items to be displayed in the spread select.
+       * `label` is the text that will be displayed to the user
+       * and `value` is the value that will be emitted when the user
+       * selects the item
+       */
+      items: TItem[];
+      /**
+       * the index of the initial item that will be selected and
+       * therefore the first item to greet the user
+       * @default 0
+       */
+      initialItemIndex: number;
+    }>(),
+    {
+      initialItemIndex: 0,
+    }
+  );
 
-const selectedItem = defineModel<TValue>()
-selectedItem.value = props.items[props.initialItemIndex].value
-if (selectedItem.value === undefined) throw new Error('invalid initialItemIndex')
+  const selectedItem = defineModel<TValue>();
+  selectedItem.value = props.items[props.initialItemIndex].value;
+  if (selectedItem.value === undefined)
+    throw new Error("invalid initialItemIndex");
 
-const selectedLabel = computed(() => {
-  return props.items.find(item => item.value === selectedItem.value)?.label
-})
+  const selectedLabel = computed(() => {
+    return props.items.find((item) => item.value === selectedItem.value)?.label;
+  });
 
-const isMenuOpen = ref(false);
+  const isOpen = ref(false);
 
-const toggleMenu = () => isMenuOpen.value = !isMenuOpen.value;
+  const toggleMenu = () => (isOpen.value = !isOpen.value);
 
-onClickOutside(target, () => isMenuOpen.value = false)
+  onClickOutside(target, () => (isOpen.value = false));
 
-const selectItem = (item: TItem) => {
-  selectedItem.value = item.value;
-  isMenuOpen.value = false;
-};
+  const selectItem = (item: TItem) => {
+    selectedItem.value = item.value;
+    isOpen.value = false;
+  };
 
-const isSelected = (item: TItem) => item.value === selectedItem.value;
+  const isSelected = (item: TItem) => item.value === selectedItem.value;
 </script>
 
 <template>
   <div class="w-full flex justify-center">
+
     <!-- spread menu -->
     <div
-      v-if="isMenuOpen"
+      v-if="isOpen"
       ref="target"
-      class="flex gap-2 justify-center "
+      class="flex gap-2 justify-center"
     >
       <GButton
         v-for="item in items"
         :key="item.label"
         @click="selectItem(item)"
         :class="[
-          'w-[50px]',
+          'w-16',
           'rounded-full',
-          isSelected(item) ? 'opacity-100 ring-white ring-2 ring-inset' : 'opacity-75'
+          isSelected(item)
+            ? 'opacity-100 ring-white ring-2 ring-inset'
+            : 'opacity-75',
         ]"
-      > {{ item.label }} </GButton>
+      >
+        {{ item.label }}
+      </GButton>
     </div>
 
-    <!-- button -->
+    <!-- activator button -->
     <GButton
       v-else-if="selectedLabel"
       @click="toggleMenu"
-      class="w-[50px] rounded-full"
-    > {{ selectedLabel }} </GButton>
+      class="w-16 rounded-full"
+    >
+      {{ selectedLabel }}
+    </GButton>
+
   </div>
 </template>
