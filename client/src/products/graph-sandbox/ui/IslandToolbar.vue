@@ -35,8 +35,7 @@
     graph.value.canvasFocused.value = true;
   };
 
-  const undo = () => graph.value.shortcutActions.undo.value();
-  const redo = () => graph.value.shortcutActions.redo.value();
+  const { undo, redo } = graph.value.shortcut.trigger;
 
   const canUndo = computed(() => {
     const { isActive: annotationActive, canUndo: canUndoAnnotation } = graph.value.annotation;
