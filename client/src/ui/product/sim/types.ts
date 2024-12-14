@@ -52,6 +52,16 @@ export type SimulationControls<T extends any[] = any[]> = {
   playbackSpeed: Ref<number>
 
   /**
+   * playback speed string value and its corresponding speed in milliseconds
+   * @example 
+   * { label: '1x', value: 1500 }
+   */
+  playbackSpeedToMs: {
+    label: string
+    value: number
+  }[]
+
+  /**
    * whether the simulation is currently active.
    * changes to true when start is called and false when stop is called
    */

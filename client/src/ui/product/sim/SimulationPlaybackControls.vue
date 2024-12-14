@@ -6,6 +6,7 @@
   import PlaybackButton from "./PlaybackButton.vue";
   import ProgressBar from "./Progressbar.vue";
   import { useGraphColors } from "@graph/themes/useGraphColors";
+  import GSpreadSelect from "@ui/graph/select/GSpreadSelect.vue";
 
   const colors = useGraphColors()
 
@@ -13,7 +14,7 @@
     controls: UnwrapRef<SimulationControls>;
   }>();
 
-  const { isOver, paused, step, hasBegun, lastStep } = toRefs(
+  const { isOver, paused, step, hasBegun, lastStep, playbackSpeed, playbackSpeedToMs } = toRefs(
     props.controls
   );
 
@@ -67,6 +68,14 @@
 
 <template>
   <div class="flex flex-col gap-5 items-center justify-center">
+    
+    <GSpreadSelect
+      v-model="playbackSpeed"
+      :items="playbackSpeedToMs"
+      :initial-item-index="1"
+      class="-my-2"
+    ></GSpreadSelect>
+
     <ProgressBar
       @mouseleave="onProgressMouseLeave"
       :range="[0, lastStep]"
