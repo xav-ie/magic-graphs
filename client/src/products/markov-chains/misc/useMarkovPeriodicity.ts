@@ -41,7 +41,7 @@ const getStepsToStart = (adjacencyList: AdjacencyList, startNodeId: GNode['id'])
    *
    * [1, 2, 3] means there are 3 paths that took 1, 2, and 3 steps
    */
-  const stepsToStart: number[] = []
+  const stepsToStart = new Set<number>()
 
   while (queue.length > 0) {
     const [nodeId, steps] = queue.shift()!;
@@ -50,9 +50,8 @@ const getStepsToStart = (adjacencyList: AdjacencyList, startNodeId: GNode['id'])
       continue;
     }
 
-    if (nodeId === startNodeId) {
-      stepsToStart.push(steps);
-      continue;
+    if (nodeId === startNodeId && steps > 0) {
+      stepsToStart.add(steps);
     }
 
     const visitedEntry = visited.get(nodeId) ?? 0;
@@ -74,9 +73,9 @@ const getPeriod = (adjacencyList: AdjacencyList, recurrentClass: Set<GNode['id']
 
   const stepsToStart = getStepsToStart(adjacencyList, startNodeId);
 
-  if (stepsToStart.length === 0) throw new Error('no path found to start node');
+  if (stepsToStart.size === 0) throw new Error('no path found to start node');
 
-  const period = stepsToStart.reduce((acc, curr) => gcd(acc, curr), stepsToStart[0]);
+  const period = Array.from(stepsToStart).reduce((acc, curr) => gcd(acc, curr));
   return lowestPrimeFactor(period);
 }
 
@@ -95,9 +94,11 @@ export const useMarkovPeriodicity = (
   const { adjacencyList } = graph.adjacencyList
 
   const recurrentClassPeriods = computed(() => {
-    return recurrentClasses
+    // console.log(getPeriod(adjacencyList.value, recurrentClasses.value[0]));
+    const res = recurrentClasses
       .value
       .map(recurrentClass => getPeriod(adjacencyList.value, recurrentClass));
+    return res;
   });
 
   const isPeriodic = computed(() => {

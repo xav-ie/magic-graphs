@@ -11,7 +11,7 @@
   import TreeShapeMenu from "./TreeShapeMenu.vue";
   import { useAutoTree } from "./useTreeShaper";
 
-  const hint = useGraphTutorial(graph.value, [
+  const tutorial = useGraphTutorial(graph.value, [
     {
       dismiss: "onNodeAdded",
       hint: "Double click on the canvas to add a node.",
@@ -22,7 +22,7 @@
     },
   ]);
 
-  hint.start();
+  tutorial.start();
 
   const toggleAnnotation = () => {
     const {
@@ -59,7 +59,7 @@
 </script>
 
 <template>
-  <GToolbar :hint="hint">
+  <GToolbar :hint="tutorial">
     <ToolbarButtonGroup class="gap-0">
       <GToolbarButton
         @click="graph.settings.value.displayEdgeLabels = true"

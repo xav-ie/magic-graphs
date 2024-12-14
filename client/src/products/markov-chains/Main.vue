@@ -3,9 +3,9 @@
   import { useGraph } from "@graph/useGraph";
   import GraphProduct from "@ui/product/GraphProduct.vue";
   import { MARKOV_CHAIN_GRAPH_SETTINGS } from "./settings";
-  import { useMarkovColorizer } from "./ui/useMarkovColorizer";
   import MarkovChainInfo from "./ui/MarkovChainInfo.vue";
   import { useMarkovChain } from "./misc/useMarkovChain";
+  import { useMarkovColorizer } from "./ui/useMarkovColorizer";
 
   const graphEl = ref<HTMLCanvasElement>();
 

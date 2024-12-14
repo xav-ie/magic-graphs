@@ -3,12 +3,15 @@ import { useTheme } from "@graph/themes/useTheme";
 import { USETHEME_ID } from "../constants";
 import type { MarkovChain } from "../misc/useMarkovChain";
 
-export const usePeriodicityLabel = (graph: Graph, markov: MarkovChain) => {
+export const usePeriodicityLabels = (graph: Graph, markov: MarkovChain) => {
   const { setTheme, removeTheme } = useTheme(graph, USETHEME_ID);
+  const { recurrentClassPeriods, nodeIdToRecurrentClassIndex } = markov;
 
   const nodeText = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return
-    return '1'
+    const recurrentClassIndex = nodeIdToRecurrentClassIndex.value.get(node.id);
+    if (recurrentClassIndex === undefined) return;
+    return recurrentClassPeriods.value[recurrentClassIndex].toString();
   }
 
   const label = () => {

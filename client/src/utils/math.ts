@@ -53,6 +53,7 @@ export const getPrimeFactors = (num: number) => {
  * lowestInPrimeFactorization(15) // 15 = 3 * 5, min(3, 5) = 3
  */
 export const lowestPrimeFactor = (num: number) => {
+  if (num === 1) return 1; // 1 has no prime factors
   return Math.min(...getPrimeFactors(num));
 }
 

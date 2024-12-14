@@ -6,10 +6,13 @@
   import type { MarkovChain } from "../misc/useMarkovChain";
   import MarkovClassNodes from "./MarkovClassNodes.vue";
   import ConnectedInfoBox from "@product/graph-sandbox/ui/GraphInfoMenu/ConnectedInfoBox.vue";
+  import { usePeriodicityLabels } from "./usePeriodicityLabels";
 
   const props = defineProps<{
     markov: MarkovChain;
   }>();
+
+  const { label, unlabel } = usePeriodicityLabels(graph.value, props.markov);
 
   /**
    * goes through classes and replaces node ids with full nodes
@@ -51,7 +54,11 @@
       </MarkovClassNodes>
 
       <div class="self-start flex flex-wrap max-w-80 gap-2">
-        <ConnectedInfoBox :tooltip="definitions.periodic">
+        <ConnectedInfoBox
+          @mouseenter="label"
+          @mouseleave="unlabel"
+          :tooltip="definitions.periodic"
+        >
           Periodic? {{ markov.isPeriodic.value ? "Yes" : "No" }}
         </ConnectedInfoBox>
 
