@@ -17,10 +17,8 @@ export const reduceSet = <T>(sets: Set<T>[]) => {
 
 /**
  * reactive markov chain characteristics
- *
- *
  */
-export const useMarkovCharacteristics = (graph: Graph) => {
+export const useMarkovChain = (graph: Graph) => {
   const componentMap = useComponentAdjacencyMap(graph);
   const { recurrentClasses, transientClasses } = useMarkovClasses(graph, componentMap);
 
@@ -58,3 +56,5 @@ export const useMarkovCharacteristics = (graph: Graph) => {
     isAbsorbing,
   }
 }
+
+export type MarkovChain = ReturnType<typeof useMarkovChain>;

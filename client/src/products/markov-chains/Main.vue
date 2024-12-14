@@ -5,11 +5,14 @@
   import { MARKOV_CHAIN_GRAPH_SETTINGS } from "./settings";
   import { useMarkovColorizer } from "./ui/useMarkovColorizer";
   import MarkovChainInfo from "./ui/MarkovChainInfo.vue";
+  import { useMarkovChain } from "./misc/useMarkovChain";
 
   const graphEl = ref<HTMLCanvasElement>();
+
   const graph = useGraph(graphEl, MARKOV_CHAIN_GRAPH_SETTINGS);
-  const colorChain = useMarkovColorizer(graph);
-  colorChain.colorize();
+  const markov = useMarkovChain(graph);
+
+  useMarkovColorizer(graph, markov).colorize();
 </script>
 
 <template>
@@ -18,7 +21,7 @@
     :graph="graph"
   >
     <template #top-center>
-      <MarkovChainInfo />
+      <MarkovChainInfo :markov="markov" />
     </template>
 
     <template #center-left>

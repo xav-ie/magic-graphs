@@ -1,19 +1,17 @@
 import { useTheme } from "@graph/themes/useTheme";
 import type { GNode, Graph } from "@graph/types";
 import { useSCCColorizer } from "@product/graph-sandbox/ui/GraphInfoMenu/useSCCColorizer";
-import { useMarkovCharacteristics } from "../misc/useMarkovCharacteristics";
+import type { MarkovChain } from "../misc/useMarkovChain";
+import { USETHEME_ID } from "../constants";
 
-export const USETHEME_ID = 'markov-chains';
-
-export const useMarkovColorizer = (graph: Graph) => {
-  const markovState = useMarkovCharacteristics(graph);
+export const useMarkovColorizer = (graph: Graph, markov: MarkovChain) => {
   const sccColorizer = useSCCColorizer(graph);
 
   const { setTheme, removeTheme } = useTheme(graph, USETHEME_ID);
 
   const colorNodeBorder = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return graph.baseTheme.value.nodeFocusBorderColor
-    if (markovState.transientStates.value.has(node.id)) return graph.baseTheme.value.nodeBorderColor
+    if (markov.transientStates.value.has(node.id)) return graph.baseTheme.value.nodeBorderColor
   }
 
   const colorize = () => {

@@ -3,11 +3,13 @@
   import type { GNode } from "@graph/types";
   import { graph } from "@graph/global";
   import GWell from "@ui/graph/GWell.vue";
-  import { useMarkovCharacteristics } from "../misc/useMarkovCharacteristics";
+  import type { MarkovChain } from "../misc/useMarkovChain";
   import MarkovClassNodes from "./MarkovClassNodes.vue";
   import ConnectedInfoBox from "@product/graph-sandbox/ui/GraphInfoMenu/ConnectedInfoBox.vue";
 
-  const markov = useMarkovCharacteristics(graph.value);
+  const props = defineProps<{
+    markov: MarkovChain;
+  }>();
 
   /**
    * goes through classes and replaces node ids with full nodes
@@ -20,11 +22,11 @@
     });
 
   const recurrentClasses = computed(() => {
-    return populateClasses(markov.recurrentClasses.value);
+    return populateClasses(props.markov.recurrentClasses.value);
   });
 
   const transientClasses = computed(() => {
-    return populateClasses(markov.transientClasses.value);
+    return populateClasses(props.markov.transientClasses.value);
   });
 
   const definitions = {
@@ -58,7 +60,7 @@
         </ConnectedInfoBox>
 
         <ConnectedInfoBox :tooltip="definitions.communicatingClasses">
-          Communicating Classes: {{ markov.communicatingClasses.value.length }}
+          Communicating Classes: {{ recurrentClasses.length + transientClasses.length }}
         </ConnectedInfoBox>
       </div>
     </div>
