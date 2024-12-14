@@ -1,7 +1,6 @@
 import { useTheme } from "@graph/themes/useTheme";
 import type { GNode, Graph } from "@graph/types";
 import { useSCCColorizer } from "@product/graph-sandbox/ui/GraphInfoMenu/useSCCColorizer";
-import { TRANSIENT_COLOR } from "./colors";
 import { useMarkovState } from "../misc/useMarkovState";
 
 export const USETHEME_ID = 'markov-chains';
