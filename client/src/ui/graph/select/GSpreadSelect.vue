@@ -1,49 +1,37 @@
-<script setup lang="ts">
-import { ref, computed, withDefaults, toRefs } from 'vue';
+<script setup lang="ts" generic="TValue, TItem extends { value: TValue, label: string }">
+import { computed, ref } from 'vue';
 import { onClickOutside } from '@vueuse/core'
 import GButton from '../button/GButton.vue';
 
 const target = ref(null)
 
-const props = withDefaults(
-  defineProps<{
-    items: any[],
-    modelValue: any,
-    itemValue?: string,
-    itemLabel?: string,
-  }>(),
-  {
-    itemValue: 'value',
-    itemLabel: 'label',
-  }
-);
+const props = withDefaults(defineProps<{
+  items: TItem[],
+  initialItemIndex: number
+}>(), {
+  initialItemIndex: 0,
+})
 
-const { modelValue, items, itemValue, itemLabel } = toRefs(props);
+const selectedItem = defineModel<TValue>()
+selectedItem.value = props.items[props.initialItemIndex].value
+if (selectedItem.value === undefined) throw new Error('invalid initialItemIndex')
+
+const selectedLabel = computed(() => {
+  return props.items.find(item => item.value === selectedItem.value)?.label
+})
 
 const isMenuOpen = ref(false);
-const selectedItem = ref(modelValue.value);
 
 const toggleMenu = () => isMenuOpen.value = !isMenuOpen.value;
 
 onClickOutside(target, () => isMenuOpen.value = false)
 
-const getItemValue = (item: any) => itemValue.value === undefined ? item : item[itemValue.value];
-const getItemLabel = (item: any) => itemValue.value === undefined ? item : item[itemLabel.value];
-
-const selectItem = (item: any) => {
-  selectedItem.value = getItemValue(item);
+const selectItem = (item: TItem) => {
+  selectedItem.value = item.value;
   isMenuOpen.value = false;
-  emit('update:modelValue', selectedItem.value);
 };
 
-const isSelected = (item: any) => getItemValue(item) === selectedItem.value;
-
-const selectedLabel = computed(() => {
-  const found = items.value.find((item) => getItemValue(item) === selectedItem.value);
-  return found ? getItemLabel(found) : 'Select an item';
-});
-
-const emit = defineEmits(['update:modelValue']);
+const isSelected = (item: TItem) => item.value === selectedItem.value;
 </script>
 
 <template>
@@ -56,26 +44,21 @@ const emit = defineEmits(['update:modelValue']);
     >
       <GButton
         v-for="item in items"
-        :key="getItemValue(item)"
+        :key="item.label"
         @click="selectItem(item)"
         :class="[
           'w-[50px]',
+          'rounded-full',
           isSelected(item) ? 'opacity-100 ring-white ring-2 ring-inset' : 'opacity-75'
         ]"
-      >
-        <slot name="menu-item" :item="item">
-          {{ getItemLabel(item) }}
-        </slot>
-      </GButton>
+      > {{ item.label }} </GButton>
     </div>
 
     <!-- button -->
     <GButton
-      v-else
+      v-else-if="selectedLabel"
       @click="toggleMenu"
-      class="w-[50px]"
-    >
-      <slot name="button-label">{{ selectedLabel }}</slot>
-    </GButton>
+      class="w-[50px] rounded-full"
+    > {{ selectedLabel }} </GButton>
   </div>
 </template>

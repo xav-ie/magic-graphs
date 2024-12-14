@@ -71,6 +71,7 @@
     "flex",
     "justify-center",
     "items-center",
+    "text-center",
   ];
 
   const classes = computed(() => {

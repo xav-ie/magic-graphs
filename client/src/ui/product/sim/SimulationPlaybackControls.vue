@@ -68,6 +68,14 @@
 
 <template>
   <div class="flex flex-col gap-5 items-center justify-center">
+    
+    <GSpreadSelect
+      v-model="playbackSpeed"
+      :items="playbackSpeedToMs"
+      :initial-item-index="1"
+      class="-my-2"
+    ></GSpreadSelect>
+
     <ProgressBar
       @mouseleave="onProgressMouseLeave"
       :range="[0, lastStep]"
@@ -78,14 +86,6 @@
       class="w-full border-2 rounded-lg"
       :style="{ borderColor: colors.tertiary }"
     />
-
-    <GSpreadSelect
-      v-model="playbackSpeed"
-      :items="playbackSpeedToMs"
-      itemValue="value"
-      itemLabel="label"
-      class="-my-2"
-    ></GSpreadSelect>
 
     <div class="flex gap-4 fill-white dark:fill-black">
       <PlaybackButton
