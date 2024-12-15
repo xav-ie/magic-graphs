@@ -26,6 +26,9 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
    * The anchor that is currently being dragged.
    */
   const currentDraggingAnchor = ref<NodeAnchor | undefined>()
+  /**
+   * is user currently selecting with marquee
+   */
   const currentlyMarqueeSelecting = ref(false)
 
   const setParentNode = (nodeId: GNode['id']) => {
@@ -171,6 +174,8 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
    */
   const updateParentNode = ({ items }: GraphMouseEvent) => {
     if (currentDraggingAnchor.value) return
+    if (currentlyMarqueeSelecting.value) return
+
 
     const topItem = items.at(-1)
     if (!topItem) return resetParentNode()
@@ -196,7 +201,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
 
   const setCurrentlyDraggingAnchor = (ev: GraphMouseEvent) => {
     if (!parentNode.value) return
-    if (currentlyMarqueeSelecting.value) return
     /**
      * TODO shouldn't getAnchor be unnecessary here because the top item in this event should
      * point to the anchor itself?
@@ -272,7 +276,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
 
   const groupDragStart = () => {
     currentlyMarqueeSelecting.value = true
-    console.log(';fsdfds')
   }
 
   const groupDragEnd = () => {
@@ -299,7 +302,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     graph.unsubscribe('onNodeDrop', updateNodeAnchors)
     graph.unsubscribe('onMouseMove', updateParentNode)
     graph.unsubscribe('onMouseMove', updateCurrentlyDraggingAnchorPosition)
-    graph.subscribe('onMouseMove', updateHoveredNodeAnchorId)
+    graph.unsubscribe('onMouseMove', updateHoveredNodeAnchorId)
     graph.unsubscribe('onMouseDown', setCurrentlyDraggingAnchor)
     graph.unsubscribe('onMouseUp', dropAnchor)
     graph.unsubscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
