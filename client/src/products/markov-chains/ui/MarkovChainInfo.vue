@@ -46,6 +46,8 @@
       "an absorbing markov chain is a chain with at least one absorbing state, which is a state that once entered cannot be left.",
     communicatingClasses:
       "A communicating class is a subset of states in a Markov chain such that any state in the subset can be reached from any other state in the subset.",
+    steadyState:
+      "A steady state is a state in which the system is in equilibrium and the properties of the system do not change over time.",
   };
 </script>
 
@@ -80,6 +82,10 @@
         >
           Communicating Classes:
           {{ markov.communicatingClasses.value.length }}
+        </ConnectedInfoBox>
+
+        <ConnectedInfoBox :tooltip="definitions.steadyState + markov.steadyState.value">
+          Steady State? {{ markov.steadyState.value ?? "No" }}
         </ConnectedInfoBox>
       </div>
     </div>

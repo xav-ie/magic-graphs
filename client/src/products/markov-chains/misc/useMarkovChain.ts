@@ -3,6 +3,7 @@ import type { GNode, Graph } from "@graph/types";
 import { useComponentAdjacencyMap } from "./useComponentAdjacencyMap";
 import { useMarkovClasses } from "./useMarkovClasses";
 import { useMarkovPeriodicity } from "./useMarkovPeriodicity";
+import { useMarkovSteadyState } from "./useMarkovSteadyState";
 
 /**
  * reduce an array of sets into a single set
@@ -47,6 +48,8 @@ export const useMarkovChain = (graph: Graph) => {
       }, new Map())
   })
 
+  const steadyState = useMarkovSteadyState(graph, recurrentClasses);
+
   return {
     componentMap,
     communicatingClasses,
@@ -61,6 +64,8 @@ export const useMarkovChain = (graph: Graph) => {
 
     isPeriodic,
     isAbsorbing,
+
+    steadyState,
   }
 }
 

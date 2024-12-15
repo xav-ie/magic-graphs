@@ -1,24 +1,10 @@
+import { computed, type Ref } from 'vue';
 // @ts-ignore
 import linearAlgebra from 'linear-algebra';
-import type { Graph } from "@graph/types";
 import BigNumber from 'bignumber.js';
+import type { GNode, Graph } from "@graph/types";
 
 const { Matrix } = linearAlgebra();
-
-export function getSteadyStateVector(transitionMatrix: number[][], precision: number) {
-  const numRows = transitionMatrix.length;
-  const inputMatrix = new Matrix(transitionMatrix).trans();
-  const identity = Matrix.identity(numRows)
-
-  const { data: augmentedMatrix } = identity.minus(inputMatrix) as { data: number[][] }
-
-  augmentedMatrix.forEach((row) => row.push(0));
-  augmentedMatrix.push(Array(numRows + 1).fill(1));
-
-  const solvedMatrix = runBigNumberRREF(augmentedMatrix, precision);
-
-  return new Matrix(solvedMatrix).trans().data.at(-1).slice(0, -1);
-}
 
 const findRREFBN = (matrix: BigNumber[][]) => {
 
@@ -34,7 +20,6 @@ const findRREFBN = (matrix: BigNumber[][]) => {
 
     let i = row;
 
-    // TODO: add adjustable tolerance parameter to narrow in on the most accurate solution
     const tolerance = new BigNumber("1e-1");
 
     while (matrix[i][lead].abs().isLessThanOrEqualTo(tolerance)) {
@@ -75,15 +60,45 @@ const findRREFBN = (matrix: BigNumber[][]) => {
   return matrix;
 }
 
-const runBigNumberRREF = (matrix: number[][], precision: number) => {
+const runBigNumberRREF = (matrix: number[][]) => {
   const bigNumberMatrix = matrix.map((row) => row.map((entry) => new BigNumber(entry)));
-  const rrefMatrix = findRREFBN(bigNumberMatrix);
-  return rrefMatrix.map((row) => row.map((entry) => parseFloat(entry.toNumber().toFixed(precision))));
+  return findRREFBN(bigNumberMatrix).map((row) => row.map((entry) => entry.toNumber()));
+}
+
+const getSteadyStateVector = (transitionMatrix: number[][]) => {
+  const numRows = transitionMatrix.length;
+  const inputMatrix = new Matrix(transitionMatrix).trans();
+  const identity = Matrix.identity(numRows)
+
+  const { data: augmentedMatrix } = identity.minus(inputMatrix) as { data: number[][] }
+
+  augmentedMatrix.forEach((row) => row.push(0));
+  augmentedMatrix.push(Array(numRows + 1).fill(1));
+
+  const solvedMatrix = runBigNumberRREF(augmentedMatrix);
+
+  return new Matrix(solvedMatrix).trans().data.at(-1).slice(0, -1);
 }
 
 /**
- * reactive steady state of a markov chain
+ * reactive unique steady state of a markov chain
  */
-export const useMarkovSteadyState = (graph: Graph) => {
+export const useMarkovSteadyState = (graph: Graph, recurrentClasses: Ref<Set<GNode['id']>[]>) => {
+  return computed(() => {
+    if (recurrentClasses.value.length === 0) return
+    if (recurrentClasses.value.length > 1) return
 
+    const { getEdgeWeight, getOutboundEdges } = graph.helpers
+
+    const allNodesValid = graph.nodes.value.every((node) => {
+      const outgoingEdges = getOutboundEdges(node.id);
+      const sum = outgoingEdges.reduce((acc, edge) => acc + getEdgeWeight(edge.id), 0);
+      return Math.abs(sum - 1) < 0.02;
+    })
+
+    if (!allNodesValid) return
+
+    const { transitionMatrix } = graph.transitionMatrix;
+    return getSteadyStateVector(transitionMatrix.value);
+  })
 }
