@@ -1,13 +1,19 @@
-import { computed, type Ref } from 'vue';
+import { computed } from 'vue';
 // @ts-ignore
 import linearAlgebra from 'linear-algebra';
 import BigNumber from 'bignumber.js';
-import type { GNode, Graph } from "@graph/types";
+import type { Graph } from "@graph/types";
+import type { TransitionMatrix } from '@graph/useTransitionMatrix';
+import type { MarkovClasses } from './useMarkovClasses';
+import type { MarkovNodeWeights } from './useMarkovNodeWeights';
 
 const { Matrix } = linearAlgebra();
 
-const findRREFBN = (matrix: BigNumber[][]) => {
-
+/**
+ * returns the reduced row echelon form of a matrix using big number
+ * for better precision
+ */
+const rref = (matrix: BigNumber[][]) => {
   const numRows = matrix.length;
   const numCols = matrix[0].length;
 
@@ -20,9 +26,9 @@ const findRREFBN = (matrix: BigNumber[][]) => {
 
     let i = row;
 
-    const tolerance = new BigNumber("1e-1");
+    const TOLERANCE = new BigNumber("1e-1");
 
-    while (matrix[i][lead].abs().isLessThanOrEqualTo(tolerance)) {
+    while (matrix[i][lead].abs().isLessThanOrEqualTo(TOLERANCE)) {
       i++;
       if (numRows === i) {
         i = row;
@@ -60,29 +66,33 @@ const findRREFBN = (matrix: BigNumber[][]) => {
   return matrix;
 }
 
-const runBigNumberRREF = (matrix: number[][]) => {
-  const bigNumberMatrix = matrix.map((row) => row.map((entry) => new BigNumber(entry)));
-  return findRREFBN(bigNumberMatrix).map((row) => row.map((entry) => entry.toNumber()));
-}
-
-const getSteadyStateVector = (transitionMatrix: number[][]) => {
+/**
+ * returns the steady state vector of a markov chain given its transition matrix
+ */
+const getSteadyStateVector = (transitionMatrix: TransitionMatrix) => {
   const numRows = transitionMatrix.length;
   const inputMatrix = new Matrix(transitionMatrix).trans();
   const identity = Matrix.identity(numRows)
 
-  const { data: augmentedMatrix } = identity.minus(inputMatrix) as { data: number[][] }
+  const { data: augmentedMatrix } = identity.minus(inputMatrix) as { data: TransitionMatrix }
 
   augmentedMatrix.forEach((row) => row.push(0));
   augmentedMatrix.push(Array(numRows + 1).fill(1));
 
-  const solvedMatrix = runBigNumberRREF(augmentedMatrix);
+  const bigNumberMatrix = augmentedMatrix.map((row) => row.map((entry) => new BigNumber(entry)));
+  const solvedBigNumberMatrix = rref(bigNumberMatrix)
+  const solvedMatrix = solvedBigNumberMatrix.map((row) => row.map((entry) => entry.toNumber()));
 
-  return new Matrix(solvedMatrix).trans().data.at(-1).slice(0, -1);
+  return new Matrix(solvedMatrix)
+    .trans()
+    .data
+    .at(-1)
+    .slice(0, -1);
 }
 
 export type MarkovSteadyStateOptions = {
-  recurrentClasses: Ref<Set<GNode['id']>[]>;
-  illegalNodeIds: Ref<Set<GNode['id']>>;
+  recurrentClasses: MarkovClasses['recurrentClasses']
+  illegalNodeIds: MarkovNodeWeights['illegalNodeIds']
 }
 
 /**
@@ -101,3 +111,5 @@ export const useMarkovSteadyState = (graph: Graph, options: MarkovSteadyStateOpt
     return getSteadyStateVector(transitionMatrix.value);
   })
 }
+
+export type MarkovSteadyState = ReturnType<typeof useMarkovSteadyState>

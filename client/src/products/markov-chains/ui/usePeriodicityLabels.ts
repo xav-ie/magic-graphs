@@ -1,7 +1,7 @@
 import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 import { USETHEME_ID } from "../constants";
-import type { MarkovChain } from "../misc/useMarkovChain";
+import type { MarkovChain } from "../markov/useMarkovChain";
 
 export const usePeriodicityLabels = (graph: Graph, markov: MarkovChain) => {
   const { setTheme, removeTheme } = useTheme(graph, USETHEME_ID);

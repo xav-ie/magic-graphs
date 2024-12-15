@@ -117,3 +117,5 @@ export const useMarkovPeriodicity = (
     isPeriodic
   }
 }
+
+export type MarkovPeriodicity = ReturnType<typeof useMarkovPeriodicity>;

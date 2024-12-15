@@ -4,10 +4,9 @@
   import type { ProgressOptions } from "./progressTypes";
   import { useGraphColors } from "@graph/themes/useGraphColors";
 
-  const colors = useGraphColors()
+  const colors = useGraphColors();
 
-  const props = withDefaults(
-    defineProps<ProgressOptions>(), PROGRESS_DEFAULTS);
+  const props = withDefaults(defineProps<ProgressOptions>(), PROGRESS_DEFAULTS);
 
   const range = computed(() => {
     const [start, end] = props.range;

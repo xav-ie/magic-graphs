@@ -3,7 +3,7 @@
   import type { GNode } from "@graph/types";
   import { graph } from "@graph/global";
   import GWell from "@ui/graph/GWell.vue";
-  import type { MarkovChain } from "../misc/useMarkovChain";
+  import type { MarkovChain } from "../markov/useMarkovChain";
   import MarkovClassNodes from "./MarkovClassNodes.vue";
   import ConnectedInfoBox from "@product/graph-sandbox/ui/GraphInfoMenu/ConnectedInfoBox.vue";
   import { usePeriodicityLabels } from "./usePeriodicityLabels";

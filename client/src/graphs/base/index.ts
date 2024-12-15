@@ -16,7 +16,8 @@ import type {
 import { prioritizeNode } from '@graph/helpers';
 import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
-import { THEMES, type GraphTheme, type GraphThemeName } from '@graph/themes'
+import { THEMES } from '@graph/themes'
+import type { GraphTheme, GraphThemeName } from '@graph/themes'
 import { getInitialThemeMap } from '@graph/themes/types';
 import { delta } from '@utils/deepDelta';
 import { clone } from '@utils/clone';
@@ -213,6 +214,16 @@ export const useBaseGraph = (
     settings,
   })
 
+  const nodeIdToIndex = computed(() => nodes.value.reduce<Map<GNode['id'], number>>((map, node, i) => {
+    map.set(node.id, i)
+    return map
+  }, new Map()))
+
+  const edgeIdToIndex = computed(() => edges.value.reduce<Map<GEdge['id'], number>>((map, edge, i) => {
+    map.set(edge.id, i)
+    return map
+  }, new Map()))
+
   /**
    * get a node by its coordinates
    *
@@ -230,6 +241,8 @@ export const useBaseGraph = (
   let currHoveredNode: GNode | undefined;
   subscribe('onMouseMove', ({ items }) => {
     const topItem = items.at(-1)
+    // TODO change this to better support node anchors
+    // that may be dragging over the node
     if (!topItem || topItem.graphType !== 'node') return
     const node = getNode(topItem.id)
     if (node === currHoveredNode) return
@@ -287,6 +300,9 @@ export const useBaseGraph = (
      * all the edges contained in the graph
      */
     edges,
+
+    nodeIdToIndex,
+    edgeIdToIndex,
 
     getNode,
     getEdge,

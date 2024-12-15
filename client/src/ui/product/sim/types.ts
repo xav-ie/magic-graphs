@@ -1,11 +1,24 @@
 import type { ComputedRef, Ref } from "vue";
 
 /**
+ * a function that takes a `step` number and returns the state of the simulation at that step.
+ * only intended for infinite or truly massive simulations. the use of array traces are preferred as
+ * it enables users to scrub or seek between steps.
+ */
+export type TraceFunction<T = unknown> = (step: number) => T
+
+/**
+ * a trace of the simulation. can be an array of states or a function that
+ * when called with a step number returns the state at that step.
+ */
+export type SimulationTrace<T = unknown> = T[] | TraceFunction<T>
+
+/**
  * used as a standard for all simulation experiences across all products
  *
  * @template T the type of the trace that the simulation is running on
  */
-export type SimulationControls<T extends any[] = any[]> = {
+export type SimulationControls<T extends SimulationTrace = any> = {
   /**
    * skip forward to the next step.
    * wont do anything if the current step is `lastStep`
@@ -20,7 +33,7 @@ export type SimulationControls<T extends any[] = any[]> = {
   /**
    * the current trace of the algorithm for which the simulation is being run.
    */
-  trace: ComputedRef<T>
+  trace: ComputedRef<T>,
   /**
    * the current step of the simulation.
    * ranges from 0 to trace.length where 0 is the state before the algorithm has begun
@@ -29,6 +42,7 @@ export type SimulationControls<T extends any[] = any[]> = {
   step: ComputedRef<number>
   /**
    * set the current step of the simulation
+   *
    * @param step the step to set the simulation to
    * @throws if step is not between 0 and `lastStep`
    */
@@ -50,16 +64,6 @@ export type SimulationControls<T extends any[] = any[]> = {
    * time, in milliseconds, between each step firing.
    */
   playbackSpeed: Ref<number>
-
-  /**
-   * playback speed string value and its corresponding speed in milliseconds
-   * @example 
-   * { label: '1x', value: 1500 }
-   */
-  playbackSpeedToMs: {
-    label: string
-    value: number
-  }[]
 
   /**
    * whether the simulation is currently active.
@@ -85,11 +89,11 @@ export type SimulationControls<T extends any[] = any[]> = {
 /**
  * wraps around simulation controls to provide a standard interface for
  * the work of setting up and running of simulations, ie prompting the user to select a starting node,
- * source/sink nodes, etc.
+ * source/sink nodes, activating graph themes, etc.
  *
  * @template T the type of the trace that the simulation is running on
  */
-export type SimulationRunner<T extends any[] = any[]> = {
+export type SimulationRunner<T extends SimulationTrace = any> = {
   /**
    * Start the simulation
    */
