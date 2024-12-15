@@ -148,8 +148,9 @@ export const getInitialEventBus = () => {
      */
     onGroupDragStart: new Set(),
     onGroupDrop: new Set(),
-    onBeginMarqueeSelection: new Set(),
-    onEndMarqueeSelection: new Set(),
+    
+    onMarqueeBeginSelection: new Set(),
+    onMarqueeEndSelection: new Set(),
   } as const satisfies GraphEventBus
 
   return eventBus

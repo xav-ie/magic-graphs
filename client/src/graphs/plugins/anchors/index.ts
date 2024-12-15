@@ -292,8 +292,8 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     graph.subscribe('onMouseDown', setCurrentlyDraggingAnchor)
     graph.subscribe('onMouseUp', dropAnchor)
     graph.subscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
-    graph.subscribe('onBeginMarqueeSelection', groupDragStart)
-    graph.subscribe('onEndMarqueeSelection', groupDragEnd)
+    graph.subscribe('onMarqueeBeginSelection', groupDragStart)
+    graph.subscribe('onMarqueeEndSelection', groupDragEnd)
   }
 
   const deactivate = () => {
@@ -306,8 +306,8 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     graph.unsubscribe('onMouseDown', setCurrentlyDraggingAnchor)
     graph.unsubscribe('onMouseUp', dropAnchor)
     graph.unsubscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
-    graph.unsubscribe('onBeginMarqueeSelection', groupDragStart)
-    graph.unsubscribe('onEndMarqueeSelection', groupDragEnd)
+    graph.unsubscribe('onMarqueeBeginSelection', groupDragStart)
+    graph.unsubscribe('onMarqueeEndSelection', groupDragEnd)
     resetParentNode()
   }
 
