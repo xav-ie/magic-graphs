@@ -4,6 +4,7 @@ import { useComponentAdjacencyMap } from "./useComponentAdjacencyMap";
 import { useMarkovClasses } from "./useMarkovClasses";
 import { useMarkovPeriodicity } from "./useMarkovPeriodicity";
 import { useMarkovSteadyState } from "./useMarkovSteadyState";
+import { useMarkovNodeWeights } from "./useMarkovNodeWeights";
 
 /**
  * reduce an array of sets into a single set
@@ -48,7 +49,12 @@ export const useMarkovChain = (graph: Graph) => {
       }, new Map())
   })
 
-  const steadyState = useMarkovSteadyState(graph, recurrentClasses);
+  const { nodeIdToOutgoingWeight, illegalNodeIds } = useMarkovNodeWeights(graph);
+
+  const steadyState = useMarkovSteadyState(graph, {
+    recurrentClasses,
+    illegalNodeIds,
+  });
 
   return {
     componentMap,
@@ -66,6 +72,9 @@ export const useMarkovChain = (graph: Graph) => {
     isAbsorbing,
 
     steadyState,
+
+    nodeIdToOutgoingWeight,
+    illegalNodeIds,
   }
 }
 

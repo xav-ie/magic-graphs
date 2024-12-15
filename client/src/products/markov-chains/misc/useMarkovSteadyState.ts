@@ -80,23 +80,22 @@ const getSteadyStateVector = (transitionMatrix: number[][]) => {
   return new Matrix(solvedMatrix).trans().data.at(-1).slice(0, -1);
 }
 
+export type MarkovSteadyStateOptions = {
+  recurrentClasses: Ref<Set<GNode['id']>[]>;
+  illegalNodeIds: Ref<Set<GNode['id']>>;
+}
+
 /**
  * reactive unique steady state of a markov chain
  */
-export const useMarkovSteadyState = (graph: Graph, recurrentClasses: Ref<Set<GNode['id']>[]>) => {
+export const useMarkovSteadyState = (graph: Graph, options: MarkovSteadyStateOptions) => {
   return computed(() => {
+    const { recurrentClasses, illegalNodeIds } = options;
+
+    // if any of these conditions are true, the chain does not have a unique steady state
     if (recurrentClasses.value.length === 0) return
     if (recurrentClasses.value.length > 1) return
-
-    const { getEdgeWeight, getOutboundEdges } = graph.helpers
-
-    const allNodesValid = graph.nodes.value.every((node) => {
-      const outgoingEdges = getOutboundEdges(node.id);
-      const sum = outgoingEdges.reduce((acc, edge) => acc + getEdgeWeight(edge.id), 0);
-      return Math.abs(sum - 1) < 0.02;
-    })
-
-    if (!allNodesValid) return
+    if (illegalNodeIds.value.size > 0) return
 
     const { transitionMatrix } = graph.transitionMatrix;
     return getSteadyStateVector(transitionMatrix.value);
