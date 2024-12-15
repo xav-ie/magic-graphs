@@ -26,7 +26,7 @@ const DEFAULT_OPTIONS = {
 export const DEFAULT_PLAYBACK_SPEED = 1000;
 
 export const useSimulationControls = <T>(
-  trace: SimulationTrace<T>,
+  trace: SimulationControls<T>['trace'],
   options: SimulationControlsOptions = {}
 ): SimulationControls<T> => {
   const { allowEditingDuringPlayback, lastStep } = {

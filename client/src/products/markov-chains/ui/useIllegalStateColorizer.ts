@@ -1,6 +1,6 @@
 import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
-import type { MarkovChain } from "../misc/useMarkovChain";
+import type { MarkovChain } from "../markov/useMarkovChain";
 import colors from "@utils/colors";
 
 const USETHEME_ID = 'markov-illegal-state';
