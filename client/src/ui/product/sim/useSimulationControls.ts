@@ -1,5 +1,5 @@
 import { computed, ref, watch } from "vue";
-import type { Ref } from "vue";
+import type { ComputedRef, Ref } from "vue";
 import { graph } from "@graph/global";
 import type { SimulationControls, SimulationTrace } from "@ui/product/sim/types";
 
@@ -25,8 +25,8 @@ const DEFAULT_OPTIONS = {
  */
 export const DEFAULT_PLAYBACK_SPEED = 1000;
 
-export const useSimulationControls = <T>(
-  trace: SimulationControls<T>['trace'],
+export const useSimulationControls = <T extends SimulationTrace>(
+  trace: ComputedRef<T>,
   options: SimulationControlsOptions = {}
 ): SimulationControls<T> => {
   const { allowEditingDuringPlayback, lastStep } = {
@@ -39,7 +39,7 @@ export const useSimulationControls = <T>(
    */
   const simLastStep = computed(() => {
     if (lastStep) return lastStep.value; // handles custom
-    if (Array.isArray(trace)) return trace.length; // handles TraceArray<T>
+    if (Array.isArray(trace.value)) return trace.value.length; // handles TraceArray<T>
     return Infinity; // handles TraceFunction<T>
   });
 

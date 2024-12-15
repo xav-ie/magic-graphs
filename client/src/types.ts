@@ -1,6 +1,6 @@
 import type { RouteRecordRaw } from "vue-router"
 import type { Graph } from "@graph/types"
-import type { SimulationRunner } from "@ui/product/sim/types"
+import type { SimulationRunner, SimulationTrace } from "@ui/product/sim/types"
 import type { ProductCategory } from "@utils/product"
 
 /**

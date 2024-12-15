@@ -98,6 +98,7 @@
     ></GSpreadSelect>
 
     <ProgressBar
+      v-if="lastStep !== Infinity"
       @mouseleave="onProgressMouseLeave"
       :range="[0, lastStep]"
       :progress="step"
