@@ -1,14 +1,18 @@
 
 const minNodeText = (minNodes: number) => {
   if (minNodes === 1) return 'Requires at least 1 node'
-  return `Requires at least ${minNodes} nodes`
+  return `Requires at least ${minNodes} nodes` as const
 }
 
 const minEdgeText = (minEdges: number) => {
   if (minEdges === 1) return 'Requires at least 1 edge'
-  return `Requires at least ${minEdges} edges`
+  return `Requires at least ${minEdges} edges` as const
 }
 
+/**
+ * a map to from standard reasons why a simulation
+ * cannot run on a given graph to user-facing text explaining why
+ */
 export const CANT_RUN_REASONS = {
   NOT_WEIGHTED: 'Requires weighted edges',
   NOT_UNWEIGHTED: 'Requires unweighted edges',
