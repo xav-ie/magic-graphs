@@ -52,7 +52,7 @@
     }"
   >
     <slot>
-      {{ node.label }}
+      {{ theme.nodeText }}
     </slot>
   </div>
 </template>

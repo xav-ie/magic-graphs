@@ -53,6 +53,7 @@ export const getPrimeFactors = (num: number) => {
  * lowestInPrimeFactorization(15) // 15 = 3 * 5, min(3, 5) = 3
  */
 export const lowestPrimeFactor = (num: number) => {
+  if (num === 1) return 1; // 1 has no prime factors
   return Math.min(...getPrimeFactors(num));
 }
 
@@ -70,4 +71,11 @@ export const lowestPrimeFactor = (num: number) => {
 export const gcd = (a: number, b: number): number => {
   if (b === 0) return a;
   return gcd(b, a % b);
+}
+
+/**
+ * check if two numbers are within a certain tolerance of each other
+ */
+export const within = (tolerance: number) => (a: number, b: number) => {
+  return Math.abs(a - b) <= tolerance;
 }

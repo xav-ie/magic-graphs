@@ -12,7 +12,7 @@ import {
   isEdgeFlowingOutOfNode
 } from ".";
 
-export const useGraphHelpers = (graph: BaseGraph) => ({
+export const useHelpers = (graph: BaseGraph) => ({
   getConnectedNodes: (edgeId: GEdge['id']) => getConnectedNodes(edgeId, graph),
   getConnectedEdges: (nodeId: GNode['id']) => getConnectedEdges(nodeId, graph),
   getInboundEdges: (nodeId: GNode['id']) => getInboundEdges(nodeId, graph),

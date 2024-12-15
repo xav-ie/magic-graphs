@@ -1,8 +1,10 @@
 import { computed } from "vue";
-import type { Graph } from "@graph/types";
+import type { GNode, Graph } from "@graph/types";
 import { useComponentAdjacencyMap } from "./useComponentAdjacencyMap";
 import { useMarkovClasses } from "./useMarkovClasses";
 import { useMarkovPeriodicity } from "./useMarkovPeriodicity";
+import { useMarkovSteadyState } from "./useMarkovSteadyState";
+import { useMarkovNodeWeights } from "./useMarkovNodeWeights";
 
 /**
  * reduce an array of sets into a single set
@@ -17,10 +19,8 @@ export const reduceSet = <T>(sets: Set<T>[]) => {
 
 /**
  * reactive markov chain characteristics
- *
- *
  */
-export const useMarkovCharacteristics = (graph: Graph) => {
+export const useMarkovChain = (graph: Graph) => {
   const componentMap = useComponentAdjacencyMap(graph);
   const { recurrentClasses, transientClasses } = useMarkovClasses(graph, componentMap);
 
@@ -30,7 +30,6 @@ export const useMarkovCharacteristics = (graph: Graph) => {
   const { isPeriodic, recurrentClassPeriods } = useMarkovPeriodicity(graph, recurrentClasses);
 
   // TODO check with a pro to see if this is correct.
-  // i am 99% sure it is though
   const isAbsorbing = computed(() => {
     if (recurrentClassPeriods.value.length === 0) return false;
     return recurrentClasses.value.every(recurrentClass => {
@@ -42,19 +41,41 @@ export const useMarkovCharacteristics = (graph: Graph) => {
     return graph.characteristics.stronglyConnectedComponents.value
   })
 
+  const nodeIdToRecurrentClassIndex = computed(() => {
+    return recurrentClasses.value
+      .reduce<Map<GNode['id'], number>>((acc, recurrentClass, i) => {
+        recurrentClass.forEach(nodeId => acc.set(nodeId, i))
+        return acc;
+      }, new Map())
+  })
+
+  const { nodeIdToOutgoingWeight, illegalNodeIds } = useMarkovNodeWeights(graph);
+
+  const steadyState = useMarkovSteadyState(graph, {
+    recurrentClasses,
+    illegalNodeIds,
+  });
+
   return {
     componentMap,
     communicatingClasses,
 
     recurrentClasses,
     recurrentStates,
+    recurrentClassPeriods,
+    nodeIdToRecurrentClassIndex,
 
     transientClasses,
     transientStates,
 
     isPeriodic,
-    recurrentClassPeriods,
-
     isAbsorbing,
+
+    steadyState,
+
+    nodeIdToOutgoingWeight,
+    illegalNodeIds,
   }
 }
+
+export type MarkovChain = ReturnType<typeof useMarkovChain>;

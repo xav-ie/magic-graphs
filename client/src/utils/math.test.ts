@@ -19,12 +19,20 @@ describe('getPrimeFactors', () => {
     expect(getPrimeFactors(12)).toEqual([2, 2, 3])
     expect(getPrimeFactors(15)).toEqual([3, 5])
   })
+
+  test('edge case: 1', () => {
+    expect(getPrimeFactors(1)).toEqual([])
+  })
 })
 
 describe('lowestPrimeFactor', () => {
   test('returns the lowest prime factor of a number', () => {
     expect(lowestPrimeFactor(12)).toBe(2)
     expect(lowestPrimeFactor(15)).toBe(3)
+  })
+
+  test('edge case: 1', () => {
+    expect(lowestPrimeFactor(1)).toBe(1)
   })
 })
 

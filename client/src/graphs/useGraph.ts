@@ -16,7 +16,7 @@ import { useInteractive } from '@graph/plugins/interactive'
 import { useCharacteristics } from '@graph/plugins/characteristics'
 
 import { usePreferredTheme } from '@graph/themes/usePreferredTheme'
-import { useGraphHelpers } from '@graph/helpers/useGraphHelpers'
+import { useHelpers } from '@graph/helpers/useHelpers'
 
 import { useAdjacencyList } from './useAdjacencyList'
 import { useTransitionMatrix } from './useTransitionMatrix'
@@ -43,7 +43,8 @@ export const useGraph = (
   const annotation = useAnnotations(base)
   const persistent = usePersistent(base)
   const preferredTheme = usePreferredTheme(base)
-  const shortcutActions = useShortcuts({
+
+  const shortcut = useShortcuts({
     ...base,
     history,
     focus,
@@ -63,13 +64,12 @@ export const useGraph = (
   })
 
   useInteractive(base)
+  const helpers = useHelpers(base)
 
   return {
     ...base,
 
-    /**
-     * plugin controllers
-     */
+    // plugin controllers
     focus,
     history,
     marquee,
@@ -79,22 +79,16 @@ export const useGraph = (
     persistent,
     animate,
 
-    /**
-     * theme and style
-     */
+    // theme and style
     ...preferredTheme,
 
-    /**
-     * reactive data structures and algorithms
-     */
+    // reactive data structures and algorithms
     adjacencyList,
     transitionMatrix,
     characteristics,
 
-    /**
-     * helper functions
-    */
-    shortcutActions,
-    helpers: useGraphHelpers(base),
+    // helper functions
+    shortcut,
+    helpers,
   }
 }
