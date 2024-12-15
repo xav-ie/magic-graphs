@@ -14,7 +14,6 @@ function extractInterfaces(fileContent) {
     const isLineMatched = regex.test(lines[i]);
     if (isLineMatched) {
       const interfaceDef = [];
-      interfaceDef.push('// @ts-ignore');
       interfaceDef.push(lines[i]);
 
       i++;
@@ -24,7 +23,6 @@ function extractInterfaces(fileContent) {
       }
 
       while (lines[i] !== '}' && lines[i] !== undefined) {
-        interfaceDef.push('// @ts-ignore');
         interfaceDef.push(lines[i]);
         i++;
       }
