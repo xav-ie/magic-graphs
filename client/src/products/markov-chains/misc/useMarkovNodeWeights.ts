@@ -56,3 +56,5 @@ export const useMarkovNodeWeights = (graph: Graph) => {
     illegalNodeIds,
   };
 }
+
+export type MarkovNodeWeights = ReturnType<typeof useMarkovNodeWeights>

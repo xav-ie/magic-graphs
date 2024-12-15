@@ -39,7 +39,15 @@ export const useMarkovClasses = (graph: Graph, componentMap: Ref<ComponentAdjace
   });
 
   return {
+    /**
+     * an array of sets where each set contains the node/state ids of a transient class
+     */
     transientClasses,
+    /**
+     * an array of sets where each set contains the node/state ids of a recurrent class
+     */
     recurrentClasses,
   };
 }
+
+export type MarkovClasses = ReturnType<typeof useMarkovClasses>
