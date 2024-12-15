@@ -1,8 +1,9 @@
 <script
   setup
   lang="ts"
-  generic="TValue, TItem extends { value: TValue, label: string }"
+  generic="TValue, TItem extends SpreadSelectItem<TValue>"
 >
+  import type { SpreadSelectItem } from "./SpreadSelectItem";
   import { computed, ref } from "vue";
   import { onClickOutside } from "@vueuse/core";
   import GButton from "@ui/graph/button/GButton.vue";
@@ -17,7 +18,7 @@
        * and `value` is the value that will be emitted when the user
        * selects the item
        */
-      items: TItem[];
+      items: readonly TItem[];
       /**
        * the index of the initial item that will be selected and
        * therefore the first item to greet the user

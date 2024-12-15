@@ -23,7 +23,7 @@ const DEFAULT_OPTIONS = {
 /**
  * the playback speed in ms per step of the simulation
  */
-const DEFAULT_PLAYBACK_SPEED = 1000;
+export const DEFAULT_PLAYBACK_SPEED = 1000;
 
 export const useSimulationControls = <T extends any[]>(
   trace: ComputedRef<T>,
@@ -42,29 +42,6 @@ export const useSimulationControls = <T extends any[]>(
   const interval = ref<NodeJS.Timeout | undefined>();
   const isOver = computed(() => step.value === simLastStep.value);
   const hasBegun = computed(() => step.value > 0);
-
-  const playbackSpeedToMs = [
-    {
-      label: "0.25x",
-      value: DEFAULT_PLAYBACK_SPEED / 0.25
-    },
-    {
-      label: "0.5x",
-      value: DEFAULT_PLAYBACK_SPEED / 0.5
-    },
-    {
-      label: "1x",
-      value: DEFAULT_PLAYBACK_SPEED
-    },
-    {
-      label: "2x",
-      value: DEFAULT_PLAYBACK_SPEED / 2
-    },
-    {
-      label: "4x",
-      value: DEFAULT_PLAYBACK_SPEED / 4
-    },
-  ];
 
   const start = () => {
     if (active.value) return;
@@ -123,7 +100,6 @@ export const useSimulationControls = <T extends any[]>(
     stop,
     paused,
     playbackSpeed,
-    playbackSpeedToMs,
 
     isOver,
     hasBegun,

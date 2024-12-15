@@ -24,7 +24,7 @@ export type SimulationTrace<T> = T extends any[] ? TraceArray<T> : TraceFunction
  *
  * @template T the type of the trace that the simulation is running on
  */
-export type SimulationControls<T> = {
+export type SimulationControls<T = unknown[]> = {
   /**
    * skip forward to the next step.
    * wont do anything if the current step is `lastStep`
@@ -48,6 +48,7 @@ export type SimulationControls<T> = {
   step: ComputedRef<number>
   /**
    * set the current step of the simulation
+   *
    * @param step the step to set the simulation to
    * @throws if step is not between 0 and `lastStep`
    */
@@ -69,16 +70,6 @@ export type SimulationControls<T> = {
    * time, in milliseconds, between each step firing.
    */
   playbackSpeed: Ref<number>
-
-  /**
-   * playback speed string value and its corresponding speed in milliseconds
-   * @example
-   * { label: '1x', value: 1500 }
-   */
-  playbackSpeedToMs: {
-    label: string
-    value: number
-  }[]
 
   /**
    * whether the simulation is currently active.
@@ -108,7 +99,7 @@ export type SimulationControls<T> = {
  *
  * @template T the type of the trace that the simulation is running on
  */
-export type SimulationRunner<T> = {
+export type SimulationRunner<T = unknown[]> = {
   /**
    * Start the simulation
    */

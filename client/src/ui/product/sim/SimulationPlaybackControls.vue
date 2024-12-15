@@ -7,14 +7,15 @@
   import ProgressBar from "./Progressbar.vue";
   import { useGraphColors } from "@graph/themes/useGraphColors";
   import GSpreadSelect from "@ui/graph/select/GSpreadSelect.vue";
+  import { DEFAULT_PLAYBACK_SPEED } from "./useSimulationControls";
 
-  const colors = useGraphColors()
+  const colors = useGraphColors();
 
   const props = defineProps<{
     controls: UnwrapRef<SimulationControls>;
   }>();
 
-  const { isOver, paused, step, hasBegun, lastStep, playbackSpeed, playbackSpeedToMs } = toRefs(
+  const { isOver, paused, step, hasBegun, lastStep, playbackSpeed } = toRefs(
     props.controls
   );
 
@@ -29,7 +30,6 @@
     nextStep();
     paused.value = true;
   };
-
 
   const goToStep = (step: number) => {
     setStep(step);
@@ -53,25 +53,47 @@
 
   const onProgressMouseLeave = () => {
     previewedProgress.value = -1;
-  }
+  };
 
   const pause = () => {
     paused.value = true;
   };
 
-  graph.value.subscribe('onStructureChange', pause);
+  graph.value.subscribe("onStructureChange", pause);
 
   onUnmounted(() => {
-    graph.value.unsubscribe('onStructureChange', pause);
+    graph.value.unsubscribe("onStructureChange", pause);
   });
+
+  const PLAYBACK_SPEEDS = [
+    {
+      label: "0.25x",
+      value: DEFAULT_PLAYBACK_SPEED / 0.25,
+    },
+    {
+      label: "0.5x",
+      value: DEFAULT_PLAYBACK_SPEED / 0.5,
+    },
+    {
+      label: "1x",
+      value: DEFAULT_PLAYBACK_SPEED,
+    },
+    {
+      label: "2x",
+      value: DEFAULT_PLAYBACK_SPEED / 2,
+    },
+    {
+      label: "4x",
+      value: DEFAULT_PLAYBACK_SPEED / 4,
+    },
+  ] as const;
 </script>
 
 <template>
   <div class="flex flex-col gap-5 items-center justify-center">
-
     <GSpreadSelect
       v-model="playbackSpeed"
-      :items="playbackSpeedToMs"
+      :items="PLAYBACK_SPEEDS"
       :initial-item-index="2"
     ></GSpreadSelect>
 
