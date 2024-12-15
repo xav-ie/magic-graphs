@@ -13,19 +13,13 @@ export const useInteractive = (graph: BaseGraph) => {
     setTimeout(() => graph.updateGraphAtMousePosition(event), 10);
   };
 
-  const getNodeFromAnchorDrop = (
+  const doesEdgeConformToRules = (
     fromNode: GNode,
-    anchor: NodeAnchor
+    toNode: GNode,
   ) => {
-    const itemStack = graph.getSchemaItemsByCoordinates(anchor);
-    const toNodeSchema = itemStack.findLast((item) => item.graphType === "node");
-    if (!toNodeSchema) return;
-    const toNode = graph.getNode(toNodeSchema.id);
-    if (!toNode) return;
-  
     if (graph.settings.value.userAddedEdgeRuleNoSelfLoops) {
       const violatesRule = fromNode.id === toNode.id;
-      if (violatesRule) return;
+      if (violatesRule) return false;
     }
   
     if (graph.settings.value.userAddedEdgeRuleOneEdgePerPath) {
@@ -38,15 +32,21 @@ export const useInteractive = (graph: BaseGraph) => {
       );
   
       const violatesRule = edgeBetweenToAndFrom || edgeBetweenFromAndTo;
-      if (violatesRule) return;
+      if (violatesRule) return false;
     }
   
-    return toNode;
+    return true;
   };
 
   const handleEdgeCreation = (fromNode: GNode, anchor: NodeAnchor) => {
-    const toNode = getNodeFromAnchorDrop(fromNode, anchor);
+    const itemStack = graph.getSchemaItemsByCoordinates(anchor);
+    const toNodeSchema = itemStack.findLast((item) => item.graphType === "node");
+    if (!toNodeSchema) return;
+    const toNode = graph.getNode(toNodeSchema.id);
     if (!toNode) return;
+
+    const canCreateEdge = doesEdgeConformToRules(fromNode, toNode);
+    if (!canCreateEdge) return;
 
     graph.addEdge({
       from: fromNode.id,
