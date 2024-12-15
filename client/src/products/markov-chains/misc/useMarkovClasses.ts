@@ -3,12 +3,22 @@ import type { Ref } from "vue"
 import type { GNode, Graph } from "@graph/types"
 import type { ComponentAdjacencyMap } from "./useComponentAdjacencyMap"
 
+/**
+ * a set of states within a markov chain recurrent or transient class
+ */
+export type MarkovClass = Set<GNode['id']>;
+
+/**
+ * a map of node ids to the index of the recurrent or transient class they belong to
+ */
+export type MarkovStateToClassIndex = Map<GNode['id'], number>;
+
 export const getMarkovClasses = (
   connectedComponents: Graph['characteristics']['stronglyConnectedComponents']['value'],
   componentMap: ComponentAdjacencyMap
 ) => {
-  const recurrent: Set<GNode['id']>[] = [];
-  const transient: Set<GNode['id']>[] = [];
+  const recurrent: MarkovClass[] = [];
+  const transient: MarkovClass[] = [];
 
   for (const [component, reachableComponents] of componentMap) {
     const leaf = reachableComponents.size === 0;
@@ -38,6 +48,13 @@ export const useMarkovClasses = (graph: Graph, componentMap: Ref<ComponentAdjace
     return recurrent;
   });
 
+  const toClassMap = (classes: MarkovClass[]) => {
+    return classes.reduce<MarkovStateToClassIndex>((acc, _class, i) => {
+      _class.forEach(nodeId => acc.set(nodeId, i))
+      return acc;
+    }, new Map())
+  }
+
   return {
     /**
      * an array of sets where each set contains the node/state ids of a transient class
@@ -47,6 +64,14 @@ export const useMarkovClasses = (graph: Graph, componentMap: Ref<ComponentAdjace
      * an array of sets where each set contains the node/state ids of a recurrent class
      */
     recurrentClasses,
+    /**
+     * a map of node ids to the index of the recurrent class they belong to
+     */
+    nodeIdToRecurrentClassIndex: computed(() => toClassMap(recurrentClasses.value)),
+    /**
+     * a map of node ids to the index of the transient class they belong to
+     */
+    nodeIdToTransientClassIndex: computed(() => toClassMap(transientClasses.value)),
   };
 }
 

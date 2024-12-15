@@ -22,7 +22,12 @@ export const reduceSet = <T>(sets: Set<T>[]) => {
  */
 export const useMarkovChain = (graph: Graph) => {
   const componentMap = useComponentAdjacencyMap(graph);
-  const { recurrentClasses, transientClasses } = useMarkovClasses(graph, componentMap);
+  const {
+    recurrentClasses,
+    transientClasses,
+    nodeIdToRecurrentClassIndex,
+    nodeIdToTransientClassIndex,
+  } = useMarkovClasses(graph, componentMap);
 
   const recurrentStates = computed(() => reduceSet(recurrentClasses.value));
   const transientStates = computed(() => reduceSet(transientClasses.value));
@@ -39,15 +44,7 @@ export const useMarkovChain = (graph: Graph) => {
 
   const communicatingClasses = computed(() => {
     return graph.characteristics.stronglyConnectedComponents.value
-  })
-
-  const nodeIdToRecurrentClassIndex = computed(() => {
-    return recurrentClasses.value
-      .reduce<Map<GNode['id'], number>>((acc, recurrentClass, i) => {
-        recurrentClass.forEach(nodeId => acc.set(nodeId, i))
-        return acc;
-      }, new Map())
-  })
+  });
 
   const { nodeIdToOutgoingWeight, illegalNodeIds } = useMarkovNodeWeights(graph);
 
@@ -67,6 +64,7 @@ export const useMarkovChain = (graph: Graph) => {
 
     transientClasses,
     transientStates,
+    nodeIdToTransientClassIndex,
 
     isPeriodic,
     isAbsorbing,
