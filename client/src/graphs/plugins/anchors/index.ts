@@ -26,6 +26,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
    * The anchor that is currently being dragged.
    */
   const currentDraggingAnchor = ref<NodeAnchor | undefined>()
+  const currentlyMarqueeSelecting = ref(false)
 
   const setParentNode = (nodeId: GNode['id']) => {
     const node = graph.getNode(nodeId)
@@ -195,6 +196,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
 
   const setCurrentlyDraggingAnchor = (ev: GraphMouseEvent) => {
     if (!parentNode.value) return
+    if (currentlyMarqueeSelecting.value) return
     /**
      * TODO shouldn't getAnchor be unnecessary here because the top item in this event should
      * point to the anchor itself?
@@ -268,6 +270,15 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     if (parentFocused && moreThanOneNodeFocused) resetParentNode()
   }
 
+  const groupDragStart = () => {
+    currentlyMarqueeSelecting.value = true
+    console.log(';fsdfds')
+  }
+
+  const groupDragEnd = () => {
+    currentlyMarqueeSelecting.value = false
+  }
+
   const activate = () => {
     graph.subscribe('onNodeRemoved', resetParentNodeIfRemoved)
     graph.subscribe('onNodeMoved', resetParentNode)
@@ -278,6 +289,8 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     graph.subscribe('onMouseDown', setCurrentlyDraggingAnchor)
     graph.subscribe('onMouseUp', dropAnchor)
     graph.subscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
+    graph.subscribe('onBeginMarqueeSelection', groupDragStart)
+    graph.subscribe('onEndMarqueeSelection', groupDragEnd)
   }
 
   const deactivate = () => {
@@ -290,6 +303,8 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     graph.unsubscribe('onMouseDown', setCurrentlyDraggingAnchor)
     graph.unsubscribe('onMouseUp', dropAnchor)
     graph.unsubscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
+    graph.unsubscribe('onBeginMarqueeSelection', groupDragStart)
+    graph.unsubscribe('onEndMarqueeSelection', groupDragEnd)
     resetParentNode()
   }
 

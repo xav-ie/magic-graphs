@@ -66,6 +66,7 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
 
   const engageMarqueeBox = (startingCoords: { x: number, y: number }) => {
     hideNodeAnchors()
+    graph.emit('onBeginMarqueeSelection', startingCoords)
     graph.graphCursorDisabled.value = true
     marqueeBox.value = {
       at: startingCoords,
@@ -76,6 +77,7 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
 
   const disengageMarqueeBox = () => {
     if (!marqueeBox.value) return
+    graph.emit('onEndMarqueeSelection', marqueeBox.value)
     marqueeBox.value = undefined
     graph.graphCursorDisabled.value = false
     showNodeAnchors()

@@ -16,7 +16,7 @@ import type {
   RedoHistoryOptions,
   UndoHistoryOptions,
 } from "@graph/plugins/history/types";
-import type { Coordinate } from "@shape/types";
+import type { BoundingBox, Coordinate } from "@shape/types";
 import type { GraphMouseEvent } from "@graph/base/types";
 
 export type BaseGraphEventMap = {
@@ -229,6 +229,14 @@ export type MarqueeGraphEventMap = {
     nodes: Readonly<GNode[]>,
     endCoordinates: Readonly<Coordinate>
   ) => void;
+  /**
+   * when the user starts a marquee selection
+   */
+  onBeginMarqueeSelection: (startingCoords: Coordinate) => void;
+  /**
+   * when the user ends a marquee selection
+   */
+  onEndMarqueeSelection: (marqueeBox: BoundingBox) => void;
 }
 
 export type AnnotationGraphEventMap = {}
