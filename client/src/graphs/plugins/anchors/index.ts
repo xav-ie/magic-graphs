@@ -59,12 +59,12 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     for (const anchor of nodeAnchors.value) {
       const { x, y, id } = anchor
 
-      const isHovered = id === hoveredNodeAnchorId.value
+      const isHoveredOrDragged = id === hoveredNodeAnchorId.value || id === currentDraggingAnchor.value?.id
 
       const circleTemplate = {
         at: { x, y },
         radius,
-        color: isHovered ? focusColor : color
+        color: isHoveredOrDragged ? focusColor : color
       }
 
       if (currentDraggingAnchor.value && currentDraggingAnchor.value.direction === anchor.direction) {
