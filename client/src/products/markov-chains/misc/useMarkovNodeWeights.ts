@@ -1,5 +1,6 @@
 import { computed } from "vue"
 import type { GNode, Graph } from "@graph/types"
+import { within } from "@utils/math";
 
 /**
  * a map of node ids to the sum of their outgoing edge weights
@@ -12,10 +13,15 @@ export type NodeIdToOutgoingWeight = Map<GNode['id'], number>;
  * however to account for 0.33 or 0.66 meaning essentially 1/3 and 2/3
  * we allow for a small tolerance
  */
-const ILLEGAL_NODE_WEIGHT_TOLERANCE = 0.02;
+export const ILLEGAL_NODE_WEIGHT_TOLERANCE = 0.02;
 
+/**
+ * reactive outgoing weights of nodes including computing illegal nodes/states
+ * for a markov chain
+ */
 export const useMarkovNodeWeights = (graph: Graph) => {
   const { getOutboundEdges, getEdgeWeight } = graph.helpers
+  const withinTolerance = within(ILLEGAL_NODE_WEIGHT_TOLERANCE);
 
   const nodeIdToOutgoingWeight = computed(() => {
     return graph.nodes.value.reduce<NodeIdToOutgoingWeight>((acc, node) => {
@@ -23,21 +29,20 @@ export const useMarkovNodeWeights = (graph: Graph) => {
       const weights = outgoingEdges.map((edge) => getEdgeWeight(edge.id));
 
       const sum = weights.reduce((acc, curr) => acc + curr, 0);
-      acc.set(node.id, sum);
+
+      const withinTol = withinTolerance(sum, 1);
+      acc.set(node.id, withinTol ? 1 : sum);
 
       return acc;
     }, new Map());
   })
 
   const illegalNodeIds = computed(() => {
-    const illegalNodes = new Set<GNode['id']>();
-
-    for (const [nodeId, sum] of nodeIdToOutgoingWeight.value) {
-      const illegal = Math.abs(sum - 1) > ILLEGAL_NODE_WEIGHT_TOLERANCE;
-      if (illegal) illegalNodes.add(nodeId);
-    }
-
-    return illegalNodes;
+    return new Set(
+      graph.nodes.value
+        .filter((node) => nodeIdToOutgoingWeight.value.get(node.id) !== 1)
+        .map((node) => node.id)
+    );
   });
 
   return {

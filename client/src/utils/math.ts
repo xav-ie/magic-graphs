@@ -72,3 +72,10 @@ export const gcd = (a: number, b: number): number => {
   if (b === 0) return a;
   return gcd(b, a % b);
 }
+
+/**
+ * check if two numbers are within a certain tolerance of each other
+ */
+export const within = (tolerance: number) => (a: number, b: number) => {
+  return Math.abs(a - b) <= tolerance;
+}

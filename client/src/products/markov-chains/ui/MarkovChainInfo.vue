@@ -8,6 +8,7 @@
   import ConnectedInfoBox from "@product/graph-sandbox/ui/GraphInfoMenu/ConnectedInfoBox.vue";
   import { usePeriodicityLabels } from "./usePeriodicityLabels";
   import { useSCCColorizer } from "@product/graph-sandbox/ui/GraphInfoMenu/useSCCColorizer";
+  import { useIllegalStateColorizer } from "./useIllegalStateColorizer";
 
   const props = defineProps<{
     markov: MarkovChain;
@@ -17,6 +18,9 @@
     graph.value,
     props.markov
   );
+
+  const { colorize: colorizeIllegalState, decolorize: decolorizeIllegalState } =
+    useIllegalStateColorizer(graph.value, props.markov);
 
   const { colorize: colorizeCommClass, decolorize: decolorizeCommClass } =
     useSCCColorizer(graph.value, 'markov-communicating-class');
@@ -40,6 +44,7 @@
   });
 
   const definitions = {
+    valid: "A markov chain is valid if all states have an outgoing probability of 1.",
     periodic:
       "A markov chain is said to be periodic if the greatest common divisor of the lengths of all possible cycles is greater than one.",
     absorbing:
@@ -62,7 +67,15 @@
         Transient Classes ({{ transientClasses.length }})
       </MarkovClassNodes>
 
-      <div class="self-start flex flex-wrap max-w-80 gap-2">
+      <div class="self-start flex flex-wrap max-w-80 max-h-20 gap-2 overflow-auto">
+        <ConnectedInfoBox
+          @mouseenter="colorizeIllegalState"
+          @mouseleave="decolorizeIllegalState"
+          :tooltip="definitions.valid"
+        >
+          Valid? {{ markov.illegalNodeIds.value.size === 0 ? "Yes" : "No" }}
+        </ConnectedInfoBox>
+
         <ConnectedInfoBox
           @mouseenter="labelPeriods"
           @mouseleave="unlabelPeriods"
@@ -85,7 +98,7 @@
         </ConnectedInfoBox>
 
         <ConnectedInfoBox :tooltip="definitions.steadyState + markov.steadyState.value">
-          Steady State? {{ markov.steadyState.value ?? "No" }}
+          Unique Steady State? {{ markov.steadyState.value ? "Yes" : "No" }}
         </ConnectedInfoBox>
       </div>
     </div>
