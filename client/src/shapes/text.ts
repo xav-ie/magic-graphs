@@ -1,6 +1,6 @@
+import type { DeepRequired } from "ts-essentials";
 import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
 import type { Coordinate, TextArea, TextAreaNoLocation } from "@shape/types";
-import type { DeepRequired } from "@utils/types";
 import { rect } from "./rect";
 
 export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({

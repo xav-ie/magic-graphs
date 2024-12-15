@@ -1,6 +1,6 @@
+import type { DeepRequired } from "ts-essentials";
 import type { TextArea } from "@shape/types";
 import { getCanvasScale } from "@utils/components/useCanvasCoord";
-import type { DeepRequired } from "@utils/types";
 import { rectHitbox } from "./rect/hitbox";
 
 export const engageTextarea = (

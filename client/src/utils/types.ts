@@ -1,12 +1,3 @@
-/**
- * make every key in an object required including nested objects
- * @example DeepRequired<{ a?: number, b?: { c?: string } }> // { a: number, b: { c: string } }
- */
-export type DeepRequired<T> = {
-  [K in keyof T]-?: T[K] extends Record<any, any>
-  ? DeepRequired<T[K]>
-  : T[K];
-};
 
 /**
  * makes only certain keys K in an object T optional
