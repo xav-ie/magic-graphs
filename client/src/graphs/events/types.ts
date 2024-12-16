@@ -232,11 +232,11 @@ export type MarqueeGraphEventMap = {
   /**
    * when the user starts a marquee selection
    */
-  onMarqueeBeginSelection: (startingCoords: Coordinate) => void;
+  onMarqueeBeginSelection: (startingCoords: Readonly<Coordinate>) => void;
   /**
    * when the user ends a marquee selection
    */
-  onMarqueeEndSelection: (marqueeBox: BoundingBox) => void;
+  onMarqueeEndSelection: (marqueeBox: Readonly<BoundingBox>) => void;
 }
 
 export type AnnotationGraphEventMap = {}
