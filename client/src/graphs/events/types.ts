@@ -1,5 +1,5 @@
 import type { DeepPartial, DeepReadonly } from "ts-essentials";
-import type { GEdge, GNode, Graph } from "@graph/types";
+import type { GEdge, GNode } from "@graph/types";
 import type { GraphSettings } from "@graph/settings";
 import type {
   AddNodeOptions,

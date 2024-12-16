@@ -26,10 +26,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
    * The anchor that is currently being dragged.
    */
   const currentDraggingAnchor = ref<NodeAnchor | undefined>()
-  /**
-   * is user currently selecting with marquee
-   */
-  const currentlyMarqueeSelecting = ref(false)
 
   const setParentNode = (nodeId: GNode['id']) => {
     const node = graph.getNode(nodeId)
@@ -174,7 +170,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
    */
   const updateParentNode = ({ items }: GraphMouseEvent) => {
     if (currentDraggingAnchor.value) return
-    if (currentlyMarqueeSelecting.value) return
 
 
     const topItem = items.at(-1)
@@ -274,14 +269,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     if (parentFocused && moreThanOneNodeFocused) resetParentNode()
   }
 
-  const groupDragStart = () => {
-    currentlyMarqueeSelecting.value = true
-  }
-
-  const groupDragEnd = () => {
-    currentlyMarqueeSelecting.value = false
-  }
-
   const activate = () => {
     graph.subscribe('onNodeRemoved', resetParentNodeIfRemoved)
     graph.subscribe('onNodeMoved', resetParentNode)
@@ -292,8 +279,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     graph.subscribe('onMouseDown', setCurrentlyDraggingAnchor)
     graph.subscribe('onMouseUp', dropAnchor)
     graph.subscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
-    graph.subscribe('onMarqueeBeginSelection', groupDragStart)
-    graph.subscribe('onMarqueeEndSelection', groupDragEnd)
   }
 
   const deactivate = () => {
@@ -306,8 +291,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     graph.unsubscribe('onMouseDown', setCurrentlyDraggingAnchor)
     graph.unsubscribe('onMouseUp', dropAnchor)
     graph.unsubscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
-    graph.unsubscribe('onMarqueeBeginSelection', groupDragStart)
-    graph.unsubscribe('onMarqueeEndSelection', groupDragEnd)
     resetParentNode()
   }
 
