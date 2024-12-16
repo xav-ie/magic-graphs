@@ -2,6 +2,7 @@ import { drawLineWithCtx } from "@shape/line/draw";
 import { drawTriangleWithCtx } from "@shape/triangle/draw";
 import { ARROW_DEFAULTS } from ".";
 import type { Arrow } from ".";
+import type { Line } from "@shape/line";
 
 export const drawArrowWithCtx = (options: Arrow) => {
 
@@ -10,6 +11,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
     end: lineEnd,
     width,
     color,
+    dash,
     arrowHeadSize,
   } = {
     ...ARROW_DEFAULTS,
@@ -49,9 +51,10 @@ export const drawArrowWithCtx = (options: Arrow) => {
     },
     width,
     color,
+    dash,
   }
 
-  const drawShaft = drawLineWithCtx(shaft);
+  const drawShaft = drawLineWithCtx(shaft as Line);
   const drawHead = drawTriangleWithCtx({
     pointA: trianglePtA,
     pointB: trianglePtB,

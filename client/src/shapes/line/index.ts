@@ -29,12 +29,17 @@ export type Line = {
    */
   textOffsetFromCenter?: number,
   color?: string,
+  /**
+   * dash: [dashLength, gapLength]
+   */
+  dash?: [number, number],
 }
 
 export const LINE_DEFAULTS = {
   width: 10,
   textOffsetFromCenter: 0,
   color: 'black',
+  dash: [],
 } as const
 
 export const line = (options: Line): Shape => {
