@@ -3,5 +3,7 @@
 </script>
 
 <template>
-  <InputText />
+  <InputText 
+    @keydown.stop
+  />
 </template>
