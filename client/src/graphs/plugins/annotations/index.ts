@@ -10,6 +10,9 @@ import type { Color } from "@utils/colors";
 import { BRUSH_WEIGHTS, COLORS } from "./constants";
 import { useAnnotationHistory } from "./history";
 import type { Annotation } from "./types";
+import { useGraphColors } from "@graph/themes/useGraphColors";
+
+const graphColor = useGraphColors()
 
 export const useAnnotations = (graph: BaseGraph) => {
   const selectedColor = ref<Color>(COLORS[0])
@@ -130,7 +133,7 @@ export const useAnnotations = (graph: BaseGraph) => {
         radius: 10,
         color: colors.TRANSPARENT,
         stroke: {
-          color: colors.WHITE + '60',
+          color: graphColor.value.contrast,
           width: 2,
         }
       })
