@@ -143,7 +143,6 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
     marqueeBox.value.width = x - marqueeBox.value.at.x
     marqueeBox.value.height = y - marqueeBox.value.at.y
     updateMarqueeSelectedItems(marqueeBox.value)
-    hideNodeAnchors()
   }
 
   const getMarqueeBoxSchema = (box: BoundingBox) => {
