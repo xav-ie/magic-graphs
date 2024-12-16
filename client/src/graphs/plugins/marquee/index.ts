@@ -17,8 +17,14 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
 
   const { setTheme, removeTheme } = useTheme(graph, MARQUEE_CONSTANTS.THEME_ID)
 
-  const hideNodeAnchors = () => setTheme('nodeAnchorColor', colors.TRANSPARENT)
-  const showNodeAnchors = () => removeTheme('nodeAnchorColor')
+  const hideNodeAnchors = () => {
+    setTheme('nodeAnchorColor', colors.TRANSPARENT)
+    setTheme('nodeAnchorColorWhenParentFocused', colors.TRANSPARENT)
+  }
+  const showNodeAnchors = () => {
+    removeTheme('nodeAnchorColor')
+    removeTheme('nodeAnchorColorWhenParentFocused')
+  }
 
   const getSurfaceArea = (box: BoundingBox) => {
     const { width, height } = box
