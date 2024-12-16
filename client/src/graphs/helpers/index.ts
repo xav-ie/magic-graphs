@@ -263,7 +263,6 @@ export const getEdgeWeightFraction = (
   }
 }
 
-
 export const getDirectedWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
@@ -276,6 +275,18 @@ export const getDirectedWeightBetweenNodes = (
   return getEdgeWeight(connectingEdge.id, graph, fallbackWeight)
 }
 
+export const getDirectedFracWeightBetweenNodes = (
+  fromNodeId: GNode['id'],
+  toNodeId: GNode['id'],
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme' | 'settings'>,
+  fallbackWeight: number,
+) => {
+  const edgesAlongPath = getEdgesAlongPath(fromNodeId, toNodeId, graph)
+  const connectingEdge = edgesAlongPath.find((e) => e.to === toNodeId)
+  if (!connectingEdge) throw new Error('nodes are not adjacent')
+  return getEdgeWeightFraction(connectingEdge.id, graph, fallbackWeight)
+}
+
 export const getUndirectedWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
@@ -285,6 +296,17 @@ export const getUndirectedWeightBetweenNodes = (
   const [connectingEdge] = getEdgesAlongPath(fromNodeId, toNodeId, graph)
   if (!connectingEdge) throw new Error('nodes are not adjacent')
   return getEdgeWeight(connectingEdge.id, graph, fallbackWeight)
+}
+
+export const getUndirectedFracWeightBetweenNodes = (
+  fromNodeId: GNode['id'],
+  toNodeId: GNode['id'],
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme' | 'settings'>,
+  fallbackWeight: number,
+) => {
+  const [connectingEdge] = getEdgesAlongPath(fromNodeId, toNodeId, graph)
+  if (!connectingEdge) throw new Error('nodes are not adjacent')
+  return getEdgeWeightFraction(connectingEdge.id, graph, fallbackWeight)
 }
 
 /**
@@ -301,9 +323,20 @@ export const getWeightBetweenNodes = (
   fromNodeId: GNode['id'],
   toNodeId: GNode['id'],
   graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme' | 'settings' >,
-  fallbackWeight = 1
+  fallbackWeight = 1,
 ) => {
   const isDirected = graph.settings.value.isGraphDirected
   const fn = isDirected ? getDirectedWeightBetweenNodes : getUndirectedWeightBetweenNodes
+  return fn(fromNodeId, toNodeId, graph, fallbackWeight)
+}
+
+export const getFracWeightBetweenNodes = (
+  fromNodeId: GNode['id'],
+  toNodeId: GNode['id'],
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getTheme' | 'settings'>,
+  fallbackWeight = 1,
+) => {
+  const isDirected = graph.settings.value.isGraphDirected
+  const fn = isDirected ? getDirectedFracWeightBetweenNodes : getUndirectedFracWeightBetweenNodes
   return fn(fromNodeId, toNodeId, graph, fallbackWeight)
 }
