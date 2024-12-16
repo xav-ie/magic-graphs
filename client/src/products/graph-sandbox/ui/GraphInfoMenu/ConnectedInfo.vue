@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from "vue";
   import { graph } from "@graph/global";
-  import ConnectedInfoBox from "./ConnectedInfoBox.vue";
+  import GHoverInfo from "@ui/graph/GHoverInfo.vue";
   import { useSCCColorizer } from "./useSCCColorizer";
   import { useBipartiteColorizer } from "./useBipartiteColorizer";
   import { useCycleColorizer } from "./useCycleColorizer";
@@ -62,69 +62,69 @@
       v-if="isDirected"
       class="flex flex-wrap gap-2"
     >
-      <ConnectedInfoBox :tooltip="explanations.isStronglyConnected">
+      <GHoverInfo :tooltip="explanations.isStronglyConnected">
         Strongly Connected? {{ isConnected ? "Yes" : "No" }}
-      </ConnectedInfoBox>
+      </GHoverInfo>
 
-      <ConnectedInfoBox :tooltip="explanations.isWeaklyConnected">
+      <GHoverInfo :tooltip="explanations.isWeaklyConnected">
         Weakly Connected? {{ isWeaklyConnected ? "Yes" : "No" }}
-      </ConnectedInfoBox>
+      </GHoverInfo>
 
-      <ConnectedInfoBox
+      <GHoverInfo
         @mouseenter="colorizeSCCs"
         @mouseleave="decolorizeSCCs"
         :tooltip="explanations.stronglyConnectedComponents"
       >
         Strongly Connected Components: {{ SCCs.length }}
-      </ConnectedInfoBox>
+      </GHoverInfo>
 
-      <ConnectedInfoBox
+      <GHoverInfo
         @mouseenter="colorizeBipartite"
         @mouseleave="decolorizeBipartite"
         :tooltip="explanations.bipartite"
       >
         Bipartite? {{ isBipartite ? "Yes" : "No" }}
-      </ConnectedInfoBox>
+      </GHoverInfo>
 
-      <ConnectedInfoBox
+      <GHoverInfo
         @mouseenter="colorizeCycles"
         @mouseleave="decolorizeCycles"
         :tooltip="explanations.acyclic"
       >
         Acyclic? {{ isAcyclic ? "Yes" : "No" }}
-      </ConnectedInfoBox>
+      </GHoverInfo>
 
-      <ConnectedInfoBox :tooltip="explanations.complete">
+      <GHoverInfo :tooltip="explanations.complete">
         Complete? {{ isComplete ? "Yes" : "No" }}
-      </ConnectedInfoBox>
+      </GHoverInfo>
     </div>
     <div
       v-else
       class="flex flex-wrap gap-2"
     >
-      <ConnectedInfoBox :tooltip="explanations.isConnected">
+      <GHoverInfo :tooltip="explanations.isConnected">
         Connected? {{ isConnected ? "Yes" : "No" }}
-      </ConnectedInfoBox>
+      </GHoverInfo>
 
-      <ConnectedInfoBox
+      <GHoverInfo
         @mouseenter="colorizeBipartite"
         @mouseleave="decolorizeBipartite"
         :tooltip="explanations.bipartite"
       >
         Bipartite? {{ isBipartite ? "Yes" : "No" }}
-      </ConnectedInfoBox>
+      </GHoverInfo>
 
-      <ConnectedInfoBox
+      <GHoverInfo
         @mouseenter="colorizeCycles"
         @mouseleave="decolorizeCycles"
         :tooltip="explanations.acyclic"
       >
         Acyclic? {{ isAcyclic ? "Yes" : "No" }}
-      </ConnectedInfoBox>
+      </GHoverInfo>
 
-      <ConnectedInfoBox :tooltip="explanations.complete">
+      <GHoverInfo :tooltip="explanations.complete">
         Complete? {{ isComplete ? "Yes" : "No" }}
-      </ConnectedInfoBox>
+      </GHoverInfo>
     </div>
   </div>
 </template>

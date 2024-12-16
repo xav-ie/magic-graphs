@@ -1,11 +1,11 @@
 <script setup lang="ts">
   import { graph } from "@graph/global";
-  import ConnectedInfoBox from "@product/graph-sandbox/ui/GraphInfoMenu/ConnectedInfoBox.vue";
   import { usePeriodicityLabels } from "./usePeriodicityLabels";
   import { useSCCColorizer } from "@product/graph-sandbox/ui/GraphInfoMenu/useSCCColorizer";
   import { useIllegalStateColorizer } from "./useIllegalStateColorizer";
   import { useLabelSteadyState } from "./useLabelSteadyState";
   import type { MarkovChain } from "../markov/useMarkovChain";
+  import GHoverInfoTop from "@ui/graph/GHoverInfoTop.vue";
   import GWell from "@ui/graph/GWell.vue";
 
   const props = defineProps<{
@@ -45,41 +45,41 @@
     secondary
     class="p-2 rounded-lg flex flex-wrap gap-2"
   >
-    <ConnectedInfoBox
+    <GHoverInfoTop
       @mouseenter="colorizeIllegalState"
       @mouseleave="decolorizeIllegalState"
       :tooltip="definitions.valid"
     >
       Valid? {{ markov.illegalNodeIds.value.size === 0 ? "Yes" : "No" }}
-    </ConnectedInfoBox>
+    </GHoverInfoTop>
 
-    <ConnectedInfoBox
+    <GHoverInfoTop
       @mouseenter="labelPeriods"
       @mouseleave="unlabelPeriods"
       :tooltip="definitions.periodic"
     >
       Periodic? {{ markov.isPeriodic.value ? "Yes" : "No" }}
-    </ConnectedInfoBox>
+    </GHoverInfoTop>
 
-    <ConnectedInfoBox :tooltip="definitions.absorbing">
+    <GHoverInfoTop :tooltip="definitions.absorbing">
       Absorbing? {{ markov.isAbsorbing.value ? "Yes" : "No" }}
-    </ConnectedInfoBox>
+    </GHoverInfoTop>
 
-    <ConnectedInfoBox
+    <GHoverInfoTop
       @mouseenter="colorizeCommClass"
       @mouseleave="decolorizeCommClass"
       :tooltip="definitions.communicatingClasses"
     >
       Communicating Classes:
       {{ markov.communicatingClasses.value.length }}
-    </ConnectedInfoBox>
+    </GHoverInfoTop>
 
-    <ConnectedInfoBox
+    <GHoverInfoTop
       @mouseenter="labelSteadyState"
       @mouseleave="unlabelSteadyState"
       :tooltip="definitions.steadyState"
     >
       Unique Steady State? {{ markov.steadyState.value ? "Yes" : "No" }}
-    </ConnectedInfoBox>
+    </GHoverInfoTop>
   </GWell>
 </template>
