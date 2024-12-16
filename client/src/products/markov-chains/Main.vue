@@ -6,6 +6,7 @@
   import MarkovChainInfo from "./ui/MarkovChainInfo.vue";
   import { useMarkovChain } from "./markov/useMarkovChain";
   import { useMarkovColorizer } from "./ui/useMarkovColorizer";
+  import MarkovChainInfoLabels from "./ui/MarkovChainInfoLabels.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
 
@@ -24,8 +25,9 @@
       <MarkovChainInfo :markov="markov" />
     </template>
 
-    <template #center-left>
-
+    <template #bottom-center>
+      <MarkovChainInfoLabels :markov="markov" />
     </template>
+
   </GraphProduct>
 </template>

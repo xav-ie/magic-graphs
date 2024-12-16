@@ -1,4 +1,3 @@
-import { onUnmounted } from "vue";
 import type { Graph } from "@graph/types";
 import type { GraphThemeKey } from "@graph/themes";
 import type { ThemeMapEntry } from "@graph/themes/types";
@@ -47,8 +46,6 @@ export const useTheme = <G extends ThemeableGraph>(graph: G, themeId: string) =>
     const themeProps = Object.keys(graph.themeMap) as GraphThemeKey[]
     for (const prop of themeProps) removeTheme(prop)
   }
-
-  onUnmounted(removeAllThemes)
 
   return {
     setTheme,
