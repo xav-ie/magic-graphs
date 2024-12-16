@@ -1,5 +1,5 @@
 import type { DeepPartial, DeepReadonly } from "ts-essentials";
-import type { GEdge, GNode, Graph } from "@graph/types";
+import type { GEdge, GNode } from "@graph/types";
 import type { GraphSettings } from "@graph/settings";
 import type {
   AddNodeOptions,
@@ -16,7 +16,7 @@ import type {
   RedoHistoryOptions,
   UndoHistoryOptions,
 } from "@graph/plugins/history/types";
-import type { Coordinate } from "@shape/types";
+import type { BoundingBox, Coordinate } from "@shape/types";
 import type { GraphMouseEvent } from "@graph/base/types";
 
 export type BaseGraphEventMap = {
@@ -229,6 +229,14 @@ export type MarqueeGraphEventMap = {
     nodes: Readonly<GNode[]>,
     endCoordinates: Readonly<Coordinate>
   ) => void;
+  /**
+   * when the user starts a marquee selection
+   */
+  onMarqueeBeginSelection: (startingCoords: Readonly<Coordinate>) => void;
+  /**
+   * when the user ends a marquee selection
+   */
+  onMarqueeEndSelection: (marqueeBox: Readonly<BoundingBox>) => void;
 }
 
 export type AnnotationGraphEventMap = {}

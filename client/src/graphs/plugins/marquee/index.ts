@@ -78,13 +78,16 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
       width: 0,
       height: 0,
     }
+    graph.emit('onMarqueeBeginSelection', startingCoords)
   }
 
   const disengageMarqueeBox = () => {
     if (!marqueeBox.value) return
+    const finalMarqueeBox = marqueeBox.value
     marqueeBox.value = undefined
     graph.graphCursorDisabled.value = false
     showNodeAnchors()
+    graph.emit('onMarqueeEndSelection', finalMarqueeBox)
   }
 
   const updateMarqueeSelectedItems = (box: BoundingBox) => {

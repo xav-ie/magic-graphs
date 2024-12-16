@@ -171,6 +171,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   const updateParentNode = ({ items }: GraphMouseEvent) => {
     if (currentDraggingAnchor.value) return
 
+
     const topItem = items.at(-1)
     if (!topItem) return resetParentNode()
     if (topItem.graphType !== 'node') return
@@ -286,7 +287,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     graph.unsubscribe('onNodeDrop', updateNodeAnchors)
     graph.unsubscribe('onMouseMove', updateParentNode)
     graph.unsubscribe('onMouseMove', updateCurrentlyDraggingAnchorPosition)
-    graph.subscribe('onMouseMove', updateHoveredNodeAnchorId)
+    graph.unsubscribe('onMouseMove', updateHoveredNodeAnchorId)
     graph.unsubscribe('onMouseDown', setCurrentlyDraggingAnchor)
     graph.unsubscribe('onMouseUp', dropAnchor)
     graph.unsubscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents)
