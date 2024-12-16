@@ -6,7 +6,8 @@ export const drawLineWithCtx = (line: Line) => (ctx: CanvasRenderingContext2D) =
     start,
     end,
     width,
-    color
+    color,
+    dash,
   } = {
     ...LINE_DEFAULTS,
     ...line
@@ -19,6 +20,7 @@ export const drawLineWithCtx = (line: Line) => (ctx: CanvasRenderingContext2D) =
   ctx.lineTo(end.x, end.y);
   ctx.lineWidth = width;
   ctx.strokeStyle = color;
+  ctx.setLineDash(dash);
   ctx.stroke();
   ctx.closePath();
 }
