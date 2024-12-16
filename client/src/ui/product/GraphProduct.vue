@@ -128,13 +128,19 @@
   <div
     class="absolute bottom-8 gap-4 w-full flex flex-col justify-center items-center"
   >
-    <div v-if="isActive">
-      <SimulationPlaybackControls :controls="simRunner.simControls" />
-    </div>
+    <template v-if="runningSimulation && isActive">
+      <slot name="bottom-center-sim">
+        <SimulationPlaybackControls :controls="simRunner.simControls" />
+      </slot>
+    </template>
 
-    <div v-show="graph.annotation.isActive.value">
-      <AnnotationToolbar />
-    </div>
+    <template v-else>
+      <slot name="bottom-center">
+        <div v-show="graph.annotation.isActive.value">
+          <AnnotationToolbar />
+        </div>
+      </slot>
+    </template>
   </div>
 
   <div class="absolute flex gap-2 bottom-8 right-8">

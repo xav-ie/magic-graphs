@@ -87,7 +87,7 @@ const getSteadyStateVector = (transitionMatrix: TransitionMatrix) => {
     .trans()
     .data
     .at(-1)
-    .slice(0, -1);
+    .slice(0, -1) as number[]
 }
 
 export type MarkovSteadyStateOptions = {
