@@ -22,7 +22,7 @@ export const useSimulationTheme = (
     const index = nodeIdToIndex.value.get(node.id);
     if (index === undefined) return;
 
-    return traceAtStep.value[index].toFixed(2);
+    return traceAtStep.value[index].toString().slice(0, 4);
   }
 
   const theme = () => {
