@@ -1,6 +1,6 @@
 import { onUnmounted, ref } from 'vue';
 import type { DeepPartial } from 'ts-essentials';
-import type { GNode } from '@graph/types';
+import type { GNode, Weight } from '@graph/types';
 import type { BaseGraph } from './base';
 import {
   getDirectedOutboundEdges,
@@ -101,7 +101,7 @@ export const getFullNodeAdjacencyList = (graph: BaseGraph) => {
  * a mapping of nodes to their neighbors where neighbors are the full node objects
  * along with the weight of the edge connecting them to the key node
  */
-export type WeightedAdjacencyList<T extends number | Fraction = number> = Record<GNode['id'], (GNode & {
+export type WeightedAdjacencyList<T extends Weight = number> = Record<GNode['id'], (GNode & {
   /**
    * the weight of the edge that connects the key node to the neighbor node
    */
@@ -123,14 +123,14 @@ export type WeightedAdjacencyList<T extends number | Fraction = number> = Record
  * //   'def456': [{ id: 'abc123', label: 'A', weight: 1, x: 100, y: 100 }]
  * // }
  */
-export const getWeightedAdjacencyList = (graph: BaseGraph, fallbackWeight = 1) => {
+export const getWeightedAdjacencyList = (graph: BaseGraph) => {
   const adjList = getAdjacencyList(graph);
   const adjListEntries = Object.entries(adjList);
 
   return adjListEntries.reduce<WeightedAdjacencyList>((acc, [keyNodeId, toNodeIds]) => {
     acc[keyNodeId] = toNodeIds.map(toNodeId => ({
       ...graph.getNode(toNodeId)!,
-      weight: getWeightBetweenNodes(keyNodeId, toNodeId, graph, fallbackWeight)
+      weight: getWeightBetweenNodes(keyNodeId, toNodeId, graph)
     }))
     return acc;
   }, {});
@@ -140,14 +140,14 @@ export const getWeightedAdjacencyList = (graph: BaseGraph, fallbackWeight = 1) =
  * the same as `getWeightedAdjacencyList` but with the weight type as a {@link Fraction}
  * instead of a number
  */
-export const getFracWeightedAdjacencyList = (graph: BaseGraph, fallbackWeight = 1) => {
+export const getFracWeightedAdjacencyList = (graph: BaseGraph) => {
   const adjList = getAdjacencyList(graph);
   const adjListEntries = Object.entries(adjList);
 
   return adjListEntries.reduce<WeightedAdjacencyList<Fraction>>((acc, [keyNodeId, toNodeIds]) => {
     acc[keyNodeId] = toNodeIds.map(toNodeId => ({
       ...graph.getNode(toNodeId)!,
-      weight: getFracWeightBetweenNodes(keyNodeId, toNodeId, graph, fallbackWeight)
+      weight: getFracWeightBetweenNodes(keyNodeId, toNodeId, graph)
     }))
     return acc;
   }, {});
