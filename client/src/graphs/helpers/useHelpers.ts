@@ -5,6 +5,7 @@ import {
   getConnectedNodes,
   getEdgesAlongPath,
   getEdgeWeight,
+  getEdgeWeightFraction,
   getInboundEdges,
   getOutboundEdges,
   getWeightBetweenNodes,
@@ -33,6 +34,7 @@ export const useHelpers = (graph: BaseGraph) => ({
     graph
   ),
   getEdgeWeight: (edgeId: GEdge['id']) => getEdgeWeight(edgeId, graph),
+  getEdgeWeightFraction: (edgeId: GEdge['id']) => getEdgeWeightFraction(edgeId, graph),
   getWeightBetweenNodes: (fromNodeId: GNode['id'], toNodeId: GNode['id']) => getWeightBetweenNodes(
     fromNodeId,
     toNodeId,

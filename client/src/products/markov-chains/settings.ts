@@ -1,3 +1,4 @@
+import { Fraction } from "mathjs";
 import type { GraphSettings } from "@graph/settings";
 
 /**
@@ -5,4 +6,14 @@ import type { GraphSettings } from "@graph/settings";
  */
 export const MARKOV_CHAIN_GRAPH_SETTINGS: Partial<GraphSettings> = {
   persistentStorageKey: 'markov-chains',
+  edgeInputToLabel: (input: string) => {
+    // fraction throws an error if the input cannot be parsed or
+    // is a divide by zero operation
+    try {
+      // TODO make the amount to simply configurable by the user
+      const fracStr = new Fraction(input).simplify(0.01).toFraction();
+      if (fracStr === '0') return // 0 edges make no sense in a markov chain
+      return fracStr;
+    } catch {}
+  }
 };

@@ -1,3 +1,4 @@
+import { Fraction } from 'mathjs'
 import type {
   Graph,
   GNode,
@@ -216,24 +217,52 @@ export const getEdgesAlongPath = (
  * @param edgeId the edge to get the weight of
  * @param graph the graph instance
  * @param fallbackWeight the weight to return if the label cannot be parsed as a number. defaults to 1
+ * @param parseFraction whether to parse the label as a fraction. defaults to true
  * @returns the weight of the edge
  */
 export const getEdgeWeight = (
   edgeId: GEdge['id'],
   graph: Pick<Graph, 'getEdge' | 'getTheme' | 'settings'>,
-  fallbackWeight = 1
+  fallbackWeight = 1,
+  parseFraction = true,
 ) => {
-
   const edge = graph.getEdge(edgeId)
   if (!edge) throw new Error('edge not found')
 
   // unweighted
   if (!graph.settings.value.displayEdgeLabels) return 1
 
-  const label = graph.getTheme('edgeText', edge)
-  const weight = Number(label)
+  if (parseFraction) {
+    try {
+      const fracWeight = new Fraction(edge.label)
+      return fracWeight.valueOf()
+    } catch {
+      return fallbackWeight
+    }
+  }
+
+  const weight = Number(edge.label)
   return isNaN(weight) ? fallbackWeight : weight
 }
+
+export const getEdgeWeightFraction = (
+  edgeId: GEdge['id'],
+  graph: Pick<Graph, 'getEdge' | 'getTheme' | 'settings'>,
+  fallbackWeight = 1,
+) => {
+  const edge = graph.getEdge(edgeId)
+  if (!edge) throw new Error('edge not found')
+
+  // unweighted
+  if (!graph.settings.value.displayEdgeLabels) return new Fraction(1)
+
+  try {
+    return new Fraction(edge.label)
+  } catch {
+    return new Fraction(fallbackWeight)
+  }
+}
+
 
 export const getDirectedWeightBetweenNodes = (
   fromNodeId: GNode['id'],
