@@ -52,9 +52,9 @@ export const useGraph = (
   })
 
   const adjacencyList = useAdjacencyList(base)
-  const transitionMatrix = useTransitionMatrix(base)
+  const transitionMatrix = useTransitionMatrix({ ...base, adjacencyList })
 
-  const characteristics = useCharacteristics({ ...base, adjacencyList })
+  const characteristics = useCharacteristics({ ...base, ...adjacencyList })
   const animate = useAnimation({
     ...base,
     history,

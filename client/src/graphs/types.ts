@@ -1,8 +1,7 @@
+import type { Fraction } from "mathjs";
 import { useGraph } from "@graph/useGraph";
 import type { Shape } from "@shape/types"
 import type { MaybeGetter } from "@utils/maybeGetter";
-import type { GraphTheme } from "./themes/types";
-import type { GraphSettings } from "./settings";
 
 /**
  * the useGraph composition function
@@ -13,6 +12,11 @@ export type UseGraph = typeof useGraph
  * a graph instance (the return value of useGraph)
  */
 export type Graph = ReturnType<UseGraph>
+
+/**
+ * a weight for an edge connecting two nodes
+ */
+export type Weight = number | Fraction;
 
 /**
  * a node in a graph instance

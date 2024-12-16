@@ -4,7 +4,7 @@ import type { AdjacencyList, AdjacencyLists } from "@graph/useAdjacencyList";
 export const useConnected = ({
   adjacencyList: adjList,
   undirectedAdjacencyList: undirectedAdjList,
-}: AdjacencyLists) => {
+}: Pick<AdjacencyLists, 'adjacencyList' | 'undirectedAdjacencyList'>) => {
   const runBFS = (adjList: AdjacencyList, startNode: string) => {
     const visited = new Set<string>();
     const q = []

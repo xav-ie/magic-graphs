@@ -4,13 +4,23 @@
   import GWell from "@ui/graph/GWell.vue";
   import CIcon from "@ui/core/Icon.vue";
 
-  defineProps<{
+  withDefaults(defineProps<{
+    /**
+     * the text to display in the tooltip. supports html
+     */
     tooltip: string;
-  }>();
+    /**
+     * the offset of the popover content from the activator (in pixels)
+     * @default 4
+     */
+    offset?: string | number;
+  }>(), {
+    offset: 4,
+  });
 </script>
 
 <template>
-  <CPopoverTooltip>
+  <CPopoverTooltip :offset="offset">
     <GButton
       v-bind="$attrs"
       tertiary

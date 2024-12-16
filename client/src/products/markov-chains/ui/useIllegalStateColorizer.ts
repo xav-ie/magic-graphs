@@ -20,8 +20,7 @@ export const useIllegalStateColorizer = (graph: Graph, markov: MarkovChain) => {
     if (graph.focus.isFocused(node.id)) return;
     const sum = nodeIdToOutgoingWeight.value.get(node.id);
     if (sum === undefined) return '?';
-    if (Number.isInteger(sum)) return sum.toString();
-    return sum.toFixed(2);
+    return sum.toFraction();
   }
 
   const nodeTextSize = (node: GNode) => {

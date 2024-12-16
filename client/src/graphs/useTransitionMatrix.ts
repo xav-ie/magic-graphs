@@ -1,44 +1,35 @@
-import { ref, onUnmounted } from "vue";
-import type { DeepPartial } from "ts-essentials";
+import { computed } from "vue";
 import type { BaseGraph } from "./base";
-import { getWeightedAdjacencyList } from "./useAdjacencyList";
-import type { GraphSettings } from "./settings";
+import type { GNode, Weight } from "./types";
+import type { AdjacencyLists, WeightedAdjacencyList } from "./useAdjacencyList";
 
 /**
  * a 2D array (matrix) where matrix[i][j] represents the absolute weight of
  * transitioning from node i to node j
  */
-export type TransitionMatrix = number[][];
+export type TransitionMatrix<T extends Weight = number> = T[][];
 
 /**
  * generates a transition matrix for a directed or undirected graph
  *
- * @param graph - The graph instance
- * @returns a 2D array (matrix) where matrix[i][j] represents the
- * absolute weight of transitioning from node i to node j
+ * @param graph the graph instance
+ * @returns a {@link TransitionMatrix}
  */
-export const getTransitionMatrix = (graph: BaseGraph): TransitionMatrix => {
-  const nodes = graph.nodes.value;
-  const nodeCount = nodes.length;
-  const adjacencyList = getWeightedAdjacencyList(graph);
+export const getTransitionMatrix = <T extends Weight>(
+  adjList: Readonly<WeightedAdjacencyList<T>>,
+  nodeToIndex: Map<GNode['id'], number>
+) => {
+  const nodeCount = Object.keys(adjList).length;
 
-  const nodeIndexMap = nodes.reduce<Record<string, number>>(
-    (acc, node, index) => {
-      acc[node.id] = index;
-      return acc;
-    },
-    {}
-  );
-
-  const matrix = Array.from({ length: nodeCount }, () =>
+  const matrix: TransitionMatrix<T> = Array.from({ length: nodeCount }, () =>
     Array(nodeCount).fill(0)
   );
 
-  for (const [nodeId, neighbors] of Object.entries(adjacencyList)) {
-    const fromIndex = nodeIndexMap[nodeId];
+  for (const [nodeId, neighbors] of Object.entries(adjList)) {
+    const fromIndex = nodeToIndex.get(nodeId)!;
 
     for (const neighbor of neighbors) {
-      const toIndex = nodeIndexMap[neighbor.id];
+      const toIndex = nodeToIndex.get(neighbor.id)!;
       matrix[fromIndex][toIndex] = neighbor.weight;
     }
   }
@@ -46,28 +37,30 @@ export const getTransitionMatrix = (graph: BaseGraph): TransitionMatrix => {
   return matrix;
 };
 
-export const useTransitionMatrix = (graph: BaseGraph) => {
-  const transitionMatrix = ref(getTransitionMatrix(graph));
+export const useTransitionMatrix = (graph: BaseGraph & {
+  adjacencyList: Pick<AdjacencyLists, 'weightedAdjacencyList' | 'weightedFracAdjacencyList'>
+}) => {
+  const {
+    weightedAdjacencyList,
+    weightedFracAdjacencyList,
+  } = graph.adjacencyList;
 
-  const update = () => {
-    transitionMatrix.value = getTransitionMatrix(graph);
-  };
+  const transitionMatrix = computed(() => {
+    return getTransitionMatrix(weightedAdjacencyList.value, graph.nodeIdToIndex.value);
+  })
 
-  const checkForUpdate = (diff: DeepPartial<GraphSettings>) => {
-    // TODO investigate why this is being invoked twice when the graph settings
-    // change from directed to undirected
-    if (diff.isGraphDirected !== undefined) update();
-  }
-
-  graph.subscribe("onStructureChange", update);
-  graph.subscribe("onSettingsChange", checkForUpdate);
-
-  onUnmounted(() => {
-    graph.unsubscribe("onStructureChange", update);
-    graph.unsubscribe("onSettingsChange", checkForUpdate);
-  });
+  const fracTransitionMatrix = computed(() => {
+    return getTransitionMatrix(weightedFracAdjacencyList.value, graph.nodeIdToIndex.value);
+  })
 
   return {
+    /**
+     * the transition matrix for the graph using standard number weights
+     */
     transitionMatrix,
+    /**
+     * the transition matrix for the graph using fraction weights
+     */
+    fracTransitionMatrix,
   };
 };

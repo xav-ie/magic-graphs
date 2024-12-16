@@ -1,12 +1,12 @@
 import { computed } from 'vue';
-import { matrix, multiply } from 'mathjs';
+import { matrix, multiply, type MathArray, type MathNumericType } from 'mathjs';
 import type { Graph } from "@graph/types";
 import type { SimulationRunner, TraceFunction } from "@ui/product/sim/types";
 import type { TransitionMatrix } from '@graph/useTransitionMatrix';
 import { useSimulationControls } from '@ui/product/sim/useSimulationControls';
 import { useSimulationTheme } from './theme';
 
-export type MarkovChainTrace = TraceFunction<number[]>;
+export type MarkovChainTrace = TraceFunction<MathArray<MathNumericType>>
 export type MarkovChainSimulationRunner = SimulationRunner<MarkovChainTrace>;
 
 /**
@@ -29,9 +29,7 @@ export const getStateAfterNSteps = (
     vector = multiply(vector, transMatrix);
   }
 
-  return vector
-    .toArray()
-    .map((entry) => parseFloat(Number(entry).toFixed(4)));
+  return vector.toArray()
 }
 
 export const useSimulationRunner = (graph: Graph): MarkovChainSimulationRunner => {

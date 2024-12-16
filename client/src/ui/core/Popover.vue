@@ -36,7 +36,7 @@
     @show="isOpen = true"
     @hide="isOpen = false"
   >
-    <div :style="{ marginTop: offset + 'px' }">
+    <div :style="{ transform: `translateY(${offset}px)` }">
       <slot></slot>
     </div>
   </Popover>
