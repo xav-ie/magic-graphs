@@ -2,6 +2,7 @@ import type { ProductInfo } from 'src/types'
 import type { Graph } from '@graph/types'
 import { useKruskalSimulationRunner, usePrimSimulationRunner } from './sim/runner'
 import { canRunMST } from './sim/guard'
+import { generateId } from '@utils/id'
 
 const info: ProductInfo = {
   route: {
@@ -33,6 +34,19 @@ const info: ProductInfo = {
       runner: usePrimSimulationRunner(graph),
     }
   ]),
+  templates: [
+    {
+      id: generateId(),
+      productId: 'mst',
+      title: 'Minimum Spanning Tree',
+      description: 'Visualize Minimum Spanning Tree',
+      thumbnail: '/products/thumbnails/mst.png',
+      graphState: {
+        nodes: [],
+        edges: [],
+      },
+    }
+  ],
 }
 
 export default info

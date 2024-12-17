@@ -9,17 +9,20 @@ import {
 import { generateId } from "@utils/id";
 import { useLocalStorage } from "@vueuse/core";
 import { createImageFromCanvasRegion } from "./snapshot";
+import { products } from "@utils/product";
 
 export const useTemplate = (graph: Graph) => {
   const userTemplates = useLocalStorage<GraphTemplate[]>(
     "user-graph-templates",
     []
   );
-  const productTemplates = ref<GraphTemplate[]>([]);
+  const productTemplates = ref<GraphTemplate[]>(
+    products.flatMap((p) => p.templates ?? [])
+  );
 
   const templates = computed(() => [
+    ...userTemplates.value, // user templates first so easier to find
     ...productTemplates.value,
-    ...userTemplates.value,
   ]);
 
   const addCurrentGraphAsTemplate = (
