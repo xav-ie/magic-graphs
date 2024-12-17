@@ -43,6 +43,8 @@
         </div>
       </div>
 
+      <hr class="my-2" />
+
       <div class="flex gap-2 justify-center">
         <GButton @click="addCurrentGraphAsTemplate">Save Current</GButton>
         <GButton @click="clearUserTemplates">Clear All</GButton>
