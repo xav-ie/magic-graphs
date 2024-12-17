@@ -5,7 +5,7 @@ const templates = [
     id: generateId(),
     productId: 'mst',
     title: 'Minimum Spanning Tree',
-    description: 'Visualize Minimum Spanning Tree',
+    description: 'basic example for visualizing different mst algorithms',
     thumbnail: '/products/template-thumbnails/mst.png',
     graphState: {
       nodes: [{
