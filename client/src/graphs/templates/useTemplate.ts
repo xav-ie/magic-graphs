@@ -6,10 +6,11 @@ import {
   getAverageCoordinatesOfGraphNodes,
 } from "./helpers";
 import { generateId } from "@utils/id";
+import { useLocalStorage } from "@vueuse/core";
 
 export const useTemplate = (graph: Graph) => {
 
-  const userTemplates = ref<GraphTemplate[]>([]);
+  const userTemplates = useLocalStorage<GraphTemplate[]>('user-graph-templates' , []);
   const productTemplates = ref<GraphTemplate[]>([]);
 
   const templates = computed(() => [...productTemplates.value, ...userTemplates.value]);
