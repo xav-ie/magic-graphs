@@ -1,7 +1,8 @@
 import type { RouteRecordRaw } from "vue-router"
 import type { Graph } from "@graph/types"
-import type { SimulationRunner, SimulationTrace } from "@ui/product/sim/types"
+import type { SimulationRunner } from "@ui/product/sim/types"
 import type { ProductCategory } from "@utils/product"
+import type { SimulationGuard } from "@ui/product/sim/guard"
 
 /**
  * options for exposing a product to the product dropdown menu
@@ -42,11 +43,10 @@ export type SimulationDeclaration = {
    */
   thumbnail: string,
   /**
-   * for determining if the simulation can run on the given graph.
-   * returning a `string` indicates that the simulation cannot run and the string, user facing,
-   * is the reason why it cannot. returning `undefined` indicates that the simulation can run
+   * a guard for preventing graphs from running unsuitable simulations,
+   * if left undefined, the simulation will always be available
    */
-  canRun?: () => string | undefined,
+  canRun?: SimulationGuard,
   /**
    * the runner for the simulation
    */

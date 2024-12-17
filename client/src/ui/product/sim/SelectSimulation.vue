@@ -16,7 +16,7 @@
   }>();
 
   const reasonNotToRun = (sim: SimulationDeclaration) => {
-    const reason = sim.canRun?.();
+    const reason = sim.canRun?.build()?.();
     if (typeof reason === "string") return reason;
   }
 
