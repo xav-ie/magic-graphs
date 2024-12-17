@@ -19,7 +19,7 @@ export const getAverageCoordinatesOfGraphNodes = (nodes: GNode[]) => {
   };
 };
 
-export const generateTemplateFromOriginCoordinates = (
+export const centerNodesOnOriginCoordinates = (
   nodes: GNode[],
   targetOrigin: Coordinate
 ): GNode[] => {
