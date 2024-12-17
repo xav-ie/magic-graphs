@@ -26,8 +26,9 @@ export const getStateAfterNSteps = (
   const vector = matrix(initialState);
   const tMatrix = matrix(transitionMatrix);
   const result = multiply(vector, tMatrix).toArray() as Fraction[];
+  const simplifiedResult = result.map((f) => f.simplify(0.0001));
 
-  return getStateAfterNSteps(transitionMatrix, result, n - 1);
+  return getStateAfterNSteps(transitionMatrix, simplifiedResult, n - 1);
 }
 
 /**
