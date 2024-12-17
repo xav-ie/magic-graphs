@@ -4,7 +4,7 @@ import type { Graph } from "@graph/types";
 import type { SimulationRunner, TraceFunction } from "@ui/product/sim/types";
 import { useSimulationControls } from '@ui/product/sim/useSimulationControls';
 import { useSimulationTheme } from './theme';
-import { useStateAfterNSteps } from './useStateAfterNSteps';
+import { useStateAfterNSteps } from '../markov/useStateAfterNSteps';
 import { useTextTip } from '@ui/useTextTip';
 import state from '../state';
 

@@ -9,11 +9,17 @@ const minEdgeText = (minEdges: number) => {
   return `Requires at least ${minEdges} edges` as const
 }
 
+const invalidText = (thing?: string) => {
+  if (!thing) return 'Invalid graph'
+  return `Requires valid ${thing}` as const
+}
+
 /**
  * a map to from standard reasons why a simulation
  * cannot run on a given graph to user-facing text explaining why
  */
 export const CANT_RUN_REASONS = {
+  INVALID: invalidText,
   NOT_WEIGHTED: 'Requires weighted edges',
   NOT_UNWEIGHTED: 'Requires unweighted edges',
   NOT_DIRECTED: 'Requires directed graph',
@@ -25,5 +31,6 @@ export const CANT_RUN_REASONS = {
   NOT_BIPARTITE: 'Requires bipartite graph',
   NOT_PLANAR: 'Requires planar graph',
   NEGATIVE_EDGE_WEIGHTS: 'Requires non-negative edge weights',
+  NON_POSITIVE_EDGE_WEIGHTS: 'Requires positive edge weights',
   NOT_BIDIRECTIONAL: 'Requires no bidirectional edges',
 } as const

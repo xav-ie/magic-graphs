@@ -2,7 +2,7 @@ import { computed, watch } from "vue";
 import type { ComputedRef, Ref } from "vue";
 import { multiply, Fraction, matrix } from "mathjs";
 import type { TransitionMatrix } from "@graph/useTransitionMatrix";
-import type { MarkovChainTrace } from "./runner";
+import type { MarkovChainTrace } from "../sim/runner";
 
 const memo = new Map<number, ReturnType<typeof getStateAfterNSteps>>();
 
