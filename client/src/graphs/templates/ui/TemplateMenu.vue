@@ -4,8 +4,15 @@
   import GWell from "@ui/graph/GWell.vue";
   import { useTemplate } from "../useTemplate";
   import GButton from "@ui/graph/button/GButton.vue";
+  import TemplateItem from "./TemplateItem.vue";
 
-  const { templates, addCurrentGraphAsTemplate, loadTemplate, clearUserTemplates, deleteUserTemplate } = useTemplate(graph.value);
+  const {
+    templates,
+    addCurrentGraphAsTemplate,
+    loadTemplate,
+    clearUserTemplates,
+    deleteUserTemplate,
+  } = useTemplate(graph.value);
 </script>
 
 <template>
@@ -13,16 +20,33 @@
     <template #activator="props">
       <slot v-bind="props"></slot>
     </template>
-    <GWell class="flex flex-col text-xl font-bold p-3 w-[400px] max-h-[600px] overflow-auto rounded-lg gap-2"> 
-      
-      <div v-for="template in templates" class="flex gap-2">
-        <GButton @click="loadTemplate(template.id)">Load</GButton>
-        <GButton @click="deleteUserTemplate(template.id)">Delete</GButton>
+    <GWell
+      class="flex flex-col text-xl font-bold p-3 w-[400px] max-h-[600px] overflow-auto rounded-lg gap-2"
+    >
+      <p
+        v-if="templates.length === 0"
+        class="font-normal text-base text-center"
+      >
+        Add a template!
+      </p>
+      <div v-else>
+        <div
+          v-for="template in templates"
+          :key="template.id"
+          class="flex gap-2"
+        >
+          <TemplateItem
+            :template="template"
+            :loadTemplate="loadTemplate"
+            :deleteTemplate="deleteUserTemplate"
+          />
+        </div>
       </div>
 
-      <GButton @click="addCurrentGraphAsTemplate">Save</GButton>
-      <GButton @click="clearUserTemplates">Clear</GButton>
+      <div class="flex gap-2 justify-center">
+        <GButton @click="addCurrentGraphAsTemplate">Save Current</GButton>
+        <GButton @click="clearUserTemplates">Clear All</GButton>
+      </div>
     </GWell>
-   
   </CPopover>
 </template>
