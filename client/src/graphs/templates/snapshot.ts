@@ -4,7 +4,7 @@ import { getCtx } from "@utils/ctx";
 export const createImageFromCanvasRegion = (
   canvas: HTMLCanvasElement,
   boundingBox: BoundingBox
-): string => {
+) => {
   const { at, width, height } = boundingBox;
   const tempCanvas = document.createElement('canvas');
   tempCanvas.width = width;
