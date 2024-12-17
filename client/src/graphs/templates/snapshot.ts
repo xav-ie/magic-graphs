@@ -19,5 +19,9 @@ export const createImageFromCanvasRegion = (
     width, height     // Destination width, height
   );
 
-  return tempCanvas.toDataURL();
+  const dataURL = tempCanvas.toDataURL();
+
+  tempCanvas.remove();
+
+  return dataURL;
 };
