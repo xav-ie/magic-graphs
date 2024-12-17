@@ -8,5 +8,8 @@ export const canRunMarkovChain = (graph: Graph) => {
     .weighted()
     .nonNegativeEdgeWeights()
     .minNodes(1)
-    .invalid(() => illegalNodeIds.value.size > 0, 'markov chain')
+    .valid(() => illegalNodeIds.value.size === 0, {
+      title: 'Requires valid Markov Chain',
+      description: 'The graph must be a valid Markov Chain for this simulation to run',
+    })
 }
