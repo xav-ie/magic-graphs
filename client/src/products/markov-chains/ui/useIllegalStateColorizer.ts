@@ -1,7 +1,7 @@
 import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
-import type { MarkovChain } from "../markov/useMarkovChain";
 import colors from "@utils/colors";
+import type { MarkovChain } from "../markov/useMarkovChain";
 
 const USETHEME_ID = 'markov-illegal-state';
 
@@ -20,7 +20,7 @@ export const useIllegalStateColorizer = (graph: Graph, markov: MarkovChain) => {
     if (graph.focus.isFocused(node.id)) return;
     const sum = nodeIdToOutgoingWeight.value.get(node.id);
     if (sum === undefined) return '?';
-    return sum.toFraction();
+    return sum.simplify(0.001).toFraction();
   }
 
   const nodeTextSize = (node: GNode) => {
