@@ -22,11 +22,18 @@ export const useSimulationTheme = (
     const index = nodeIdToIndex.value.get(node.id);
     if (index === undefined) return;
 
-    return traceAtStep.value[index].toString().slice(0, 4);
+    return traceAtStep.value[index].simplify(0.001).toFraction();
+  }
+
+  const nodeTextSize = (node: GNode) => {
+    const defaultSize = graph.baseTheme.value.nodeTextSize;
+    if (graph.focus.isFocused(node.id)) return;
+    return defaultSize - 5;
   }
 
   const theme = () => {
     setTheme('nodeText', nodeText);
+    setTheme('nodeTextSize', nodeTextSize);
   }
 
   const untheme = () => {

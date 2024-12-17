@@ -40,7 +40,7 @@
     return props.items.find((item) => item.value === selectedItem.value)?.label;
   });
 
-  const isOpen = ref(false);
+  const isOpen = defineModel("open", { default: false });
 
   const toggleMenu = () => (isOpen.value = !isOpen.value);
 
@@ -56,7 +56,6 @@
 
 <template>
   <div class="w-full flex justify-center">
-
     <!-- spread menu -->
     <div
       v-if="isOpen"
@@ -68,14 +67,15 @@
         :key="item.label"
         @click="selectItem(item)"
         :class="[
-          'w-16',
           'rounded-full',
           isSelected(item)
             ? 'opacity-100 ring-white ring-2 ring-inset'
             : 'opacity-75',
         ]"
       >
-        {{ item.label }}
+        <span class="w-12">
+          {{ item.label }}
+        </span>
       </GButton>
     </div>
 
@@ -83,10 +83,11 @@
     <GButton
       v-else-if="selectedLabel"
       @click="toggleMenu"
-      class="w-16 rounded-full"
+      class="rounded-full"
     >
-      {{ selectedLabel }}
+      <span class="w-12">
+        {{ selectedLabel }}
+      </span>
     </GButton>
-
   </div>
 </template>

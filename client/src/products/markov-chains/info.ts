@@ -1,5 +1,6 @@
 import type { ProductInfo } from "src/types";
 import { useSimulationRunner } from "./sim/runner";
+import { canRunMarkovChain } from "./sim/guard";
 import type { Graph } from "@graph/types";
 
 export const info: ProductInfo = {
@@ -15,6 +16,7 @@ export const info: ProductInfo = {
     description: 'Simulate the probability of being in each state after a certain number of steps.',
     thumbnail: '/products/thumbnails/markov-chains.png',
     runner: useSimulationRunner(graph),
+    canRun: canRunMarkovChain(graph),
   }],
   menu: {
     name: "Markov Chains",
