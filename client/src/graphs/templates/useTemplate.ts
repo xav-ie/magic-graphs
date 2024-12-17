@@ -1,6 +1,6 @@
 import type { Graph } from "@graph/types";
 import type { GraphTemplate } from "./types";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import {
   centerNodesOnOriginCoordinates,
   getAverageCoordinatesOfGraphNodes,
@@ -21,40 +21,38 @@ export const useTemplate = (graph: Graph) => {
     }
   ]);
 
-  // onMounted(() => {
-  //   templates.value = loadTemplates();
-  // })
-  
   const addCurrentGraphAsTemplate = (templateDetails: Pick<GraphTemplate, "title" | "description">) => {
     const { nodes, edges } = graph;
     templates.value.push({
       id: '10',
       ...templateDetails,
       graphState: {
-        nodes: nodes.value,
-        edges: edges.value
+        nodes: JSON.parse(JSON.stringify(nodes.value)),
+        edges: JSON.parse(JSON.stringify(edges.value))
       }
     })
-    console.log(templates.value)
   };
   
   const loadTemplate = (templateId: GraphTemplate["id"]) => {
     const template = templates.value.find((t) => t.id === templateId);
-    console.log(template)
     if (template === undefined) {
       throw new Error(`template could not be loaded: ${templateId} not found`);
     }
     
     const { nodes, edges } = template.graphState;
+    // currently only works after moving the nodes around 2x. why????
     const { x, y } = getAverageCoordinatesOfGraphNodes(graph.nodes.value);
     graph.load({
       nodes: centerNodesOnOriginCoordinates(nodes, { x, y }),
-      edges: [],
+      edges
     });
   };
+
+  const clearTemplates = () => templates.value = [];
 
   return {
     addCurrentGraphAsTemplate,
     loadTemplate,
+    clearTemplates,
   };
 };
