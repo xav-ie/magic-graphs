@@ -27,6 +27,7 @@ import { computed } from "vue";
     <GWell
       class="flex flex-col text-xl font-bold p-3 w-[400px] rounded-lg gap-2"
     >
+      <h1 class="text-2xl">Templates</h1>
       <p
         v-if="templates.length === 0"
         class="font-normal text-base text-center"
