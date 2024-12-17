@@ -1,21 +1,22 @@
+import type { DeepReadonly } from "ts-essentials"
 import type { Graph } from "@graph/types"
 import { useNodeEdgeColorizer } from "./theme/useNodeEdgeColorizer"
 import { CANT_RUN_REASONS } from "./constants"
 import type { Reason } from "./types"
 
 /**
- * for determining if the simulation can run on the given graph.
- * returning a {@link Reason} will prevent the simulation from running
- * for that reason, otherwise the check passes
+ * determines if the simulation can run.
+ * returning a {@link Reason} fails the check for `Reason`, otherwise it passes.
+ * simulations must pass all checks to clear {@link SimulationGuard.check}
  */
-type GuardCheck = () => Reason | undefined
+export type SimulationGuardCheck = () => DeepReadonly<Reason> | undefined
 
 /**
  * a fluent builder for creating a guard that checks if a simulation can run on a given graph
  */
 export class SimulationGuard {
   graph: Graph
-  checks: GuardCheck[] = []
+  checks: SimulationGuardCheck[] = []
 
   constructor(g: Graph) {
     this.graph = g
@@ -223,7 +224,7 @@ export class SimulationGuard {
   }
 
   /**
-   * builds the final check function
+   * @returns the final check function that run all the checks
    */
   build() {
     return () => {
@@ -236,7 +237,7 @@ export class SimulationGuard {
 
   /**
    * checks if the simulation can run on the graph.
-   * returns a `string` if it cannot, explaining why. returns `undefined` if it can
+   * @returns a {@link Reason} if it cant or `undefined` if it can
    */
   check() {
     return this.build()()

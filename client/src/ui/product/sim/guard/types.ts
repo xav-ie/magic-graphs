@@ -3,7 +3,7 @@
 /**
  * text explaining why cant the simulation run on the given graph
 */
-export type ReasonText = Readonly<{
+export type ReasonText = {
   /**
    * a title for the reason
   */
@@ -13,14 +13,14 @@ export type ReasonText = Readonly<{
   * for the user
  */
 description: string
-}>
+}
 
 export type ReasonTextGetter = (...args: any[]) => ReasonText
 
 /**
  * themes the graph to highlight the reason why the simulation cannot run
  */
-export type ReasonThemer = Readonly<{
+export type ReasonThemer = {
   /**
    * activates the theme
    */
@@ -29,7 +29,7 @@ export type ReasonThemer = Readonly<{
    * deactivates the theme
    */
   untheme: () => void
-}>
+}
 
 /**
  * text and themer for the reason why the simulation cannot run

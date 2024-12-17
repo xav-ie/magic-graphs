@@ -1,5 +1,5 @@
 import definitions from "@graph/plugins/characteristics/definitions"
-import type { ReasonText } from "./types"
+import type { ReasonText, ReasonTextGetter } from "./types"
 
 const minNodeText = (minNodes: number) => {
   if (minNodes === 1) return 'Requires at least 1 node'
@@ -64,4 +64,4 @@ export const CANT_RUN_REASONS = {
     title: 'Requires no bidirectional edges',
     description: 'There is at least one pair of nodes that are connected by two edges in opposite directions',
   }
-} as const satisfies Record<string, ReasonText>
+} as const satisfies Record<string, ReasonText | ReasonTextGetter>
