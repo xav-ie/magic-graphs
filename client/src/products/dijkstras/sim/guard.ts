@@ -8,5 +8,4 @@ export const canRunDijkstras = (graph: Graph) => () => {
   if (!nonNegativeWeights) return CANT_RUN_REASONS.NEGATIVE_EDGE_WEIGHTS
   const hasNodes = graph.nodes.value.length > 0
   if (!hasNodes) return CANT_RUN_REASONS.NOT_ENOUGH_NODES(1)
-  return true
 }

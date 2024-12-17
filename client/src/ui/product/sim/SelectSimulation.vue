@@ -17,8 +17,7 @@
 
   const reasonNotToRun = (sim: SimulationDeclaration) => {
     const reason = sim.canRun?.();
-    if (reason === true) return;
-    if (reason) return reason;
+    if (typeof reason === "string") return reason;
   }
 
   const displayedSimulations = computed(() => {
@@ -57,6 +56,7 @@
             {{ reasonNotToRun(simulation) }}
           </h2>
         </div>
+
         <GVerticalCardButton
           @click="emits('simulation-selected', simulation)"
           class="rounded-md"

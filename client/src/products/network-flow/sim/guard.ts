@@ -10,5 +10,4 @@ export const canRunFordFulkerson = (graph: Graph) => () => {
   if (!hasAtLeastTwoNodes) return CANT_RUN_REASONS.NOT_ENOUGH_NODES(2)
   const { hasBidirectionalEdges } = graph.characteristics
   if (hasBidirectionalEdges.value) return CANT_RUN_REASONS.NOT_BIDIRECTIONAL
-  return true
 }

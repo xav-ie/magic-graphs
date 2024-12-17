@@ -12,6 +12,5 @@ export const canRunMarkovChain = (graph: Graph) => {
     const hasNodes = graph.nodes.value.length > 0
     if (!hasNodes) return CANT_RUN_REASONS.NOT_ENOUGH_NODES(1)
     if (illegalNodeIds.value.size > 0) return CANT_RUN_REASONS.INVALID('markov chain')
-    return true
   }
 }

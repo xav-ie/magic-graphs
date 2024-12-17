@@ -10,5 +10,4 @@ export const canRunMST = (graph: Graph) => () => {
   if (!hasAtLeastOneEdge) return CANT_RUN_REASONS.NOT_ENOUGH_EDGES(1)
   const isConnected = graph.characteristics.isConnected.value
   if (!isConnected) return CANT_RUN_REASONS.NOT_CONNECTED
-  return true
 }

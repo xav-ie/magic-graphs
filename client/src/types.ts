@@ -42,11 +42,11 @@ export type SimulationDeclaration = {
    */
   thumbnail: string,
   /**
-   * a predicate to determine if the simulation can run on the given graph.
-   * returning a string indicates that the simulation cannot run and the string, user facing,
-   * is the reason why it cannot. returning true indicates that the simulation can run.
+   * for determining if the simulation can run on the given graph.
+   * returning a `string` indicates that the simulation cannot run and the string, user facing,
+   * is the reason why it cannot. returning `undefined` indicates that the simulation can run
    */
-  canRun?: () => true | string,
+  canRun?: () => string | undefined,
   /**
    * the runner for the simulation
    */
