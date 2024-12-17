@@ -5,6 +5,7 @@
   import { useTemplate } from "../useTemplate";
   import GButton from "@ui/graph/button/GButton.vue";
   import TemplateItem from "./TemplateItem.vue";
+import { computed } from "vue";
 
   const {
     templates,
@@ -13,6 +14,8 @@
     clearUserTemplates,
     deleteUserTemplate,
   } = useTemplate(graph.value);
+
+  const color = computed(() => graph.value.baseTheme.value.graphBgColor);
 </script>
 
 <template>
@@ -21,7 +24,7 @@
       <slot v-bind="props"></slot>
     </template>
     <GWell
-      class="flex flex-col text-xl font-bold p-3 w-[400px] max-h-[600px] overflow-auto rounded-lg gap-2"
+      class="flex flex-col text-xl font-bold p-3 w-[400px] rounded-lg gap-2"
     >
       <p
         v-if="templates.length === 0"
@@ -29,16 +32,20 @@
       >
         Add a template!
       </p>
-      <div v-else>
+      <div v-else class="max-h-[600px] overflow-auto">
         <div
           v-for="template in templates"
           :key="template.id"
-          class="flex gap-2"
+          class="flex flex-col gap-2 mb-2"
         >
           <TemplateItem
             :template="template"
             :loadTemplate="loadTemplate"
             :deleteTemplate="deleteUserTemplate"
+            class="w-full rounded"
+            :style="{
+              backgroundColor: color,
+            }"
           />
         </div>
       </div>
