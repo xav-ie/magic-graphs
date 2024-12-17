@@ -9,6 +9,7 @@ import { computed } from "vue";
 
   const {
     templates,
+    userTemplates,
     addCurrentGraphAsTemplate,
     loadTemplate,
     clearUserTemplates,
@@ -53,8 +54,8 @@ import { computed } from "vue";
       <hr class="my-2" />
 
       <div class="flex gap-2 justify-center">
-        <GButton @click="addCurrentGraphAsTemplate">Save Current</GButton>
-        <GButton @click="clearUserTemplates">Clear All</GButton>
+        <GButton @click="addCurrentGraphAsTemplate" :disabled="graph.nodes.value.length === 0">Save Current</GButton>
+        <GButton @click="clearUserTemplates" :disabled="userTemplates.length === 0">Clear All</GButton>
       </div>
     </GWell>
   </CPopover>
