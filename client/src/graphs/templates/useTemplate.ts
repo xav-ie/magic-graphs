@@ -28,7 +28,7 @@ export const useTemplate = (graph: Graph) => {
   const addCurrentGraphAsTemplate = (templateDetails: Pick<GraphTemplate, "title" | "description">) => {
     const { nodes, edges } = graph;
     templates.value.push({
-      id: generateId(),
+      id: '10',
       ...templateDetails,
       graphState: {
         nodes: nodes.value,
@@ -40,6 +40,7 @@ export const useTemplate = (graph: Graph) => {
   
   const loadTemplate = (templateId: GraphTemplate["id"]) => {
     const template = templates.value.find((t) => t.id === templateId);
+    console.log(template)
     if (template === undefined) {
       throw new Error(`template could not be loaded: ${templateId} not found`);
     }
@@ -48,7 +49,7 @@ export const useTemplate = (graph: Graph) => {
     const { x, y } = getAverageCoordinatesOfGraphNodes(graph.nodes.value);
     graph.load({
       nodes: centerNodesOnOriginCoordinates(nodes, { x, y }),
-      edges,
+      edges: [],
     });
   };
 

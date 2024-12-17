@@ -10,6 +10,7 @@
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
   import TreeShapeMenu from "./TreeShapeMenu.vue";
   import { useAutoTree } from "./useTreeShaper";
+  import TemplateButton from "@graph/templates/ui/TemplateButton.vue";
 
   const tutorial = useGraphTutorial(graph.value, [
     {
@@ -143,6 +144,8 @@
           "
         />
       </TreeShapeMenu>
+
+      <TemplateButton />
     </ToolbarButtonGroup>
   </GToolbar>
 </template>
