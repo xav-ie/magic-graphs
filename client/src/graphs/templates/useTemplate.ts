@@ -44,6 +44,11 @@ export const useTemplate = (graph: Graph) => {
       boundingBox
     );
 
+    console.log({
+      nodes: JSON.parse(JSON.stringify(nodes.value)),
+      edges: JSON.parse(JSON.stringify(edges.value)),
+    });
+
     userTemplates.value.push({
       id: generateId(),
       thumbnail,
