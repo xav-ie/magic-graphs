@@ -2,6 +2,10 @@ import type { GNode } from "@graph/types";
 import type { Coordinate } from "@shape/types";
 
 export const getAverageCoordinatesOfGraphNodes = (nodes: GNode[]) => {
+  if (nodes.length === 0) {
+    return { x: 0, y: 0 };
+  }
+
   const total = nodes.reduce((acc, node) => {
     acc.x += node.x;
     acc.y += node.y;
