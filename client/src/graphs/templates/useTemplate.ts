@@ -1,6 +1,6 @@
 import type { Graph } from "@graph/types";
 import type { GraphTemplate } from "./types";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import {
   centerNodesOnOriginCoordinates,
   getAverageCoordinatesOfGraphNodes,
@@ -8,23 +8,16 @@ import {
 import { generateId } from "@utils/id";
 
 export const useTemplate = (graph: Graph) => {
-  const templates = ref<GraphTemplate[]>([
-    {
-      id: generateId(),
-      thumbnail: "",
-      title: "Test Template",
-      description: "This is a test",
-      graphState: {
-        nodes: [],
-        edges: []
-      }
-    }
-  ]);
+
+  const userTemplates = ref<GraphTemplate[]>([]);
+  const productTemplates = ref<GraphTemplate[]>([]);
+
+  const templates = computed(() => [...productTemplates.value, ...userTemplates.value]);
 
   const addCurrentGraphAsTemplate = (templateDetails: Pick<GraphTemplate, "title" | "description">) => {
     const { nodes, edges } = graph;
-    templates.value.push({
-      id: '10',
+    userTemplates.value.push({
+      id: generateId(),
       ...templateDetails,
       graphState: {
         nodes: JSON.parse(JSON.stringify(nodes.value)),
@@ -40,7 +33,6 @@ export const useTemplate = (graph: Graph) => {
     }
     
     const { nodes, edges } = template.graphState;
-    // currently only works after moving the nodes around 2x. why????
     const { x, y } = getAverageCoordinatesOfGraphNodes(graph.nodes.value);
     graph.load({
       nodes: centerNodesOnOriginCoordinates(nodes, { x, y }),
@@ -48,11 +40,20 @@ export const useTemplate = (graph: Graph) => {
     });
   };
 
-  const clearTemplates = () => templates.value = [];
+  const clearUserTemplates = () => userTemplates.value = [];
+
+  const deleteUserTemplate = (templateId: GraphTemplate["id"]) => {
+    userTemplates.value = userTemplates.value.filter((t) => t.id !== templateId);
+  };
 
   return {
     addCurrentGraphAsTemplate,
     loadTemplate,
-    clearTemplates,
+    clearUserTemplates,
+    deleteUserTemplate,
+
+    templates,
+    userTemplates,
+    productTemplates,
   };
 };

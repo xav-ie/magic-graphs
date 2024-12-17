@@ -10,7 +10,7 @@
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
   import TreeShapeMenu from "./TreeShapeMenu.vue";
   import { useAutoTree } from "./useTreeShaper";
-  import TemplateButton from "@graph/templates/ui/TemplateButton.vue";
+  import TemplateMenu from "@graph/templates/ui/TemplateMenu.vue";
 
   const tutorial = useGraphTutorial(graph.value, [
     {
@@ -145,7 +145,13 @@
         />
       </TreeShapeMenu>
 
-      <TemplateButton />
+      <TemplateMenu v-slot="{ toggle, isOpen }">
+        <GToolbarButton
+          @click="toggle"
+          :active="isOpen"
+          :icon="isOpen ? 'add_box' : 'add_box_outline'"
+        />
+      </TemplateMenu>
     </ToolbarButtonGroup>
   </GToolbar>
 </template>
