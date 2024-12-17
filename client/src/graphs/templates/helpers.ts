@@ -19,7 +19,7 @@ export const getAverageCoordinatesOfGraphNodes = (nodes: GNode[]): Coordinate =>
   };
 };
 
-export const getGraphNodesBoundingBox = (nodes: GNode[]): BoundingBox => {
+export const getGraphNodesBoundingBox = (nodes: GNode[], padding: number = 0): BoundingBox => {
   if (nodes.length === 0) {
     return {
       at: { x: 0, y: 0 },
@@ -40,9 +40,9 @@ export const getGraphNodesBoundingBox = (nodes: GNode[]): BoundingBox => {
     if (node.y > maxY) maxY = node.y;
   }
 
-  const topLeft = { x: minX, y: minY };
-  const width = maxX - minX;
-  const height = maxY - minY;
+  const topLeft = { x: minX - padding, y: minY - padding };
+  const width = maxX - minX + padding * 2;
+  const height = maxY - minY + padding * 2;
 
   return {
     at: topLeft,
@@ -55,10 +55,10 @@ export const centerNodesOnOriginCoordinates = (
   nodes: GNode[],
   targetOrigin: Coordinate
 ): GNode[] => {
-  const centerOfMass = getAverageCoordinatesOfGraphNodes(nodes);
+  const averageCoordinates = getAverageCoordinatesOfGraphNodes(nodes);
 
-  const offsetX = targetOrigin.x - centerOfMass.x;
-  const offsetY = targetOrigin.y - centerOfMass.y;
+  const offsetX = targetOrigin.x - averageCoordinates.x;
+  const offsetY = targetOrigin.y - averageCoordinates.y;
 
   return nodes.map(node => ({
     ...node,

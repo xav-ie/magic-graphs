@@ -2,7 +2,7 @@ import type { BoundingBox } from "@shape/types";
 import { getCtx } from "@utils/ctx";
 
 export const createImageFromCanvasRegion = (
-  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
   boundingBox: BoundingBox
 ): string => {
   const { at, width, height } = boundingBox;
@@ -12,7 +12,7 @@ export const createImageFromCanvasRegion = (
   const tempCtx = getCtx(tempCanvas);
 
   tempCtx.drawImage(
-    ctx.canvas,       // Source canvas
+    canvas,           // Source canvas
     at.x, at.y,       // Source start x, y
     width, height,    // Source width, height
     0, 0,             // Destination start x, y
