@@ -12,7 +12,8 @@ import type { Reason } from "./types"
 export type SimulationGuardCheck = () => DeepReadonly<Reason> | undefined
 
 /**
- * a fluent builder for creating a guard that checks if a simulation can run on a given graph
+ * a builder to create a guard for simulations to ensure the graph is compatible
+ * with the simulation before running it
  */
 export class SimulationGuard {
   graph: Graph
@@ -41,9 +42,16 @@ export class SimulationGuard {
    * ensures the graph is unweighted
    */
   unweighted() {
+    const allEdgeIds = this.graph.edges.value.map((e) => e.id)
+    const color = useNodeEdgeColorizer(this.graph, new Set(allEdgeIds))
+
     const isUnweighted = () => {
       if (!this.graph.settings.value.displayEdgeLabels) return
       return {
+        themer: {
+          theme: color.colorize,
+          untheme: color.decolorize,
+        },
         ...CANT_RUN_REASONS.NOT_UNWEIGHTED,
       }
     }
@@ -211,8 +219,8 @@ export class SimulationGuard {
   /**
    * a wildcard check for anything that may make the graph not compatible with the simulation
    *
-   * @param predicate a function that returns `false` if the graph is invalid
-   * @param invalidationReason the reason why the graph is invalid
+   * @param predicate a function that returns `false` if the simulation cannot run
+   * @param invalidationReason the reason why the graph cannot run the simulation
    */
   valid(predicate: () => boolean, invalidationReason: Reason) {
     const isInvalid = () => {
