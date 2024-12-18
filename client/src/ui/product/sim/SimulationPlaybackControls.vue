@@ -7,6 +7,7 @@
   import ProgressBar from "./Progressbar.vue";
   import { useGraphColors } from "@graph/themes/useGraphColors";
   import GSpreadSelect from "@ui/graph/select/GSpreadSelect.vue";
+  import GButton from "@ui/graph/button/GButton.vue";
   import { DEFAULT_PLAYBACK_SPEED } from "./useSimulationControls";
 
   const colors = useGraphColors();
@@ -87,15 +88,29 @@
       value: DEFAULT_PLAYBACK_SPEED / 4,
     },
   ] as const;
+
+  const speedMenuOpen = ref(false);
 </script>
 
 <template>
   <div class="flex flex-col gap-5 items-center justify-center">
-    <GSpreadSelect
-      v-model="playbackSpeed"
-      :items="PLAYBACK_SPEEDS"
-      :initial-item-index="2"
-    ></GSpreadSelect>
+    <div class="flex gap-2 justify-between">
+      <GSpreadSelect
+        v-model="playbackSpeed"
+        v-model:open="speedMenuOpen"
+        :items="PLAYBACK_SPEEDS"
+        :initial-item-index="2"
+      ></GSpreadSelect>
+
+      <GButton
+        v-if="!speedMenuOpen"
+        class="rounded-full"
+      >
+        <span class="w-12">
+          {{ step }}
+        </span>
+      </GButton>
+    </div>
 
     <ProgressBar
       v-if="lastStep !== Infinity"

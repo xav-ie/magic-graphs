@@ -32,7 +32,9 @@ export const useSimulationTheme = (
   const nodeDistanceText = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return
     const distance = traceAtStep.value.distances[node.id]
-    return distance === Infinity ? INF_STR : distance.toString()
+    if (distance === Infinity) return INF_STR
+    if (Number.isInteger(distance)) return distance.toString()
+    return distance.toFixed(2)
   }
 
   const activate = () => {
