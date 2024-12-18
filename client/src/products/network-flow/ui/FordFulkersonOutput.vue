@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { computed } from "vue";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import { useFordFulkerson } from "../algo/useFordFulkerson";
 
   const { output } = useFordFulkerson(graph.value);

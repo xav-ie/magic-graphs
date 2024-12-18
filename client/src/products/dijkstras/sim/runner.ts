@@ -1,6 +1,5 @@
 import { computed } from "vue";
 import type { Graph } from "@graph/types";
-import { useGTextTip } from "@ui/useGTextTip";
 import type { SimulationRunner } from "@ui/product/sim/types";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 import { useDijkstra } from "../algo/useDijkstra";

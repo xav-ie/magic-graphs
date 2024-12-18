@@ -1,7 +1,8 @@
-import type { Graph } from "@graph/types";
 import { useNodeState } from "@graph/useNodeState";
 
-const startNode = useNodeState()
+const startNode = useNodeState({
+  setterTextTip: 'select start node',
+})
 
 export default {
   startNode,

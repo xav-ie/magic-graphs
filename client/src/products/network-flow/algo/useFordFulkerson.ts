@@ -5,6 +5,8 @@ import { fordFulkerson } from './fordFulkerson'
 import type { FlowTrace } from './fordFulkerson'
 import { useResidualEdges } from '../misc/useResidualEdges'
 
+const { sourceNode, sinkNode } = state
+
 /**
  * reactive Ford-Fulkerson algorithm
  */
@@ -13,18 +15,16 @@ export const useFordFulkerson = (graph: Graph) => {
   const maxFlow = ref<number>()
 
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
-  const { sourceNode, sinkNode } = state
 
   const update = () => {
-    if (!sourceNode.value || !sinkNode.value) return
-    const validSourceNode = graph.getNode(sourceNode.value.id)
-    const validSinkNode = graph.getNode(sinkNode.value.id)
-    if (!validSourceNode || !validSinkNode) return
+    const srcNode = sourceNode.get(graph)
+    const snkNode = sinkNode.get(graph)
+    if (!srcNode || !snkNode) return
 
     createResidualEdges()
     const { maxFlow: gotMaxFlow, trace: gotTrace } = fordFulkerson(graph, {
-      sourceId: sourceNode.value.id,
-      sinkId: sinkNode.value.id,
+      sourceId: srcNode.id,
+      sinkId: snkNode.id,
     })
     trace.value = gotTrace
     maxFlow.value = gotMaxFlow
@@ -32,7 +32,7 @@ export const useFordFulkerson = (graph: Graph) => {
   }
 
   graph.subscribe('onStructureChange', update)
-  watch([sourceNode, sinkNode], update, { immediate: true })
+  watch([sourceNode.ref, sinkNode.ref], update, { immediate: true })
 
   return {
     output: {

@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { computed, readonly, ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { selectNode } from "@graph/select";
 import { useGTextTip } from "@ui/useGTextTip";
@@ -30,6 +30,8 @@ export const useNodeState = (
   }
 
   const node = ref<GNode>();
+  const isSetting = ref(false);
+
   let cancelNodeSetter = () => {};
 
   const { showText, hideText } = useGTextTip(setterTextTip)
@@ -40,11 +42,16 @@ export const useNodeState = (
   }
 
   const set = async (graph: Graph) => {
+    if (isSetting.value) return;
+    isSetting.value = true;
+
     const { selectedItemPromise, cancelSelection } = selectNode(graph)
     cancelNodeSetter = cancelSelection
     showText()
     node.value = await selectedItemPromise()
     hideText()
+
+    isSetting.value = false;
   }
 
   const cancelSet = () => {
@@ -71,6 +78,10 @@ export const useNodeState = (
      * cancels the promise that `setNode` is waiting on and hides the text tip if showing
      */
     cancelSet,
+    /**
+     * true if the node is currently being set
+     */
+    isSetting: readonly(isSetting),
 
     /**
      * true if the node is set
