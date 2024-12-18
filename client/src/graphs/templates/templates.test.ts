@@ -1,38 +1,39 @@
 import { describe, it, expect } from "vitest";
 import {
-  getAverageCoordinatesOfGraphNodes,
+  getAverageCoordinatesOfNodes,
   centerNodesOnOriginCoordinates,
 } from "./helpers";
+import type { GNode } from "@graph/types";
 
-describe("getAverageCoordinatesOfGraphNodes", () => {
-  it("should return the average coordinates for a list of nodes", () => {
+describe("getAverageCoordinatesOfNodes", () => {
+  it("returns the average coordinates of nodes", () => {
     const nodes = [
       { x: 10, y: 20 },
       { x: 30, y: 40 },
       { x: 50, y: 60 },
     ];
 
-    const result = getAverageCoordinatesOfGraphNodes(nodes);
+    const result = getAverageCoordinatesOfNodes(nodes);
     expect(result).toEqual({ x: 30, y: 40 });
   });
 
-  it("should handle a single node correctly", () => {
+  it("handles a single node", () => {
     const nodes = [{ x: 15, y: 25 }];
 
-    const result = getAverageCoordinatesOfGraphNodes(nodes);
+    const result = getAverageCoordinatesOfNodes(nodes);
     expect(result).toEqual({ x: 15, y: 25 });
   });
 
-  it("should return { x: 0, y: 0 } for an empty node list", () => {
-    const nodes: { x: number; y: number }[] = [];
+  it("handles edge case of 0 nodes", () => {
+    const nodes: GNode[] = [];
 
-    const result = getAverageCoordinatesOfGraphNodes(nodes);
+    const result = getAverageCoordinatesOfNodes(nodes);
     expect(result).toEqual({ x: 0, y: 0 });
   });
 });
 
 describe("centerNodesOnOriginCoordinates", () => {
-  it("should center nodes around the target origin (0, 0)", () => {
+  it("centers nodes around (0, 0)", () => {
     const nodes = [
       { x: 10, y: 10 },
       { x: 20, y: 20 },
@@ -49,7 +50,7 @@ describe("centerNodesOnOriginCoordinates", () => {
     ]);
   });
 
-  it("should center nodes around a positive target origin (30, 20)", () => {
+  it("centers nodes around (30, 20)", () => {
     const nodes = [
       { x: 0, y: 20 },
       { x: 30, y: 40 },
@@ -66,7 +67,7 @@ describe("centerNodesOnOriginCoordinates", () => {
     ]);
   });
 
-  it("should handle a single node", () => {
+  it("handles a single node", () => {
     const nodes = [{ x: 5, y: 5 }];
     const targetOrigin = { x: 0, y: 0 };
 
@@ -75,7 +76,7 @@ describe("centerNodesOnOriginCoordinates", () => {
     expect(result).toEqual([{ x: 0, y: 0 }]);
   });
 
-  it("should not mutate the original node array", () => {
+  it("does not mutate the original array", () => {
     const nodes = [
       { x: 10, y: 20 },
       { x: 30, y: 40 },

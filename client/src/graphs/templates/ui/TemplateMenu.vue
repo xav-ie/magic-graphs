@@ -1,20 +1,20 @@
 <script setup lang="ts">
+  import { computed } from "vue";
   import { graph } from "@graph/global";
   import CPopover from "@ui/core/Popover.vue";
   import GWell from "@ui/graph/GWell.vue";
-  import { useTemplate } from "../useTemplate";
+  import { useGraphTemplate } from "../useGraphTemplate";
   import GButton from "@ui/graph/button/GButton.vue";
   import TemplateItem from "./TemplateItem.vue";
-import { computed } from "vue";
 
   const {
     templates,
     userTemplates,
-    addCurrentGraphAsTemplate,
-    loadTemplate,
+    add,
+    load,
     clearUserTemplates,
-    deleteUserTemplate,
-  } = useTemplate(graph.value);
+    removeUserTemplate,
+  } = useGraphTemplate(graph.value);
 
   const color = computed(() => graph.value.baseTheme.value.graphBgColor);
 </script>
@@ -42,8 +42,8 @@ import { computed } from "vue";
         >
           <TemplateItem
             :template="template"
-            :loadTemplate="loadTemplate"
-            :deleteTemplate="deleteUserTemplate"
+            :load="load"
+            :remove="removeUserTemplate"
             class="w-full rounded"
             :style="{
               backgroundColor: color,
@@ -55,8 +55,14 @@ import { computed } from "vue";
       <hr class="my-2" />
 
       <div class="flex gap-2 justify-center">
-        <GButton @click="addCurrentGraphAsTemplate" :disabled="graph.nodes.value.length === 0">Save Current</GButton>
-        <GButton @click="clearUserTemplates" :disabled="userTemplates.length === 0">Clear All</GButton>
+        <GButton 
+          @click="add" 
+          :disabled="graph.nodes.value.length === 0"
+        >Save Current</GButton>
+        <GButton 
+          @click="clearUserTemplates" 
+          :disabled="userTemplates.length === 0"
+        >Clear All</GButton>
       </div>
     </GWell>
   </CPopover>

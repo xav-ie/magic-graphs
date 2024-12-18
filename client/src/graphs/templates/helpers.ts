@@ -1,7 +1,7 @@
 import type { GNode } from "@graph/types";
 import type { BoundingBox, Coordinate } from "@shape/types";
 
-export const getAverageCoordinatesOfGraphNodes = (nodes: GNode[]): Coordinate => {
+export const getAverageCoordinatesOfNodes = (nodes: GNode[]) => {
   if (nodes.length === 0) {
     return { x: 0, y: 0 };
   }
@@ -19,7 +19,7 @@ export const getAverageCoordinatesOfGraphNodes = (nodes: GNode[]): Coordinate =>
   };
 };
 
-export const getGraphNodesBoundingBox = (nodes: GNode[], padding: number = 0): BoundingBox => {
+export const getNodesBoundingBox = (nodes: GNode[], padding: number = 0): BoundingBox => {
   if (nodes.length === 0) {
     return {
       at: { x: 0, y: 0 },
@@ -55,7 +55,7 @@ export const centerNodesOnOriginCoordinates = (
   nodes: GNode[],
   targetOrigin: Coordinate
 ): GNode[] => {
-  const averageCoordinates = getAverageCoordinatesOfGraphNodes(nodes);
+  const averageCoordinates = getAverageCoordinatesOfNodes(nodes);
 
   const offsetX = targetOrigin.x - averageCoordinates.x;
   const offsetY = targetOrigin.y - averageCoordinates.y;

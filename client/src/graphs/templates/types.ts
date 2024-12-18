@@ -2,7 +2,7 @@ import type { GEdge, GNode } from "@graph/types";
 
 export type GraphTemplate = {
   id: string
-  productId?: string
+  isUserAdded?: boolean
   thumbnail?: string
   title: string
   description: string

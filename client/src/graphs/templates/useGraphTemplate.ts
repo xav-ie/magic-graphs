@@ -3,17 +3,17 @@ import type { GraphTemplate } from "./types";
 import { computed, ref } from "vue";
 import {
   centerNodesOnOriginCoordinates,
-  getAverageCoordinatesOfGraphNodes,
-  getGraphNodesBoundingBox,
+  getAverageCoordinatesOfNodes,
+  getNodesBoundingBox,
 } from "./helpers";
 import { generateId } from "@utils/id";
 import { useLocalStorage } from "@vueuse/core";
 import { createImageFromCanvasRegion } from "./snapshot";
 import { products } from "@utils/product";
 
-export const useTemplate = (graph: Graph) => {
+export const useGraphTemplate = (graph: Graph) => {
   const userTemplates = useLocalStorage<GraphTemplate[]>(
-    "user-graph-templates",
+    "graph-templates",
     []
   );
   const productTemplates = ref<GraphTemplate[]>(
@@ -25,35 +25,30 @@ export const useTemplate = (graph: Graph) => {
     ...productTemplates.value,
   ]);
 
-  const addCurrentGraphAsTemplate = (
-    templateDetails: Pick<GraphTemplate, "title" | "description" | "thumbnail">
+  const add = (
+    options: Pick<GraphTemplate, "title" | "description" | "thumbnail">
   ) => {
-    const { nodes, edges } = graph;
+    const { nodes, edges, canvas } = graph;
+
+    if (!canvas.value) throw new Error("no snapshot canvas found");
 
     const nodeRadius = graph.baseTheme.value.nodeSize;
     const nodeBorderWidth = graph.baseTheme.value.nodeBorderWidth;
-    const boundingBox = getGraphNodesBoundingBox(
+    const boundingBox = getNodesBoundingBox(
       nodes.value,
       nodeRadius + nodeBorderWidth / 2
     );
 
-    if (!graph.canvas.value) return;
-
     const thumbnail = createImageFromCanvasRegion(
-      graph.canvas.value,
+      canvas.value,
       boundingBox
     );
-
-    // console.log({
-    //   nodes: JSON.parse(JSON.stringify(nodes.value)),
-    //   edges: JSON.parse(JSON.stringify(edges.value)),
-    // });
 
     userTemplates.value.push({
       id: generateId(),
       thumbnail,
-      ...templateDetails,
-
+      isUserAdded: true,
+      ...options,
       graphState: {
         nodes: JSON.parse(JSON.stringify(nodes.value)),
         edges: JSON.parse(JSON.stringify(edges.value)),
@@ -61,33 +56,33 @@ export const useTemplate = (graph: Graph) => {
     });
   };
 
-  const loadTemplate = (templateId: GraphTemplate["id"]) => {
+  const load = (templateId: GraphTemplate["id"]) => {
     const template = templates.value.find((t) => t.id === templateId);
-    if (template === undefined) {
+    if (!template) {
       throw new Error(`template could not be loaded: ${templateId} not found`);
     }
 
     const { nodes, edges } = template.graphState;
-    const { x, y } = getAverageCoordinatesOfGraphNodes(graph.nodes.value);
+    const coords = getAverageCoordinatesOfNodes(graph.nodes.value);
     graph.load({
-      nodes: centerNodesOnOriginCoordinates(nodes, { x, y }),
+      nodes: centerNodesOnOriginCoordinates(nodes, coords),
       edges,
     });
   };
 
   const clearUserTemplates = () => (userTemplates.value = []);
 
-  const deleteUserTemplate = (templateId: GraphTemplate["id"]) => {
+  const removeUserTemplate = (templateId: GraphTemplate["id"]) => {
     userTemplates.value = userTemplates.value.filter(
       (t) => t.id !== templateId
     );
   };
 
   return {
-    addCurrentGraphAsTemplate,
-    loadTemplate,
+    add,
+    load,
     clearUserTemplates,
-    deleteUserTemplate,
+    removeUserTemplate,
 
     templates,
     userTemplates,

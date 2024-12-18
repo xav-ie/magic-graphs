@@ -1,9 +1,8 @@
-import { generateId } from "@utils/id";
+import type { GraphTemplate } from "@graph/templates/types"
 
-const templates = [
+const templates: GraphTemplate[] = [
   {
-    id: generateId(),
-    productId: 'dijkstras',
+    id: 'dijkstras',
     title: 'Dijkstras',
     description: 'basic example for visualizing Dijkstras Algorithm',
     thumbnail: '/products/template-thumbnails/dijkstra.png',

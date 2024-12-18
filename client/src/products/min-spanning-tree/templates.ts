@@ -1,9 +1,8 @@
-import { generateId } from "@utils/id";
+import type { GraphTemplate } from "@graph/templates/types"
 
-const templates = [
+const templates: GraphTemplate[] = [
   {
-    id: generateId(),
-    productId: 'mst',
+    id: 'mst',
     title: 'Minimum Spanning Tree',
     description: 'basic example for visualizing different mst algorithms',
     thumbnail: '/products/template-thumbnails/mst.png',

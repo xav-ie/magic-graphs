@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import GButton from "@ui/graph/button/GButton.vue";
-import type { GraphTemplate } from "../types";
-import { ref, toRefs } from "vue";
-import colors from "@utils/colors";
+  import { ref, toRefs } from "vue";
+  import type { GraphTemplate } from "../types";
+  import GButton from "@ui/graph/button/GButton.vue";
+  import colors from "@utils/colors";
 
-const props = defineProps<{
-  template: GraphTemplate;
-  loadTemplate: (id: string) => void;
-  deleteTemplate: (id: string) => void;
-}>();
+  const props = defineProps<{
+    template: GraphTemplate;
+    load: (id: string) => void;
+    remove: (id: string) => void;
+  }>();
 
-const { template } = toRefs(props);
+  const { template } = toRefs(props);
 
-const hovered = ref(false);
+  const hovered = ref(false);
 </script>
 
 <template>
@@ -41,10 +41,10 @@ const hovered = ref(false);
       }"
     >
       <div class="flex gap-2">
-        <GButton @click="loadTemplate(template.id)">Load</GButton>
+        <GButton @click="load(template.id)">Load</GButton>
         <GButton
-          v-if="!template.productId"
-          @click="deleteTemplate(template.id)"
+          v-if="template.isUserAdded"
+          @click="remove(template.id)"
           :color="colors.RED_500"
           >Delete</GButton
         >
