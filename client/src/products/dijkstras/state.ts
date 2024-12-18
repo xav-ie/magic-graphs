@@ -1,5 +1,5 @@
 import type { Graph } from "@graph/types";
-import { useNodeState } from "./useNodeState";
+import { useNodeState } from "@graph/useNodeState";
 
 const startNode = useNodeState()
 

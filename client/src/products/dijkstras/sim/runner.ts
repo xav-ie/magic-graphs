@@ -22,7 +22,7 @@ export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
   const start = async () => {
     showText();
 
-    await startNode.setNode(graph);
+    await startNode.set(graph);
     if (startNode.isUndefined.value) return;
 
     simControls.start();
@@ -31,7 +31,7 @@ export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
   };
 
   const stop = () => {
-    startNode.cancelSetNode();
+    startNode.cancelSet();
     simControls.stop();
     untheme();
     hideText();

@@ -2,30 +2,44 @@ import { computed, ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { selectNode } from "@graph/select";
 
+/**
+ * a utility for managing the state of a node, providing
+ * getters and setters for the node and a way to cancel the setter
+ */
 export const useNodeState = () => {
   const node = ref<GNode>();
-  let cancelSetNode = () => {};
+  let cancelSet = () => {};
 
-  const setNode = async (graph: Graph) => {
+  const get = (graph: Graph) => {
+    if (!node.value) return;
+    return graph.getNode(node.value.id);
+  }
+
+  const set = async (graph: Graph) => {
     const { selectedItemPromise, cancelSelection } = selectNode(graph)
-    cancelSetNode = cancelSelection
+    cancelSet = cancelSelection
     node.value = await selectedItemPromise()
   }
 
   const reset = () => {
     node.value = undefined
-    cancelSetNode()
+    cancelSet()
   }
 
   return {
     /**
+     * gets the node on the graph passed in, returns the node if it exists
+     * in the graph, otherwise returns undefined
+     */
+    get,
+    /**
      * a promise that resolves when either the node is set or cancelled by `cancelSetNode`
      */
-    setNode,
+    set,
     /**
      * cancels the promise that `setNode` is waiting on
      */
-    cancelSetNode,
+    cancelSet,
 
     /**
      * true if the node is set
@@ -36,10 +50,6 @@ export const useNodeState = () => {
      */
     isUndefined: computed(() => node.value === undefined),
 
-    /**
-     * the node that is set
-     */
-    node,
     /**
      * resets the node to undefined
      */
