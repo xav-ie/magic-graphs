@@ -3,6 +3,7 @@ import type { Graph } from "@graph/types"
 import { useNodeEdgeTheme } from "./theme/useNodeEdgeThemer"
 import { CANT_RUN_REASONS } from "./constants"
 import type { Reason } from "./types"
+import { useCycleColorizer } from "@product/graph-sandbox/ui/GraphInfoMenu/useCycleColorizer"
 
 /**
  * determines if the simulation can run.
@@ -20,10 +21,12 @@ export class SimulationGuard {
   checks: SimulationGuardCheck[] = []
 
   color: ReturnType<typeof useNodeEdgeTheme>
+  cycle: ReturnType<typeof useCycleColorizer>
 
   constructor(g: Graph) {
     this.graph = g
     this.color = useNodeEdgeTheme(this.graph)
+    this.cycle = useCycleColorizer(this.graph)
   }
 
   /**
@@ -33,6 +36,7 @@ export class SimulationGuard {
     const isWeighted = () => {
       if (this.graph.settings.value.displayEdgeLabels) return
       return {
+        themer: this.color.edges(),
         ...CANT_RUN_REASONS.NOT_WEIGHTED
       }
     }
@@ -48,6 +52,7 @@ export class SimulationGuard {
     const isUnweighted = () => {
       if (!this.graph.settings.value.displayEdgeLabels) return
       return {
+        themer: this.color.edges(),
         ...CANT_RUN_REASONS.NOT_UNWEIGHTED,
       }
     }
@@ -63,6 +68,7 @@ export class SimulationGuard {
     const isDirected = () => {
       if (this.graph.settings.value.isGraphDirected) return
       return {
+        themer: this.color.edges(),
         ...CANT_RUN_REASONS.NOT_DIRECTED,
       }
     }
@@ -95,6 +101,7 @@ export class SimulationGuard {
     const hasNodes = () => {
       if (this.graph.nodes.value.length >= minNodes) return
       return {
+        themer: this.color.nodes(),
         ...CANT_RUN_REASONS.NOT_ENOUGH_NODES(minNodes),
       }
     }
@@ -111,6 +118,7 @@ export class SimulationGuard {
     const hasEdges = () => {
       if (this.graph.edges.value.length >= minEdges) return
       return {
+        themer: this.color.edges(),
         ...CANT_RUN_REASONS.NOT_ENOUGH_EDGES(minEdges),
       }
     }
@@ -125,9 +133,7 @@ export class SimulationGuard {
   connected() {
     const isConnected = () => {
       if (this.graph.characteristics.isConnected.value) return
-      return {
-        ...CANT_RUN_REASONS.NOT_CONNECTED,
-      }
+      return CANT_RUN_REASONS.NOT_CONNECTED
     }
 
     this.checks.push(isConnected)
@@ -141,6 +147,10 @@ export class SimulationGuard {
     const isAcyclic = () => {
       if (this.graph.characteristics.isAcyclic.value) return
       return {
+        themer: {
+          theme: this.cycle.colorize,
+          untheme: this.cycle.decolorize,
+        },
         ...CANT_RUN_REASONS.NOT_ACYCLIC,
       }
     }
@@ -155,9 +165,7 @@ export class SimulationGuard {
   bipartite() {
     const isBipartite = () => {
       if (this.graph.characteristics.isBipartite.value) return
-      return {
-        ...CANT_RUN_REASONS.NOT_BIPARTITE,
-      }
+      return CANT_RUN_REASONS.NOT_BIPARTITE
     }
 
     this.checks.push(isBipartite)
@@ -169,9 +177,13 @@ export class SimulationGuard {
    */
   nonNegativeEdgeWeights() {
     const nonNegativeWeights = () => {
-      const isValid = this.graph.edges.value.every((e) => this.graph.helpers.getEdgeWeight(e.id) >= 0)
-      if (isValid) return
+      const negativeEdgeIds = this.graph.edges.value
+        .filter((e) => this.graph.helpers.getEdgeWeight(e.id) < 0)
+        .map((e) => e.id)
+
+      if (negativeEdgeIds.length === 0) return
       return {
+        themer: this.color.edges(negativeEdgeIds),
         ...CANT_RUN_REASONS.NEGATIVE_EDGE_WEIGHTS,
       }
     }
@@ -185,9 +197,13 @@ export class SimulationGuard {
    */
   positiveEdgeWeights() {
     const positiveWeights = () => {
-      const isValid = this.graph.edges.value.every((e) => this.graph.helpers.getEdgeWeight(e.id) > 0)
-      if (isValid) return
+      const negativeOrZeroEdgeIds = this.graph.edges.value
+        .filter((e) => this.graph.helpers.getEdgeWeight(e.id) <= 0)
+        .map((e) => e.id)
+
+      if (negativeOrZeroEdgeIds.length === 0) return
       return {
+        themer: this.color.edges(negativeOrZeroEdgeIds),
         ...CANT_RUN_REASONS.NON_POSITIVE_EDGE_WEIGHTS,
       }
     }

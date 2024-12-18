@@ -44,13 +44,13 @@ export const useNodeEdgeTheme = (graph: Graph) => {
     ids,
 
     /**
-     * @returns `themer` with nodes targeted, defaults to all nodes
+     * @returns `themer` with nodes to target, defaults to all nodes
      */
-    nodes: (nodeIds = new Set(graph.nodes.value.map(n => n.id))) => ((ids.value = nodeIds), themer),
+    nodes: (nodeIds = graph.nodes.value.map(n => n.id)) => ((ids.value = new Set(nodeIds)), themer),
     /**
-     * @returns `themer` with edges targeted, defaults to all edges
+     * @returns `themer` with edges to target, defaults to all edges
      */
-    edges: (edgeIds = new Set(graph.edges.value.map(e => e.id))) => ((ids.value = edgeIds), themer),
+    edges: (edgeIds = graph.edges.value.map(e => e.id)) => ((ids.value = new Set(edgeIds)), themer),
 
     themer,
   }
