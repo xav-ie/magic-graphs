@@ -55,6 +55,8 @@ export const useTextTip = (textInput?: MaybeRef<string>) => {
   if (text.value) innerDiv.textContent = text.value
 
   const showText = async () => {
+    if (outerDiv.isConnected) return
+
     mountTextTip()
     outerDiv.style.opacity = '0'
     await new Promise((res) => setTimeout(res, 0))
@@ -63,6 +65,8 @@ export const useTextTip = (textInput?: MaybeRef<string>) => {
   }
 
   const hideText = async () => {
+    if (!outerDiv.isConnected) return
+
     outerDiv.style.opacity = '0'
     await new Promise((res) => setTimeout(res, TRANSITION_DURATION))
     unmountTextTip()

@@ -1,14 +1,38 @@
 import { computed, ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { selectNode } from "@graph/select";
+import { useGTextTip } from "@ui/useGTextTip";
+
+type NodeStateOptions = {
+  /**
+   * a tip to show when the node is being set.
+   * @default 'select a node'
+   */
+  setterTextTip: string;
+}
+
+const DEFAULT_NODE_STATE_OPTIONS: NodeStateOptions = {
+  setterTextTip: 'select a node'
+}
 
 /**
  * a utility for managing the state of a node, providing
  * getters and setters for the node and a way to cancel the setter
  */
-export const useNodeState = () => {
+export const useNodeState = (
+  options: Partial<NodeStateOptions> = {},
+) => {
+  const {
+    setterTextTip,
+  } = {
+    ...DEFAULT_NODE_STATE_OPTIONS,
+    ...options
+  }
+
   const node = ref<GNode>();
-  let cancelSet = () => {};
+  let cancelNodeSetter = () => {};
+
+  const { showText, hideText } = useGTextTip(setterTextTip)
 
   const get = (graph: Graph) => {
     if (!node.value) return;
@@ -17,9 +41,16 @@ export const useNodeState = () => {
 
   const set = async (graph: Graph) => {
     const { selectedItemPromise, cancelSelection } = selectNode(graph)
-    cancelSet = cancelSelection
+    cancelNodeSetter = cancelSelection
+    showText()
     node.value = await selectedItemPromise()
+    hideText()
   }
+
+  const cancelSet = () => {
+    hideText()
+    cancelNodeSetter()
+  };
 
   const reset = () => {
     node.value = undefined
@@ -37,7 +68,7 @@ export const useNodeState = () => {
      */
     set,
     /**
-     * cancels the promise that `setNode` is waiting on
+     * cancels the promise that `setNode` is waiting on and hides the text tip if showing
      */
     cancelSet,
 

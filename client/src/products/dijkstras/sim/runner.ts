@@ -17,24 +17,19 @@ export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
   const lastStep = computed(() => trace.value.length - 1);
   const simControls = useSimulationControls(graph, trace, { lastStep });
   const { activate: theme, deactivate: untheme } = useSimulationTheme(graph, simControls);
-  const { showText, hideText } = useGTextTip("select starting node");
 
   const start = async () => {
-    showText();
-
     await startNode.set(graph);
     if (startNode.isUndefined.value) return;
 
     simControls.start();
     theme();
-    hideText();
   };
 
   const stop = () => {
     startNode.cancelSet();
     simControls.stop();
     untheme();
-    hideText();
   };
 
   return {
