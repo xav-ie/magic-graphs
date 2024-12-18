@@ -8,6 +8,8 @@ import type { DijkstrasTrace } from "../algo/useDijkstra";
 import { useSimulationTheme } from "./theme";
 import state from "../state";
 
+const { startNode } = state
+
 export type DijkstraSimulationRunner = SimulationRunner<DijkstrasTrace>;
 
 export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
@@ -19,14 +21,17 @@ export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
 
   const start = async () => {
     showText();
-    await state.setNode(graph, state.startNode);
+
+    await startNode.setNode(graph);
+    if (startNode.isUndefined.value) return;
+
     simControls.start();
     theme();
     hideText();
   };
 
   const stop = () => {
-    state.cancelNodeSelection.value?.();
+    startNode.cancelSetNode();
     simControls.stop();
     untheme();
     hideText();

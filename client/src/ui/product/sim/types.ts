@@ -49,7 +49,7 @@ export type SimulationControls<T extends SimulationTrace = any> = {
   setStep: (step: number) => void
 
   /**
-   * start the simulation. this will begin the simulation from step -1
+   * start the simulation. this will begin the simulation from step 0
    */
   start: () => void
   /**
