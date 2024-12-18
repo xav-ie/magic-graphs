@@ -1,5 +1,10 @@
-import { toRef, watch } from 'vue'
+import { onUnmounted, toRef, watch } from 'vue'
 import type { MaybeRef } from 'vue'
+
+type TextTipEls = {
+  outerDiv: HTMLDivElement
+  innerDiv: HTMLDivElement
+}
 
 const TRANSITION_DURATION = 300
 
@@ -11,7 +16,7 @@ const outerDivClasslist = [
   'justify-center',
   'items-center',
   'transition-opacity',
-  `duration-${TRANSITION_DURATION}`,
+  'duration-[300ms]',
   'pointer-events-none'
 ]
 
@@ -24,53 +29,55 @@ const innerDivClasslist = [
   'rounded-xl'
 ]
 
-const mountTextTip = () => {
+const createTextTipEls: () => TextTipEls = () => {
   const outerDiv = document.createElement('div')
   const innerDiv = document.createElement('div')
 
   outerDiv.classList.add(...outerDivClasslist)
-
   innerDiv.classList.add(...innerDivClasslist)
-
-  outerDiv.style.opacity = '0'
-
-  outerDiv.appendChild(innerDiv)
-  document.body.appendChild(outerDiv)
 
   return { outerDiv, innerDiv }
 }
 
-const unmountTextTip = (outerDiv: HTMLDivElement) => {
-  outerDiv.remove()
-}
-
 export const useTextTip = (textInput?: MaybeRef<string>) => {
   const text = toRef(textInput)
+  const { outerDiv, innerDiv } = createTextTipEls()
 
-  const { outerDiv, innerDiv } = mountTextTip()
+  const mountTextTip = () => {
+    outerDiv.appendChild(innerDiv)
+    document.body.appendChild(outerDiv)
+  }
 
-  outerDiv.style.opacity = '0'
+  const unmountTextTip = () => {
+    outerDiv.remove()
+  }
 
   if (text.value) innerDiv.textContent = text.value
 
-  const showText = () => {
+  const showText = async () => {
+    mountTextTip()
+    outerDiv.style.opacity = '0'
+    await new Promise((res) => setTimeout(res, 0))
     outerDiv.style.opacity = '1'
+    await new Promise((res) => setTimeout(res, TRANSITION_DURATION))
   }
 
-  const hideText = () => {
+  const hideText = async () => {
     outerDiv.style.opacity = '0'
+    await new Promise((res) => setTimeout(res, TRANSITION_DURATION))
+    unmountTextTip()
   }
 
   const transitionTextContent = async (newText: string | undefined) => {
-    hideText()
+    await hideText()
     if (!newText) return
-    await new Promise((res) => setTimeout(res, TRANSITION_DURATION))
     innerDiv.textContent = newText
-    await new Promise((res) => setTimeout(res, TRANSITION_DURATION))
-    showText()
+    await showText()
   }
 
   watch(text, transitionTextContent)
+
+  onUnmounted(unmountTextTip)
 
   return {
     showText,

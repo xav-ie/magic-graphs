@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { COLORS, BRUSH_WEIGHTS } from "@graph/plugins/annotations/constants";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import type { Color } from "@utils/colors";
   import GToolbar from "@ui/graph/toolbar/GToolbarBase.vue";
   import GToolbarButton from "@ui/graph/toolbar/GToolbarButton.vue";

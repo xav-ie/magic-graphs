@@ -31,7 +31,7 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
 
   const { sourceNode, sinkNode } = state
   const { trace } = useFordFulkerson(graph)
-  const simControls = useSimulationControls(trace, {
+  const simControls = useSimulationControls(graph, trace, {
     allowEditingDuringPlayback: false,
   })
 

@@ -16,7 +16,7 @@ const useSimulationRunner = (
   trace: ComputedRef<BasicSearchTrace>
 ): BasicSearchSimulationRunner => {
   const lastStep = computed(() => trace.value.length - 1);
-  const simControls = useSimulationControls(trace, { lastStep });
+  const simControls = useSimulationControls(graph, trace, { lastStep });
   const { activate: theme, deactivate: untheme } = useSimulationTheme(graph, simControls);
   const { showText, hideText } = useTextTip("select the starting node");
 

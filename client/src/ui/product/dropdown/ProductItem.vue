@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import { ref } from "vue";
-  import { graph, queuedGraphStateLoadout } from "@graph/global";
+  import {
+    nonNullGraph as graph,
+    queuedGraphStateLoadout,
+  } from "@graph/global";
   import {
     useProductRouting,
     getCurrentProduct,

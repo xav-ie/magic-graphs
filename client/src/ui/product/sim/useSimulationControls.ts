@@ -1,6 +1,6 @@
 import { computed, ref, watch } from "vue";
 import type { ComputedRef, Ref } from "vue";
-import { graph } from "@graph/global";
+import type { Graph } from "@graph/types";
 import type { SimulationControls, SimulationTrace } from "@ui/product/sim/types";
 
 type SimulationControlsOptions = {
@@ -26,6 +26,7 @@ const DEFAULT_OPTIONS = {
 export const DEFAULT_PLAYBACK_SPEED = 1000;
 
 export const useSimulationControls = <T extends SimulationTrace>(
+  graph: Graph,
   trace: ComputedRef<T>,
   options: SimulationControlsOptions = {}
 ): SimulationControls<T> => {
@@ -84,7 +85,7 @@ export const useSimulationControls = <T extends SimulationTrace>(
   const start = () => {
     if (active.value) return;
 
-    graph.value.settings.value.interactive = allowEditingDuringPlayback;
+    graph.settings.value.interactive = allowEditingDuringPlayback;
 
     paused.value = false;
     active.value = true;
@@ -98,7 +99,7 @@ export const useSimulationControls = <T extends SimulationTrace>(
    */
   const stop = () => {
     if (interval.value) clearInterval(interval.value);
-    graph.value.settings.value.interactive = true;
+    graph.settings.value.interactive = true;
     active.value = false;
   };
 

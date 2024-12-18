@@ -2,7 +2,7 @@
   import { computed } from "vue";
   import { useAdjacencyList } from "@graph/useAdjacencyList";
   import GNode from "@ui/graph/GNode.vue";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import { getCommaList } from "@utils/string";
   import CPopoverTooltip from "@ui/core/PopoverTooltip.vue";
   import CIcon from "@ui/core/Icon.vue";
@@ -53,7 +53,7 @@
             :key="node.id"
           >
             <CPopoverTooltip>
-              <GNode 
+              <GNode
                 :node="node"
                 class="relative flex flex-col"
               >

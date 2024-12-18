@@ -1,16 +1,16 @@
 <script setup lang="ts">
   import { onUnmounted, ref, toRefs } from "vue";
   import type { UnwrapRef } from "vue";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import type { SimulationControls } from "./types";
   import PlaybackButton from "./PlaybackButton.vue";
   import ProgressBar from "./Progressbar.vue";
-  import { useGraphColors } from "@graph/themes/useGraphColors";
+  import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
   import GSpreadSelect from "@ui/graph/select/GSpreadSelect.vue";
   import GButton from "@ui/graph/button/GButton.vue";
   import { DEFAULT_PLAYBACK_SPEED } from "./useSimulationControls";
 
-  const colors = useGraphColors();
+  const colors = useNonNullGraphColors();
 
   const props = defineProps<{
     controls: UnwrapRef<SimulationControls>;

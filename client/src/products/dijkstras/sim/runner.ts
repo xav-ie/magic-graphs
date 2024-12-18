@@ -15,7 +15,7 @@ export type DijkstraSimulationRunner = SimulationRunner<DijkstrasTrace>;
 export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
   const { trace } = useDijkstra(graph)
   const lastStep = computed(() => trace.value.length - 1);
-  const simControls = useSimulationControls(trace, { lastStep });
+  const simControls = useSimulationControls(graph, trace, { lastStep });
   const { activate: theme, deactivate: untheme } = useSimulationTheme(graph, simControls);
   const { showText, hideText } = useGTextTip("select starting node");
 

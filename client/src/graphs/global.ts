@@ -1,7 +1,15 @@
-import { shallowRef } from "vue";
+import { computed, shallowRef } from "vue";
 import type { GEdge, GNode, Graph } from "./types";
 
-export const graph = shallowRef({} as Graph);
+export const graph = shallowRef<Graph>();
+
+export const nonNullGraph = computed(() => {
+  if (!graph.value) {
+    throw new Error("global graph state is undefined");
+  }
+
+  return graph.value;
+});
 
 /**
  * when switching between products, if this is set, the graph will be loaded with this state

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { computed } from "vue";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import GHoverInfo from "@ui/graph/GHoverInfo.vue";
   import { useSCCColorizer } from "./useSCCColorizer";
   import { useBipartiteColorizer } from "./useBipartiteColorizer";

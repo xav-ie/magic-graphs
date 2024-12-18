@@ -29,7 +29,7 @@ export const useSimulationRunner = (graph: Graph): MarkovChainSimulationRunner =
 
   const trace = useStateAfterNSteps(fracTransitionMatrix, initialState);
 
-  const simControls = useSimulationControls(trace);
+  const simControls = useSimulationControls(graph, trace);
   const theme = useSimulationTheme(graph, simControls);
   const { showText, hideText } = useTextTip("select the starting node");
 

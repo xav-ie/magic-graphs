@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue";
-  import { graph } from "@graph/global";
+  import { computed } from "vue";
+  import { nonNullGraph as graph } from "@graph/global";
   import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
   import GToolbar from "@ui/graph/toolbar/GToolbarBase.vue";
   import GToolbarButton from "@ui/graph/toolbar/GToolbarButton.vue";
