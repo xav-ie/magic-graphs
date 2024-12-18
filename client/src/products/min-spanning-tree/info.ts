@@ -2,6 +2,7 @@ import type { ProductInfo } from 'src/types'
 import type { Graph } from '@graph/types'
 import { useKruskalSimulationRunner, usePrimSimulationRunner } from './sim/runner'
 import { canRunMST } from './sim/guard'
+import templates from './templates'
 
 const info: ProductInfo = {
   route: {
@@ -33,6 +34,7 @@ const info: ProductInfo = {
       runner: usePrimSimulationRunner(graph),
     }
   ]),
+  templates,
 }
 
 export default info

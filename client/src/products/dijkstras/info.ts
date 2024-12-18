@@ -3,6 +3,7 @@ import type { Graph } from '@graph/types'
 import { useSimulationRunner } from './sim/runner'
 import state from './state'
 import { canRunDijkstras } from './sim/guard'
+import templates from './templates'
 
 const info: ProductInfo = {
   route: {
@@ -26,6 +27,7 @@ const info: ProductInfo = {
     runner: useSimulationRunner(graph),
   }],
   state,
+  templates,
 }
 
 export default info
