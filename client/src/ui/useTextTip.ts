@@ -1,4 +1,4 @@
-import { onUnmounted, toRef, watch } from 'vue'
+import { toRef, watch } from 'vue'
 import type { MaybeRef } from 'vue'
 
 type TextTipEls = {
@@ -80,8 +80,6 @@ export const useTextTip = (textInput?: MaybeRef<string>) => {
   }
 
   watch(text, transitionTextContent)
-
-  onUnmounted(unmountTextTip)
 
   return {
     showText,
