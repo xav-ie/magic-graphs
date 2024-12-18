@@ -44,7 +44,7 @@ export const useGraphTemplate = (graph: Graph) => {
       boundingBox
     );
 
-    userTemplates.value.push({
+    userTemplates.value.unshift({
       id: generateId(),
       thumbnail,
       isUserAdded: true,
