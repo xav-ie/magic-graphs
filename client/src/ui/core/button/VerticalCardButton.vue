@@ -39,11 +39,13 @@
     }"
     class="p-2 cursor-pointer text-left flex gap-4"
   >
-    <img
-      v-if="imageSrc"
-      :src="imageSrc"
-      class="object-cover h-20 w-20 rounded-md"
-    />
+    <div class="min-w-20 min-h-20 max-w-20 max-h-20 rounded-md">
+      <img
+        v-if="imageSrc"
+        :src="imageSrc"
+        class="object-cover aspect-square rounded-md"
+      />
+    </div>
     <div class="flex flex-col gap-1">
       <h1 class="text-lg font-bold">
         {{ title }}

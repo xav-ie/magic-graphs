@@ -40,6 +40,17 @@ export const ThemeToGraphColors: Record<GraphThemeName, GraphColors> = {
 }
 
 export const useGraphColors = () => computed(() => {
+  if (!graph.value) return
+  const theme = graph.value.themeName.value;
+  return ThemeToGraphColors[theme];
+});
+
+export const useNonNullGraphColors = () => computed(() => {
+  if (!graph.value) {
+    throw 'global graph state not set';
+    console.warn('global graph state not set, defaulting to dark theme');
+    return ThemeToGraphColors.dark;
+  }
   const theme = graph.value.themeName.value;
   return ThemeToGraphColors[theme];
 });

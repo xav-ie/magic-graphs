@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import { computed } from "vue";
   import CToolbarButton from "@ui/core/toolbar/ToolbarButton.vue";
-  import { useGraphColors } from "@graph/themes/useGraphColors";
-  import { graph } from "@graph/global";
+  import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
+  import { nonNullGraph as graph } from "@graph/global";
 
-  const colors = useGraphColors();
+  const colors = useNonNullGraphColors();
 
   // special case!
   const activeColor = computed(() => {

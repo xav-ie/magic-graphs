@@ -10,9 +10,9 @@ import type { Color } from "@utils/colors";
 import { BRUSH_WEIGHTS, COLORS } from "./constants";
 import { useAnnotationHistory } from "./history";
 import type { Annotation } from "./types";
-import { useGraphColors } from "@graph/themes/useGraphColors";
+import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
 
-const graphColor = useGraphColors()
+const graphColor = useNonNullGraphColors()
 
 export const useAnnotations = (graph: BaseGraph) => {
   const selectedColor = ref<Color>(COLORS[0])

@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import { ref } from "vue";
-  import { graph, queuedGraphStateLoadout } from "@graph/global";
+  import {
+    nonNullGraph as graph,
+    queuedGraphStateLoadout,
+  } from "@graph/global";
   import {
     useProductRouting,
     getCurrentProduct,
@@ -12,6 +15,7 @@
   import type { ProductInfo } from "src/types";
   import CIcon from "@ui/core/Icon.vue";
   import GWell from "@ui/graph/GWell.vue";
+  import { getRandomInRange } from "@utils/random";
 
   const { navigate } = useProductRouting();
   const currentProduct = getCurrentProduct();
@@ -24,11 +28,16 @@
     navigate(product);
   };
 
-  defineProps<{
+  const props = defineProps<{
     product: ProductInfoWithMenu;
   }>();
 
   const hovered = ref(false);
+
+  const img = ref("");
+  setTimeout(() => {
+    img.value = props.product.menu.thumbnail;
+  }, getRandomInRange(0, 100));
 </script>
 
 <template>
@@ -91,7 +100,7 @@
       </GWell>
     </div>
     <GVerticalCardButton
-      :image-src="product.menu.thumbnail"
+      :image-src="img"
       :title="product.menu.name"
       :description="product.menu.description"
       class="rounded-md"

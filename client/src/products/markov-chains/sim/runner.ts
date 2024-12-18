@@ -5,47 +5,50 @@ import type { SimulationRunner, TraceFunction } from "@ui/product/sim/types";
 import { useSimulationControls } from '@ui/product/sim/useSimulationControls';
 import { useSimulationTheme } from './theme';
 import { useStateAfterNSteps } from '../markov/useStateAfterNSteps';
-import { useTextTip } from '@ui/useTextTip';
 import state from '../state';
+
+const { initialState } = state
 
 export type MarkovChainTrace = TraceFunction<Fraction[]>
 export type MarkovChainSimulationRunner = SimulationRunner<MarkovChainTrace>;
 
 export const useSimulationRunner = (graph: Graph): MarkovChainSimulationRunner => {
   const { fracTransitionMatrix } = graph.transitionMatrix;
+  const { nodeIdToIndex } = graph;
 
-  const initialState = computed(() => {
-    if (!state.startNode.value) return [];
+  const initialStateVector = computed(() => {
+    if (initialState.isUndefined.value) return [];
 
     const stateVector: Fraction[] = []
     for (let i = 0; i < fracTransitionMatrix.value.length; i++) {
       stateVector.push(new Fraction(0));
     }
 
-    const index = graph.nodeIdToIndex.value.get(state.startNode.value.id);
-    if (index !== undefined) stateVector[index] = new Fraction(1);
+    const nodeId = initialState.get(graph)!.id
+    const index = nodeIdToIndex.value.get(nodeId)!;
+
+    stateVector[index] = new Fraction(1);
     return stateVector;
   })
 
-  const trace = useStateAfterNSteps(fracTransitionMatrix, initialState);
+  const trace = useStateAfterNSteps(fracTransitionMatrix, initialStateVector);
 
-  const simControls = useSimulationControls(trace);
+  const simControls = useSimulationControls(graph, trace);
   const theme = useSimulationTheme(graph, simControls);
-  const { showText, hideText } = useTextTip("select the starting node");
 
   const start = async () => {
-    showText();
-    await state.setNode(graph, state.startNode);
-    hideText();
+    await initialState.set(graph);
+    if (initialState.isUndefined.value) return;
+
     simControls.start();
     theme.theme();
   }
 
   const stop = () => {
-    state.cancelNodeSelection.value?.();
+    initialState.cancelSet();
+
     simControls.stop();
     theme.untheme();
-    hideText();
   }
 
   return {

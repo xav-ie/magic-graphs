@@ -1,6 +1,6 @@
-import { computed, type ComputedRef } from "vue";
+import { computed } from "vue";
+import type { ComputedRef } from "vue";
 import type { Graph } from "@graph/types";
-import { useTextTip } from "@ui/useTextTip";
 import type { SimulationRunner } from "@ui/product/sim/types";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 import { useBFS } from "../algo/useBFS";
@@ -9,6 +9,8 @@ import { useSimulationTheme } from "./theme";
 import state from "../state";
 import type { BasicSearchTrace } from "../algo/types";
 
+const { startNode } = state;
+
 export type BasicSearchSimulationRunner = SimulationRunner<BasicSearchTrace>;
 
 const useSimulationRunner = (
@@ -16,23 +18,26 @@ const useSimulationRunner = (
   trace: ComputedRef<BasicSearchTrace>
 ): BasicSearchSimulationRunner => {
   const lastStep = computed(() => trace.value.length - 1);
-  const simControls = useSimulationControls(trace, { lastStep });
-  const { activate: theme, deactivate: untheme } = useSimulationTheme(graph, simControls);
-  const { showText, hideText } = useTextTip("select the starting node");
+  const simControls = useSimulationControls(graph, trace, { lastStep });
+
+  const {
+    activate: theme,
+    deactivate: untheme
+  } = useSimulationTheme(graph, simControls);
 
   const start = async () => {
-    showText();
-    await state.setNode(graph, state.startNode);
+    await startNode.set(graph);
+    if (startNode.isUndefined.value) return;
+
     simControls.start();
     theme();
-    hideText();
   };
 
   const stop = () => {
-    state.cancelNodeSelection.value?.();
+    startNode.cancelSet();
+
     simControls.stop();
     untheme();
-    hideText();
   };
 
   return {

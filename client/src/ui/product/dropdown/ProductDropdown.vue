@@ -2,9 +2,9 @@
   import CPopover from "@ui/core/Popover.vue";
   import ProductDropdownMenu from "./ProductDropdownMenu.vue";
   import GButton from "@ui/graph/button/GButton.vue";
-  import { useGraphColors } from "@graph/themes/useGraphColors";
+  import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
 
-  const colors = useGraphColors()
+  const colors = useNonNullGraphColors()
 </script>
 
 <template>

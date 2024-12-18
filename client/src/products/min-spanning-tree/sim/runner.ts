@@ -13,7 +13,7 @@ export const useMSTSimulationRunner = (
   graph: Graph,
   trace: MSTSimulationControls['trace']
 ): MSTSimulationRunner => {
-  const simControls = useSimulationControls(trace);
+  const simControls = useSimulationControls(graph, trace);
   const { activate, deactivate } = useSimulationTheme(graph, simControls);
   return {
     simControls,

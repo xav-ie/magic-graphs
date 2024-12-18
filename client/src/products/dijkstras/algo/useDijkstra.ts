@@ -9,25 +9,38 @@ export type DijkstrasOutput = {
   distances: Record<GNode['id'], number>;
 }
 
-export type DijkstrasTrace = {
+export type DijkstrasTraceAtStep = {
+  /**
+   * the node the algorithm is currently at. is undefined if the algorithm
+   * is in its initialization phase, or if it has finished
+   */
   currentNode?: GNode;
+  /**
+   * a map of the distances from the start node to each node in the graph
+   * as of the current step
+   */
   distances: Record<GNode['id'], number>;
+  /**
+   * the nodes that are currently in the queue
+   */
   queue: Set<GNode['id']>;
-}[]
+}
+
+export type DijkstrasTrace = DijkstrasTraceAtStep[];
 
 export const useDijkstra = (graph: Graph) => {
   const trace = ref<DijkstrasTrace>([]);
   const output = ref<DijkstrasOutput>();
-  const { startNode } = state;
 
+  const { startNode: startNodeState } = state;
   const { transitionMatrix } = useTransitionMatrix(graph);
 
   const update = () => {
-    if (!startNode.value) return
-    const startNodeIndex = graph.nodes.value.findIndex(node => node.id === startNode.value!.id)
-    if (startNodeIndex === -1) return
+    const startNode = startNodeState.get(graph)
+    if (!startNode) return;
+    const index = graph.nodeIdToIndex.value.get(startNode.id)!;
 
-    const res = dijkstras(transitionMatrix.value, startNodeIndex)
+    const res = dijkstras(transitionMatrix.value, index);
 
     // parses out the matrix trace into a more consumable format
     // by mapping the indices back to the actual nodes and node ids
@@ -42,14 +55,14 @@ export const useDijkstra = (graph: Graph) => {
     }))
 
     output.value = {
-      startNode: startNode.value,
+      startNode: startNode,
       distances: Object.fromEntries(
         res.res.map((distance, i) => [graph.nodes.value[i].id, distance])
       )
     }
   }
 
-  watch([startNode, transitionMatrix], update, { immediate: true });
+  watch([startNodeState.ref, transitionMatrix], update, { immediate: true });
 
   return {
     output,

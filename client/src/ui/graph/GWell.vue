@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import { computed } from "vue";
-  import { useGraphColors } from "@graph/themes/useGraphColors";
+  import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
   import CWell from "@ui/core/Well.vue";
 
-  const colors = useGraphColors();
+  const colors = useNonNullGraphColors();
 
   const props = withDefaults(
     defineProps<{

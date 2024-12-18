@@ -24,6 +24,7 @@ export const useSimulationTheme = (
 
   const colorBorders = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return
+
     if (traceAtStep.value?.currentNodeId === node.id) return SIM_COLORS.CURRENT
     if (traceAtStep.value.visited.has(node.id)) return SIM_COLORS.VISITED
     if (traceAtStep.value.nextToExplore?.has(node.id)) return SIM_COLORS.QUEUED

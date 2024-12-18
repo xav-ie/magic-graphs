@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { computed, onUnmounted, ref } from "vue";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import { resolveThemeForNode } from '@graph/themes'
   import type { GNode } from "@graph/types";
 

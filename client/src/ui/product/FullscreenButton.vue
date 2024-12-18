@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { onUnmounted } from "vue";
   import { useFullscreen } from "@vueuse/core";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import GButton from "@ui/graph/button/GButton.vue";
   import CIcon from "@ui/core/Icon.vue";
 

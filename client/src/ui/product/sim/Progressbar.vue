@@ -2,9 +2,9 @@
   import { computed } from "vue";
   import { PROGRESS_DEFAULTS } from "./progressTypes";
   import type { ProgressOptions } from "./progressTypes";
-  import { useGraphColors } from "@graph/themes/useGraphColors";
+  import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
 
-  const colors = useGraphColors();
+  const colors = useNonNullGraphColors();
 
   const props = withDefaults(defineProps<ProgressOptions>(), PROGRESS_DEFAULTS);
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { ref } from "vue";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import TransitionMatrixDisplay from "./TransitionMatrixDisplay.vue";
   import GWell from "@ui/graph/GWell.vue";
   import GButton from "@ui/graph/button/GButton.vue";

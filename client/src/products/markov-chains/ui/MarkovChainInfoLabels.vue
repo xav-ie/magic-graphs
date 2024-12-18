@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import { usePeriodicityLabels } from "./usePeriodicityLabels";
   import { useSCCColorizer } from "@product/graph-sandbox/ui/GraphInfoMenu/useSCCColorizer";
   import { useIllegalStateColorizer } from "./useIllegalStateColorizer";

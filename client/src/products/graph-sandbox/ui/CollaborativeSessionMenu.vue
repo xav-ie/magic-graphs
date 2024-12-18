@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed, ref } from "vue";
   import { useRouter } from "vue-router";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import { collabControls, myCollaboratorProfile } from "@graph/collab";
   import { debounce } from "@utils/debounce";
   import colors from "@utils/colors";

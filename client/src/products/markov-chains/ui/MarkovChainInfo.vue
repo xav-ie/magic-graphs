@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from "vue";
   import type { GNode } from "@graph/types";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import GWell from "@ui/graph/GWell.vue";
   import type { MarkovChain } from "../markov/useMarkovChain";
   import MarkovClassNodes from "./MarkovClassNodes.vue";

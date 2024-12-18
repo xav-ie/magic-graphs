@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import type { GNode } from "@graph/types";
-  import { graph } from "@graph/global";
+  import { nonNullGraph as graph } from "@graph/global";
   import colors from "@colors";
   import { SIM_COLORS, INF_STR } from "../sim/theme";
 

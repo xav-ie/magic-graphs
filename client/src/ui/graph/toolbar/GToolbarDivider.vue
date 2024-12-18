@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import CToolbarDivider from "@ui/core/toolbar/ToolbarDivider.vue";
-  import { useGraphColors } from "@graph/themes/useGraphColors";
+  import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
 
-  const colors = useGraphColors();
+  const colors = useNonNullGraphColors();
 </script>
 
 <template>
