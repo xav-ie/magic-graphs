@@ -2,6 +2,7 @@ import { computed, ref, watch } from "vue";
 import type { ComputedRef, Ref } from "vue";
 import { graph } from "@graph/global";
 import type { SimulationControls, SimulationTrace } from "@ui/product/sim/types";
+import { useLocalStorage } from "@vueuse/core";
 
 type SimulationControlsOptions = {
   /**
@@ -56,7 +57,7 @@ export const useSimulationControls = <T extends SimulationTrace>(
   /**
    * the playback speed in ms per step of the simulation
    */
-  const playbackSpeed = ref(DEFAULT_PLAYBACK_SPEED);
+  const playbackSpeed = useLocalStorage('simulation-playback-speed',DEFAULT_PLAYBACK_SPEED);
 
   /**
    * whether the simulation is actively being played back (even if paused)

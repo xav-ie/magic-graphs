@@ -90,6 +90,10 @@
   ] as const;
 
   const speedMenuOpen = ref(false);
+
+  const initialItemIndex = PLAYBACK_SPEEDS.findIndex(
+    (speed) => speed.value === playbackSpeed.value
+  ) ?? 2
 </script>
 
 <template>
@@ -99,7 +103,7 @@
         v-model="playbackSpeed"
         v-model:open="speedMenuOpen"
         :items="PLAYBACK_SPEEDS"
-        :initial-item-index="2"
+        :initial-item-index="initialItemIndex"
       ></GSpreadSelect>
 
       <GButton
