@@ -11,10 +11,6 @@ const minEdgeText = (minEdges: number) => {
   return `Requires at least ${minEdges} edges`
 }
 
-/**
- * a map to from standard reasons why a simulation
- * cannot run on a given graph to user-facing text explaining why
- */
 export const CANT_RUN_REASONS = {
   NOT_WEIGHTED: {
     title: 'Requires weighted edges',

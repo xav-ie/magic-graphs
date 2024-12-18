@@ -20,9 +20,11 @@
   >
     <CPopoverTooltip>
       <CButton
+        @mouseenter="reason.themer?.theme()"
+        @mouseleave="reason.themer?.untheme()"
         :color="colors.GRAY_900"
         :text-color="colors.RED_500"
-        class="font-bold text-lg rounded-lg px-2 py-1"
+        class="text-lg rounded-lg px-2 py-1"
       >
         {{ reason.title }}
       </CButton>

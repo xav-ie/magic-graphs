@@ -1,6 +1,6 @@
 import type { DeepReadonly } from "ts-essentials"
 import type { Graph } from "@graph/types"
-import { useNodeEdgeColorizer } from "./theme/useNodeEdgeColorizer"
+import { useNodeEdgeTheme } from "./theme/useNodeEdgeThemer"
 import { CANT_RUN_REASONS } from "./constants"
 import type { Reason } from "./types"
 
@@ -19,8 +19,11 @@ export class SimulationGuard {
   graph: Graph
   checks: SimulationGuardCheck[] = []
 
+  color: ReturnType<typeof useNodeEdgeTheme>
+
   constructor(g: Graph) {
     this.graph = g
+    this.color = useNodeEdgeTheme(this.graph)
   }
 
   /**
@@ -42,16 +45,9 @@ export class SimulationGuard {
    * ensures the graph is unweighted
    */
   unweighted() {
-    const allEdgeIds = this.graph.edges.value.map((e) => e.id)
-    const color = useNodeEdgeColorizer(this.graph, new Set(allEdgeIds))
-
     const isUnweighted = () => {
       if (!this.graph.settings.value.displayEdgeLabels) return
       return {
-        themer: {
-          theme: color.colorize,
-          untheme: color.decolorize,
-        },
         ...CANT_RUN_REASONS.NOT_UNWEIGHTED,
       }
     }
@@ -82,6 +78,7 @@ export class SimulationGuard {
     const isUndirected = () => {
       if (!this.graph.settings.value.isGraphDirected) return
       return {
+        themer: this.color.edges(),
         ...CANT_RUN_REASONS.NOT_UNDIRECTED,
       }
     }
@@ -168,7 +165,7 @@ export class SimulationGuard {
   }
 
   /**
-   * ensures the graph has non-negative edge weights
+   * ensures every edge on the graph has either 0 or positive weight/label
    */
   nonNegativeEdgeWeights() {
     const nonNegativeWeights = () => {
