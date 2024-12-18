@@ -9,7 +9,7 @@ export type DijkstrasOutput = {
   distances: Record<GNode['id'], number>;
 }
 
-export type DijkstrasTrace = {
+export type DijkstrasTraceAtStep = {
   /**
    * the node the algorithm is currently at. is undefined if the algorithm
    * is in its initialization phase, or if it has finished
@@ -24,7 +24,9 @@ export type DijkstrasTrace = {
    * the nodes that are currently in the queue
    */
   queue: Set<GNode['id']>;
-}[]
+}
+
+export type DijkstrasTrace = DijkstrasTraceAtStep[];
 
 export const useDijkstra = (graph: Graph) => {
   const trace = ref<DijkstrasTrace>([]);
@@ -60,7 +62,7 @@ export const useDijkstra = (graph: Graph) => {
     }
   }
 
-  watch([startNodeState, transitionMatrix], update, { immediate: true });
+  watch([startNodeState.ref, transitionMatrix], update, { immediate: true });
 
   return {
     output,

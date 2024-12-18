@@ -51,6 +51,11 @@ export const useNodeState = () => {
     isUndefined: computed(() => node.value === undefined),
 
     /**
+     * the reactive source for tracking changes to the node with computed, watchers, etc.
+     */
+    ref: node,
+
+    /**
      * resets the node to undefined
      */
     reset,

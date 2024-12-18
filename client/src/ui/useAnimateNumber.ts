@@ -4,10 +4,6 @@ import type { Ref } from "vue";
 export const useAnimateNumber = (number: Ref<number>, duration: number) => {
   const displayedValue = ref(0);
 
-  watch(number, (newVal, oldVal) => {
-    runAnimation(newVal, oldVal);
-  });
-
   const getFrameDuration = (change: number) => {
     if (change < 5) {
       return 200
@@ -44,6 +40,8 @@ export const useAnimateNumber = (number: Ref<number>, duration: number) => {
       }
     }, frameDuration)
   };
+
+  watch(number, runAnimation);
 
   return displayedValue;
 }
