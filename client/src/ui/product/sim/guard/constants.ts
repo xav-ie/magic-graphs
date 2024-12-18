@@ -56,7 +56,11 @@ export const CANT_RUN_REASONS = {
     title: 'Requires positive edge weights',
     description: 'Edges that have zero or negative weights/labels are not allowed',
   },
-  NOT_BIDIRECTIONAL: {
+  NO_SELF_REFERENCING_EDGES: {
+    title: 'Requires no self-loops',
+    description: 'There is at least one edge that starts and ends at the same node',
+  },
+  NO_BIDIRECTIONAL_EDGES: {
     title: 'Requires no bidirectional edges',
     description: 'There is at least one pair of nodes that are connected by two edges in opposite directions',
   }

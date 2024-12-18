@@ -213,15 +213,37 @@ export class SimulationGuard {
   }
 
   /**
+   * ensures no edge starts and ends at the same node
+   */
+  noSelfReferencingEdges() {
+    const noSelfReferencing = () => {
+      const selfReferencingEdgeIds = this.graph.edges.value
+        .filter((e) => e.from === e.to)
+        .map((e) => e.id)
+
+      if (selfReferencingEdgeIds.length === 0) return
+      return {
+        themer: this.color.edges(selfReferencingEdgeIds),
+        ...CANT_RUN_REASONS.NO_SELF_REFERENCING_EDGES,
+      }
+    }
+
+    this.checks.push(noSelfReferencing)
+    return this
+  }
+
+  /**
    * ensures the graph has no bidirectional edges
    * ie two nodes linked by two edges in opposite directions
    */
   noBidirectionalEdges() {
     const noBidirectional = () => {
-      const isValid = this.graph.characteristics.hasBidirectionalEdges.value
-      if (isValid) return
+      const { bidirectionalEdges } = this.graph.characteristics
+      const edgeIds = bidirectionalEdges.value.map((e) => e.id)
+      if (edgeIds.length === 0) return
       return {
-        ...CANT_RUN_REASONS.NOT_BIDIRECTIONAL,
+        themer: this.color.edges(edgeIds),
+        ...CANT_RUN_REASONS.NO_BIDIRECTIONAL_EDGES,
       }
     }
 
