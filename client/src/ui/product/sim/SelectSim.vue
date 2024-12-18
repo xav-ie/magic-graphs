@@ -5,8 +5,8 @@
   import CPopover from "@ui/core/Popover.vue";
   import CIcon from "@ui/core/Icon.vue";
   import GWell from "@ui/graph/GWell.vue";
-  import GVerticalCardButton from "@ui/graph/button/GVerticalCardButton.vue";
-import SelectSimGuard from "./SelectSimGuard.vue";
+  import SelectSimGuard from "./SelectSimGuard.vue";
+  import SimCard from "./SimCard.vue";
 
   const props = defineProps<{
     simulations: SimulationDeclaration[];
@@ -46,12 +46,9 @@ import SelectSimGuard from "./SelectSimGuard.vue";
       >
         <SelectSimGuard :simulation="simulation" />
 
-        <GVerticalCardButton
+        <SimCard
           @click="emits('simulation-selected', simulation)"
-          class="rounded-md"
-          :image-src="simulation.thumbnail"
-          :title="simulation.name"
-          :description="simulation.description"
+          :simulation="simulation"
         />
       </div>
     </GWell>

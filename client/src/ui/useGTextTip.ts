@@ -1,7 +1,7 @@
+import { watch } from "vue";
 import type { MaybeRef } from "vue";
 import { useTextTip } from "./useTextTip";
 import { useGraphColors } from "@graph/themes/useGraphColors";
-import { watch } from "vue";
 
 /**
  * a text tip themed after the global graph
