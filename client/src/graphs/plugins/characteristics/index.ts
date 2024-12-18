@@ -15,11 +15,13 @@ export const useCharacteristics = (graph: BaseGraph & AdjacencyLists) => {
 
   const bidirectionalEdges = computed(() => {
     const edges = graph.edges.value
-    return edges.filter(edge => {
-      return edges.some(otherEdge => {
-        return edge.from === otherEdge.to && edge.to === otherEdge.from
+    return edges
+      .filter(edge => edge.from !== edge.to)
+      .filter(edge => {
+        return edges.some(otherEdge => {
+          return edge.from === otherEdge.to && edge.to === otherEdge.from
+        })
       })
-    })
   })
 
   const stronglyConnectedComponents = computed(() => {

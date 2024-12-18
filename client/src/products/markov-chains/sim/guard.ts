@@ -1,17 +1,23 @@
 import type { Graph } from "@graph/types";
-import { CANT_RUN_REASONS } from "@ui/product/sim/cannotRunReasons";
+import { SimulationGuard } from "@ui/product/sim/guard";
 import { useMarkovChain } from "../markov/useMarkovChain";
+import { useIllegalStateColorizer } from "../ui/useIllegalStateColorizer";
+import definitions from "../markov/definitions";
 
 export const canRunMarkovChain = (graph: Graph) => {
-  const { illegalNodeIds } = useMarkovChain(graph)
-  return () => {
-    const isWeighted = graph.settings.value.displayEdgeLabels
-    if (!isWeighted) return CANT_RUN_REASONS.NOT_WEIGHTED
-    const nonNegativeWeights = graph.edges.value.every((e) => graph.helpers.getEdgeWeight(e.id) >= 0)
-    if (!nonNegativeWeights) return CANT_RUN_REASONS.NEGATIVE_EDGE_WEIGHTS
-    const hasNodes = graph.nodes.value.length > 0
-    if (!hasNodes) return CANT_RUN_REASONS.NOT_ENOUGH_NODES(1)
-    if (illegalNodeIds.value.size > 0) return CANT_RUN_REASONS.INVALID('markov chain')
-    return true
-  }
+  const markov = useMarkovChain(graph)
+  const { colorize, decolorize } = useIllegalStateColorizer(graph, markov)
+
+  return new SimulationGuard(graph)
+    .weighted()
+    .nonNegativeEdgeWeights()
+    .minNodes(1)
+    .valid(() => markov.illegalNodeIds.value.size === 0, {
+      title: 'Requires valid Markov Chain',
+      description: definitions.valid,
+      themer: {
+        theme: colorize,
+        untheme: decolorize,
+      }
+    })
 }

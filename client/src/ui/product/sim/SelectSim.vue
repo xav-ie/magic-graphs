@@ -6,6 +6,7 @@
   import CIcon from "@ui/core/Icon.vue";
   import GWell from "@ui/graph/GWell.vue";
   import GVerticalCardButton from "@ui/graph/button/GVerticalCardButton.vue";
+import SelectSimGuard from "./SelectSimGuard.vue";
 
   const props = defineProps<{
     simulations: SimulationDeclaration[];
@@ -15,16 +16,10 @@
     (e: "simulation-selected", simulation: SimulationDeclaration): void;
   }>();
 
-  const reasonNotToRun = (sim: SimulationDeclaration) => {
-    const reason = sim.canRun?.();
-    if (reason === true) return;
-    if (reason) return reason;
-  }
-
   const displayedSimulations = computed(() => {
     const allSimulations = props.simulations;
-    const cannotRun = allSimulations.filter(reasonNotToRun);
-    const canRun = allSimulations.filter((sim) => !reasonNotToRun(sim));
+    const cannotRun = allSimulations.filter((sim) => sim.canRun?.check());
+    const canRun = allSimulations.filter((sim) => !sim.canRun?.check());
     return [...canRun, ...cannotRun];
   });
 </script>
@@ -49,14 +44,8 @@
         :key="simulation.name"
         class="relative"
       >
-        <div
-          v-if="reasonNotToRun(simulation)"
-          class="absolute bg-black w-full h-full z-10 rounded-md bg-opacity-50 grid place-items-center"
-        >
-          <h2 class="text-red-500 font-bold text-lg bg-gray-900 rounded-lg px-2 py-1">
-            {{ reasonNotToRun(simulation) }}
-          </h2>
-        </div>
+        <SelectSimGuard :simulation="simulation" />
+
         <GVerticalCardButton
           @click="emits('simulation-selected', simulation)"
           class="rounded-md"

@@ -7,7 +7,7 @@
   import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
   import AnnotationToolbar from "@product/graph-sandbox/ui/AnnotationToolbar.vue";
   import ProductDropdown from "@ui/product/dropdown/ProductDropdown.vue";
-  import SelectSimulation from "@ui/product/sim/SelectSimulation.vue";
+  import SelectSimulation from "@ui/product/sim/SelectSim.vue";
   import type { SimulationDeclaration } from "src/types";
   import { getSimulationDeclarationsForProduct } from "@utils/product";
   import StopSimButton from "./StopSimButton.vue";
