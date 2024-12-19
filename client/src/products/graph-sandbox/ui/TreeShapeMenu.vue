@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed, toRef } from "vue";
   import { nonNullGraph as graph } from "@graph/global";
-  import type { AutoTreeControls } from "./useTreeShaper";
+  import type { AutoTreeControls } from "./tree/useTreeShaper";
   import GraphNode from "@ui/graph/GNode.vue";
   import CPopover from "@ui/core/Popover.vue";
   import GWell from "@ui/graph/GWell.vue";
