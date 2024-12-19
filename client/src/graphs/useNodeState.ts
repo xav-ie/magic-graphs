@@ -71,7 +71,7 @@ export const useNodeState = (
      */
     get,
     /**
-     * a promise that resolves when either the node is set or cancelled by `cancelSetNode`
+     * a promise that resolves when either the node is set or cancelled by `cancelSet`
      */
     set,
     /**

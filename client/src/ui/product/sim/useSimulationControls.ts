@@ -12,7 +12,7 @@ type SimulationControlsOptions = {
   allowEditingDuringPlayback?: boolean;
   /**
    * if set, the simulation will stop when the step reaches this value
-   * @default trace.length
+   * @default trace.length - 1
    */
   lastStep?: Ref<number>;
 };
@@ -40,9 +40,9 @@ export const useSimulationControls = <T extends SimulationTrace>(
    * the last step of the simulation
    */
   const simLastStep = computed(() => {
-    if (lastStep) return lastStep.value; // handles custom
-    if (Array.isArray(trace.value)) return trace.value.length; // handles TraceArray<T>
-    return Infinity; // handles TraceFunction<T>
+    if (lastStep) return lastStep.value;
+    if (Array.isArray(trace.value)) return trace.value.length - 1;
+    return Infinity;
   });
 
   /**

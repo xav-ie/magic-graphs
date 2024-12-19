@@ -26,6 +26,7 @@ export const useFordFulkerson = (graph: Graph) => {
       sourceId: srcNode.id,
       sinkId: snkNode.id,
     })
+
     trace.value = gotTrace
     maxFlow.value = gotMaxFlow
     cleanupResidualEdges()
