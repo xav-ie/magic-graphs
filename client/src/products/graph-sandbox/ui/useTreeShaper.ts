@@ -1,10 +1,9 @@
 import { onUnmounted, ref, watch } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { getNodeDepths } from "@product/search-visualizer/useNodeDepth";
-import type { Coordinate } from "@shape/types";
 import type { GNodeMoveRecord } from "@graph/plugins/history/types";
-import { roundToNearestN } from "@utils/math";
 import { debounce } from "@utils/debounce";
+import { getTreeStandardPos } from "./getTreeStandardPos";
 
 export type TreeFormationOptions = {
   /**
@@ -50,31 +49,13 @@ export const useMoveNodesIntoTreeFormation = (
   const reshapingActive = ref(false);
 
   const getNewNodePositions = (rootNode: GNode) => {
-    const roundToNearest10 = roundToNearestN(10);
-    const newPositions: Map<GNode['id'], Coordinate> = new Map();
-
     const { depthToNodeIds } = getNodeDepths(rootNode, graph.adjacencyList.adjacencyList.value);
-    const { x: rootNodeX, y: rootNodeY } = rootNode;
-
-    for (let i = 1; i < depthToNodeIds.length; i++) {
-      const nodeIds = depthToNodeIds[i];
-      const yOffset = i * treeOffsetY.value;
-
-      for (let j = 0; j < nodeIds.length; j++) {
-        const node = graph.getNode(nodeIds[j]);
-        if (!node) throw new Error(`Node with id ${nodeIds[j]} not found`);
-
-        const x = rootNodeX + (j - nodeIds.length / 2) * treeOffsetX.value;
-        const y = rootNodeY + yOffset;
-
-        newPositions.set(node.id, {
-          x: roundToNearest10(x),
-          y: roundToNearest10(y),
-        });
-      }
-    }
-
-    return newPositions;
+    return getTreeStandardPos(
+      graph,
+      rootNode,
+      depthToNodeIds,
+      { x: treeOffsetX.value, y: treeOffsetY.value }
+    );
   }
 
   const shapeGraph = async (rootNode: GNode) => {
