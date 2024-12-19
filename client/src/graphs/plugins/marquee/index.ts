@@ -8,6 +8,7 @@ import type { BoundingBox, Coordinate } from "@shape/types";
 import type { BaseGraph } from '@graph/base'
 import type { GraphMouseEvent } from '@graph/base/types'
 import type { GraphFocusPlugin } from '../focus'
+import { getEncapsulatedNodeBox } from './helpers'
 
 export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
   const marqueeBox = ref<BoundingBox | undefined>()
@@ -106,38 +107,7 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
   }
 
   const updateEncapsulatedNodeBox = () => {
-    encapsulatedNodeBox.value = {
-      at: { x: Infinity, y: Infinity },
-      width: 0,
-      height: 0,
-    }
-
-    if (graph.focus.focusedNodes.value.length < 2) return
-
-    let minX = Infinity, minY = Infinity;
-    let maxX = -Infinity, maxY = -Infinity;
-
-    for (const node of graph.focus.focusedNodes.value) {
-      const nodeRadius = graph.getTheme('nodeSize', node);
-      const nodeBorderWidth = graph.getTheme('nodeBorderWidth', node);
-      const nodeArea = nodeRadius + (nodeBorderWidth / 2);
-      const { x, y } = node;
-
-      minX = Math.min(minX, x - nodeArea);
-      minY = Math.min(minY, y - nodeArea);
-      maxX = Math.max(maxX, x + nodeArea);
-      maxY = Math.max(maxY, y + nodeArea);
-    }
-
-    if (minX < Infinity && minY < Infinity && maxX > -Infinity && maxY > -Infinity) {
-      encapsulatedNodeBox.value.at.x = minX;
-      encapsulatedNodeBox.value.at.y = minY;
-      encapsulatedNodeBox.value.width = maxX - minX;
-      encapsulatedNodeBox.value.height = maxY - minY;
-    } else {
-      encapsulatedNodeBox.value.width = 0;
-      encapsulatedNodeBox.value.height = 0;
-    }
+    encapsulatedNodeBox.value = getEncapsulatedNodeBox(graph.focus.focusedNodes.value, graph)
   };
 
   const setMarqueeBoxDimensions = ({ coords }: GraphMouseEvent) => {

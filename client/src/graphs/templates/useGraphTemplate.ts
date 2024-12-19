@@ -4,18 +4,15 @@ import { computed, ref } from "vue";
 import {
   centerNodesOnOriginCoordinates,
   getAverageCoordinatesOfNodes,
-  getNodesBoundingBox,
 } from "./helpers";
 import { generateId } from "@utils/id";
 import { useLocalStorage } from "@vueuse/core";
 import { createImageFromCanvasRegion } from "./snapshot";
 import { products } from "@utils/product";
+import { getEncapsulatedNodeBox } from "@graph/plugins/marquee/helpers";
 
 export const useGraphTemplate = (graph: Graph) => {
-  const userTemplates = useLocalStorage<GraphTemplate[]>(
-    "graph-templates",
-    []
-  );
+  const userTemplates = useLocalStorage<GraphTemplate[]>("graph-templates", []);
   const productTemplates = ref<GraphTemplate[]>(
     products.flatMap((p) => p.templates ?? [])
   );
@@ -31,18 +28,9 @@ export const useGraphTemplate = (graph: Graph) => {
     const { nodes, edges, canvas } = graph;
 
     if (!canvas.value) throw new Error("no snapshot canvas found");
+    const boundingBox = getEncapsulatedNodeBox(nodes.value, graph);
 
-    const nodeRadius = graph.baseTheme.value.nodeSize;
-    const nodeBorderWidth = graph.baseTheme.value.nodeBorderWidth;
-    const boundingBox = getNodesBoundingBox(
-      nodes.value,
-      nodeRadius + nodeBorderWidth / 2
-    );
-
-    const thumbnail = createImageFromCanvasRegion(
-      canvas.value,
-      boundingBox
-    );
+    const thumbnail = createImageFromCanvasRegion(canvas.value, boundingBox);
 
     userTemplates.value.unshift({
       id: generateId(),
