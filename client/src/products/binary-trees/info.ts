@@ -12,7 +12,7 @@ const info: ProductInfo = {
   menu: {
     name: 'Binary Trees',
     description: 'Binary trees are a commonly to store and search for data',
-    thumbnail: '/products/thumbnails/dijkstras.png',
+    thumbnail: '/products/thumbnails/binary-tree.png',
     category: 'data structures',
   },
   // simulations: (graph: Graph) => [{
