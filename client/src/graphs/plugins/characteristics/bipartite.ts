@@ -1,10 +1,15 @@
 import type { AdjacencyList } from "@graph/useAdjacencyList";
+import { computed, type Ref } from "vue";
 
-export const getBipartitePartition = (adjList: AdjacencyList): [string[], string[]] | undefined => {
+type BipartitePartition = [string[], string[]];
+type GetBipartitePartition = (adjList: Readonly<AdjacencyList>) => BipartitePartition | undefined;
+
+export type NodeIdToBipartiteSet = Map<string, 0 | 1>;
+
+export const getBipartitePartition: GetBipartitePartition = (adjList) => {
   const colors: { [node: string]: 0 | 1 } = {};
-  const groups: [string[], string[]] = [[], []];
+  const groups: BipartitePartition = [[], []];
 
-  // Build a complete graph representation including all nodes
   const completeGraph: AdjacencyList = { ...adjList };
 
   // Ensure all nodes are in the graph
@@ -67,4 +72,26 @@ export const getBipartitePartition = (adjList: AdjacencyList): [string[], string
   }
 
   return groups;
+};
+
+export const useBipartite = (adjList: Ref<AdjacencyList>) => {
+  const bipartitePartition = computed(() => getBipartitePartition(adjList.value))
+
+  const nodeIdToBipartitePartition = computed(() => {
+    const partition = bipartitePartition.value
+    const map: NodeIdToBipartiteSet = new Map()
+    if (!partition) return map
+    const [left, right] = partition
+    for (const nodeId of left) map.set(nodeId, 0)
+    for (const nodeId of right) map.set(nodeId, 1)
+    return map
+  })
+
+  const isBipartite = computed(() => bipartitePartition.value !== undefined)
+
+  return {
+    bipartitePartition,
+    nodeIdToBipartitePartition,
+    isBipartite,
+  }
 }

@@ -4,15 +4,17 @@ import type { GNode } from "@graph/types";
 import type { AdjacencyLists } from "@graph/useAdjacencyList";
 import { useConnected } from "./useConnected";
 import { getStronglyConnectedComponents } from "./getConnectedComponents";
-import { getBipartitePartition } from "./getBipartite";
+import { useBipartite } from "./bipartite";
 import { findAllCycles } from "./getCycles";
-
-type NodeIdToBipartiteSet = Map<GNode['id'], 0 | 1>;
 
 export const useCharacteristics = (graph: BaseGraph & AdjacencyLists) => {
   const { adjacencyList, undirectedAdjacencyList } = graph;
   const connectedState = useConnected({ adjacencyList, undirectedAdjacencyList });
 
+  /**
+   * all edges that link two nodes in both directions
+   * (i.e. edge A->B and B->A are a bidirectional pair of edges)
+   */
   const bidirectionalEdges = computed(() => {
     const edges = graph.edges.value
     return edges
@@ -22,6 +24,10 @@ export const useCharacteristics = (graph: BaseGraph & AdjacencyLists) => {
           return edge.from === otherEdge.to && edge.to === otherEdge.from
         })
       })
+  })
+
+  const hasBidirectionalEdges = computed(() => {
+    return bidirectionalEdges.value.length > 0
   })
 
   const stronglyConnectedComponents = computed(() => {
@@ -36,23 +42,7 @@ export const useCharacteristics = (graph: BaseGraph & AdjacencyLists) => {
     }, new Map<GNode['id'], number>());
   })
 
-  const hasBidirectionalEdges = computed(() => {
-    return bidirectionalEdges.value.length > 0
-  })
-
-  const bipartitePartition = computed(() => {
-    return getBipartitePartition(adjacencyList.value)
-  })
-
-  const nodeIdToBipartitePartition = computed(() => {
-    const partition = bipartitePartition.value
-    const map: NodeIdToBipartiteSet = new Map()
-    if (!partition) return map
-    const [left, right] = partition
-    for (const nodeId of left) map.set(nodeId, 0)
-    for (const nodeId of right) map.set(nodeId, 1)
-    return map
-  })
+  const bipartite = useBipartite(adjacencyList);
 
   const cycles = computed(() => {
     const isDirected = graph.settings.value.isGraphDirected
@@ -83,20 +73,17 @@ export const useCharacteristics = (graph: BaseGraph & AdjacencyLists) => {
     return m === (isDirected ? (n * (n - 1)) : (n * (n - 1) / 2))
   });
 
-  const isBipartite = computed(() => !!bipartitePartition.value)
-
   return {
     bidirectionalEdges,
     hasBidirectionalEdges,
     stronglyConnectedComponents,
     nodeIdToStronglyConnectedComponent,
-    bipartitePartition,
-    nodeIdToBipartitePartition,
-    isBipartite,
     cycles,
     nodeIdToCycle,
     isAcyclic,
     isComplete,
+
+    ...bipartite,
     ...connectedState,
   }
 }
