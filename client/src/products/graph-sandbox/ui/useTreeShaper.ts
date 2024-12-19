@@ -4,6 +4,7 @@ import { getNodeDepths } from "@product/search-visualizer/useNodeDepth";
 import type { GNodeMoveRecord } from "@graph/plugins/history/types";
 import { debounce } from "@utils/debounce";
 import { getTreeStandardPos } from "./getTreeStandardPos";
+import { getTreeBinaryPos } from "./getTreeBinaryPos";
 
 export type TreeFormationOptions = {
   /**
@@ -49,12 +50,13 @@ export const useMoveNodesIntoTreeFormation = (
   const reshapingActive = ref(false);
 
   const getNewNodePositions = (rootNode: GNode) => {
-    const { depthToNodeIds } = getNodeDepths(rootNode, graph.adjacencyList.adjacencyList.value);
-    return getTreeStandardPos(
+    const nodeDepths = getNodeDepths(rootNode, graph.adjacencyList.adjacencyList.value);
+    const pos = getTreeBinaryPos;
+    return pos(
       graph,
       rootNode,
-      depthToNodeIds,
-      { x: treeOffsetX.value, y: treeOffsetY.value }
+      nodeDepths,
+      { x: 150, y: treeOffsetY.value }
     );
   }
 
