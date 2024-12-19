@@ -97,6 +97,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     // +0.01, -0.01 to overlap
     ctx.arc(arcAt.x, arcAt.y, spacing, Math.PI / 2 + rotation + 0.01, -Math.PI / 2 + rotation - 0.01, true);
     ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
     ctx.stroke();
     ctx.closePath();
   }
