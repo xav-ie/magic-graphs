@@ -83,6 +83,46 @@ export const getConnectedEdges = (
   return isFlowingOut || isFlowingIn
 })
 
+export const getParentsOfNode = (
+  nodeId: GNode['id'],
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getNode' | 'settings'>
+) => {
+  return getInboundEdges(nodeId, graph)
+    .map(edge => edge.from)
+    .map(nodeId => graph.getNode(nodeId)!)
+}
+
+export const getAncestorsOfNode = (
+  nodeId: GNode['id'],
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getNode' | 'settings'>
+): GNode[] => {
+  const parents = getParentsOfNode(nodeId, graph)
+  const ancestors = parents.flatMap(parent => {
+    return [parent, ...getAncestorsOfNode(parent.id, graph)]
+  })
+  return ancestors
+}
+
+export const getChildrenOfNode = (
+  nodeId: GNode['id'],
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getNode' | 'settings'>
+) => {
+  return getOutboundEdges(nodeId, graph)
+    .map(edge => edge.to)
+    .map(nodeId => graph.getNode(nodeId)!)
+}
+
+export const getDescendantsOfNode = (
+  nodeId: GNode['id'],
+  graph: Pick<Graph, 'edges' | 'getEdge' | 'getNode' | 'settings'>
+): GNode[] => {
+  const children = getChildrenOfNode(nodeId, graph)
+  const descendants = children.flatMap(child => {
+    return [child, ...getDescendantsOfNode(child.id, graph)]
+  })
+  return descendants
+}
+
 export const getDirectedInboundEdges = (nodeId: string, edges: GEdge[]) => {
   return edges.filter(edge => isDirectedEdgeFlowingIntoNode(edge, nodeId))
 }

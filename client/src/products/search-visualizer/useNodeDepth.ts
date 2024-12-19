@@ -75,3 +75,5 @@ export const useNodeDepth = (graph: Graph, startNode: Ref<GNode>) => {
   const { adjacencyList } = useAdjacencyList(graph);
   return computed(() => getNodeDepths(startNode.value, adjacencyList.value));
 }
+
+export type NodeDepth = ReturnType<typeof getNodeDepths>;

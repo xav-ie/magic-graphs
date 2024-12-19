@@ -1,19 +1,28 @@
 import type { GEdge, GNode } from "@graph/types";
 import type { BaseGraph } from "@graph/base";
 import {
+  getAncestorsOfNode,
+  getChildrenOfNode,
   getConnectedEdges,
   getConnectedNodes,
+  getDescendantsOfNode,
   getEdgesAlongPath,
   getEdgeWeight,
   getEdgeWeightFraction,
   getInboundEdges,
   getOutboundEdges,
+  getParentsOfNode,
   getWeightBetweenNodes,
   isEdgeFlowingIntoNode,
   isEdgeFlowingOutOfNode
 } from ".";
 
 export const useHelpers = (graph: BaseGraph) => ({
+  getParentsOfNode: (nodeId: GNode['id']) => getParentsOfNode(nodeId, graph),
+  getAncestorsOfNode: (nodeId: GNode['id']) => getAncestorsOfNode(nodeId, graph),
+  getChildrenOfNode: (nodeId: GNode['id']) => getChildrenOfNode(nodeId, graph),
+  getDescendantsOfNode: (nodeId: GNode['id']) => getDescendantsOfNode(nodeId, graph),
+
   getConnectedNodes: (edgeId: GEdge['id']) => getConnectedNodes(edgeId, graph),
   getConnectedEdges: (nodeId: GNode['id']) => getConnectedEdges(nodeId, graph),
   getInboundEdges: (nodeId: GNode['id']) => getInboundEdges(nodeId, graph),

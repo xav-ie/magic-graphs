@@ -1,3 +1,4 @@
+import { computed } from "vue";
 import type { GEdge, Graph } from "@graph/types";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 import type { SimulationControls, SimulationRunner } from "@ui/product/sim/types";
@@ -13,8 +14,10 @@ export const useMSTSimulationRunner = (
   graph: Graph,
   trace: MSTSimulationControls['trace']
 ): MSTSimulationRunner => {
-  const simControls = useSimulationControls(graph, trace);
+  const lastStep = computed(() => trace.value.length);
+  const simControls = useSimulationControls(graph, trace, { lastStep });
   const { activate, deactivate } = useSimulationTheme(graph, simControls);
+
   return {
     simControls,
     start: () => {

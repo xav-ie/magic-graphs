@@ -9,7 +9,7 @@
   import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
   import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
   import TreeShapeMenu from "./TreeShapeMenu.vue";
-  import { useAutoTree } from "./useTreeShaper";
+  import { useAutoTree } from "./tree/useTreeShaper";
   import TemplateMenu from "@graph/templates/ui/TemplateMenu.vue";
 
   const tutorial = useGraphTutorial(graph.value, [

@@ -9,6 +9,7 @@ import { useSourceSinkTheme } from "../theme/useSourceSinkTheme";
 import { useEdgeThickener } from "../theme/useEdgeThickener";
 import { useResidualEdges } from "../misc/useResidualEdges";
 import { useSimulationTheme } from "./theme";
+import { computed } from "vue";
 
 export type FlowSimulationControls = SimulationControls<FlowTrace>
 export type FlowSimulationRunner = SimulationRunner<FlowTrace>
@@ -32,6 +33,7 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
   const { trace } = useFordFulkerson(graph)
   const simControls = useSimulationControls(graph, trace, {
     allowEditingDuringPlayback: false,
+    lastStep: computed(() => trace.value.length),
   })
 
   const {
