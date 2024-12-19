@@ -1,7 +1,8 @@
 import type { ProductInfo } from "src/types";
+import type { Graph } from "@graph/types";
+import state from "./state";
 import { useSimulationRunner } from "./sim/runner";
 import { canRunMarkovChain } from "./sim/guard";
-import type { Graph } from "@graph/types";
 
 export const info: ProductInfo = {
   route: {
@@ -23,7 +24,8 @@ export const info: ProductInfo = {
     description: "Build and analyze your very own Markov Chains.",
     thumbnail: "/products/thumbnails/markov-chains.png",
     category: "math",
-  }
+  },
+  state,
 }
 
 export default info;
