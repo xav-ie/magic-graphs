@@ -1,6 +1,6 @@
 import type { Graph } from "@graph/types";
 import { useGraph } from "@graph/useGraph";
-import type { BoundingBox } from "@shape/types";
+import type { BoundingBox, Coordinate } from "@shape/types";
 import { getCtx } from "@utils/ctx";
 import { onMounted, onUnmounted, ref } from "vue";
 import { getEncapsulatedNodeBox } from "@graph/plugins/marquee/helpers";
@@ -32,10 +32,20 @@ export const createImageFromCanvasRegion = (
   return dataURL;
 };
 
+export const normalizeNodes = <T extends Coordinate>(nodes: T[]) => {
+  const minX = Math.min(...nodes.map(node => node.x));
+  const minY = Math.min(...nodes.map(node => node.y));
+
+  nodes.forEach(node => {
+    node.x -= minX;
+    node.y -= minY;
+  });
+}
+
 export const useProductThumbnails = (graph: Graph) => {
   const tempCanvas = ref(document.createElement("canvas"));
-  tempCanvas.value.width = 10000;
-  tempCanvas.value.height = 10000;
+  tempCanvas.value.width = 5000;
+  tempCanvas.value.height = 5000;
   const tempGraph = useGraph(tempCanvas);
 
   const productTemplates = ref<GraphTemplate[]>(
@@ -43,7 +53,7 @@ export const useProductThumbnails = (graph: Graph) => {
   );
 
   const updateProductThumbnails = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1)); // not sure why this one is needed, but without it it will load the same image twice
+    await new Promise((resolve) => setTimeout(resolve, 1)); // needed to load initial canvas
     for (const product of productTemplates.value) {
       tempGraph.load(product.graphState);
       await new Promise((resolve) => setTimeout(resolve, 1)); // gives time to load in
