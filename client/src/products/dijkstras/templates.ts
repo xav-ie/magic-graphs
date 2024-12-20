@@ -5,7 +5,6 @@ const templates: GraphTemplate[] = [
     id: 'dijkstras',
     title: 'Dijkstras',
     description: 'basic example for visualizing Dijkstras Algorithm',
-    thumbnail: '/products/template-thumbnails/dijkstra.png',
     graphState: {
       nodes: [
         {
