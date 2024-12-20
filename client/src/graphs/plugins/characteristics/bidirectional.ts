@@ -27,3 +27,5 @@ export const useBidirectionalEdges = (graph: BaseGraph) => {
     hasBidirectionalEdges
   }
 }
+
+export type CharacteristicBidirectional = ReturnType<typeof useBidirectionalEdges>

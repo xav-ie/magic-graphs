@@ -44,3 +44,5 @@ export const useConnected = ({
     isWeaklyConnected,
   }
 }
+
+export type CharacteristicConnected = ReturnType<typeof useConnected>;

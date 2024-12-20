@@ -45,3 +45,5 @@ export const useStronglyConnectedComponents = (graph: BaseGraph) => {
     nodeIdToStronglyConnectedComponent
   }
 }
+
+export type CharacteristicSCC = ReturnType<typeof useStronglyConnectedComponents>;

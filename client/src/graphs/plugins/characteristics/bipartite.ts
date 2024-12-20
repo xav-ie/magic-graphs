@@ -95,3 +95,5 @@ export const useBipartite = (adjList: Ref<AdjacencyList>) => {
     isBipartite,
   }
 }
+
+export type CharacteristicBipartite = ReturnType<typeof useBipartite>;
