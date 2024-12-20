@@ -3,7 +3,7 @@ import type { GraphTemplate } from "./types";
 import { computed, ref } from "vue";
 import {
   centerNodesOnOriginCoordinates,
-  getAverageCoordinatesOfNodes,
+  getAverageCoordinates,
 } from "./helpers";
 import { generateId } from "@utils/id";
 import { useLocalStorage } from "@vueuse/core";
@@ -51,7 +51,7 @@ export const useGraphTemplate = (graph: Graph) => {
     }
 
     const { nodes, edges } = template.graphState;
-    const coords = getAverageCoordinatesOfNodes(graph.nodes.value);
+    const coords = getAverageCoordinates(graph.nodes.value);
     graph.load({
       nodes: centerNodesOnOriginCoordinates(nodes, coords),
       edges,

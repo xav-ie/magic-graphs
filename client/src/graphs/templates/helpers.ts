@@ -1,29 +1,20 @@
-import type { GNode } from "@graph/types";
 import type { Coordinate } from "@shape/types";
+import { average } from "@utils/math";
 
-export const getAverageCoordinatesOfNodes = (nodes: GNode[]) => {
-  if (nodes.length === 0) {
-    return { x: 0, y: 0 };
-  }
-
-  const total = nodes.reduce((acc, node) => {
-    acc.x += node.x;
-    acc.y += node.y;
-    return acc;
-  }, { x: 0, y: 0 });
-
-  const nodeCount = nodes.length;
+export const getAverageCoordinates = (coords: Coordinate[]) => {
+  const x = coords.map(coord => coord.x);
+  const y = coords.map(coord => coord.y);
   return {
-    x: total.x / nodeCount,
-    y: total.y / nodeCount
-  };
+    x: average(x),
+    y: average(y),
+  }
 };
 
 export const centerNodesOnOriginCoordinates = (
-  nodes: GNode[],
+  nodes: Coordinate[],
   targetOrigin: Coordinate
-): GNode[] => {
-  const averageCoordinates = getAverageCoordinatesOfNodes(nodes);
+): Coordinate[] => {
+  const averageCoordinates = getAverageCoordinates(nodes);
 
   const offsetX = targetOrigin.x - averageCoordinates.x;
   const offsetY = targetOrigin.y - averageCoordinates.y;

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  getAverageCoordinatesOfNodes,
+  getAverageCoordinates,
   centerNodesOnOriginCoordinates,
 } from "./helpers";
 import type { GNode } from "@graph/types";
@@ -13,21 +13,21 @@ describe("getAverageCoordinatesOfNodes", () => {
       { x: 50, y: 60 },
     ];
 
-    const result = getAverageCoordinatesOfNodes(nodes);
+    const result = getAverageCoordinates(nodes);
     expect(result).toEqual({ x: 30, y: 40 });
   });
 
   it("handles a single node", () => {
     const nodes = [{ x: 15, y: 25 }];
 
-    const result = getAverageCoordinatesOfNodes(nodes);
+    const result = getAverageCoordinates(nodes);
     expect(result).toEqual({ x: 15, y: 25 });
   });
 
   it("handles edge case of 0 nodes", () => {
     const nodes: GNode[] = [];
 
-    const result = getAverageCoordinatesOfNodes(nodes);
+    const result = getAverageCoordinates(nodes);
     expect(result).toEqual({ x: 0, y: 0 });
   });
 });

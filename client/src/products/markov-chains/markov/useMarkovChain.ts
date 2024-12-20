@@ -11,13 +11,12 @@ import { useMarkovNodeWeights } from "./useMarkovNodeWeights";
  * reactive markov chain characteristics
  */
 export const useMarkovChain = (graph: Graph) => {
-  const componentMap = useComponentAdjacencyMap(graph);
   const {
     recurrentClasses,
     transientClasses,
     nodeIdToRecurrentClassIndex,
     nodeIdToTransientClassIndex,
-  } = useMarkovClasses(graph, componentMap);
+  } = useMarkovClasses(graph);
 
   const recurrentStates = computed(() => reduceSet(recurrentClasses.value));
   const transientStates = computed(() => reduceSet(transientClasses.value));
@@ -44,7 +43,6 @@ export const useMarkovChain = (graph: Graph) => {
   });
 
   return {
-    componentMap,
     communicatingClasses,
 
     recurrentClasses,
