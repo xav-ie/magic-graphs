@@ -7,13 +7,13 @@ import {
 } from "./helpers";
 import { generateId } from "@utils/id";
 import { useLocalStorage } from "@vueuse/core";
-import { createImageFromCanvasRegion, useGraphSnapshot } from "./useGraphSnapshot";
+import { createImageFromCanvasRegion, useProductThumbnails } from "./useGraphSnapshot";
 import { getEncapsulatedNodeBox } from "@graph/plugins/marquee/helpers";
 
 export const useGraphTemplate = (graph: Graph) => {
   const userTemplates = useLocalStorage<GraphTemplate[]>("graph-templates", []);
 
-  const { productTemplates } = useGraphSnapshot(graph);
+  const { productTemplates } = useProductThumbnails(graph);
 
   const templates = computed(() => [
     ...userTemplates.value, // user templates first so easier to find
@@ -26,7 +26,7 @@ export const useGraphTemplate = (graph: Graph) => {
     const { nodes, edges, canvas } = graph;
 
     if (!canvas.value) throw new Error("no snapshot canvas found");
-    
+
     const boundingBox = getEncapsulatedNodeBox(nodes.value, graph);
 
     const thumbnail = createImageFromCanvasRegion(canvas.value, boundingBox);

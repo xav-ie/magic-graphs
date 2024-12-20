@@ -2,15 +2,14 @@ import type { GEdge, GNode, Graph } from "@graph/types";
 import { useGraph } from "@graph/useGraph";
 import type { BoundingBox } from "@shape/types";
 import { getCtx } from "@utils/ctx";
-import { onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { getEncapsulatedNodeBox } from "@graph/plugins/marquee/helpers";
 import { products } from "@utils/product";
 import type { GraphTemplate } from "./types";
-import { triangle } from "@shapes";
 
 export const createImageFromCanvasRegion = (
   canvas: HTMLCanvasElement,
-  boundingBox: BoundingBox
+  boundingBox: BoundingBox,
 ) => {
   const { at, width, height } = boundingBox;
   const tempCanvas = document.createElement('canvas');
@@ -33,7 +32,7 @@ export const createImageFromCanvasRegion = (
   return dataURL;
 };
 
-export const useGraphSnapshot = (graph: Graph) => {
+export const useProductThumbnails = (graph: Graph) => {
   const tempCanvas = ref(document.createElement('canvas'));
   tempCanvas.value.width = 10000
   tempCanvas.value.height = 10000
@@ -42,34 +41,31 @@ export const useGraphSnapshot = (graph: Graph) => {
   const productTemplates = ref<GraphTemplate[]>(
     products.flatMap((p) => p.templates ?? [])
   );
+  console.log(productTemplates.value)
 
-  const getSnapshot = (graphState: { nodes: GNode[], edges: GEdge[] }) => {
-    tempGraph.load(graphState)
-
-    tempGraph.themeName.value = graph.themeName.value
-    const boundingBox = getEncapsulatedNodeBox(graphState.nodes, tempGraph);
-    const thumbnail = createImageFromCanvasRegion(tempGraph.canvas.value!, boundingBox);
-    console.log(thumbnail)
-
-    return thumbnail
+  const updateProductThumbnails = () => {
+    for (const product of productTemplates.value) {
+      tempGraph.load(product.graphState)
+      tempGraph.themeName.value = graph.themeName.value
+      const boundingBox = getEncapsulatedNodeBox(tempGraph.nodes.value, tempGraph);
+      setTimeout(() => {
+        product.thumbnail = createImageFromCanvasRegion(tempCanvas.value, boundingBox);
+      }, 1)
+    }
   }
 
-  const updateProductThumbnails = () => { 
-    productTemplates.value.forEach((p) => {
-      p.thumbnail = getSnapshot(p.graphState)
-    })
-  }
+  onMounted(() => {
+    updateProductThumbnails()
+    graph.subscribe('onThemeChange', updateProductThumbnails)
+  })
 
-  graph.subscribe('onThemeChange', updateProductThumbnails)
 
   onUnmounted(() => {
     graph.unsubscribe('onThemeChange', updateProductThumbnails)
     tempCanvas.value.remove()
-    console.log('goneee')
   })
 
   return {
-    getSnapshot,
     productTemplates,
   }
 }
