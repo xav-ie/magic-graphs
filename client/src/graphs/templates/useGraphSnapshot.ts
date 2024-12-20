@@ -41,16 +41,15 @@ export const useProductThumbnails = (graph: Graph) => {
   const productTemplates = ref<GraphTemplate[]>(
     products.flatMap((p) => p.templates ?? [])
   );
-  console.log(productTemplates.value)
 
-  const updateProductThumbnails = () => {
+  const updateProductThumbnails = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1)); // not sure why this one is needed, but without it it will load the same image twice
     for (const product of productTemplates.value) {
       tempGraph.load(product.graphState)
+      await new Promise((resolve) => setTimeout(resolve, 1)); // gives time to load in
       tempGraph.themeName.value = graph.themeName.value
       const boundingBox = getEncapsulatedNodeBox(tempGraph.nodes.value, tempGraph);
-      setTimeout(() => {
-        product.thumbnail = createImageFromCanvasRegion(tempCanvas.value, boundingBox);
-      }, 1)
+      product.thumbnail = createImageFromCanvasRegion(tempCanvas.value, boundingBox);
     }
   }
 
