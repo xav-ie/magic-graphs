@@ -44,8 +44,6 @@ export const normalizeNodes = <T extends Coordinate>(nodes: T[]) => {
 
 export const useProductThumbnails = (graph: Graph) => {
   const tempCanvas = ref(document.createElement("canvas"));
-  tempCanvas.value.width = 5000;
-  tempCanvas.value.height = 5000;
   const tempGraph = useGraph(tempCanvas);
 
   const productTemplates = ref<GraphTemplate[]>(
@@ -53,10 +51,12 @@ export const useProductThumbnails = (graph: Graph) => {
   );
 
   const updateProductThumbnails = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1)); // needed to load initial canvas
+    tempCanvas.value.width = 5000;
+    tempCanvas.value.height = 5000;
+    await new Promise((resolve) => setTimeout(resolve, 50)); // needed to load initial canvas
     for (const product of productTemplates.value) {
       tempGraph.load(product.graphState);
-      await new Promise((resolve) => setTimeout(resolve, 1)); // gives time to load in
+      await new Promise((resolve) => setTimeout(resolve, 50)); // gives time to load in
       tempGraph.themeName.value = graph.themeName.value;
       const boundingBox = getEncapsulatedNodeBox(
         tempGraph.nodes.value,
@@ -67,6 +67,8 @@ export const useProductThumbnails = (graph: Graph) => {
         boundingBox
       );
     }
+    tempCanvas.value.width = 0; // performance
+    tempCanvas.value.height = 0;
   };
 
   onMounted(() => {
