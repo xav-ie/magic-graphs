@@ -1,4 +1,4 @@
-import type { GEdge, GNode, Graph } from "@graph/types";
+import type { Graph } from "@graph/types";
 import { useGraph } from "@graph/useGraph";
 import type { BoundingBox } from "@shape/types";
 import { getCtx } from "@utils/ctx";
