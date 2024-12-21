@@ -4,6 +4,7 @@
   import GraphProduct from "@ui/product/GraphProduct.vue";
   import { BINARY_TREE_GRAPH_SETTINGS } from "./settings";
   import { useAutoBinaryTree } from "./theme/useAutoBinaryTree";
+  import CRUDControls from "./CRUDControls.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, BINARY_TREE_GRAPH_SETTINGS);
@@ -16,10 +17,8 @@
     @graph-ref="(el) => (graphEl = el)"
     :graph="graph"
   >
-    <template #top-center></template>
-
-    <template #center-left></template>
-
-    <template #center-right-sim></template>
+    <template #bottom-center>
+      <CRUDControls />
+    </template>
   </GraphProduct>
 </template>
