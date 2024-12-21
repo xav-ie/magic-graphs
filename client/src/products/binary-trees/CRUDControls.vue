@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import GWell from "@ui/graph/GWell.vue";
   import GButton from "@ui/graph/button/GButton.vue";
+  import './tree/avl'
 
   const addNode = () => {
     console.log("addNode");
