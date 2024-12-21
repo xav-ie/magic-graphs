@@ -1,4 +1,3 @@
-import type { GNode } from "@graph/types";
 import type { Coordinate } from "@shape/types";
 import { average } from "@utils/math";
 
