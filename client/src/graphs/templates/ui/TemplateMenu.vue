@@ -6,7 +6,8 @@
   import { useGraphTemplate } from "../useGraphTemplate";
   import GButton from "@ui/graph/button/GButton.vue";
   import TemplateItem from "./TemplateItem.vue";
-
+  import AutoGenerate from "../autoGenerate/AutoGenerate.vue";
+  
   const {
     templates,
     userTemplates,
@@ -52,8 +53,6 @@
         </div>
       </div>
 
-      <hr class="my-2" />
-
       <div class="flex gap-2 justify-center">
         <GButton 
           @click="add" 
@@ -63,7 +62,10 @@
           @click="clearUserTemplates" 
           :disabled="userTemplates.length === 0"
         >Clear All</GButton>
+
       </div>
+      <hr class="my-2" />
+      <AutoGenerate />
     </GWell>
   </CPopover>
 </template>
