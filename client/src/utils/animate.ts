@@ -25,7 +25,7 @@ export type NamedEasingFunction =
   | "in"
   | "out";
 
-const EASING_FUNCTIONS: Record<NamedEasingFunction, EasingFunction> = {
+export const EASING_FUNCTIONS: Record<NamedEasingFunction, EasingFunction> = {
   "linear": (step) => step,
   "in": (step) => step * step,
   "out": (step) => step * (2 - step),

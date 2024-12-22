@@ -7,10 +7,6 @@
   import IslandMarkup from "./ui/IslandMarkup.vue";
   import { useMarkupColorizer } from "./theme/useMarkupColorizer";
   import { useMarkupSizer } from "./theme/useMarkupSizer";
-  import { interpolateCoordinates } from "@utils/animate";
-  import gsap from "gsap";
-
-  const res = gsap.utils.interpolate({ x: 0, y: 0 }, { x: 100, y: 100 });
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, SANDBOX_GRAPH_SETTINGS);

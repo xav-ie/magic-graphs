@@ -9,6 +9,8 @@ import {
   uturn
 } from '@shapes'
 
+import { animatedArrow } from './animateEdge'
+
 const WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE = 2
 
 type PropsNeededFromGraph = 'edges' | 'getNode' | 'getEdge' | 'getTheme' | 'settings'
@@ -73,7 +75,7 @@ export const getEdgeSchematic = (
       .filter((e) => (e.from === from.id || e.to === to.id) && e.from !== e.to)
       .map((e) => {
         const [fromNode, toNode] = getConnectedNodes(e.id, graph)
-        return from.id === fromNode.id ? { x: toNode.x, y: toNode.y } : { x: fromNode.x, y: fromNode.y }
+        return from.id === fromNode.id ? toNode : fromNode
       })
       .filter((point, index, self) =>
         index === self.findIndex(
@@ -151,7 +153,7 @@ export const getEdgeSchematic = (
 
   // const edgeTextAdjustment = fromNodeSize >= 50 ? 0.9 : (fromNodeSize >= 25 ? 1 : 1.3)
 
-  const shape = arrow({
+  const shape = animatedArrow({
     start: edgeStart,
     end: edgeEnd,
     width: edgeWidth,
