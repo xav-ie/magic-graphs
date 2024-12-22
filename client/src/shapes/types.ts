@@ -11,7 +11,7 @@ export type BoundingBoxCorners = {
   bottomRight: Coordinate
 }
 
-export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'arrow' | 'uturn' | 'cross' | 'scribble'
+export type ShapeName = 'circle' | 'line' | 'square' | 'rect' | 'triangle' | 'arrow' | 'uturn' | 'cross' | 'scribble' | 'ellipse'
 
 export type Shape = {
   /**

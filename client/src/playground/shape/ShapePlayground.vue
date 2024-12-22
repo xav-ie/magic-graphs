@@ -24,12 +24,13 @@
   const draw = () => {
     const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    const { circle, uturn, cross, rect, square, triangle, scribble } = shapes;
+    const { uturn, cross, ellipse, square, triangle, scribble } = shapes;
 
     items.value.push(
-      circle({
+      ellipse({
         at: { x: 200, y: 200 },
-        radius: 50,
+        radiusX: 50,
+        radiusY: 90,
         color: colors.BLUE_500,
         stroke: {
           color: colors.BLUE_700,
