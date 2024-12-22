@@ -18,8 +18,8 @@
     <ToolbarButtonGroup>
       <GToolbarButton
         v-for="(val, key) in themeNameToIcon"
-        @click="graph.preferredTheme.value = key"
         :key="key"
+        @click="graph.preferredTheme.value = key"
         :icon="val"
         :active="key === graph.preferredTheme.value"
       />

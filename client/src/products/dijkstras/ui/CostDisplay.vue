@@ -45,6 +45,7 @@
 <template>
   <div
     v-for="node in graph.nodes.value"
+    :key="node.id"
     @click="graph.focus.set([node.id])"
     class="text-white flex items-center gap-3 p-2 hover:bg-gray-900 cursor-pointer rounded-lg"
   >
