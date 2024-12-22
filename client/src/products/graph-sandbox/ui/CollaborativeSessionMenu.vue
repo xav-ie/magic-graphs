@@ -81,8 +81,8 @@ import GInputText from "@ui/graph/input/GInputText.vue";
       <div class="rounded-lg mb-2">
         <GInputText
           v-model="myCollaboratorProfile.name"
-          :disabled="isConnected || startingRoom"
           id="collab-name"
+          :disabled="isConnected || startingRoom"
           class="w-full"
           placeholder="Pick a name for others to see"
         />
@@ -113,8 +113,8 @@ import GInputText from "@ui/graph/input/GInputText.vue";
 
         <div v-else>
           <GWell
-            tertiary
             @click="copyLink"
+            tertiary
             class="group p-2 rounded-md cursor-pointer flex justify-between items-center"
           >
             <span>
@@ -168,13 +168,13 @@ import GInputText from "@ui/graph/input/GInputText.vue";
           </div>
           <button
             v-for="collaborator in collaborators"
+            :key="collaborator.id"
+            @click="navigate(productIdToProduct[collaborator.productId])"
             v-tooltip="
               `${collaborator.name} is in ${
                 productIdToProduct[collaborator.productId].name
               }`
             "
-            @click="navigate(productIdToProduct[collaborator.productId])"
-            :key="collaborator.id"
             :style="{ backgroundColor: collaborator.color }"
             class="text-gray-300 font-bold rounded-md px-3 py-1"
           >
