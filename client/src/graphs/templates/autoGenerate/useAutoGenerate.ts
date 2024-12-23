@@ -24,7 +24,7 @@ export const useAutoGenerate = (graph: Graph) => {
         y: 0,
       });
     }
-    return nodes;
+    return nodes.value;
   };
 
   const generateEdges = (
@@ -57,8 +57,8 @@ export const useAutoGenerate = (graph: Graph) => {
     const radius = graph.baseTheme.value.nodeSize * GOLDEN_RATIO;
     const circularNodes = nodes.map((node, index) => ({
       ...node,
-      x: Math.cos(angleStep * index) * radius * 8,
-      y: Math.sin(angleStep * index) * radius * 8,
+      x: Math.cos(angleStep * index) * radius * 7,
+      y: Math.sin(angleStep * index) * radius * 7,
     }));
     return circularNodes;
   };
@@ -82,17 +82,15 @@ export const useAutoGenerate = (graph: Graph) => {
   const generatePartialMesh = (
     nodes: GNode[],
     edgeLabel: AutoGenerateGraphOptions["edgeLabel"],
-    connectionProbability: number, // Between 0 and 1
-    maxConnectionsPerNode: number // Optional limit per node
+    connectionProbability: number,
+    maxConnectionsPerNode: number = Infinity
   ): { nodes: GNode[]; edges: GEdge[] } => {
     const edges: GEdge[] = [];
     const connections = new Map<string, number>();
     const existingEdges = new Set<string>();
 
-    // Clamp connection probability between 0 and 1
     connectionProbability = Math.max(0, Math.min(1, connectionProbability));
 
-    // Initialize connection counts for each node
     nodes.forEach((node) => connections.set(node.id, 0));
 
     const addEdge = (from: string, to: string) => {
@@ -110,22 +108,19 @@ export const useAutoGenerate = (graph: Graph) => {
       connections.set(from, (connections.get(from) || 0) + 1);
       connections.set(to, (connections.get(to) || 0) + 1);
       existingEdges.add(edgeKey);
-      existingEdges.add(`${to}-${from}`); // Undirected edge
+      existingEdges.add(`${to}-${from}`); 
     };
 
-    // Step 1: Create a spanning tree to ensure connectivity
     for (let i = 0; i < nodes.length - 1; i++) {
       addEdge(nodes[i].id, nodes[i + 1].id);
     }
 
-    // Step 2: Add additional random edges based on connection probability
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         if (Math.random() < connectionProbability) {
           const nodeA = nodes[i].id;
           const nodeB = nodes[j].id;
 
-          // Ensure connection limits are respected
           if (
             (connections.get(nodeA) || 0) < maxConnectionsPerNode &&
             (connections.get(nodeB) || 0) < maxConnectionsPerNode
@@ -145,7 +140,7 @@ export const useAutoGenerate = (graph: Graph) => {
       ...options,
     };
 
-    const nodes = ref(generateNodes(numNodes) as GNode[]);
+    const nodes = ref(generateNodes(numNodes));
     const edges = ref(generateEdges(nodes.value, numEdges, edgeLabel));
 
     switch (layout) {
@@ -156,7 +151,7 @@ export const useAutoGenerate = (graph: Graph) => {
         nodes.value = gridLayout(nodes.value);
         break;
       case "partialMesh": {
-        const graphState = generatePartialMesh(nodes.value, edgeLabel, 0.75, 4);
+        const graphState = generatePartialMesh(nodes.value, edgeLabel, 0.1);
         nodes.value = circularLayout(graphState.nodes);
         edges.value = graphState.edges;
         break;
