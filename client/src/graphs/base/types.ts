@@ -48,7 +48,7 @@ export const ADD_NODE_OPTIONS_DEFAULTS: AddNodeOptions = {
   broadcast: true,
   focus: true,
   history: true,
-  animate: false,
+  animate: true,
 }
 
 export const BULK_ADD_NODE_OPTIONS_DEFAULTS: AddNodeOptions = {
@@ -58,11 +58,12 @@ export const BULK_ADD_NODE_OPTIONS_DEFAULTS: AddNodeOptions = {
   animate: true,
 }
 
-export type RemoveNodeOptions = BroadcastOption & HistoryOption
+export type RemoveNodeOptions = BroadcastOption & HistoryOption & AnimateOption
 
 export const REMOVE_NODE_OPTIONS_DEFAULTS: RemoveNodeOptions = {
   broadcast: true,
   history: true,
+  animate: true,
 }
 
 export type AddEdgeOptions = FocusOption & BroadcastOption & HistoryOption & AnimateOption

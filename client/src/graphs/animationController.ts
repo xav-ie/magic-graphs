@@ -39,6 +39,7 @@ export const useAnimationController = () => {
 
     itemsAnimatingIn,
     itemsAnimatingOut,
+    isAnimating: (id: ItemId) => itemsAnimatingIn.has(id) || itemsAnimatingOut.has(id),
   }
 }
 
