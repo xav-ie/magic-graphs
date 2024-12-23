@@ -21,8 +21,8 @@ export const useAutoGenerate = (graph: Graph) => {
       nodes.value.push({
         id: generateId(),
         label: getLabel(),
-        x: Math.random() * 1000,
-        y: Math.random() * 1000,
+        x: 0,
+        y: 0,
       });
     }
     return nodes.value;
