@@ -3,7 +3,7 @@ type GenerateGraphOptions = {
   edgeLabel: string | ((fromNode: string, toNode: string) => string);
   edgeLabelMin: string;
   edgeLabelMax: string;
-  layout: "circular" | "grid";
+  layout: "circular" | "grid" | "partialMesh";
 };
 
 type PartialGenerateGraphOptions = Partial<GenerateGraphOptions>;
@@ -18,5 +18,5 @@ export const DEFAULT_AUTO_GENERATE_GRAPH_OPTIONS: AutoGenerateGraphOptions = {
   numEdges: 10,
   edgeType: "directed",
   edgeLabel: "1",
-  layout: "circular",
+  layout: "partialMesh",
 };

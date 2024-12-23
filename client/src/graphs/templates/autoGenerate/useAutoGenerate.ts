@@ -8,15 +8,23 @@ import {
   getAverageCoordinatesOfNodes,
 } from "../helpers";
 import { ref } from "vue";
+import { graphLabelGetter, LETTERS } from "@graph/labels";
 
 export const useAutoGenerate = (graph: Graph) => {
   const generateNodes = (nodeCount: number) => {
-    return Array.from({ length: nodeCount }, () => ({
-      id: generateId(),
-      label: "fhsdj",
-      x: 10,
-      y: 10,
-    }));
+    const nodes = ref<GNode[]>([]);
+
+    const getLabel = graphLabelGetter(nodes, LETTERS);
+
+    for (let i = 0; i < nodeCount; i++) {
+      nodes.value.push({
+        id: generateId(),
+        label: getLabel(),
+        x: 0,
+        y: 0,
+      });
+    }
+    return nodes;
   };
 
   const generateEdges = (
@@ -45,8 +53,6 @@ export const useAutoGenerate = (graph: Graph) => {
   };
 
   const circularLayout = (nodes: GNode[]) => {
-    const origin = getAverageCoordinatesOfNodes(graph.nodes.value);
-    console.log(origin);
     const angleStep = (2 * Math.PI) / nodes.length;
     const radius = graph.baseTheme.value.nodeSize * GOLDEN_RATIO;
     const circularNodes = nodes.map((node, index) => ({
@@ -54,13 +60,10 @@ export const useAutoGenerate = (graph: Graph) => {
       x: Math.cos(angleStep * index) * radius * 8,
       y: Math.sin(angleStep * index) * radius * 8,
     }));
-    const centeredNodes = centerNodesOnOriginCoordinates(circularNodes, origin);
-    return centeredNodes;
+    return circularNodes;
   };
 
   const gridLayout = (nodes: GNode[]) => {
-    const origin = getAverageCoordinatesOfNodes(graph.nodes.value);
-
     const gridSize = Math.ceil(Math.sqrt(nodes.length));
     const cellSize = graph.baseTheme.value.nodeSize * GOLDEN_RATIO * 5;
 
@@ -73,8 +76,67 @@ export const useAutoGenerate = (graph: Graph) => {
         y: row * cellSize + cellSize / 2, // Center in the cell
       };
     });
-    const centeredNodes = centerNodesOnOriginCoordinates(gridNodes, origin);
-    return centeredNodes;
+    return gridNodes;
+  };
+
+  const generatePartialMesh = (
+    nodes: GNode[],
+    edgeLabel: AutoGenerateGraphOptions["edgeLabel"],
+    connectionProbability: number, // Between 0 and 1
+    maxConnectionsPerNode: number // Optional limit per node
+  ): { nodes: GNode[]; edges: GEdge[] } => {
+    const edges: GEdge[] = [];
+    const connections = new Map<string, number>();
+    const existingEdges = new Set<string>();
+
+    // Clamp connection probability between 0 and 1
+    connectionProbability = Math.max(0, Math.min(1, connectionProbability));
+
+    // Initialize connection counts for each node
+    nodes.forEach((node) => connections.set(node.id, 0));
+
+    const addEdge = (from: string, to: string) => {
+      const edgeKey = `${from}-${to}`;
+      if (existingEdges.has(edgeKey)) return;
+
+      const label =
+        typeof edgeLabel === "function" ? edgeLabel(from, to) : edgeLabel!;
+      edges.push({
+        id: generateId(),
+        from,
+        to,
+        label,
+      });
+      connections.set(from, (connections.get(from) || 0) + 1);
+      connections.set(to, (connections.get(to) || 0) + 1);
+      existingEdges.add(edgeKey);
+      existingEdges.add(`${to}-${from}`); // Undirected edge
+    };
+
+    // Step 1: Create a spanning tree to ensure connectivity
+    for (let i = 0; i < nodes.length - 1; i++) {
+      addEdge(nodes[i].id, nodes[i + 1].id);
+    }
+
+    // Step 2: Add additional random edges based on connection probability
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        if (Math.random() < connectionProbability) {
+          const nodeA = nodes[i].id;
+          const nodeB = nodes[j].id;
+
+          // Ensure connection limits are respected
+          if (
+            (connections.get(nodeA) || 0) < maxConnectionsPerNode &&
+            (connections.get(nodeB) || 0) < maxConnectionsPerNode
+          ) {
+            addEdge(nodeA, nodeB);
+          }
+        }
+      }
+    }
+
+    return { nodes, edges };
   };
 
   const generate = (options: AutoGenerateGraphOptions) => {
@@ -93,10 +155,18 @@ export const useAutoGenerate = (graph: Graph) => {
       case "grid":
         nodes.value = gridLayout(nodes.value);
         break;
+      case "partialMesh": {
+        const graphState = generatePartialMesh(nodes.value, edgeLabel, 0.75, 4);
+        nodes.value = circularLayout(graphState.nodes);
+        edges.value = graphState.edges;
+        break;
+      }
     }
+    const origin = getAverageCoordinatesOfNodes(graph.nodes.value);
+    const centeredNodes = centerNodesOnOriginCoordinates(nodes.value, origin);
 
     graph.load({
-      nodes: nodes.value,
+      nodes: centeredNodes,
       edges: edges.value,
     });
   };
