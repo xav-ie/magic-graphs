@@ -5,21 +5,30 @@ import type { BaseGraph } from '@graph/base'
 import { GOLDEN_RATIO } from '@utils/math'
 import {
   line,
-  arrow,
   uturn
 } from '@shapes'
 
-import { animatedArrow } from './animateEdge'
+import { edgeArrow } from './edgeArrow'
 
 const WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE = 2
 
-type PropsNeededFromGraph = 'edges' | 'getNode' | 'getEdge' | 'getTheme' | 'settings'
+type PropsNeededFromGraph =
+ | 'edges'
+ | 'getNode'
+ | 'getEdge'
+ | 'getTheme'
+ | 'settings'
+ | 'animationController'
 
 export const getEdgeSchematic = (
   edge: GEdge,
   graph: Pick<BaseGraph, PropsNeededFromGraph>,
 ): Omit<SchemaItem, 'priority'> | undefined => {
   const { displayEdgeLabels, isGraphDirected } = graph.settings.value
+  const arrow = edgeArrow({
+    edgeId: edge.id,
+    controller: graph.animationController,
+  })
 
   const [from, to] = getConnectedNodes(edge.id, graph)
   const edgesAlongPath = getEdgesAlongPath(from.id, to.id, graph)
@@ -153,7 +162,7 @@ export const getEdgeSchematic = (
 
   // const edgeTextAdjustment = fromNodeSize >= 50 ? 0.9 : (fromNodeSize >= 25 ? 1 : 1.3)
 
-  const shape = animatedArrow({
+  const shape = arrow({
     start: edgeStart,
     end: edgeEnd,
     width: edgeWidth,
