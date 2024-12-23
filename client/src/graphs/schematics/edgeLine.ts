@@ -5,18 +5,15 @@ import { DURATION_MS } from "@graph/animationController";
 import type { ShapeResolverOptions } from "./types";
 import { SEQ } from "./edgeSeq";
 import { getMapper, inRange } from "./utils";
-import { animateTextArea } from "./edgeTextArea";
+import { animateInTextArea, animateOutTextArea } from "./edgeTextArea";
 import type { Line } from "@shape/line";
 
 const { interpolate, normalize } = gsap.utils
+const EASING = EASING_FUNCTIONS["in-out"]
 
-/**
- * returns the ending coordinates of the arrow body
- */
-const animateLineBody = (progress: number) => (lineSchema: Line): Partial<Line> => {
-  const easing = EASING_FUNCTIONS["in-out"]
-  const mapper = getMapper(...SEQ.BODY)
-  const percentage = easing(mapper(progress))
+const animateInLineBody = (progress: number) => (lineSchema: Line): Partial<Line> => {
+  const mapper = getMapper(...SEQ.IN.BODY)
+  const percentage = EASING(mapper(progress))
 
   const interpolateWidth = interpolate(0, lineSchema.width)
 
@@ -25,21 +22,53 @@ const animateLineBody = (progress: number) => (lineSchema: Line): Partial<Line> 
   }
 }
 
-const animatedLine = (progress: number) => (lineSchema: Line) => {
+const animateOutLineBody = (progress: number) => (lineSchema: Line): Partial<Line> => {
+  const mapper = getMapper(...SEQ.OUT.BODY)
+  const percentage = EASING(mapper(progress))
+
+  const interpolateWidth = interpolate(lineSchema.width, 0)
+
+  return {
+    width: interpolateWidth(percentage),
+  }
+}
+
+const inLine = (progress: number) => (lineSchema: Line) => {
   const percent = normalize(0, DURATION_MS, progress)
 
-  if (inRange(SEQ.BODY[0], SEQ.BODY[1], percent)) {
+  if (inRange(SEQ.IN.BODY[0], SEQ.IN.BODY[1], percent)) {
     return line({
       ...lineSchema,
-      ...animateLineBody(progress)(lineSchema),
+      ...animateInLineBody(progress)(lineSchema),
       textArea: undefined,
     })
   }
 
-  if (inRange(SEQ.TEXT_AREA[0], SEQ.TEXT_AREA[1], percent)) {
+  if (inRange(SEQ.IN.TEXT_AREA[0], SEQ.IN.TEXT_AREA[1], percent)) {
     return line({
       ...lineSchema,
-      textArea: animateTextArea(progress)(lineSchema.textArea),
+      textArea: animateInTextArea(progress)(lineSchema.textArea),
+    })
+  }
+
+  return line(lineSchema)
+}
+
+const outLine = (progress: number) => (lineSchema: Line) => {
+  const percent = normalize(0, DURATION_MS, progress)
+
+  if (inRange(SEQ.OUT.TEXT_AREA[0], SEQ.OUT.TEXT_AREA[1], percent)) {
+    return line({
+      ...lineSchema,
+      textArea: animateOutTextArea(progress)(lineSchema.textArea),
+    })
+  }
+
+  if (inRange(SEQ.OUT.BODY[0], SEQ.OUT.BODY[1], percent)) {
+    return line({
+      ...lineSchema,
+      ...animateOutLineBody(progress)(lineSchema),
+      textArea: undefined,
     })
   }
 
@@ -53,7 +82,10 @@ export const edgeLine = ({
   const { itemsAnimatingIn, itemsAnimatingOut } = controller
 
   const inProgress = itemsAnimatingIn.get(id)
+  if (inProgress !== undefined) return inLine(inProgress)(lineSchema)
+
   const outProgress = itemsAnimatingOut.get(id)
-  if (inProgress !== undefined) return animatedLine(inProgress)(lineSchema)
+  if (outProgress !== undefined) return outLine(outProgress)(lineSchema)
+
   return line(lineSchema)
 }
