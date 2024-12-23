@@ -1,4 +1,8 @@
-class AVLTree {
+
+/**
+ * a binary search tree
+ */
+export class BinaryTree {
   root: TreeNode | null;
 
   constructor() {
@@ -9,23 +13,33 @@ class AVLTree {
     this.root = insert(this.root, key);
   }
 
-  remove(key: number) {
-    // TODO
-  }
-
   height() {
     return height(this.root);
   }
 
-  toJSON(): TreeNodeJSON {
-    return toJSON(this.root);
+  getBalance(node: TreeNode | null) {
+    return getBalance(node);
   }
 }
 
 /**
- * Represents a node in an AVL tree
+ * a binary search tree with AVL balancing capabilities
  */
-class TreeNode {
+export class AVLTree extends BinaryTree {
+  constructor() {
+    super();
+  }
+
+  insert(key: TreeNode['key']) {
+    this.root = insert(this.root, key);
+    this.root = balance(this.root);
+  }
+}
+
+/**
+ * Represents a node in a binary/avl tree
+ */
+export class TreeNode {
   key: number;
   left: TreeNode | null;
   right: TreeNode | null;
@@ -120,11 +134,47 @@ function insert(node: TreeNode | null, key: number): TreeNode {
     node.right = insert(node.right, key);
   }
 
-  // Update height of current node
-  node.height = 1 + Math.max(height(node.left), height(node.right));
+  return node;
 
-  // Get the balance factor and handle the 4 unbalanced cases
+  // // all the logic beyond this point is for AVL tree balancing
+
+  // // Update height of current node
+  // node.height = 1 + Math.max(height(node.left), height(node.right));
+
+  // // Get the balance factor and handle the 4 unbalanced cases
+  // const balance = getBalance(node);
+
+  // // Left Left Case
+  // if (balance > 1 && key < node.left!.key) {
+  //   return rightRotate(node);
+  // }
+
+  // // Right Right Case
+  // if (balance < -1 && key > node.right!.key) {
+  //   return leftRotate(node);
+  // }
+
+  // // Left Right Case
+  // if (balance > 1 && key > node.left!.key) {
+  //   node.left = leftRotate(node.left!);
+  //   return rightRotate(node);
+  // }
+
+  // // Right Left Case
+  // if (balance < -1 && key < node.right!.key) {
+  //   node.right = rightRotate(node.right!);
+  //   return leftRotate(node);
+  // }
+
+  // return node;
+}
+
+/**
+ * rebalances an AVL subtree rooted at the given node
+ */
+const balance = (node: TreeNode) => {
   const balance = getBalance(node);
+  const { key } = node;
 
   // Left Left Case
   if (balance > 1 && key < node.left!.key) {
@@ -150,29 +200,3 @@ function insert(node: TreeNode | null, key: number): TreeNode {
 
   return node;
 }
-
-// Example usage
-let root: TreeNode | null = null;
-root = insert(root, 10);
-root = insert(root, 20);
-root = insert(root, 30);
-root = insert(root, 40);
-root = insert(root, 50);
-root = insert(root, 25);
-
-type TreeNodeJSON = {
-  key: number;
-  left: TreeNodeJSON | null;
-  right: TreeNodeJSON | null;
-} | null;
-
-const toJSON = (node: TreeNode | null): TreeNodeJSON => {
-  if (!node) return null
-  return {
-    key: node.key,
-    left: toJSON(node.left),
-    right: toJSON(node.right),
-  }
-}
-
-console.log(JSON.stringify(toJSON(root), null, 2));  // (30 (20 (10 null null) (25 null null)) (40 null (50 null null)))

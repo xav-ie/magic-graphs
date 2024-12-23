@@ -1,10 +1,12 @@
 <script setup lang="ts">
   import GWell from "@ui/graph/GWell.vue";
   import GButton from "@ui/graph/button/GButton.vue";
-  import './tree/avl'
+  import { AVLTree } from "./tree/avl";
+  import { getRandomInRange } from "@utils/random";
 
   const addNode = () => {
-    console.log("addNode");
+    const key = getRandomInRange(1, 100);
+
   };
 </script>
 
@@ -14,8 +16,8 @@
     class="rounded-lg p-2"
   >
     <GButton
-      tertiary
       @click="addNode"
+      tertiary
     >Add Node</GButton>
   </GWell>
 </template>
