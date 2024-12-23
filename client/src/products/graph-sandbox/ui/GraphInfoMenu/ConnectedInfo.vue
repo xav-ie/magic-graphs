@@ -47,11 +47,11 @@
       v-if="isDirected"
       class="flex flex-wrap gap-2"
     >
-      <GHoverInfo :tooltip="definitions.isStronglyConnected">
+      <GHoverInfo :tooltip="definitions.stronglyConnected">
         Strongly Connected? {{ isConnected ? "Yes" : "No" }}
       </GHoverInfo>
 
-      <GHoverInfo :tooltip="definitions.isWeaklyConnected">
+      <GHoverInfo :tooltip="definitions.weaklyConnected">
         Weakly Connected? {{ isWeaklyConnected ? "Yes" : "No" }}
       </GHoverInfo>
 
@@ -87,7 +87,7 @@
       v-else
       class="flex flex-wrap gap-2"
     >
-      <GHoverInfo :tooltip="definitions.isConnected">
+      <GHoverInfo :tooltip="definitions.connected">
         Connected? {{ isConnected ? "Yes" : "No" }}
       </GHoverInfo>
 

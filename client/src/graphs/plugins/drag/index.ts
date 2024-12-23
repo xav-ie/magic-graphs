@@ -50,12 +50,14 @@ export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
     graph.subscribe('onMouseDown', beginDrag)
     graph.subscribe('onMouseUp', drop)
     graph.subscribe('onMouseMove', drag)
+    graph.graphToCursorMap.value['node'] = 'grab'
   }
 
   const deactivate = () => {
     graph.unsubscribe('onMouseDown', beginDrag)
     graph.unsubscribe('onMouseUp', drop)
     graph.unsubscribe('onMouseMove', drag)
+    graph.graphToCursorMap.value['node'] = 'pointer'
     if (currentlyDraggingNode.value) drop()
   }
 
@@ -65,6 +67,7 @@ export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
   })
 
   if (graph.settings.value.draggable) activate()
+  if (!graph.settings.value.draggable) deactivate()
 
   return {
     /**

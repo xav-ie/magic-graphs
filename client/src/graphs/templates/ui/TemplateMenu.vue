@@ -55,12 +55,12 @@
       <hr class="my-2" />
 
       <div class="flex gap-2 justify-center">
-        <GButton 
-          @click="add" 
+        <GButton
+          @click="add"
           :disabled="graph.nodes.value.length === 0"
         >Save Current</GButton>
-        <GButton 
-          @click="clearUserTemplates" 
+        <GButton
+          @click="clearUserTemplates"
           :disabled="userTemplates.length === 0"
         >Clear All</GButton>
       </div>

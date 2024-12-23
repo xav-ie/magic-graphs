@@ -60,6 +60,9 @@ export const getNodeDepths = (startNode: GNode, adjList: AdjacencyList) => {
         acc[depth].push(nodeId);
         return acc;
       }, []),
+    /**
+     * depth of the tree. root node is at depth 0.
+     */
     depth: currentDepth - 1,
   };
 };

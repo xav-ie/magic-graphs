@@ -79,3 +79,16 @@ export const gcd = (a: number, b: number): number => {
 export const within = (tolerance: number) => (a: number, b: number) => {
   return Math.abs(a - b) <= tolerance;
 }
+
+/**
+ * get the average of an array of numbers
+ *
+ * @param arr the array of numbers to average
+ * @returns the average of the array
+ * @example average([1, 2, 3]) // 2
+ * average([1, 2, 3, 4]) // 2.5
+ */
+export const average = (arr: number[]) => {
+  if (arr.length === 0) return 0;
+  return arr.reduce((acc, val) => acc + val, 0) / arr.length;
+}

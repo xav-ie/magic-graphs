@@ -21,20 +21,20 @@ export const useInteractive = (graph: BaseGraph) => {
       const violatesRule = fromNode.id === toNode.id;
       if (violatesRule) return false;
     }
-  
+
     if (graph.settings.value.userAddedEdgeRuleOneEdgePerPath) {
       const edgeBetweenToAndFrom = graph.edges.value.find(
         (edge) => edge.from === fromNode.id && edge.to === toNode.id
       );
-  
+
       const edgeBetweenFromAndTo = graph.edges.value.find(
         (edge) => edge.from === toNode.id && edge.to === fromNode.id
       );
-  
+
       const violatesRule = edgeBetweenToAndFrom || edgeBetweenFromAndTo;
       if (violatesRule) return false;
     }
-  
+
     return true;
   };
 
@@ -70,6 +70,7 @@ export const useInteractive = (graph: BaseGraph) => {
   };
 
   if (graph.settings.value.interactive) activate();
+  if (!graph.settings.value.interactive) deactivate();
 
   graph.subscribe("onSettingsChange", (diff) => {
     if (diff.interactive === true) activate();

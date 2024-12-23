@@ -15,7 +15,6 @@ import {
 import { getFullTextArea } from "@shape/text";
 import { getArrowHeadSize } from "@shape/helpers";
 
-
 export type Arrow = Line & {
   arrowHeadSize?: ((width: number) => {
     arrowHeadHeight: number,

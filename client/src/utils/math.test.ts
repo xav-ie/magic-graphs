@@ -4,6 +4,8 @@ import {
   getPrimeFactors,
   lowestPrimeFactor,
   gcd,
+  within,
+  average,
 } from './math'
 
 describe('roundToNearestN', () => {
@@ -40,5 +42,16 @@ describe('gcd', () => {
   test('returns the greatest common divisor of two numbers', () => {
     expect(gcd(12, 15)).toBe(3)
     expect(gcd(12, 18)).toBe(6)
+  })
+})
+
+describe('average', () => {
+  test('returns the average of a list of numbers', () => {
+    expect(average([1, 2, 3, 4, 5])).toBe(3)
+    expect(average([1, 2, 3, 4, 5, 6])).toBe(3.5)
+  })
+
+  test('edge case: empty list', () => {
+    expect(average([])).toBe(0)
   })
 })

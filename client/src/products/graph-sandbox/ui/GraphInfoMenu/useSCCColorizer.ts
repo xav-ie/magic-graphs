@@ -18,7 +18,7 @@ export const useSCCColorizer = (graph: Graph, themeId = SCC_THEME_ID) => {
 
   const colorNodeBorders = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return;
-    const map = graph.characteristics.nodeIdToStronglyConnectedComponent.value;
+    const map = graph.characteristics.nodeIdToConnectedComponent.value;
     const scc = map.get(node.id);
     if (scc === undefined) return;
     return COLORS[scc % COLORS.length];

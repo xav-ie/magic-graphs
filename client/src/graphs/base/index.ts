@@ -39,6 +39,7 @@ import { getCtx } from '@utils/ctx';
 import type { GraphAtMousePosition } from './types';
 import { useGraphCursor } from './useGraphCursor';
 import { getCanvasCoords } from '@utils/components/useCanvasCoord';
+import { useAnimationController } from '@graph/animationController';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -132,6 +133,8 @@ export const useBaseGraph = (
     getSchemaItemsByCoordinates,
   } = useAggregator({ canvas, emit })
 
+  const animationController = useAnimationController()
+
   const addNodesAndEdgesToAggregator = (aggregator: Aggregator) => {
     const edgeOptions = {
       edges,
@@ -139,6 +142,7 @@ export const useBaseGraph = (
       getEdge,
       getTheme,
       settings,
+      animationController,
     }
 
     const edgeSchemaItems = edges.value
@@ -212,6 +216,7 @@ export const useBaseGraph = (
     edgeMap: edgeIdToEdgeMap,
     emit,
     settings,
+    animationController,
   })
 
   const nodeIdToIndex = computed(() => nodes.value.reduce<Map<GNode['id'], number>>((map, node, i) => {
@@ -335,6 +340,8 @@ export const useBaseGraph = (
 
     updateAggregator,
     aggregator,
+
+    animationController,
 
     baseTheme: computed(() => THEMES[themeName.value]),
     themeName,

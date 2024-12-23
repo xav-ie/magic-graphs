@@ -1,4 +1,4 @@
-import { onUnmounted, ref, watch } from "vue";
+import { computed, onUnmounted, ref, watch } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { getNodeDepths } from "@product/search-visualizer/useNodeDepth";
 import type { GNodeMoveRecord } from "@graph/plugins/history/types";

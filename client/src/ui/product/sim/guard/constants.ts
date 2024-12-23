@@ -38,7 +38,7 @@ export const CANT_RUN_REASONS = {
   }),
   NOT_CONNECTED: {
     title: 'Requires connected graph',
-    description: definitions.isConnected,
+    description: definitions.connected,
   },
   NOT_ACYCLIC: {
     title: 'Requires acyclic graph',

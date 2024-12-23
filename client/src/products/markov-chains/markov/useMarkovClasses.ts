@@ -35,8 +35,11 @@ export const getMarkovClasses = (
 /**
  * reactive recurrent and transient classes of a markov chain
  */
-export const useMarkovClasses = (graph: Graph, componentMap: Ref<ComponentAdjacencyMap>) => {
-  const { stronglyConnectedComponents: sccs } = graph.characteristics;
+export const useMarkovClasses = (graph: Graph) => {
+  const {
+    stronglyConnectedComponents: sccs,
+    componentAdjacencyMap: componentMap
+  } = graph.characteristics;
 
   const transientClasses = computed(() => {
     const { transient } = getMarkovClasses(sccs.value, componentMap.value)
