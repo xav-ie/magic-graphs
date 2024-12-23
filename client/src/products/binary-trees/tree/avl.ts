@@ -1,12 +1,15 @@
+import type { Graph } from "@graph/types";
+import type { Coordinate } from "@shape/types";
+import { getTreeIndexToPosition } from "@product/graph-sandbox/ui/tree/getTreeBinaryPos";
 
 /**
  * a binary search tree
  */
 export class BinaryTree {
-  root: TreeNode | null;
+  root: TreeNode | undefined;
 
   constructor() {
-    this.root = null;
+    this.root = undefined;
   }
 
   insert(key: TreeNode['key']) {
@@ -17,9 +20,103 @@ export class BinaryTree {
     return height(this.root);
   }
 
-  getBalance(node: TreeNode | null) {
+  getBalance(node: TreeNode | undefined) {
     return getBalance(node);
   }
+
+  toArray() {
+    const treeDepth = this.height() - 1;
+    const treeIndexToNodeKey = getTreeIndexToNode({ root: this.root, treeDepth });
+    return treeIndexToNodeKey.map(node => node?.key);
+  }
+
+  async toGraph(graph: Graph, rootPosition: Coordinate) {
+    graph.reset();
+
+    const addTreeNodeToGraph = (treeNode: TreeNode | undefined) => {
+      if (!treeNode) return;
+
+      graph.addNode({
+        id: treeNode.key.toString(),
+        label: treeNode.key.toString(),
+        ...rootPosition,
+      }, { animate: true, focus: false });
+
+      if (treeNode.left) {
+        // edge must be added after both parent and child nodes are added
+        setTimeout(() => {
+          graph.addEdge({
+            from: treeNode.key.toString(),
+            to: treeNode.left!.key.toString(),
+          }, { animate: true })
+        }, 150)
+        addTreeNodeToGraph(treeNode.left);
+      }
+
+      if (treeNode.right) {
+        setTimeout(() => {
+          graph.addEdge({
+            from: treeNode.key.toString(),
+            to: treeNode.right!.key.toString(),
+          }, { animate: true })
+        }, 150)
+        addTreeNodeToGraph(treeNode.right);
+      }
+    }
+
+    addTreeNodeToGraph(this.root);
+
+    const depthToXOffset: Record<number, number> = {
+      1: 250,
+      2: 200,
+      3: 150,
+    }
+
+    const positions = getTreeIndexToPosition({
+      rootCoordinate: rootPosition,
+      xOffset: depthToXOffset[this.height()] ?? 100,
+      yOffset: 200,
+      treeDepth: this.height() - 1,
+    })
+
+    const arr = this.toArray();
+
+    for (let i = 0; i < arr.length; i++) {
+      const nodeId = arr[i]?.toString();
+      if (!nodeId) continue;
+      graph.animate.node({
+        nodeId,
+        endCoords: positions[i],
+      })
+    }
+  }
+}
+
+export const getTreeIndexToNode = ({
+  root,
+  treeDepth,
+}: {
+  root: TreeNode | undefined,
+  treeDepth: number,
+}) => {
+  const treeIndexToNodeId: (TreeNode | undefined)[] = [];
+  if (!root) return treeIndexToNodeId;
+
+  let nodesAtDepth: (TreeNode | undefined)[] = [root];
+
+  for (let i = 0; i <= treeDepth; i++) {
+    const nodesAtNextDepth: (TreeNode | undefined)[] = [];
+
+    for (const maybeTreeNode of nodesAtDepth) {
+      treeIndexToNodeId.push(maybeTreeNode);
+      nodesAtNextDepth.push(maybeTreeNode?.left);
+      nodesAtNextDepth.push(maybeTreeNode?.right);
+    }
+
+    nodesAtDepth = [...nodesAtNextDepth];
+  }
+
+  return treeIndexToNodeId;
 }
 
 /**
@@ -32,7 +129,6 @@ export class AVLTree extends BinaryTree {
 
   insert(key: TreeNode['key']) {
     this.root = insert(this.root, key);
-    this.root = balance(this.root);
   }
 }
 
@@ -41,14 +137,14 @@ export class AVLTree extends BinaryTree {
  */
 export class TreeNode {
   key: number;
-  left: TreeNode | null;
-  right: TreeNode | null;
+  left: TreeNode | undefined;
+  right: TreeNode | undefined;
   height: number;
 
   constructor(key: number) {
     this.key = key;
-    this.left = null;
-    this.right = null;
+    this.left = undefined;
+    this.right = undefined;
     this.height = 1;
   }
 }
@@ -58,8 +154,8 @@ export class TreeNode {
 * @param node - The node to get the height from
 * @returns The height of the node, or 0 if the node is null
 */
-function height(node: TreeNode | null): number {
-  if (node === null) {
+function height(node: TreeNode | undefined): number {
+  if (node === undefined) {
     return 0;
   }
   return node.height;
@@ -106,8 +202,8 @@ function leftRotate(x: TreeNode): TreeNode {
 * @param node - The node to calculate the balance factor for
 * @returns The balance factor (difference between left and right subtree heights)
 */
-function getBalance(node: TreeNode | null): number {
-  if (node === null) return 0;
+function getBalance(node: TreeNode | undefined): number {
+  if (node === undefined) return 0;
   return height(node.left) - height(node.right);
 }
 
@@ -117,9 +213,9 @@ function getBalance(node: TreeNode | null): number {
 * @param key - The key to insert
 * @returns The new root of the subtree after insertion
 */
-function insert(node: TreeNode | null, key: number): TreeNode {
+function insert(node: TreeNode | undefined, key: number): TreeNode {
   // Perform standard BST insertion
-  if (node === null) {
+  if (node === undefined) {
     return new TreeNode(key);
   }
 
@@ -134,47 +230,12 @@ function insert(node: TreeNode | null, key: number): TreeNode {
     node.right = insert(node.right, key);
   }
 
-  return node;
+  node.height = 1 + Math.max(height(node.left), height(node.right));
 
-  // // all the logic beyond this point is for AVL tree balancing
+  // all the logic beyond this point is for AVL tree balancing
 
-  // // Update height of current node
-  // node.height = 1 + Math.max(height(node.left), height(node.right));
-
-  // // Get the balance factor and handle the 4 unbalanced cases
-  // const balance = getBalance(node);
-
-  // // Left Left Case
-  // if (balance > 1 && key < node.left!.key) {
-  //   return rightRotate(node);
-  // }
-
-  // // Right Right Case
-  // if (balance < -1 && key > node.right!.key) {
-  //   return leftRotate(node);
-  // }
-
-  // // Left Right Case
-  // if (balance > 1 && key > node.left!.key) {
-  //   node.left = leftRotate(node.left!);
-  //   return rightRotate(node);
-  // }
-
-  // // Right Left Case
-  // if (balance < -1 && key < node.right!.key) {
-  //   node.right = rightRotate(node.right!);
-  //   return leftRotate(node);
-  // }
-
-  // return node;
-}
-
-/**
- * rebalances an AVL subtree rooted at the given node
- */
-const balance = (node: TreeNode) => {
+  // Get the balance factor and handle the 4 unbalanced cases
   const balance = getBalance(node);
-  const { key } = node;
 
   // Left Left Case
   if (balance > 1 && key < node.left!.key) {

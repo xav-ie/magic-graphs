@@ -9,7 +9,7 @@
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, BINARY_TREE_GRAPH_SETTINGS);
 
-  useAutoBinaryTree(graph);
+  // useAutoBinaryTree(graph);
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 import type { GNode, Graph } from "@graph/types";
 import type { NodeDepth } from "@product/search-visualizer/useNodeDepth";
 import type { Coordinate } from "@shape/types";
-import { roundToNearestN } from "@utils/math";
+import { roundToInt } from "@utils/math";
 
 /**
  * an array which maps a tree index (root = 0, left child = 1, right child = 2, etc)
@@ -43,7 +43,10 @@ export const getTreeIndexToPosition = ({
     }
   }
 
-  return treeIndexToPositionArr;
+  return treeIndexToPositionArr.map(({ x, y }) => ({
+    x: roundToInt(x),
+    y: roundToInt(y)
+  }));
 }
 
 type MaybeNodeId = GNode['id'] | undefined;
@@ -99,31 +102,27 @@ export const getTreeBinaryPos = (
   treeOffset: { xOffset: number, yOffset: number }
 ) => {
   const { xOffset, yOffset } = treeOffset;
-  const { depth } = nodeDepths;
+  const { depth: treeDepth } = nodeDepths;
   const newNodePositions: Map<GNode['id'], Coordinate> = new Map();
-  const roundToNearest10 = roundToNearestN(10);
 
   const treeIndexToPosition = getTreeIndexToPosition({
     rootCoordinate: root,
     xOffset,
     yOffset,
-    treeDepth: depth,
+    treeDepth,
   });
 
   const treeIndexToNodeId = getTreeIndexToNodeId({
     graph,
     root,
-    treeDepth: depth,
+    treeDepth,
   });
 
   for (let i = 0; i < treeIndexToNodeId.length; i++) {
     const maybeNodeId = treeIndexToNodeId[i];
     if (!maybeNodeId) continue;
     const newPos = treeIndexToPosition[i];
-    newNodePositions.set(maybeNodeId, {
-      x: roundToNearest10(newPos.x),
-      y: roundToNearest10(newPos.y),
-    });
+    newNodePositions.set(maybeNodeId, newPos);
   }
 
   return newNodePositions;
