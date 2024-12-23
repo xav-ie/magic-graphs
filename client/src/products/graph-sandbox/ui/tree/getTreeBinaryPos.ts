@@ -3,22 +3,29 @@ import type { NodeDepth } from "@product/search-visualizer/useNodeDepth";
 import type { Coordinate } from "@shape/types";
 import { roundToNearestN } from "@utils/math";
 
-export const getTreeBinaryPos = (
-  graph: Graph,
-  root: GNode,
-  nodeDepths: NodeDepth,
-  treeOffset: { xOffset: number, yOffset: number }
-) => {
-  const { xOffset, yOffset } = treeOffset;
-  const { depth } = nodeDepths;
-  const newNodePositions: Map<GNode['id'], Coordinate> = new Map();
-  const roundToNearest10 = roundToNearestN(10);
+/**
+ * an array which maps a tree index (root = 0, left child = 1, right child = 2, etc)
+ * to the coordinates of where that tree position should be on the screen
+ *
+ * @example [root, left, right, left-left, left-right, right-left, right-right]
+ * console.log(getTreeIndexToPosition[0]) // { x: 0, y: 0 }
+ */
+export const getTreeIndexToPosition = ({
+  rootCoordinate,
+  xOffset,
+  yOffset,
+  treeDepth,
+}: {
+  rootCoordinate: Coordinate,
+  xOffset: number,
+  yOffset: number,
+  treeDepth: number,
+}) => {
+  const treeIndexToPositionArr: Coordinate[] = [rootCoordinate];
+  const totalWidth = Math.pow(2, treeDepth) * xOffset;
 
-  const treeIndexToPositionArr: Coordinate[] = [root];
-  const totalWidth = Math.pow(2, depth) * xOffset;
-
-  for (let i = 1; i <= depth; i++) {
-    const y = root.y + i * yOffset;
+  for (let i = 1; i <= treeDepth; i++) {
+    const y = rootCoordinate.y + i * yOffset;
     const spotsOnThisLevel = Math.pow(2, i);
 
     const xOffset = totalWidth / spotsOnThisLevel;
@@ -30,21 +37,46 @@ export const getTreeBinaryPos = (
 
     for (let j = 0; j < spotsOnThisLevel; j++) {
       treeIndexToPositionArr.push({
-        x: root.x + xOffsetPerNode[j],
+        x: rootCoordinate.x + xOffsetPerNode[j],
         y,
       });
     }
   }
 
+  return treeIndexToPositionArr;
+}
+
+type MaybeNodeId = GNode['id'] | undefined;
+
+/**
+ * an array which contains at index i the node id that should be at tree index i
+ * or `undefined` if there is no node at that tree index
+ *
+ * @example [root, left, right, left-left, undefined, undefined, undefined]
+ * //                 1
+ * //               /   \
+ * //              2     3
+ * //             /
+ * //            4
+ */
+export const getTreeIndexToNodeId = ({
+  graph,
+  root,
+  treeDepth,
+}: {
+  graph: Graph,
+  root: GNode,
+  treeDepth: number,
+}) => {
+  const treeIndexToNodeId: MaybeNodeId[] = [];
+
   const { getChildrenOfNode } = graph.helpers;
+  let nodesAtDepth: MaybeNodeId[] = [root.id];
 
-  const processedNodes: (GNode['id'] | undefined)[] = [];
-  let nodesAtDepth: (GNode['id'] | undefined)[] = [root.id];
-
-  for (let i = 0; i <= depth; i++) {
-    const nodesAtNextDepth: (GNode['id'] | undefined)[] = [];
+  for (let i = 0; i <= treeDepth; i++) {
+    const nodesAtNextDepth: MaybeNodeId[] = [];
     for (const maybeNodeId of nodesAtDepth) {
-      processedNodes.push(maybeNodeId);
+      treeIndexToNodeId.push(maybeNodeId);
       if (!maybeNodeId) {
         nodesAtNextDepth.push(undefined);
         nodesAtNextDepth.push(undefined);
@@ -57,10 +89,37 @@ export const getTreeBinaryPos = (
     nodesAtDepth = [...nodesAtNextDepth];
   }
 
-  for (let i = 0; i < processedNodes.length; i++) {
-    const maybeNodeId = processedNodes[i];
+  return treeIndexToNodeId;
+}
+
+export const getTreeBinaryPos = (
+  graph: Graph,
+  root: GNode,
+  nodeDepths: NodeDepth,
+  treeOffset: { xOffset: number, yOffset: number }
+) => {
+  const { xOffset, yOffset } = treeOffset;
+  const { depth } = nodeDepths;
+  const newNodePositions: Map<GNode['id'], Coordinate> = new Map();
+  const roundToNearest10 = roundToNearestN(10);
+
+  const treeIndexToPosition = getTreeIndexToPosition({
+    rootCoordinate: root,
+    xOffset,
+    yOffset,
+    treeDepth: depth,
+  });
+
+  const treeIndexToNodeId = getTreeIndexToNodeId({
+    graph,
+    root,
+    treeDepth: depth,
+  });
+
+  for (let i = 0; i < treeIndexToNodeId.length; i++) {
+    const maybeNodeId = treeIndexToNodeId[i];
     if (!maybeNodeId) continue;
-    const newPos = treeIndexToPositionArr[i];
+    const newPos = treeIndexToPosition[i];
     newNodePositions.set(maybeNodeId, {
       x: roundToNearest10(newPos.x),
       y: roundToNearest10(newPos.y),
