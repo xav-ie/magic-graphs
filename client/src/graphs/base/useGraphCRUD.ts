@@ -5,6 +5,7 @@ import type { PartiallyPartial } from "@utils/types";
 import {
   ADD_EDGE_DEFAULTS,
   ADD_EDGE_OPTIONS_DEFAULTS,
+  BULK_ADD_EDGE_OPTIONS_DEFAULTS,
   ADD_NODE_OPTIONS_DEFAULTS,
   BULK_ADD_NODE_OPTIONS_DEFAULTS,
   MOVE_NODE_OPTIONS_DEFAULTS,
@@ -185,17 +186,14 @@ export const useGraphCRUD = ({
     if (edges.length === 0) return
 
     const fullOptions = {
-      ...ADD_EDGE_OPTIONS_DEFAULTS,
+      ...BULK_ADD_EDGE_OPTIONS_DEFAULTS,
       ...options
     }
 
     const createdEdges: GEdge[] = []
 
     for (const edge of edges) {
-      const newEdge = addEdge(edge, {
-        broadcast: false,
-        history: false,
-      })
+      const newEdge = addEdge(edge, fullOptions)
       if (!newEdge) continue
       createdEdges.push(newEdge)
     }
@@ -262,7 +260,7 @@ export const useGraphCRUD = ({
    * @param options - override default effects (onNodeRemoved event)
    * @returns the removed node along with its removed edges or undefined if not removed
    */
-  const removeNode = (id: GNode['id'], options: Partial<RemoveNodeOptions> = {}) => {
+  const removeNode = async (id: GNode['id'], options: Partial<RemoveNodeOptions> = {}) => {
     const removedNode = getNode(id)
     if (!removedNode) return
 
@@ -272,10 +270,16 @@ export const useGraphCRUD = ({
     }
 
     const edgesToRemove = getConnectedEdges(removedNode.id, { edges, getEdge, settings })
-    const removedEdges = edgesToRemove.map((e) => removeEdge(e.id, {
-      broadcast: false,
-      history: false,
-    })).filter(Boolean) as GEdge[]
+
+    const removedEdges: GEdge[] = []
+    for (const edge of edgesToRemove) {
+      const removed = await removeEdge(edge.id, {
+        broadcast: false,
+        history: false,
+      })
+      if (!removed) continue
+      removedEdges.push(removed)
+    }
 
     nodes.value = nodes.value.filter(n => n.id !== removedNode.id)
 
@@ -285,7 +289,7 @@ export const useGraphCRUD = ({
     return [removedNode, removedEdges] as const
   }
 
-  const bulkRemoveNode = (
+  const bulkRemoveNode = async (
     nodeIds: GNode['id'][],
     options: Partial<RemoveNodeOptions> = {}
   ) => {
@@ -300,7 +304,7 @@ export const useGraphCRUD = ({
     const removedEdges: GEdge[] = []
 
     for (const nodeId of nodeIds) {
-      const removed = removeNode(nodeId, {
+      const removed = await removeNode(nodeId, {
         broadcast: false,
         history: false,
       })
@@ -321,7 +325,7 @@ export const useGraphCRUD = ({
    * @param options - override default effects (onEdgeRemoved event)
    * @returns the removed edge or undefined if not removed
    */
-  const removeEdge = (
+  const removeEdge = async (
     edgeId: GEdge['id'],
     options: Partial<RemoveEdgeOptions> = {}
   ) => {
@@ -333,14 +337,16 @@ export const useGraphCRUD = ({
       ...options
     }
 
-    edges.value = edges.value.filter(e => e.id !== edge.id)
+    if (fullOptions.animate) await animationController.animateOut(edge.id)
 
+    edges.value = edges.value.filter(e => e.id !== edge.id)
     emit('onEdgeRemoved', edge, fullOptions)
     emit('onStructureChange')
+
     return edge
   }
 
-  const bulkRemoveEdge = (
+  const bulkRemoveEdge = async (
     edgeIds: GEdge['id'][],
     options: Partial<RemoveEdgeOptions> = {}
   ) => {
@@ -354,7 +360,7 @@ export const useGraphCRUD = ({
     const removedEdges: GEdge[] = []
 
     for (const edgeId of edgeIds) {
-      const removed = removeEdge(edgeId, {
+      const removed = await removeEdge(edgeId, {
         broadcast: false,
         history: false,
       })

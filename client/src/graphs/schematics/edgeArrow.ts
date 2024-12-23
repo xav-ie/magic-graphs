@@ -25,7 +25,7 @@ const animateInArrowBody = (progress: number) => (arrowSchema: Arrow): Partial<A
 }
 
 const animateOutArrowBody = (progress: number) => (arrowSchema: Arrow): Partial<Arrow> => {
-  const mapper = getMapper(...SEQ.OUT.BODY)
+  const mapper = getMapper(0, 1)
   const percentage = EASING(mapper(progress))
 
   const interpolateWidth = interpolate(arrowSchema.width, 0)
@@ -57,24 +57,11 @@ const inArrow = (progress: number) => (arrowSchema: Arrow) => {
 }
 
 const outArrow = (progress: number) => (arrowSchema: Arrow) => {
-  const percent = normalize(0, DURATION_MS, progress)
-
-  if (inRange(SEQ.OUT.TEXT_AREA[0], SEQ.OUT.TEXT_AREA[1], percent)) {
-    return arrow({
-      ...arrowSchema,
-      textArea: animateOutTextArea(progress)(arrowSchema.textArea),
-    })
-  }
-
-  if (inRange(SEQ.OUT.BODY[0], SEQ.OUT.BODY[1], percent)) {
-    return arrow({
-      ...arrowSchema,
-      ...animateOutArrowBody(progress)(arrowSchema),
-      textArea: undefined,
-    })
-  }
-
-  return arrow(arrowSchema)
+  return arrow({
+    ...arrowSchema,
+    ...animateOutArrowBody(progress)(arrowSchema),
+    textArea: animateOutTextArea(progress)(arrowSchema.textArea),
+  })
 }
 
 export const edgeArrow = ({

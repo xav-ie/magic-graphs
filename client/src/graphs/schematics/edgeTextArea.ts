@@ -36,9 +36,21 @@ export const animateInTextArea = (progress: number) => (textArea: TextAreaNoLoca
 export const animateOutTextArea = (progress: number) => (textArea: TextAreaNoLocation | undefined) => {
   if (!textArea) return undefined
 
-  const mapper = getMapper(...SEQ.OUT.TEXT_AREA)
+  const mapper = getMapper(0, 1)
   const opacity = 1 - mapper(progress)
 
-  const adjustOpacityOfTextArea = opacityAdjustedTextArea(opacity)
-  return adjustOpacityOfTextArea(textArea)
+  const textColor = textArea.text.color;
+  if (!textColor) return textArea;
+
+  const adjustOpacity = (color: string) => tinycolor(color).setAlpha(opacity).toRgbString()
+
+  const textColorWithOpacity = adjustOpacity(textColor)
+
+  return {
+    ...textArea,
+    text: {
+      ...textArea.text,
+      color: textColorWithOpacity,
+    },
+  }
 }

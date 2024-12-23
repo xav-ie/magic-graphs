@@ -7,7 +7,7 @@ type ItemId = GNode['id'] | GEdge['id']
  */
 export type IdToProgress = Map<ItemId, number>
 
-export const DURATION_MS = 1250
+export const DURATION_MS = 500
 
 /**
  * keeps track of animation state for node and edges animating
@@ -22,7 +22,7 @@ export const useAnimationController = () => {
 
     for (let i = 0; i <= DURATION_MS; i++) {
       setTimeout(() => {
-        itemsAnimatingIn.set(id, i)
+        map.set(id, i)
       }, 1 * i)
     }
 
