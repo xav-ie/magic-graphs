@@ -10,6 +10,7 @@ import {
 import { ref } from "vue";
 import { graphLabelGetter, LETTERS } from "@graph/labels";
 
+
 export const useAutoGenerate = (graph: Graph) => {
   const generateNodes = (nodeCount: number) => {
     const nodes = ref<GNode[]>([]);
@@ -20,8 +21,8 @@ export const useAutoGenerate = (graph: Graph) => {
       nodes.value.push({
         id: generateId(),
         label: getLabel(),
-        x: 0,
-        y: 0,
+        x: Math.random() * 1000,
+        y: Math.random() * 1000,
       });
     }
     return nodes.value;
@@ -134,6 +135,100 @@ export const useAutoGenerate = (graph: Graph) => {
     return { nodes, edges };
   };
 
+  const forceDirectedLayout = (
+    nodes: GNode[],
+    edges: GEdge[],
+    iterations: number = 100,
+    width: number = 1000,
+    height: number = 1000,
+    buffer: number = 50, // minimum buffer zone between nodes
+    perturbation: number = 50 // small random displacement to prevent colinearity
+  ): GNode[] => {
+    const area = width * height;
+    const k = Math.sqrt(area / nodes.length); 
+    let temperature = width / 10; 
+  
+    const repulsiveForce = (distance: number) => (k * k) / distance;
+    const attractiveForce = (distance: number) => (distance * distance) / k;
+  
+    const isColinear = (a: GNode, b: GNode, c: GNode): boolean => {
+      const crossProduct = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+      return Math.abs(crossProduct) < 1e-5; 
+    };
+  
+    const applyPerturbation = (node: GNode) => {
+      node.x += Math.random() * perturbation - perturbation / 2;
+      node.y += Math.random() * perturbation - perturbation / 2;
+    };
+  
+    for (let iter = 0; iter < iterations; iter++) {
+      const displacements = new Map<string, { x: number; y: number }>();
+      nodes.forEach((node) => displacements.set(node.id, { x: 0, y: 0 }));
+  
+      nodes.forEach((v) => {
+        nodes.forEach((u) => {
+          if (u.id !== v.id) {
+            const dx = v.x - u.x;
+            const dy = v.y - u.y;
+            const distance = Math.sqrt(dx * dx + dy * dy) || 0.01; 
+  
+            let force = repulsiveForce(distance);
+            if (distance < buffer) {
+              force += (buffer - distance) * 2;
+            }
+  
+            const disp = displacements.get(v.id)!;
+            disp.x += (dx / distance) * force;
+            disp.y += (dy / distance) * force;
+          }
+        });
+      });
+  
+      edges.forEach((edge) => {
+        const v = nodes.find((n) => n.id === edge.to)!;
+        const u = nodes.find((n) => n.id === edge.from)!;
+  
+        const dx = v.x - u.x;
+        const dy = v.y - u.y;
+        const distance = Math.sqrt(dx * dx + dy * dy) || 0.01; 
+        const force = attractiveForce(distance);
+  
+        const vDisp = displacements.get(v.id)!;
+        const uDisp = displacements.get(u.id)!;
+  
+        vDisp.x -= (dx / distance) * force;
+        vDisp.y -= (dy / distance) * force;
+        uDisp.x += (dx / distance) * force;
+        uDisp.y += (dy / distance) * force;
+      });
+  
+      nodes.forEach((v) => {
+        const disp = displacements.get(v.id)!;
+        const dispMagnitude = Math.sqrt(disp.x * disp.x + disp.y * disp.y) || 0.01;
+  
+        v.x += (disp.x / dispMagnitude) * Math.min(dispMagnitude, temperature);
+        v.y += (disp.y / dispMagnitude) * Math.min(dispMagnitude, temperature);
+  
+        v.x = Math.min(width / 2, Math.max(-width / 2, v.x));
+        v.y = Math.min(height / 2, Math.max(-height / 2, v.y));
+      });
+  
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          for (let k = j + 1; k < nodes.length; k++) {
+            if (isColinear(nodes[i], nodes[j], nodes[k])) {
+              applyPerturbation(nodes[k]); 
+            }
+          }
+        }
+      }
+  
+      temperature *= 0.9;
+    }
+  
+    return nodes;
+  };
+
   const generate = (options: AutoGenerateGraphOptions) => {
     const { numNodes, numEdges, edgeLabel, layout } = {
       ...DEFAULT_AUTO_GENERATE_GRAPH_OPTIONS,
@@ -152,7 +247,7 @@ export const useAutoGenerate = (graph: Graph) => {
         break;
       case "partialMesh": {
         const graphState = generatePartialMesh(nodes.value, edgeLabel, 0.1);
-        nodes.value = circularLayout(graphState.nodes);
+        nodes.value = forceDirectedLayout(graphState.nodes, graphState.edges);
         edges.value = graphState.edges;
         break;
       }
