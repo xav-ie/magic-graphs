@@ -3,32 +3,34 @@ import { getConnectedNodes, getEdgesAlongPath } from '@graph/helpers'
 import { getLargestAngularSpace } from '@shape/helpers'
 import type { BaseGraph } from '@graph/base'
 import { GOLDEN_RATIO } from '@utils/math'
-import {
-  line,
-  uturn
-} from '@shapes'
-
+import { uturn } from '@shapes'
 import { edgeArrow } from './edgeArrow'
+import { edgeLine } from './edgeLine'
+import type { ShapeResolverOptions } from './types'
 
 const WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE = 2
 
 type PropsNeededFromGraph =
- | 'edges'
- | 'getNode'
- | 'getEdge'
- | 'getTheme'
- | 'settings'
- | 'animationController'
+  | 'edges'
+  | 'getNode'
+  | 'getEdge'
+  | 'getTheme'
+  | 'settings'
+  | 'animationController'
 
 export const getEdgeSchematic = (
   edge: GEdge,
   graph: Pick<BaseGraph, PropsNeededFromGraph>,
 ): Omit<SchemaItem, 'priority'> | undefined => {
   const { displayEdgeLabels, isGraphDirected } = graph.settings.value
-  const arrow = edgeArrow({
-    edgeId: edge.id,
+
+  const edgeShapeOptions: ShapeResolverOptions = {
+    id: edge.id,
     controller: graph.animationController,
-  })
+  }
+
+  const arrow = edgeArrow(edgeShapeOptions)
+  const line = edgeLine(edgeShapeOptions)
 
   const [from, to] = getConnectedNodes(edge.id, graph)
   const edgesAlongPath = getEdgesAlongPath(from.id, to.id, graph)

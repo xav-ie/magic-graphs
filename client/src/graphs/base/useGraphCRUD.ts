@@ -9,7 +9,7 @@ import {
   BULK_ADD_NODE_OPTIONS_DEFAULTS,
   MOVE_NODE_OPTIONS_DEFAULTS,
   REMOVE_EDGE_OPTIONS_DEFAULTS,
-  REMOVE_NODE_OPTIONS_DEFAULTS
+  REMOVE_NODE_OPTIONS_DEFAULTS,
 } from "./types";
 import type {
   AddEdgeOptions,
@@ -24,6 +24,7 @@ import { generateId } from "@utils/id";
 import type { Emitter } from "@graph/events";
 import { nodeLetterLabelGetter } from "@graph/labels";
 import type { GraphSettings } from "@graph/settings";
+import type { GraphAnimationController } from "@graph/animationController";
 
 type GraphCRUDOptions = {
   emit: Emitter,
@@ -32,6 +33,7 @@ type GraphCRUDOptions = {
   nodeMap: NodeMap,
   edgeMap: EdgeMap,
   settings: Ref<GraphSettings>,
+  animationController: GraphAnimationController,
 }
 
 export const useGraphCRUD = ({
@@ -41,6 +43,7 @@ export const useGraphCRUD = ({
   edgeMap,
   emit,
   settings,
+  animationController,
 }: GraphCRUDOptions) => {
 
   // READ OPERATIONS
@@ -82,7 +85,7 @@ export const useGraphCRUD = ({
 
     const fullOptions = {
       ...ADD_NODE_OPTIONS_DEFAULTS,
-      ...options
+      ...options,
     }
 
     const labelGetter = settings.value.newNodeLabelGetter ?? nodeLetterLabelGetter({ nodes })
@@ -164,6 +167,8 @@ export const useGraphCRUD = ({
       id: generateId(),
       ...edge,
     }
+
+    if (fullOptions.animate) animationController.animateIn(newEdge.id)
 
     edges.value.push(newEdge)
 

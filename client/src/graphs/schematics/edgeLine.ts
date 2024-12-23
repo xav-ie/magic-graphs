@@ -1,4 +1,4 @@
-import { arrow } from "@shapes";
+import { arrow, line } from "@shapes";
 import type { Arrow } from "@shape/arrow";
 import gsap from "gsap";
 import { EASING_FUNCTIONS } from "@utils/animate";
@@ -6,6 +6,7 @@ import type { TextAreaNoLocation } from "@shape/types";
 import tinycolor from "tinycolor2";
 import { DURATION_MS } from "@graph/animationController";
 import type { ShapeResolverOptions } from "./types";
+import type { Line } from "@shape/line";
 
 const { interpolate, normalize, mapRange } = gsap.utils
 
@@ -50,49 +51,47 @@ const animateTextArea = (progress: number) => (textArea: TextAreaNoLocation | un
 /**
  * returns the ending coordinates of the arrow body
  */
-const animateArrowBody = (progress: number) => (arrowSchema: Arrow): Partial<Arrow> => {
+const animateArrowBody = (progress: number) => (lineSchema: Arrow): Partial<Line> => {
   const easing = EASING_FUNCTIONS["in-out"]
   const mapper = getMapper(...BODY_SEQUENCE)
   const percentage = easing(mapper(progress))
 
-  const interpolateCoords = interpolate(arrowSchema.start, arrowSchema.end)
-  const interpolateWidth = interpolate(0, arrowSchema.width)
+  const interpolateWidth = interpolate(0, lineSchema.width)
 
   return {
-    end: interpolateCoords(percentage),
     width: interpolateWidth(percentage),
   }
 }
 
-const animatedArrow = (progress: number) => (arrowSchema: Arrow) => {
+const animatedLine = (progress: number) => (lineSchema: Line) => {
   const percent = normalize(0, DURATION_MS, progress)
 
   if (inRange(BODY_SEQUENCE[0], BODY_SEQUENCE[1], percent)) {
-    return arrow({
-      ...arrowSchema,
-      ...animateArrowBody(progress)(arrowSchema),
+    return line({
+      ...lineSchema,
+      ...animateArrowBody(progress)(lineSchema),
       textArea: undefined,
     })
   }
 
   if (inRange(TEXT_AREA_SEQUENCE[0], TEXT_AREA_SEQUENCE[1], percent)) {
-    return arrow({
-      ...arrowSchema,
-      textArea: animateTextArea(progress)(arrowSchema.textArea),
+    return line({
+      ...lineSchema,
+      textArea: animateTextArea(progress)(lineSchema.textArea),
     })
   }
 
-  return arrow(arrowSchema)
+  return line(lineSchema)
 }
 
-export const edgeArrow = ({
+export const edgeLine = ({
   controller,
   id,
-}: ShapeResolverOptions) => (arrowSchema: Arrow) => {
+}: ShapeResolverOptions) => (arrowSchema: Line) => {
   const { itemsAnimatingIn, itemsAnimatingOut } = controller
 
   const inProgress = itemsAnimatingIn.get(id)
   const outProgress = itemsAnimatingOut.get(id)
-  if (inProgress !== undefined) return animatedArrow(inProgress)(arrowSchema)
-  return arrow(arrowSchema)
+  if (inProgress !== undefined) return animatedLine(inProgress)(arrowSchema)
+  return line(arrowSchema)
 }

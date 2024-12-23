@@ -216,6 +216,7 @@ export const useBaseGraph = (
     edgeMap: edgeIdToEdgeMap,
     emit,
     settings,
+    animationController,
   })
 
   const nodeIdToIndex = computed(() => nodes.value.reduce<Map<GNode['id'], number>>((map, node, i) => {

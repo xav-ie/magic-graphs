@@ -35,6 +35,13 @@ export type PersistOption = {
   persist: boolean
 }
 
+export type AnimateOption = {
+  /**
+   * whether to animate this action
+   */
+  animate: boolean
+}
+
 export type AddNodeOptions = FocusOption & BroadcastOption & HistoryOption
 
 export const ADD_NODE_OPTIONS_DEFAULTS: AddNodeOptions = {
@@ -56,12 +63,13 @@ export const REMOVE_NODE_OPTIONS_DEFAULTS: RemoveNodeOptions = {
   history: true,
 }
 
-export type AddEdgeOptions = FocusOption & BroadcastOption & HistoryOption
+export type AddEdgeOptions = FocusOption & BroadcastOption & HistoryOption & AnimateOption
 
 export const ADD_EDGE_OPTIONS_DEFAULTS: AddEdgeOptions = {
   broadcast: true,
   focus: false,
   history: true,
+  animate: true,
 }
 
 export type RemoveEdgeOptions = BroadcastOption & HistoryOption
