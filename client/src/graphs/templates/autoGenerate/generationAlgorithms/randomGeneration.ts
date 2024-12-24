@@ -4,23 +4,60 @@ import { generateId } from "@utils/id";
 import { ref } from "vue";
 import { angleDifference } from "@shape/helpers";
 
+type GenerateClusterNodesOptions = {
+  clusterCount: number;
+  maxNodesPerCluster: number;
+  minDistance: number;
+  clusterSpread: number;
+};
+
+type PartialGenerateClusterNodesOptions = Partial<GenerateClusterNodesOptions>;
+
+const GENERATE_CLUSTER_GRAPH_DEFAULTS = {
+  clusterCount: 1,
+  maxNodesPerCluster: 15,
+  minDistance: 200,
+  clusterSpread: 350,
+} as const;
+
+type GenerateCohesiveEdgesOptions = {
+  maxEdgesPerNode: number;
+  connectionProbability: number;
+  maxNeighbors: number;
+  minAngleBetweenEdges: number;
+};
+
+type PartialGenerateCohesiveEdgesOptions = Partial<GenerateCohesiveEdgesOptions>
+
+const GENERATE_COHESIVE_EDGES_DEFAULTS = {
+  maxEdgesPerNode: 10,
+  connectionProbability: 0.8,
+  maxNeighbors: 4,
+  minAngleBetweenEdges: Math.PI / 6,
+} as const;
+
 /**
  * Generates an array of nodes distributed across multiple clusters.
  *
  * @param clusterCount - The number of clusters to generate.
  * @param maxNodesPerCluster - The number of nodes per cluster.
- * @param maxWidth - The maximum generation width.
- * @param maxHeight - The maximum generation height.
  * @param minDistance - The minimum distance between nodes in a cluster.
  * @param clusterSpread - The maximum radius for nodes in a cluster.
  * @returns An array of nodes distributed across multiple clusters.
  */
 export const generateClusterNodes = (
-  clusterCount: number = 1,
-  maxNodesPerCluster: number = 10,
-  minDistance: number = 200,
-  clusterSpread: number = 350
+  options: PartialGenerateClusterNodesOptions = {}
 ): GNode[] => {
+  const { 
+    clusterCount, 
+    maxNodesPerCluster, 
+    minDistance, 
+    clusterSpread 
+  } = {
+    ...GENERATE_CLUSTER_GRAPH_DEFAULTS,
+    ...options,
+  };
+
   const nodes = ref<GNode[]>([]);
 
   const minJump = 5;
@@ -76,13 +113,17 @@ export const generateClusterNodes = (
  * @param minAngleBetweenEdges - The minimum angle between edges `IN RADIANS`.
  * @returns An array of edges between nodes.
  */
-export const generateRandomEdges = (
-  nodes: GNode[],
-  maxEdgesPerNode: number,
-  connectionProbability: number,
-  maxNeighbors: number,
-  minAngleBetweenEdges: number
-): GEdge[] => {
+export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCohesiveEdgesOptions = {}): GEdge[] => {
+  const { 
+    maxEdgesPerNode, 
+    connectionProbability, 
+    maxNeighbors, 
+    minAngleBetweenEdges 
+  } = {
+    ...GENERATE_COHESIVE_EDGES_DEFAULTS,
+    ...options,
+  };
+
   const edges: GEdge[] = [];
   const usedConnections = new Map<string, Set<string>>();
 
@@ -164,12 +205,20 @@ export const generateRandomEdges = (
         const angleCheck = edges
           .filter((e) => e.from === fromNode.id || e.to === fromNode.id)
           .every((e) => {
-            const otherNode = nodes.find((node) => e.from === fromNode.id ? node.id === e.to : node.id === e.from);
+            const otherNode = nodes.find((node) =>
+              e.from === fromNode.id ? node.id === e.to : node.id === e.from
+            );
             if (!otherNode) {
               return false;
             }
-            const otherNodeAngle = Math.atan2(otherNode.y - fromNode.y, otherNode.x - fromNode.x);
-            const angleDiff = angleDifference(newPotentialEdgeAngle, otherNodeAngle);
+            const otherNodeAngle = Math.atan2(
+              otherNode.y - fromNode.y,
+              otherNode.x - fromNode.x
+            );
+            const angleDiff = angleDifference(
+              newPotentialEdgeAngle,
+              otherNodeAngle
+            );
             return angleDiff > minAngleBetweenEdges;
           });
 

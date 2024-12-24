@@ -9,7 +9,7 @@ import {
 } from "../helpers";
 import { ref } from "vue";
 import { graphLabelGetter, LETTERS } from "@graph/labels";
-import { generateClusterNodes, generateRandomEdges } from "./generationAlgorithms/randomGeneration";
+import { generateClusterNodes, generateCohesiveEdges } from "./generationAlgorithms/randomGeneration";
 
 
 export const useAutoGenerate = (graph: Graph) => {
@@ -251,8 +251,8 @@ export const useAutoGenerate = (graph: Graph) => {
         // const graphState = generatePartialMesh(nodes.value, edgeLabel, 0.1);
         // nodes.value = forceDirectedLayout(graphState.nodes, graphState.edges);
         // edges.value = graphState.edges;
-        nodes.value = generateClusterNodes(1, 15)
-        edges.value = generateRandomEdges(nodes.value, 10, 0.8, 4, Math.PI / 6);
+        nodes.value = generateClusterNodes()
+        edges.value = generateCohesiveEdges(nodes.value);
         break;
       }
     }
