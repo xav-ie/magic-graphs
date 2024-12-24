@@ -1,7 +1,7 @@
 import type { Graph } from "@graph/types";
 import type { Coordinate } from "@shape/types";
 import { getTreeIndexToPosition } from "@product/graph-sandbox/ui/tree/getTreeBinaryPos";
-import { insert } from "./insert";
+import { type InsertTrace } from "./insert";
 import { getTreeIndexToNode } from "./treeIndexToNode";
 
 /**
@@ -98,10 +98,126 @@ export class AVLTree extends BinaryTree {
   }
 
   insert(key: TreeNode['key']) {
-    const { node, trace } = insert(this.root, key);
+    const preserveRoot = this.root;
+
+    const runInsertion = (
+      node: TreeNode | undefined,
+      key: number,
+      trace: InsertTrace[] = [],
+    ): {
+      node: TreeNode,
+      trace: InsertTrace[],
+    } => {
+      // Perform standard BST insertion
+      if (node === undefined) {
+        return {
+          node: new TreeNode(key),
+          trace,
+        };
+      }
+
+      // Equal keys are not allowed in BST
+      if (key === node.key) {
+        return {
+          node,
+          trace,
+        }
+      }
+
+      let traceCopy = [...trace];
+      if (key < node.key) {
+        const { node: left, trace: leftTrace } = runInsertion(node.left, key, [...trace, {
+          action: "compare",
+          nodeId: node.key,
+        }]);
+        node.left = left;
+        traceCopy = leftTrace;
+      } else if (key > node.key) {
+        const { node: right, trace: rightTrace } = runInsertion(node.right, key, [...trace, {
+          action: "compare",
+          nodeId: node.key,
+        }]);
+        node.right = right;
+        traceCopy = rightTrace;
+      }
+
+      node.height = 1 + Math.max(height(node.left), height(node.right));
+
+      // all the logic beyond this point is for AVL tree balancing
+
+      // Get the balance factor and handle the 4 unbalanced cases
+      const balance = getBalance(node);
+
+      // Left Left Case
+      if (balance > 1 && key < node.left!.key) {
+        return {
+          node: rightRotate(node),
+          trace: [...traceCopy, {
+            action: "balance",
+            type: "left-left",
+            treeState: treeToArray(preserveRoot),
+          }],
+        };
+      }
+
+      // Right Right Case
+      if (balance < -1 && key > node.right!.key) {
+        return {
+          node: leftRotate(node),
+          trace: [...traceCopy, {
+            action: "balance",
+            type: "right-right",
+            treeState: treeToArray(preserveRoot),
+          }],
+        };
+      }
+
+      // Left Right Case
+      if (balance > 1 && key > node.left!.key) {
+        node.left = leftRotate(node.left!);
+        return {
+          node: rightRotate(node),
+          trace: [...traceCopy, {
+            action: "balance",
+            type: "left-right",
+            treeState: treeToArray(preserveRoot),
+          }],
+        }
+      }
+
+      // Right Left Case
+      if (balance < -1 && key < node.right!.key) {
+        node.right = rightRotate(node.right!);
+        return {
+          node: leftRotate(node),
+          trace:
+          [...traceCopy, {
+            action: "balance",
+            type: "right-left",
+            treeState: treeToArray(preserveRoot),
+          }],
+        }
+      }
+
+      return {
+        node,
+        trace:
+          [...traceCopy, {
+            action: "insert",
+            treeState: treeToArray(preserveRoot),
+          }],
+      };
+    }
+
+    const { node, trace } = runInsertion(this.root, key);
+
+    const finalTreeState = treeToArray(node);
+
+    const newTrace = operateTrace(trace, finalTreeState);
+
     this.root = node;
-    console.log(JSON.stringify(trace, null, 2));
-    return trace;
+
+    return newTrace;
   }
 
   getNode(key: number) {
@@ -113,6 +229,29 @@ export class AVLTree extends BinaryTree {
     }
     return undefined;
   }
+}
+
+/**
+ * turns trace into consumable format by removing recursive artifacts
+ */
+const operateTrace = (trace: InsertTrace[], finalTreeState: ReturnType<AVLTree['toArray']>) => {
+  if (trace.length === 0) return trace;
+  const hasBalanced = trace.some(t => t.action === "balance");
+  if (hasBalanced) {
+    trace.pop();
+    const obj = trace.at(-1);
+    if (obj?.action === "balance") {
+      obj.treeState = finalTreeState;
+    }
+  } else {
+    const last = trace.pop();
+    if (!last || last.action !== 'insert') throw new Error("last action in trace must be insert");
+    last.treeState = finalTreeState;
+    const removeExtraInserts = trace.filter(t => t.action !== "insert");
+    trace = [...removeExtraInserts, last];
+  }
+
+  return trace;
 }
 
 /**
@@ -195,3 +334,66 @@ export function getBalance(node: TreeNode | undefined): number {
   if (node === undefined) return 0;
   return height(node.left) - height(node.right);
 }
+
+export const treeArrayToGraph = async (
+  graph: Graph,
+  treeArray: ReturnType<AVLTree['toArray']>,
+  treeRoot: TreeNode,
+  rootPosition: Coordinate,
+) => {
+  const addTreeNodeToGraph = (treeNode: TreeNode | undefined) => {
+    if (!treeNode) return;
+
+    graph.addNode({
+      id: treeNode.key.toString(),
+      label: treeNode.key.toString(),
+      ...rootPosition,
+    }, { animate: true, focus: false });
+
+    if (treeNode.left) {
+      // edge must be added after both parent and child nodes are added
+      setTimeout(() => {
+        graph.addEdge({
+          from: treeNode.key.toString(),
+          to: treeNode.left!.key.toString(),
+        }, { animate: true })
+      }, 150)
+      addTreeNodeToGraph(treeNode.left);
+    }
+
+    if (treeNode.right) {
+      setTimeout(() => {
+        graph.addEdge({
+          from: treeNode.key.toString(),
+          to: treeNode.right!.key.toString(),
+        }, { animate: true })
+      }, 150)
+      addTreeNodeToGraph(treeNode.right);
+    }
+  }
+
+  addTreeNodeToGraph(treeRoot);
+  const rootHeight = height(treeRoot);
+
+  const depthToXOffset: Record<number, number> = {
+    1: 250,
+    2: 200,
+    3: 150,
+  }
+
+  const positions = getTreeIndexToPosition({
+    rootCoordinate: rootPosition,
+    xOffset: depthToXOffset[rootHeight] ?? 100,
+    yOffset: 200,
+    treeDepth: rootHeight - 1,
+  })
+
+  for (let i = 0; i < treeArray.length; i++) {
+    const nodeId = treeArray[i]?.toString();
+    if (!nodeId) continue;
+    graph.animate.node({
+      nodeId,
+      endCoords: positions[i],
+    })
+  }
+};

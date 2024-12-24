@@ -2,7 +2,7 @@
   import { computed, ref } from "vue";
   import GWell from "@ui/graph/GWell.vue";
   import GButton from "@ui/graph/button/GButton.vue";
-  import { AVLTree, BinaryTree } from "./tree/avl";
+  import { AVLTree, BinaryTree, treeArrayToGraph } from "./tree/avl";
   import { getRandomInRange } from "@utils/random";
   import { nonNullGraph as graph } from "@graph/global";
   import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
@@ -27,8 +27,8 @@
     targetNode.value = undefined;
 
     const step = trace.value[newStep];
-    if (step.action === 'insert') {
-      tree.toGraph(graph.value, rootPos);
+    if (step.action === 'insert' || step.action === 'balance') {
+      treeArrayToGraph(graph.value, step.treeState, tree.root!, rootPos);
       return;
     }
 
@@ -43,6 +43,7 @@
     sim.stop();
 
     currTrace.value = tree.insert(key.value);
+    console.log(JSON.stringify(currTrace.value, null, 2));
     key.value = getRandomInRange(1, 100);
 
     // for adding the root node
