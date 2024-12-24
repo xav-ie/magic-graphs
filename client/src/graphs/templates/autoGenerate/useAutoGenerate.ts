@@ -251,8 +251,8 @@ export const useAutoGenerate = (graph: Graph) => {
         // const graphState = generatePartialMesh(nodes.value, edgeLabel, 0.1);
         // nodes.value = forceDirectedLayout(graphState.nodes, graphState.edges);
         // edges.value = graphState.edges;
-        nodes.value = generateClusterNodes()
-        edges.value = generateRandomEdges(nodes.value, 10, 0.8, 4, 30);
+        nodes.value = generateClusterNodes(1, 15)
+        edges.value = generateRandomEdges(nodes.value, 10, 0.8, 4, 1);
         break;
       }
     }

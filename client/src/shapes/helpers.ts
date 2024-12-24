@@ -171,4 +171,5 @@ export const calculateArrowHeadCorners = (options: Required<Pick<Arrow, 'start' 
  * @param angleB The second angle in radians.
  * @returns The difference between the two angles in radians.
  */
-export const angleDifference = (angleA: number, angleB: number) => Math.atan2(Math.sin(angleA - angleB), Math.cos(angleA - angleB));
+export const angleDifference = (angleA: number, angleB: number) => 
+  Math.abs(Math.atan2(Math.sin(angleA - angleB), Math.cos(angleA - angleB)));
