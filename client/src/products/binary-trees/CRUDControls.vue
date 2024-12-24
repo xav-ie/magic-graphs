@@ -7,38 +7,46 @@
   import { nonNullGraph as graph } from "@graph/global";
   import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
   import { useTargetNodeColor } from "./theme/useTargetNodeColor";
+  import type { InsertTrace } from "./tree/insert";
 
   const tree = new AVLTree();
+
+  const key = ref(50);
 
   const rootPos = { x: 2300, y: 1500 };
 
   const { targetNode, activate } = useTargetNodeColor(graph.value);
-  activate()
+  activate();
 
-  const currTrace = ref<number[]>([]);
+  const currTrace = ref<InsertTrace[]>([]);
   const trace = computed(() => currTrace.value);
 
-  const sim = useSimulationControls(trace, {
-    lastStep: computed(() => trace.value.length),
-  });
+  const sim = useSimulationControls(trace);
 
-  sim.onStepChange((step) => {
-    const treeNodeKey = trace.value[step];
-    if (treeNodeKey === undefined) {
-      targetNode.value = undefined;
+  sim.onStepChange((newStep) => {
+    targetNode.value = undefined;
+
+    const step = trace.value[newStep];
+    if (step.action === 'insert') {
       tree.toGraph(graph.value, rootPos);
       return;
     }
-    const node = graph.value.getNode(treeNodeKey.toString());
-    if (node) targetNode.value = node;
+
+    if (step.action === 'compare') {
+      const { nodeId } = step;
+      const node = graph.value.getNode(nodeId.toString());
+      if (node) targetNode.value = node;
+    }
   });
 
   const addNode = () => {
     sim.stop();
 
-    const key = getRandomInRange(1, 100);
-    currTrace.value = tree.insert(key);
+    currTrace.value = tree.insert(key.value);
+    key.value = getRandomInRange(1, 100);
 
+    // for adding the root node
+    if (currTrace.value.length === 0) return tree.toGraph(graph.value, rootPos);
     sim.start();
   };
 </script>
@@ -52,7 +60,7 @@
       @click="addNode"
       tertiary
     >
-      Add Node
+      Add Node ({{ key }})
     </GButton>
     <GButton
       @click="graph.reset"

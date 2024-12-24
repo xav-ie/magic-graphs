@@ -100,7 +100,18 @@ export class AVLTree extends BinaryTree {
   insert(key: TreeNode['key']) {
     const { node, trace } = insert(this.root, key);
     this.root = node;
+    console.log(JSON.stringify(trace, null, 2));
     return trace;
+  }
+
+  getNode(key: number) {
+    let current = this.root;
+    while (current) {
+      if (key === current.key) return current;
+      if (key < current.key) current = current.left;
+      else current = current.right;
+    }
+    return undefined;
   }
 }
 
@@ -121,6 +132,12 @@ export class TreeNode {
   }
 }
 
+export const treeToArray = (root: TreeNode | undefined) => {
+  const treeDepth = height(root) - 1;
+  const treeIndexToNodeKey = getTreeIndexToNode({ root, treeDepth });
+  return treeIndexToNodeKey.map(node => node?.key)
+};
+
 /**
 * Gets the height of a node in the AVL tree
 * @param node - The node to get the height from
@@ -138,7 +155,7 @@ export function height(node: TreeNode | undefined): number {
 * @param y - The root of the subtree to rotate
 * @returns The new root after rotation
 */
-function rightRotate(y: TreeNode): TreeNode {
+export function rightRotate(y: TreeNode): TreeNode {
   const x = y.left!;  // We know this exists because right rotation is only called when left child exists
   const T2 = x.right;
 
@@ -156,7 +173,7 @@ function rightRotate(y: TreeNode): TreeNode {
 * @param x - The root of the subtree to rotate
 * @returns The new root after rotation
 */
-function leftRotate(x: TreeNode): TreeNode {
+export function leftRotate(x: TreeNode): TreeNode {
   const y = x.right!;  // We know this exists because left rotation is only called when right child exists
   const T2 = y.left;
 
@@ -174,7 +191,7 @@ function leftRotate(x: TreeNode): TreeNode {
 * @param node - The node to calculate the balance factor for
 * @returns The balance factor (difference between left and right subtree heights)
 */
-function getBalance(node: TreeNode | undefined): number {
+export function getBalance(node: TreeNode | undefined): number {
   if (node === undefined) return 0;
   return height(node.left) - height(node.right);
 }
