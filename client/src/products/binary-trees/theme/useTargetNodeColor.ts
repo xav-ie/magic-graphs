@@ -17,8 +17,8 @@ export const useTargetNodeColor = (graph: Graph) => {
     if (node.id === targetNode.value.id) return TARGET_COLOR;
   }
 
-  const activate = (node: GNode) => {
-    targetNode.value = node;
+  const activate = (node?: GNode) => {
+    if (node) targetNode.value = node;
     setTheme("nodeBorderColor", colorNode);
     setTheme("nodeAnchorColor", colorNode);
   }

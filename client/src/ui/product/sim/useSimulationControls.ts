@@ -1,5 +1,5 @@
 import { computed, ref, toRef, watch } from "vue";
-import type { ComputedRef, MaybeRef, Ref } from "vue";
+import type { ComputedRef, MaybeRef } from "vue";
 import type { OnStepChangeCallback, SimulationControls, SimulationTrace } from "@ui/product/sim/types";
 import { useLocalStorage } from "@vueuse/core";
 
@@ -8,7 +8,7 @@ type SimulationControlsOptions = {
    * if set, the simulation will stop when the step reaches this value
    * @default trace.length - 1
    */
-  lastStep?: Ref<number>;
+  lastStep?: MaybeRef<number>;
 };
 
 /**
@@ -20,7 +20,8 @@ export const useSimulationControls = <T>(
   traceInput: ComputedRef<SimulationTrace<T>> | SimulationTrace<T>,
   options: SimulationControlsOptions = {}
 ): SimulationControls<T> => {
-  const { lastStep } = options;
+  const lastStepOption = toRef(options.lastStep)
+
   const trace = computed(() => {
     if ('value' in traceInput) return traceInput.value;
     return traceInput;
@@ -30,7 +31,7 @@ export const useSimulationControls = <T>(
    * the last step of the simulation
    */
   const simLastStep = computed(() => {
-    if (lastStep) return lastStep.value;
+    if (lastStepOption.value !== undefined) return lastStepOption.value;
     if (Array.isArray(trace.value)) return trace.value.length - 1;
     return Infinity;
   });
@@ -48,7 +49,7 @@ export const useSimulationControls = <T>(
   /**
    * the playback speed in ms per step of the simulation
    */
-  const playbackSpeed = useLocalStorage('simulation-playback-speed',DEFAULT_PLAYBACK_SPEED);
+  const playbackSpeed = useLocalStorage('simulation-playback-speed', DEFAULT_PLAYBACK_SPEED);
 
   /**
    * whether the simulation is actively being played back (even if paused)
@@ -79,6 +80,7 @@ export const useSimulationControls = <T>(
     paused.value = false;
     active.value = true;
     step.value = 0;
+    emitStepChange(0, -1);
 
     setupPlaybackInterval();
   };
@@ -135,7 +137,6 @@ export const useSimulationControls = <T>(
   const stepChangeSubs = new Set<OnStepChangeCallback>();
 
   const emitStepChange = (newStep: number, oldStep: number) => {
-    if (newStep === oldStep) return;
     for (const cb of stepChangeSubs) {
       cb(newStep, oldStep);
     }
