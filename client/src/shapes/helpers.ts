@@ -164,3 +164,5 @@ export const calculateArrowHeadCorners = (options: Required<Pick<Arrow, 'start' 
     pointC: baseRight,
   };
 };
+
+const angleDifference = (angleA: number, angleB: number) => Math.atan2(Math.sin(angleA - angleB), Math.cos(angleA - angleB));
