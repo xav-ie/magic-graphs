@@ -252,7 +252,7 @@ export const useAutoGenerate = (graph: Graph) => {
         // nodes.value = forceDirectedLayout(graphState.nodes, graphState.edges);
         // edges.value = graphState.edges;
         nodes.value = generateClusterNodes(1, 15)
-        edges.value = generateRandomEdges(nodes.value, 10, 0.8, 4, 1);
+        edges.value = generateRandomEdges(nodes.value, 10, 0.8, 4, Math.PI / 6);
         break;
       }
     }

@@ -66,8 +66,16 @@ export const generateClusterNodes = (
   return nodes.value;
 };
 
-
-
+/**
+ * Generates random edges between nodes.
+ *
+ * @param nodes - An array of nodes.
+ * @param maxEdgesPerNode - The maximum number of edges each node can have.
+ * @param connectionProbability - The probability of a node being connected to another node.
+ * @param maxNeighbors - The maximum number of neighbors a node can have.
+ * @param minAngleBetweenEdges - The minimum angle between edges `IN RADIANS`.
+ * @returns An array of edges between nodes.
+ */
 export const generateRandomEdges = (
   nodes: GNode[],
   maxEdgesPerNode: number,
@@ -149,20 +157,20 @@ export const generateRandomEdges = (
         Math.random() <= prob &&
         !usedConnections.get(fromNode.id)?.has(toNode.id)
       ) {
+        const newPotentialEdgeAngle = Math.atan2(
+          toNode.y - fromNode.y,
+          toNode.x - fromNode.x
+        );
         const angleCheck = edges
           .filter((e) => e.from === fromNode.id || e.to === fromNode.id)
           .every((e) => {
-            const existingToNode = nodes.find(
-              (n) => n.id === (e.from === fromNode.id ? e.to : e.from)
-            )!;
-
-            const angle1 = Math.atan2(
-              existingToNode.y - fromNode.y,
-              existingToNode.x - fromNode.x
-            );
-            const angle2 = Math.atan2(toNode.y - fromNode.y, toNode.x - fromNode.x);
-            const angle = angleDifference(angle1, angle2);
-            return angle >= minAngleBetweenEdges;
+            const otherNode = nodes.find((node) => e.from === fromNode.id ? node.id === e.to : node.id === e.from);
+            if (!otherNode) {
+              return false;
+            }
+            const otherNodeAngle = Math.atan2(otherNode.y - fromNode.y, otherNode.x - fromNode.x);
+            const angleDiff = angleDifference(newPotentialEdgeAngle, otherNodeAngle);
+            return angleDiff > minAngleBetweenEdges;
           });
 
         if (angleCheck) {
