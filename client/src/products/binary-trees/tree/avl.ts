@@ -1,6 +1,8 @@
 import type { Graph } from "@graph/types";
 import type { Coordinate } from "@shape/types";
 import { getTreeIndexToPosition } from "@product/graph-sandbox/ui/tree/getTreeBinaryPos";
+import { insert } from "./insert";
+import { getTreeIndexToNode } from "./treeIndexToNode";
 
 /**
  * a binary search tree
@@ -10,10 +12,6 @@ export class BinaryTree {
 
   constructor() {
     this.root = undefined;
-  }
-
-  insert(key: TreeNode['key']) {
-    this.root = insert(this.root, key);
   }
 
   height() {
@@ -31,7 +29,6 @@ export class BinaryTree {
   }
 
   async toGraph(graph: Graph, rootPosition: Coordinate) {
-    graph.reset();
 
     const addTreeNodeToGraph = (treeNode: TreeNode | undefined) => {
       if (!treeNode) return;
@@ -92,33 +89,6 @@ export class BinaryTree {
   }
 }
 
-export const getTreeIndexToNode = ({
-  root,
-  treeDepth,
-}: {
-  root: TreeNode | undefined,
-  treeDepth: number,
-}) => {
-  const treeIndexToNodeId: (TreeNode | undefined)[] = [];
-  if (!root) return treeIndexToNodeId;
-
-  let nodesAtDepth: (TreeNode | undefined)[] = [root];
-
-  for (let i = 0; i <= treeDepth; i++) {
-    const nodesAtNextDepth: (TreeNode | undefined)[] = [];
-
-    for (const maybeTreeNode of nodesAtDepth) {
-      treeIndexToNodeId.push(maybeTreeNode);
-      nodesAtNextDepth.push(maybeTreeNode?.left);
-      nodesAtNextDepth.push(maybeTreeNode?.right);
-    }
-
-    nodesAtDepth = [...nodesAtNextDepth];
-  }
-
-  return treeIndexToNodeId;
-}
-
 /**
  * a binary search tree with AVL balancing capabilities
  */
@@ -128,7 +98,9 @@ export class AVLTree extends BinaryTree {
   }
 
   insert(key: TreeNode['key']) {
-    this.root = insert(this.root, key);
+    const { node, trace } = insert(this.root, key);
+    console.log(trace);
+    this.root = node;
   }
 }
 
@@ -154,7 +126,7 @@ export class TreeNode {
 * @param node - The node to get the height from
 * @returns The height of the node, or 0 if the node is null
 */
-function height(node: TreeNode | undefined): number {
+export function height(node: TreeNode | undefined): number {
   if (node === undefined) {
     return 0;
   }
@@ -205,59 +177,4 @@ function leftRotate(x: TreeNode): TreeNode {
 function getBalance(node: TreeNode | undefined): number {
   if (node === undefined) return 0;
   return height(node.left) - height(node.right);
-}
-
-/**
-* Inserts a new key into the AVL tree
-* @param node - The root of the current subtree
-* @param key - The key to insert
-* @returns The new root of the subtree after insertion
-*/
-function insert(node: TreeNode | undefined, key: number): TreeNode {
-  // Perform standard BST insertion
-  if (node === undefined) {
-    return new TreeNode(key);
-  }
-
-  // Equal keys are not allowed in BST
-  if (key === node.key) {
-    return node;
-  }
-
-  if (key < node.key) {
-    node.left = insert(node.left, key);
-  } else if (key > node.key) {
-    node.right = insert(node.right, key);
-  }
-
-  node.height = 1 + Math.max(height(node.left), height(node.right));
-
-  // all the logic beyond this point is for AVL tree balancing
-
-  // Get the balance factor and handle the 4 unbalanced cases
-  const balance = getBalance(node);
-
-  // Left Left Case
-  if (balance > 1 && key < node.left!.key) {
-    return rightRotate(node);
-  }
-
-  // Right Right Case
-  if (balance < -1 && key > node.right!.key) {
-    return leftRotate(node);
-  }
-
-  // Left Right Case
-  if (balance > 1 && key > node.left!.key) {
-    node.left = leftRotate(node.left!);
-    return rightRotate(node);
-  }
-
-  // Right Left Case
-  if (balance < -1 && key < node.right!.key) {
-    node.right = rightRotate(node.right!);
-    return leftRotate(node);
-  }
-
-  return node;
 }
