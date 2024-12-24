@@ -6,7 +6,7 @@ import { useKruskal } from "../algo/useKruskal";
 import { usePrim } from "../algo/usePrim";
 import { useSimulationTheme } from "./theme";
 
-export type MSTTrace = GEdge[];
+export type MSTTrace = GEdge;
 export type MSTSimulationControls = SimulationControls<MSTTrace>;
 export type MSTSimulationRunner = SimulationRunner<MSTTrace>;
 

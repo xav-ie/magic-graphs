@@ -17,10 +17,8 @@ export const useSimulationTheme = (
   graph: Graph,
   sim: SimulationControls<BasicSearchTrace>
 ) => {
-  const { trace, step } = sim;
+  const { traceAtStep } = sim;
   const { setTheme, removeAllThemes } = useTheme(graph, USETHEME_ID)
-
-  const traceAtStep = computed(() => trace.value[step.value])
 
   const colorBorders = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return

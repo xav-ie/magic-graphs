@@ -4,6 +4,7 @@
   import { AVLTree, BinaryTree } from "./tree/avl";
   import { getRandomInRange } from "@utils/random";
   import { nonNullGraph as graph } from "@graph/global";
+  import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 
   const tree = new AVLTree();
 

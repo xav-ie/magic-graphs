@@ -15,7 +15,7 @@ export type BasicSearchSimulationRunner = SimulationRunner<BasicSearchTrace>;
 
 const useSimulationRunner = (
   graph: Graph,
-  trace: ComputedRef<BasicSearchTrace>
+  trace: ComputedRef<BasicSearchTrace[]>
 ): BasicSearchSimulationRunner => {
   const simControls = useSimulationControls(graph, trace);
 

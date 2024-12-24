@@ -1,4 +1,3 @@
-import { computed } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 import type { SimulationControls } from "@ui/product/sim/types";
@@ -8,13 +7,11 @@ const USETHEME_ID = 'markov-chain-sim'
 
 export const useSimulationTheme = (
   graph: Graph,
-  simControls: SimulationControls<MarkovChainTrace>
+  simControls: SimulationControls<ReturnType<MarkovChainTrace>>
 ) => {
   const { setTheme, removeAllThemes } = useTheme(graph, USETHEME_ID);
-  const { trace, step } = simControls;
+  const { traceAtStep } = simControls;
   const { nodeIdToIndex } = graph;
-
-  const traceAtStep = computed(() => trace.value(step.value))
 
   const nodeText = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return

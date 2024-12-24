@@ -8,7 +8,7 @@ import type { BasicSearchTrace } from "./types";
 const { startNode } = state;
 
 export const useBFS = (graph: Graph) => {
-  const trace = ref<BasicSearchTrace>([]);
+  const trace = ref<BasicSearchTrace[]>([]);
 
   const { adjacencyList } = useAdjacencyList(graph);
 

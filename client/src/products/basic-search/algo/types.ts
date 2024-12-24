@@ -13,4 +13,4 @@ export type BasicSearchTrace = {
    * a neutral term for stacked or queued nodes
    */
   nextToExplore?: Set<GNode['id']>
-}[]
+}

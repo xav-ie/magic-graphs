@@ -15,8 +15,10 @@ export const useSimulationTheme = (
   graph: Graph,
   sim: SimulationControls<MSTTrace>
 ) => {
+  const { traceArray: trace } = sim;
   const { setTheme, removeAllThemes } = useTheme(graph, MST_USETHEME_ID);
-  const mstAtStep = computed(() => sim.trace.value.slice(0, sim.step.value));
+
+  const mstAtStep = computed(() => trace.value.slice(0, sim.step.value));
 
   const colorEdge = (edge: GEdge) => {
     if (graph.focus.isFocused(edge.id)) return;

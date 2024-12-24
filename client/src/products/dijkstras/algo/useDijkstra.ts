@@ -26,10 +26,8 @@ export type DijkstrasTraceAtStep = {
   queue: Set<GNode['id']>;
 }
 
-export type DijkstrasTrace = DijkstrasTraceAtStep[];
-
 export const useDijkstra = (graph: Graph) => {
-  const trace = ref<DijkstrasTrace>([]);
+  const trace = ref<DijkstrasTraceAtStep[]>([]);
   const output = ref<DijkstrasOutput>();
 
   const { startNode: startNodeState } = state;

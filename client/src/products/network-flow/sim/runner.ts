@@ -1,3 +1,4 @@
+import { computed } from "vue";
 import type { Graph } from "@graph/types";
 import type { SimulationControls, SimulationRunner } from "@ui/product/sim/types";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
@@ -9,7 +10,6 @@ import { useSourceSinkTheme } from "../theme/useSourceSinkTheme";
 import { useEdgeThickener } from "../theme/useEdgeThickener";
 import { useResidualEdges } from "../misc/useResidualEdges";
 import { useSimulationTheme } from "./theme";
-import { computed } from "vue";
 
 export type FlowSimulationControls = SimulationControls<FlowTrace>
 export type FlowSimulationRunner = SimulationRunner<FlowTrace>
