@@ -13,7 +13,7 @@ export type DijkstraSimulationRunner = SimulationRunner<DijkstrasTraceAtStep>;
 
 export const useSimulationRunner = (graph: Graph): DijkstraSimulationRunner => {
   const { trace } = useDijkstra(graph)
-  const simControls = useSimulationControls(graph, trace);
+  const simControls = useSimulationControls(trace);
   const { activate: theme, deactivate: untheme } = useSimulationTheme(graph, simControls);
 
   const start = async () => {

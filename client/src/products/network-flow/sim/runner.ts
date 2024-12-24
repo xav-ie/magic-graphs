@@ -31,8 +31,7 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
 
   const { trace } = useFordFulkerson(graph)
-  const simControls = useSimulationControls(graph, trace, {
-    allowEditingDuringPlayback: false,
+  const simControls = useSimulationControls(trace, {
     lastStep: computed(() => trace.value.length),
   })
 
@@ -56,6 +55,8 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
     createResidualEdges()
     activateTheme()
 
+    graph.settings.value.interactive = false
+
     simControls.start()
   }
 
@@ -70,6 +71,7 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
     deactivateFlowColorizer()
     deactivateEdgeThickener()
 
+    graph.settings.value.interactive = true
     graph.settings.value.persistent = true
   }
 

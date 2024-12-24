@@ -33,7 +33,7 @@ export const useSimulationRunner = (graph: Graph): MarkovChainSimulationRunner =
 
   const trace = useStateAfterNSteps(fracTransitionMatrix, initialStateVector);
 
-  const simControls = useSimulationControls(graph, trace);
+  const simControls = useSimulationControls(trace);
   const theme = useSimulationTheme(graph, simControls);
 
   const start = async () => {

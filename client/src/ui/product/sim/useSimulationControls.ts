@@ -1,15 +1,9 @@
-import { computed, ref, watch } from "vue";
-import type { Ref } from "vue";
-import type { Graph } from "@graph/types";
-import type { OnStepChangeCallback, SimulationControls } from "@ui/product/sim/types";
+import { computed, ref, toRef, watch } from "vue";
+import type { ComputedRef, MaybeRef, Ref } from "vue";
+import type { OnStepChangeCallback, SimulationControls, SimulationTrace } from "@ui/product/sim/types";
 import { useLocalStorage } from "@vueuse/core";
 
 type SimulationControlsOptions = {
-  /**
-   * if true, the user can edit the graph while the simulation is running
-   * @default true
-   */
-  allowEditingDuringPlayback?: boolean;
   /**
    * if set, the simulation will stop when the step reaches this value
    * @default trace.length - 1
@@ -17,24 +11,20 @@ type SimulationControlsOptions = {
   lastStep?: Ref<number>;
 };
 
-const DEFAULT_OPTIONS = {
-  allowEditingDuringPlayback: true,
-} as const;
-
 /**
  * the playback speed in ms per step of the simulation
  */
 export const DEFAULT_PLAYBACK_SPEED = 1000;
 
 export const useSimulationControls = <T>(
-  graph: Graph,
-  trace: SimulationControls<T>['trace'],
+  traceInput: ComputedRef<SimulationTrace<T>> | SimulationTrace<T>,
   options: SimulationControlsOptions = {}
 ): SimulationControls<T> => {
-  const { allowEditingDuringPlayback, lastStep } = {
-    ...DEFAULT_OPTIONS,
-    ...options,
-  };
+  const { lastStep } = options;
+  const trace = computed(() => {
+    if ('value' in traceInput) return traceInput.value;
+    return traceInput;
+  })
 
   /**
    * the last step of the simulation
@@ -86,8 +76,6 @@ export const useSimulationControls = <T>(
   const start = () => {
     if (active.value) return;
 
-    graph.settings.value.interactive = allowEditingDuringPlayback;
-
     paused.value = false;
     active.value = true;
     step.value = 0;
@@ -100,7 +88,6 @@ export const useSimulationControls = <T>(
    */
   const stop = () => {
     if (interval.value) clearInterval(interval.value);
-    graph.settings.value.interactive = true;
     active.value = false;
   };
 

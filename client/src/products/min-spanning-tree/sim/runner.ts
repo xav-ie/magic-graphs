@@ -15,7 +15,7 @@ export const useMSTSimulationRunner = (
   trace: MSTSimulationControls['trace']
 ): MSTSimulationRunner => {
   const lastStep = computed(() => trace.value.length);
-  const simControls = useSimulationControls(graph, trace, { lastStep });
+  const simControls = useSimulationControls(trace, { lastStep });
   const { activate, deactivate } = useSimulationTheme(graph, simControls);
 
   return {

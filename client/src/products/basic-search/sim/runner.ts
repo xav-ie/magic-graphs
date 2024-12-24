@@ -17,7 +17,7 @@ const useSimulationRunner = (
   graph: Graph,
   trace: ComputedRef<BasicSearchTrace[]>
 ): BasicSearchSimulationRunner => {
-  const simControls = useSimulationControls(graph, trace);
+  const simControls = useSimulationControls(trace);
 
   const {
     activate: theme,

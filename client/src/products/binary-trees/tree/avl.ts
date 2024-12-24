@@ -99,8 +99,8 @@ export class AVLTree extends BinaryTree {
 
   insert(key: TreeNode['key']) {
     const { node, trace } = insert(this.root, key);
-    console.log(trace);
     this.root = node;
+    return trace;
   }
 }
 

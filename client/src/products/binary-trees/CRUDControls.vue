@@ -12,7 +12,10 @@
 
   const addNode = () => {
     const key = getRandomInRange(1, 100);
-    tree.insert(key);
+    const trace = tree.insert(key);
+
+    const sim = useSimulationControls(trace)
+
     tree.toGraph(graph.value, rootPos);
   };
 </script>
