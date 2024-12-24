@@ -9,6 +9,7 @@ import {
 } from "../helpers";
 import { ref } from "vue";
 import { graphLabelGetter, LETTERS } from "@graph/labels";
+import { generateClusterNodes, generateRandomEdges } from "./generationAlgorithms/randomGeneration";
 
 
 export const useAutoGenerate = (graph: Graph) => {
@@ -230,13 +231,13 @@ export const useAutoGenerate = (graph: Graph) => {
   };
 
   const generate = (options: AutoGenerateGraphOptions) => {
-    const { numNodes, numEdges, edgeLabel, layout } = {
+    const { layout } = {
       ...DEFAULT_AUTO_GENERATE_GRAPH_OPTIONS,
       ...options,
     };
 
-    const nodes = ref(generateNodes(numNodes));
-    const edges = ref(generateEdges(nodes.value, numEdges, edgeLabel));
+    const nodes = ref();
+    const edges = ref();
 
     switch (layout) {
       case "circular":
@@ -246,9 +247,12 @@ export const useAutoGenerate = (graph: Graph) => {
         nodes.value = gridLayout(nodes.value);
         break;
       case "partialMesh": {
-        const graphState = generatePartialMesh(nodes.value, edgeLabel, 0.1);
-        nodes.value = forceDirectedLayout(graphState.nodes, graphState.edges);
-        edges.value = graphState.edges;
+        
+        // const graphState = generatePartialMesh(nodes.value, edgeLabel, 0.1);
+        // nodes.value = forceDirectedLayout(graphState.nodes, graphState.edges);
+        // edges.value = graphState.edges;
+        nodes.value = generateClusterNodes()
+        edges.value = generateRandomEdges(nodes.value, 10, 0.8, 4, 30);
         break;
       }
     }
