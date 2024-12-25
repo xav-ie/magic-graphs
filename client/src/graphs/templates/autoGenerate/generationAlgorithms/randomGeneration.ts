@@ -88,7 +88,8 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
     maxEdgesPerNode, 
     connectionProbability, 
     maxNeighbors, 
-    minAngleBetweenEdges 
+    minAngleBetweenEdges,
+    edgeLabel,
   } = {
     ...GENERATE_COHESIVE_EDGES_DEFAULTS,
     ...options,
@@ -134,13 +135,15 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
       }
     }
 
+    const label = typeof edgeLabel === 'function' ? edgeLabel(closestPair!.from, closestPair!.to) : edgeLabel;
+
     if (closestPair) {
       const { from, to } = closestPair;
       edges.push({
         id: generateId(),
         from,
         to,
-        label: "1",
+        label,
       });
       addConnection(from, to);
       connectedNodes.add(to);

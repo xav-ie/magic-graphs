@@ -19,6 +19,7 @@ type GenerateCohesiveEdgesOptions = {
   connectionProbability: number;
   maxNeighbors: number;
   minAngleBetweenEdges: number;
+  edgeLabel: string | ((fromNode: string, toNode: string) => string);
 };
 
 export type PartialGenerateCohesiveEdgesOptions = Partial<GenerateCohesiveEdgesOptions>;
@@ -28,16 +29,15 @@ export const GENERATE_COHESIVE_EDGES_DEFAULTS = {
   connectionProbability: 0.8,
   maxNeighbors: 4,
   minAngleBetweenEdges: Math.PI / 6,
+  edgeLabel: "1",
 } as const;
 
 export type AutoGenerateGraphOptions = 
   PartialGenerateClusterNodesOptions &
   PartialGenerateCohesiveEdgesOptions & {
-    edgeLabel?: string | ((fromNode: string, toNode: string) => string);
   };
 
 export const AUTO_GENERATE_GRAPH_DEFAULTS = {
   ...GENERATE_COHESIVE_EDGES_DEFAULTS,
   ...GENERATE_CLUSTER_GRAPH_DEFAULTS,
-  edgeLabel: "1",
 } as const;
