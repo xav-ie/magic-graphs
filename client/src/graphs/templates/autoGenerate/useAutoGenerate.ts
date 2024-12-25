@@ -3,7 +3,7 @@ import type { AutoGenerateGraphOptions } from "./types";
 import { ref } from "vue";
 import {
   centerNodesOnOriginCoordinates,
-  getAverageCoordinatesOfNodes,
+  getAverageCoordinates,
 } from "../helpers";
 import {
   generateClusterNodes,
@@ -21,7 +21,7 @@ export const useAutoGenerate = (graph: Graph) => {
 
   const generate = () => {
     const generatedNodes = generateClusterNodes(options.value);
-    const origin = getAverageCoordinatesOfNodes(graph.nodes.value);
+    const origin = getAverageCoordinates(graph.nodes.value);
     const centeredNodes = centerNodesOnOriginCoordinates(
       generatedNodes,
       origin

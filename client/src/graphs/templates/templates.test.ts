@@ -5,7 +5,7 @@ import {
 } from "./helpers";
 import type { GNode } from "@graph/types";
 
-describe("getAverageCoordinatesOfNodes", () => {
+describe("getAverageCoordinates", () => {
   it("returns the average coordinates of nodes", () => {
     const nodes = [
       { x: 10, y: 20 },
