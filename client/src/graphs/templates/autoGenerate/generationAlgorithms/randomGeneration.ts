@@ -196,11 +196,12 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
           });
 
         if (angleCheck) {
+          const label = typeof edgeLabel === 'function' ? edgeLabel(fromNode.id, toNode.id) : edgeLabel;
           edges.push({
             id: generateId(),
             from: fromNode.id,
             to: toNode.id,
-            label: "1",
+            label,
           });
           addConnection(fromNode.id, toNode.id);
           edgesAdded++;
