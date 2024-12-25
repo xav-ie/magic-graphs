@@ -4,6 +4,7 @@ import { useShortcutPressed } from './useShortcutPressed'
 import type { GraphHistoryPlugin } from "../history"
 import type { GraphFocusPlugin } from "../focus"
 import type { GraphAnnotationPlugin } from "../annotations"
+import { useToast } from 'primevue/usetoast'
 
 const USER_PLATFORM = window.navigator.userAgent.includes('Mac') ? 'Mac' : 'Windows'
 
@@ -14,6 +15,8 @@ export const useShortcuts = (
   graph: BaseGraph & GraphHistoryPlugin & GraphFocusPlugin & GraphAnnotationPlugin,
 ) => {
   const { settings } = graph
+  
+  const toast = useToast()
 
   const defaultShortcutUndo = () => {
     if (graph.annotation.isActive.value) graph.annotation.undo()
@@ -43,6 +46,22 @@ export const useShortcuts = (
     graph.bulkRemoveEdge([...graph.focus.focusedItemIds.value])
   }
 
+  const defaultShortcutSave = () => {
+    const saveMessages = [
+      'Magic Graphs saves for you automagically ⚡',
+      'Don’t worry, We’ve been saving while you weren’t looking. 😎',
+      'Magic Graphs syncs with your browser automatically. ✨',
+      'Pressing Ctrl + S again? Okay, We saved it twice... just kidding! 😂',
+    ]
+
+    toast.add({
+      severity: 'contrast',
+      life: 3000,
+      summary: '',
+      detail: saveMessages[Math.floor(Math.random() * saveMessages.length)],
+    })
+  }
+
   /**
    * get the function to run based on the keyboard shortcut setting
    */
@@ -57,6 +76,7 @@ export const useShortcuts = (
   const shortcutEscape = computed(() => getFn(defaultShortcutEscape, settings.value.shortcutEscape))
   const shortcutSelectAll = computed(() => getFn(defaultShortcutSelectAll, settings.value.shortcutSelectAll))
   const shortcutDelete = computed(() => getFn(defaultShortcutDelete, settings.value.shortcutDelete))
+  const shortcutSave = computed(() => getFn(defaultShortcutSave, settings.value.shortcutSave))
 
   const bindings = computed(() => ({
     Mac: {
@@ -66,6 +86,7 @@ export const useShortcuts = (
       ['Backspace']: shortcutDelete.value,
       ['Meta+A']: shortcutSelectAll.value,
       ['Escape']: shortcutEscape.value,
+      ['Meta+S']: shortcutSave.value,
     },
     Windows: {
       ['Control+Z']: shortcutUndo.value,
@@ -74,6 +95,7 @@ export const useShortcuts = (
       ['Backspace']: shortcutDelete.value,
       ['Control+A']: shortcutSelectAll.value,
       ['Escape']: shortcutEscape.value,
+      ['Control+S']: shortcutSave.value,
     },
   }))
 

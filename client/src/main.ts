@@ -6,9 +6,11 @@ import './main.css'
 
 import PrimeVue from 'primevue/config';
 import Tooltip from 'primevue/tooltip';
+import ToastService from 'primevue/toastservice'
 
 const app = createApp(App)
   .use(PrimeVue, { theme: 'none' })
+  .use(ToastService)
   .use(router)
 
 app.directive('tooltip', Tooltip);

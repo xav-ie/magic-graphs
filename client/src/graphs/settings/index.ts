@@ -234,6 +234,15 @@ export type ShortcutGraphSettings = {
    * @default true
    */
   shortcutEscape: boolean | (() => void);
+
+  /**
+   * BINDING: Mac: Meta+S, Windows: Control+S
+   *
+   * if false, the save shortcut will be disabled, if set to a function,
+   * the function will be called when the save shortcut is pressed
+   * @default true
+   */
+  shortcutSave: boolean | (() => void);
 }
 
 export const DEFAULT_SHORTCUT_SETTINGS: ShortcutGraphSettings = {
@@ -243,6 +252,7 @@ export const DEFAULT_SHORTCUT_SETTINGS: ShortcutGraphSettings = {
   shortcutSelectAll: true,
   shortcutDelete: true,
   shortcutEscape: true,
+  shortcutSave: true,
 }
 
 /**
