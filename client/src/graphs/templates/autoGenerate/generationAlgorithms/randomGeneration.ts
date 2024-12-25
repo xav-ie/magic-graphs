@@ -3,38 +3,8 @@ import type { GEdge, GNode } from "@graph/types";
 import { generateId } from "@utils/id";
 import { ref } from "vue";
 import { angleDifference } from "@shape/helpers";
-
-type GenerateClusterNodesOptions = {
-  clusterCount: number;
-  maxNodesPerCluster: number;
-  minDistance: number;
-  clusterSpread: number;
-};
-
-type PartialGenerateClusterNodesOptions = Partial<GenerateClusterNodesOptions>;
-
-const GENERATE_CLUSTER_GRAPH_DEFAULTS = {
-  clusterCount: 1,
-  maxNodesPerCluster: 15,
-  minDistance: 200,
-  clusterSpread: 350,
-} as const;
-
-type GenerateCohesiveEdgesOptions = {
-  maxEdgesPerNode: number;
-  connectionProbability: number;
-  maxNeighbors: number;
-  minAngleBetweenEdges: number;
-};
-
-type PartialGenerateCohesiveEdgesOptions = Partial<GenerateCohesiveEdgesOptions>
-
-const GENERATE_COHESIVE_EDGES_DEFAULTS = {
-  maxEdgesPerNode: 10,
-  connectionProbability: 0.8,
-  maxNeighbors: 4,
-  minAngleBetweenEdges: Math.PI / 6,
-} as const;
+import type { PartialGenerateClusterNodesOptions, PartialGenerateCohesiveEdgesOptions } from "@graph/templates/autoGenerate/types";
+import { GENERATE_CLUSTER_GRAPH_DEFAULTS, GENERATE_COHESIVE_EDGES_DEFAULTS } from "@graph/templates/autoGenerate/types";
 
 /**
  * Generates an array of nodes distributed across multiple clusters.
