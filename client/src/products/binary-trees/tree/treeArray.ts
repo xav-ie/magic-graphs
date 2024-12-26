@@ -1,19 +1,24 @@
-import type { TreeNode } from "./avl";
+import type { TreeNode } from "./treeNode";
 
-export const getTreeIndexToNode = ({
+/**
+ * the node at the index of the tree or undefined if the tree index is empty
+ */
+export type TreeArray = (TreeNode | undefined)[];
+
+export const getTreeArray = ({
   root,
   treeDepth,
 }: {
   root: TreeNode | undefined,
   treeDepth: number,
 }) => {
-  const treeIndexToNodeId: (TreeNode | undefined)[] = [];
+  const treeIndexToNodeId: TreeArray = [];
   if (!root) return treeIndexToNodeId;
 
-  let nodesAtDepth: (TreeNode | undefined)[] = [root];
+  let nodesAtDepth: TreeArray = [root];
 
   for (let i = 0; i <= treeDepth; i++) {
-    const nodesAtNextDepth: (TreeNode | undefined)[] = [];
+    const nodesAtNextDepth: TreeArray = [];
 
     for (const maybeTreeNode of nodesAtDepth) {
       treeIndexToNodeId.push(maybeTreeNode);

@@ -2,12 +2,13 @@
   import { computed, ref } from "vue";
   import GWell from "@ui/graph/GWell.vue";
   import GButton from "@ui/graph/button/GButton.vue";
-  import { AVLTree, BinaryTree, treeArrayToGraph } from "./tree/avl";
+  import { AVLTree } from "./tree/avl";
+  import type { InsertTrace } from "./tree/avl";
   import { getRandomInRange } from "@utils/random";
   import { nonNullGraph as graph } from "@graph/global";
   import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
   import { useTargetNodeColor } from "./theme/useTargetNodeColor";
-  import type { InsertTrace } from "./tree/insert";
+  import { treeArrayToGraph } from "./tree/treeArrayToGraph";
 
   const tree = new AVLTree();
 
@@ -27,14 +28,14 @@
     targetNode.value = undefined;
 
     const step = trace.value[newStep];
-    if (step.action === 'insert' || step.action === 'balance') {
+    if (step.action === "insert" || step.action === "balance") {
       treeArrayToGraph(graph.value, step.treeState, tree.root!, rootPos);
       return;
     }
 
-    if (step.action === 'compare') {
-      const { nodeId } = step;
-      const node = graph.value.getNode(nodeId.toString());
+    if (step.action === "compare") {
+      const { treeNodeKey } = step;
+      const node = graph.value.getNode(treeNodeKey.toString());
       if (node) targetNode.value = node;
     }
   });
@@ -44,10 +45,20 @@
 
     currTrace.value = tree.insert(key.value);
     console.log(JSON.stringify(currTrace.value, null, 2));
-    key.value = getRandomInRange(1, 100);
+    key.value++;
 
     // for adding the root node
-    if (currTrace.value.length === 0) return tree.toGraph(graph.value, rootPos);
+    if (currTrace.value.length === 0) {
+      graph.value.addNode(
+        {
+          id: key.value.toString(),
+          label: key.value.toString(),
+          ...rootPos,
+        },
+        { animate: true }
+      );
+      return;
+    }
     sim.start();
   };
 </script>
