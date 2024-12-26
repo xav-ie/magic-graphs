@@ -54,12 +54,12 @@ export const useShortcuts = (
       `Pressing ${USER_PLATFORM === 'Mac' ? '⌘' : 'Ctrl'} + S again? Okay, We saved it twice... just kidding! 😂`,
       'Saved automatically — like magic, but better because it’s real. 🌟',
       'Magic Graphs keeps your data saved so you don’t have to worry 😅',
+      'Saving? Already done. You’re fast, but we’re faster. 🏃‍♂️💨',
     ]
 
     toast.add({
       severity: 'secondary',
       life: 3000,
-      summary: '',
       detail: saveMessages[Math.floor(Math.random() * saveMessages.length)],
     })
   }
