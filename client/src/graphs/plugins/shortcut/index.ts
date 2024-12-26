@@ -1,4 +1,4 @@
-import { computed } from "vue"
+import { computed, onUnmounted } from "vue"
 import type { BaseGraph } from "@graph/base"
 import { useShortcutPressed } from './useShortcutPressed'
 import type { GraphHistoryPlugin } from "../history"
@@ -23,7 +23,7 @@ export const useShortcuts = (
     if (settings.value.interactive) {
       const action = graph.history.undo()
       if (!action) return
-      // TODO focus the edges that were affected by move
+      // TODO focus the edges that were affected by move 
       // actions as well
       graph.focus.set(action.affectedItems.map((item) => item.data.id))
     }
@@ -51,11 +51,13 @@ export const useShortcuts = (
       'Magic Graphs saves for you automagically ⚡',
       'Don’t worry, We’ve been saving while you weren’t looking. 😎',
       'Magic Graphs syncs with your browser automatically. ✨',
-      'Pressing Ctrl + S again? Okay, We saved it twice... just kidding! 😂',
+      `Pressing ${USER_PLATFORM === 'Mac' ? '⌘' : 'Ctrl'} + S again? Okay, We saved it twice... just kidding! 😂`,
+      'Saved automatically — like magic, but better because it’s real. 🌟',
+      'Magic Graphs keeps your data saved so you don’t have to worry 😅',
     ]
 
     toast.add({
-      severity: 'contrast',
+      severity: 'secondary',
       life: 3000,
       summary: '',
       detail: saveMessages[Math.floor(Math.random() * saveMessages.length)],
@@ -126,6 +128,8 @@ export const useShortcuts = (
     if (diff.shortcuts === true) activate()
     else if (diff.shortcuts === false) deactivate()
   })
+
+  onUnmounted(() => toast.removeAllGroups())
 
   return {
     /**
