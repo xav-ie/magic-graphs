@@ -6,6 +6,7 @@ export type TreeNodeKeyArray = (TreeNode['key'] | undefined)[];
 export type InsertTrace = {
   action: "compare";
   treeNodeKey: number;
+  treeState: TreeNodeKeyArray;
 } | {
   action: "insert";
   treeState: TreeNodeKeyArray;
@@ -88,7 +89,8 @@ export class AVLTree {
 
       trace.push({
         action: "compare",
-        treeNodeKey: node.key
+        treeNodeKey: node.key,
+        treeState: this.toArray()
       });
 
       if (key < node.key) {
