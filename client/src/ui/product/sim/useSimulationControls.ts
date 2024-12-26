@@ -164,11 +164,11 @@ export const useSimulationControls = <T>(
 
     trace,
     traceArray: computed(() => {
-      if (!Array.isArray(trace.value)) throw new Error("trace is not an array");
+      if (!Array.isArray(trace.value)) return [];
       return trace.value;
     }),
     traceFn: computed(() => {
-      if (Array.isArray(trace.value)) throw new Error("trace is an array");
+      if (Array.isArray(trace.value)) return () => traceAtStep.value;
       return trace.value;
     }),
     step: computed(() => step.value),
