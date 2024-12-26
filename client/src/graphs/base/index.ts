@@ -151,7 +151,7 @@ export const useBaseGraph = (
       .map((item, i) => ({ ...item, priority: i * 10 })) as SchemaItem[]
 
     const nodeSchemaItems = nodes.value
-      .map((node) => getNodeSchematic(node, getTheme))
+      .map((node) => getNodeSchematic(node, getTheme, animationController))
       .filter(Boolean)
       .map((item, i) => ({ ...item, priority: (i * 10) + 1000 })) as SchemaItem[]
 

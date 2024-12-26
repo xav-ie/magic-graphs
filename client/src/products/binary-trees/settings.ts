@@ -5,7 +5,8 @@ import type { GraphSettings } from "@graph/settings";
  */
 export const BINARY_TREE_GRAPH_SETTINGS: Partial<GraphSettings> = {
   persistentStorageKey: "binary-trees",
-  interactive: false,
-  draggable: false,
-  marquee: false,
+  // interactive: false,
+  // draggable: false,
+  // marquee: false,
+  displayEdgeLabels: false,
 }

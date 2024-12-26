@@ -3,7 +3,7 @@ import type { GNode, Graph } from "@graph/types";
 import type { SimulationControls } from "@ui/product/sim/types";
 import { useTheme } from "@graph/themes/useTheme";
 import colors from "@utils/colors";
-import type { DijkstrasTrace } from "../algo/useDijkstra";
+import type { DijkstrasTraceAtStep } from "../algo/useDijkstra";
 
 export const SIM_COLORS = {
   SOURCE: colors.AMBER_600,
@@ -15,12 +15,10 @@ export const INF_STR = 'Inf'
 
 export const useSimulationTheme = (
   graph: Graph,
-  sim: SimulationControls<DijkstrasTrace>
+  sim: SimulationControls<DijkstrasTraceAtStep>
 ) => {
-  const { trace, step } = sim;
+  const { traceAtStep } = sim;
   const { setTheme, removeAllThemes } = useTheme(graph, 'dijkstra');
-
-  const traceAtStep = computed(() => trace.value[step.value])
 
   const colorBorders = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return

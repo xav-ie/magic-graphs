@@ -1,3 +1,4 @@
+import { computed } from "vue";
 import type { Graph } from "@graph/types";
 import type { SimulationControls, SimulationRunner } from "@ui/product/sim/types";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
@@ -9,7 +10,6 @@ import { useSourceSinkTheme } from "../theme/useSourceSinkTheme";
 import { useEdgeThickener } from "../theme/useEdgeThickener";
 import { useResidualEdges } from "../misc/useResidualEdges";
 import { useSimulationTheme } from "./theme";
-import { computed } from "vue";
 
 export type FlowSimulationControls = SimulationControls<FlowTrace>
 export type FlowSimulationRunner = SimulationRunner<FlowTrace>
@@ -31,8 +31,7 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)
 
   const { trace } = useFordFulkerson(graph)
-  const simControls = useSimulationControls(graph, trace, {
-    allowEditingDuringPlayback: false,
+  const simControls = useSimulationControls(trace, {
     lastStep: computed(() => trace.value.length),
   })
 
@@ -56,6 +55,8 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
     createResidualEdges()
     activateTheme()
 
+    graph.settings.value.interactive = false
+
     simControls.start()
   }
 
@@ -70,6 +71,7 @@ export const useSimulationRunner = (graph: Graph): FlowSimulationRunner => {
     deactivateFlowColorizer()
     deactivateEdgeThickener()
 
+    graph.settings.value.interactive = true
     graph.settings.value.persistent = true
   }
 

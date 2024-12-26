@@ -11,7 +11,7 @@ const { sourceNode, sinkNode } = state
  * reactive Ford-Fulkerson algorithm
  */
 export const useFordFulkerson = (graph: Graph) => {
-  const trace = ref<FlowTrace>([])
+  const trace = ref<FlowTrace[]>([])
   const maxFlow = ref<number>()
 
   const { createResidualEdges, cleanupResidualEdges } = useResidualEdges(graph)

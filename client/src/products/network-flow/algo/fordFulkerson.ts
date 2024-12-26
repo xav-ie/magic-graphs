@@ -1,7 +1,7 @@
 import type { GEdge, GNode, Graph } from "@graph/types";
 import { getAdjacencyList } from "@graph/useAdjacencyList";
 
-export type FlowTrace = Record<GEdge['id'], number>[]
+export type FlowTrace = Record<GEdge['id'], number>
 
 /**
  * implementation of the Ford-Fulkerson algorithm
@@ -16,7 +16,7 @@ export const fordFulkerson = (graph: Graph, { sourceId, sinkId }: {
     return acc
   }, {})
 
-  const trace: FlowTrace = []
+  const trace: FlowTrace[] = []
 
   const adjList = getAdjacencyList(graph)
 

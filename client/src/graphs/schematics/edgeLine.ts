@@ -23,7 +23,7 @@ const animateInLineBody = (progress: number) => (lineSchema: Line): Partial<Line
 }
 
 const animateOutLineBody = (progress: number) => (lineSchema: Line): Partial<Line> => {
-  const mapper = getMapper(...SEQ.OUT.BODY)
+  const mapper = getMapper(0, 1)
   const percentage = EASING(mapper(progress))
 
   const interpolateWidth = interpolate(lineSchema.width, 0)
@@ -55,24 +55,11 @@ const inLine = (progress: number) => (lineSchema: Line) => {
 }
 
 const outLine = (progress: number) => (lineSchema: Line) => {
-  const percent = normalize(0, DURATION_MS, progress)
-
-  if (inRange(SEQ.OUT.TEXT_AREA[0], SEQ.OUT.TEXT_AREA[1], percent)) {
-    return line({
-      ...lineSchema,
-      textArea: animateOutTextArea(progress)(lineSchema.textArea),
-    })
-  }
-
-  if (inRange(SEQ.OUT.BODY[0], SEQ.OUT.BODY[1], percent)) {
-    return line({
-      ...lineSchema,
-      ...animateOutLineBody(progress)(lineSchema),
-      textArea: undefined,
-    })
-  }
-
-  return line(lineSchema)
+  return line({
+    ...lineSchema,
+    ...animateOutLineBody(progress)(lineSchema),
+    textArea: animateOutTextArea(progress)(lineSchema.textArea),
+  })
 }
 
 export const edgeLine = ({

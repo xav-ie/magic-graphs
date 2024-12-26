@@ -30,6 +30,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   const setParentNode = (nodeId: GNode['id']) => {
     const node = graph.getNode(nodeId)
     if (!node) throw new Error('node not found')
+    if (graph.animationController.isAnimating(node.id)) return
     parentNode.value = node
     updateNodeAnchors(node)
   }
@@ -171,7 +172,6 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   const updateParentNode = ({ items }: GraphMouseEvent) => {
     if (currentDraggingAnchor.value) return
 
-
     const topItem = items.at(-1)
     if (!topItem) return resetParentNode()
     if (topItem.graphType !== 'node') return
@@ -190,7 +190,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
 
     if (perspectiveNodeFocused && moreThanOneNodeFocused) return resetParentNode()
 
-    parentNode.value = perspectiveNode
+    setParentNode(perspectiveNode.id)
     updateNodeAnchors(perspectiveNode)
   }
 

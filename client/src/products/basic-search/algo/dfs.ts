@@ -3,7 +3,7 @@ import type { AdjacencyList } from "@graph/useAdjacencyList"
 import type { BasicSearchTrace } from "./types"
 
 export const dfs = (adjList: AdjacencyList, startNode: GNode['id']) => {
-  const trace: BasicSearchTrace = []
+  const trace: BasicSearchTrace[] = []
 
   const runDfs = (currentNode: GNode['id'], visited: Set<GNode['id']>) => {
     visited.add(currentNode)

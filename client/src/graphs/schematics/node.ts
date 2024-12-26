@@ -1,14 +1,21 @@
 import type { ThemeGetter } from '@graph/themes/getThemeResolver'
 import type { GNode, SchemaItem } from '@graph/types'
-import { circle, square } from '@shapes'
+import { square } from '@shapes'
 import colors from '@colors'
+import type { GraphAnimationController } from '@graph/animationController'
+import { nodeCircle } from './nodeCircle'
 
 export type SupportedNodeShapes = 'circle' | 'square'
 
 export const getNodeSchematic = (
   node: GNode,
   getTheme: ThemeGetter,
+  animationController: GraphAnimationController,
 ): Omit<SchemaItem, 'priority'> | undefined => {
+  const circle = nodeCircle({
+    controller: animationController,
+    id: node.id
+  })
 
   const color = getTheme('nodeColor', node)
   const borderColor = getTheme('nodeBorderColor', node)

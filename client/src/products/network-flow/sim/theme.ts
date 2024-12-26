@@ -13,9 +13,11 @@ export const useSimulationTheme = (graph: Graph, sim: SimulationControls<FlowTra
   const { setTheme, removeTheme } = useTheme(graph, FLOW_USETHEME_ID)
 
   const getActiveEdgeIdsAtStep = (step: number) => {
+    const trace = sim.trace.value
+    if (!Array.isArray(trace)) throw 'trace is not an array'
+
     if (step === sim.trace.value.length) return []
-    const traceAtStep =  sim.trace.value[step]
-    const edgeIdsAtStep = Object.keys(traceAtStep)
+    const edgeIdsAtStep = Object.keys(trace[step])
     return edgeIdsAtStep
   }
 
@@ -24,7 +26,10 @@ export const useSimulationTheme = (graph: Graph, sim: SimulationControls<FlowTra
   const edgeWeightMapAtStep = computed(() => {
     const currentMap: WeightMap = new Map()
 
-    const weightMap = sim.trace.value.reduce<WeightMap[]>((maps, traceAtStep) => {
+    const trace = sim.trace.value
+    if (!Array.isArray(trace)) throw 'trace is not an array'
+
+    const weightMap = trace.reduce<WeightMap[]>((maps, traceAtStep) => {
       for (const edgeId in traceAtStep) {
         const edge = graph.getEdge(edgeId)
         if (!edge) throw 'edge not found'

@@ -9,8 +9,8 @@ import state from '../state';
 
 const { initialState } = state
 
-export type MarkovChainTrace = TraceFunction<Fraction[]>
-export type MarkovChainSimulationRunner = SimulationRunner<MarkovChainTrace>;
+export type MarkovChainTrace = TraceFunction<Fraction[]>;
+export type MarkovChainSimulationRunner = SimulationRunner<Fraction[]>;
 
 export const useSimulationRunner = (graph: Graph): MarkovChainSimulationRunner => {
   const { fracTransitionMatrix } = graph.transitionMatrix;
@@ -33,7 +33,7 @@ export const useSimulationRunner = (graph: Graph): MarkovChainSimulationRunner =
 
   const trace = useStateAfterNSteps(fracTransitionMatrix, initialStateVector);
 
-  const simControls = useSimulationControls(graph, trace);
+  const simControls = useSimulationControls(trace);
   const theme = useSimulationTheme(graph, simControls);
 
   const start = async () => {

@@ -98,6 +98,8 @@ export const useGraphCRUD = ({
       y: node.y ?? 0,
     }
 
+    if (fullOptions.animate) animationController.animateIn(newNode.id)
+
     nodes.value.push(newNode)
     emit('onNodeAdded', newNode, fullOptions)
     emit('onStructureChange')
@@ -193,7 +195,10 @@ export const useGraphCRUD = ({
     const createdEdges: GEdge[] = []
 
     for (const edge of edges) {
-      const newEdge = addEdge(edge, fullOptions)
+      const newEdge = addEdge(edge, {
+        broadcast: false,
+        history: false,
+      })
       if (!newEdge) continue
       createdEdges.push(newEdge)
     }
@@ -281,6 +286,8 @@ export const useGraphCRUD = ({
       removedEdges.push(removed)
     }
 
+    if (fullOptions.animate) await animationController.animateOut(removedNode.id)
+
     nodes.value = nodes.value.filter(n => n.id !== removedNode.id)
 
     emit('onNodeRemoved', removedNode, removedEdges, fullOptions)
@@ -307,6 +314,7 @@ export const useGraphCRUD = ({
       const removed = await removeNode(nodeId, {
         broadcast: false,
         history: false,
+        animate: fullOptions.animate,
       })
       if (!removed) continue
       const [removedNode, removedNodeEdges] = removed
@@ -363,6 +371,7 @@ export const useGraphCRUD = ({
       const removed = await removeEdge(edgeId, {
         broadcast: false,
         history: false,
+        animate: fullOptions.animate,
       })
       if (!removed) continue
       removedEdges.push(removed)

@@ -1,46 +1,37 @@
-import { computed, ref, watch } from "vue";
-import type { ComputedRef, Ref } from "vue";
-import type { Graph } from "@graph/types";
-import type { SimulationControls, SimulationTrace } from "@ui/product/sim/types";
+import { computed, ref, toRef, watch } from "vue";
+import type { ComputedRef, MaybeRef } from "vue";
+import type { OnStepChangeCallback, SimulationControls, SimulationTrace } from "@ui/product/sim/types";
 import { useLocalStorage } from "@vueuse/core";
 
 type SimulationControlsOptions = {
   /**
-   * if true, the user can edit the graph while the simulation is running
-   * @default true
-   */
-  allowEditingDuringPlayback?: boolean;
-  /**
    * if set, the simulation will stop when the step reaches this value
    * @default trace.length - 1
    */
-  lastStep?: Ref<number>;
+  lastStep?: MaybeRef<number>;
 };
-
-const DEFAULT_OPTIONS = {
-  allowEditingDuringPlayback: true,
-} as const;
 
 /**
  * the playback speed in ms per step of the simulation
  */
 export const DEFAULT_PLAYBACK_SPEED = 1000;
 
-export const useSimulationControls = <T extends SimulationTrace>(
-  graph: Graph,
-  trace: ComputedRef<T>,
+export const useSimulationControls = <T>(
+  traceInput: ComputedRef<SimulationTrace<T>> | SimulationTrace<T>,
   options: SimulationControlsOptions = {}
 ): SimulationControls<T> => {
-  const { allowEditingDuringPlayback, lastStep } = {
-    ...DEFAULT_OPTIONS,
-    ...options,
-  };
+  const lastStepOption = toRef(options.lastStep)
+
+  const trace = computed(() => {
+    if ('value' in traceInput) return traceInput.value;
+    return traceInput;
+  })
 
   /**
    * the last step of the simulation
    */
   const simLastStep = computed(() => {
-    if (lastStep) return lastStep.value;
+    if (lastStepOption.value !== undefined) return lastStepOption.value;
     if (Array.isArray(trace.value)) return trace.value.length - 1;
     return Infinity;
   });
@@ -58,7 +49,7 @@ export const useSimulationControls = <T extends SimulationTrace>(
   /**
    * the playback speed in ms per step of the simulation
    */
-  const playbackSpeed = useLocalStorage('simulation-playback-speed',DEFAULT_PLAYBACK_SPEED);
+  const playbackSpeed = useLocalStorage('simulation-playback-speed', DEFAULT_PLAYBACK_SPEED);
 
   /**
    * whether the simulation is actively being played back (even if paused)
@@ -86,11 +77,10 @@ export const useSimulationControls = <T extends SimulationTrace>(
   const start = () => {
     if (active.value) return;
 
-    graph.settings.value.interactive = allowEditingDuringPlayback;
-
     paused.value = false;
     active.value = true;
     step.value = 0;
+    emitStepChange(0, -1);
 
     setupPlaybackInterval();
   };
@@ -100,7 +90,6 @@ export const useSimulationControls = <T extends SimulationTrace>(
    */
   const stop = () => {
     if (interval.value) clearInterval(interval.value);
-    graph.settings.value.interactive = true;
     active.value = false;
   };
 
@@ -145,13 +134,45 @@ export const useSimulationControls = <T extends SimulationTrace>(
     step.value = newStep;
   };
 
+  const stepChangeSubs = new Set<OnStepChangeCallback>();
+
+  const emitStepChange = (newStep: number, oldStep: number) => {
+    for (const cb of stepChangeSubs) {
+      cb(newStep, oldStep);
+    }
+  }
+
+  watch(step, emitStepChange);
+
+  const traceAtStep = computed(() => {
+    if (Array.isArray(trace.value)) return trace.value[step.value];
+    return trace.value(step.value);
+  })
+
+  /**
+   * allows users to subscribe to step changes
+   */
+  const onStepChange = (cb: OnStepChangeCallback) => {
+    stepChangeSubs.add(cb);
+    return () => { stepChangeSubs.delete(cb) };
+  }
+
   return {
     nextStep,
     prevStep,
     setStep,
 
     trace,
+    traceArray: computed(() => {
+      if (!Array.isArray(trace.value)) throw new Error("trace is not an array");
+      return trace.value;
+    }),
+    traceFn: computed(() => {
+      if (Array.isArray(trace.value)) throw new Error("trace is an array");
+      return trace.value;
+    }),
     step: computed(() => step.value),
+    traceAtStep,
 
     start,
     stop,
@@ -162,5 +183,7 @@ export const useSimulationControls = <T extends SimulationTrace>(
     hasBegun,
     isActive: computed(() => active.value),
     lastStep: simLastStep,
+
+    onStepChange,
   };
 };

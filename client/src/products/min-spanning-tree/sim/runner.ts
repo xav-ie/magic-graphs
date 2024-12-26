@@ -6,7 +6,7 @@ import { useKruskal } from "../algo/useKruskal";
 import { usePrim } from "../algo/usePrim";
 import { useSimulationTheme } from "./theme";
 
-export type MSTTrace = GEdge[];
+export type MSTTrace = GEdge;
 export type MSTSimulationControls = SimulationControls<MSTTrace>;
 export type MSTSimulationRunner = SimulationRunner<MSTTrace>;
 
@@ -15,7 +15,7 @@ export const useMSTSimulationRunner = (
   trace: MSTSimulationControls['trace']
 ): MSTSimulationRunner => {
   const lastStep = computed(() => trace.value.length);
-  const simControls = useSimulationControls(graph, trace, { lastStep });
+  const simControls = useSimulationControls(trace, { lastStep });
   const { activate, deactivate } = useSimulationTheme(graph, simControls);
 
   return {

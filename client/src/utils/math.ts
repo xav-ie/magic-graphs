@@ -20,6 +20,14 @@ export const roundToNearestN = (nearest: number) => (n: number) => {
 }
 
 /**
+ * rounds a number to the nearest integer
+ * @param n the number to round
+ * @returns the rounded number
+ * @example roundToNearestInt(1.5) // 2
+ */
+export const roundToInt = roundToNearestN(1);
+
+/**
  * get the prime factors of a number
  *
  * @param num the number to get the prime factors of
