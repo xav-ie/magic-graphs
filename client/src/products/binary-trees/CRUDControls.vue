@@ -44,7 +44,6 @@
     sim.stop();
 
     currTrace.value = tree.insert(key.value);
-    console.log(JSON.stringify(currTrace.value, null, 2));
     key.value++;
 
     // for adding the root node

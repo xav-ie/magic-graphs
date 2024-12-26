@@ -51,11 +51,12 @@ export const treeArrayToGraph = async (
   const rootHeight = treeRoot.height;
 
   const depthToXOffset: Record<number, number> = {
-    2: 250,
-    3: 200,
+    2: 150,
+    3: 150,
     4: 150,
   }
 
+  console.log(rootHeight, depthToXOffset[rootHeight]);
   const positions = getTreeIndexToPosition({
     rootCoordinate: rootPosition,
     xOffset: depthToXOffset[rootHeight] ?? 100,
@@ -73,20 +74,23 @@ export const treeArrayToGraph = async (
     }, { animate: true, focus: false });
   }
 
-  for (const edge of edgesNotInNewTree) {
-    await graph.removeEdge(edge.id, { animate: true });
-  }
+  await Promise.all(edgesNotInNewTree.map(edge => graph.removeEdge(edge.id, { animate: true })));
+
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  await Promise.all(treeArray.map((treeNodeKey, i) => {
+    if (!treeNodeKey) return;
+    const node = graph.getNode(treeNodeKey.toString());
+    if (!node) return;
+    if (node.x === positions[i].x && node.y === positions[i].y) return;
+    graph.animate.node({
+      nodeId: node.id,
+      endCoords: positions[i],
+      durationMs: 750,
+    })
+  }));
 
   for (const edge of newTreeEdges) {
     await graph.addEdge(edge, { animate: true });
-  }
-
-  for (let i = 0; i < treeArray.length; i++) {
-    const nodeId = treeArray[i]?.toString();
-    if (!nodeId) continue;
-    graph.animate.node({
-      nodeId,
-      endCoords: positions[i],
-    })
   }
 };
