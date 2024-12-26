@@ -1,9 +1,10 @@
-import { computed } from "vue"
+import { computed, onUnmounted } from "vue"
 import type { BaseGraph } from "@graph/base"
 import { useShortcutPressed } from './useShortcutPressed'
 import type { GraphHistoryPlugin } from "../history"
 import type { GraphFocusPlugin } from "../focus"
 import type { GraphAnnotationPlugin } from "../annotations"
+import { useToast } from 'primevue/usetoast'
 
 const USER_PLATFORM = window.navigator.userAgent.includes('Mac') ? 'Mac' : 'Windows'
 
@@ -14,13 +15,15 @@ export const useShortcuts = (
   graph: BaseGraph & GraphHistoryPlugin & GraphFocusPlugin & GraphAnnotationPlugin,
 ) => {
   const { settings } = graph
+  
+  const toast = useToast()
 
   const defaultShortcutUndo = () => {
     if (graph.annotation.isActive.value) graph.annotation.undo()
     if (settings.value.interactive) {
       const action = graph.history.undo()
       if (!action) return
-      // TODO focus the edges that were affected by move
+      // TODO focus the edges that were affected by move 
       // actions as well
       graph.focus.set(action.affectedItems.map((item) => item.data.id))
     }
@@ -43,6 +46,24 @@ export const useShortcuts = (
     graph.bulkRemoveEdge([...graph.focus.focusedItemIds.value])
   }
 
+  const defaultShortcutSave = () => {
+    const saveMessages = [
+      'Magic Graphs saves for you automagically ⚡',
+      'Don’t worry, We’ve been saving while you weren’t looking. 😎',
+      'Magic Graphs syncs with your browser automatically. ✨',
+      `Pressing ${USER_PLATFORM === 'Mac' ? '⌘' : 'Ctrl'} + S again? Okay, We saved it twice... just kidding! 😂`,
+      'Saved automatically — like magic, but better because it’s real. 🌟',
+      'Magic Graphs keeps your data saved so you don’t have to worry 😅',
+      'Saving? Already done. You’re fast, but we’re faster. 🏃‍♂️💨',
+    ]
+
+    toast.add({
+      severity: 'secondary',
+      life: 3000,
+      detail: saveMessages[Math.floor(Math.random() * saveMessages.length)],
+    })
+  }
+
   /**
    * get the function to run based on the keyboard shortcut setting
    */
@@ -57,6 +78,7 @@ export const useShortcuts = (
   const shortcutEscape = computed(() => getFn(defaultShortcutEscape, settings.value.shortcutEscape))
   const shortcutSelectAll = computed(() => getFn(defaultShortcutSelectAll, settings.value.shortcutSelectAll))
   const shortcutDelete = computed(() => getFn(defaultShortcutDelete, settings.value.shortcutDelete))
+  const shortcutSave = computed(() => getFn(defaultShortcutSave, settings.value.shortcutSave))
 
   const bindings = computed(() => ({
     Mac: {
@@ -66,6 +88,7 @@ export const useShortcuts = (
       ['Backspace']: shortcutDelete.value,
       ['Meta+A']: shortcutSelectAll.value,
       ['Escape']: shortcutEscape.value,
+      ['Meta+S']: shortcutSave.value,
     },
     Windows: {
       ['Control+Z']: shortcutUndo.value,
@@ -74,6 +97,7 @@ export const useShortcuts = (
       ['Backspace']: shortcutDelete.value,
       ['Control+A']: shortcutSelectAll.value,
       ['Escape']: shortcutEscape.value,
+      ['Control+S']: shortcutSave.value,
     },
   }))
 
@@ -104,6 +128,8 @@ export const useShortcuts = (
     if (diff.shortcuts === true) activate()
     else if (diff.shortcuts === false) deactivate()
   })
+
+  onUnmounted(() => toast.removeAllGroups())
 
   return {
     /**
