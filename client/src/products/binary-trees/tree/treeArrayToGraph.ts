@@ -1,9 +1,8 @@
 import type { Coordinate } from "@shape/types";
-import type { AVLTree, TreeNodeKeyArray } from "./avl";
+import type { TreeNodeKeyArray } from "./avl";
 import type { TreeNode } from "./treeNode";
 import type { GEdge, Graph } from "@graph/types";
 import { getTreeIndexToPosition } from "@product/graph-sandbox/ui/tree/getTreeBinaryPos";
-import type { TreeArray } from "./treeArray";
 
 const newEdge = (from: number, to: number) => ({
   from: from.toString(),
@@ -14,27 +13,21 @@ const newEdge = (from: number, to: number) => ({
 
 const edgesInTree = (
   graph: Graph,
-  treeRoot: TreeNode | undefined,
+  treeArray: TreeNodeKeyArray,
 ) => {
   const edges: GEdge[] = [];
 
-  const getEdges = (treeNode: TreeNode | undefined) => {
-    if (!treeNode) return;
+  for (let i = 0; i < treeArray.length; i++) {
+    const node = treeArray[i];
+    if (!node) continue;
 
-    if (treeNode.left) {
-      const edge = graph.getEdge(`${treeNode.key}-${treeNode.left.key}`);
-      edges.push(edge ?? newEdge(treeNode.key, treeNode.left.key));
-      getEdges(treeNode.left);
-    }
+    const left = treeArray[2 * i + 1];
+    const right = treeArray[2 * i + 2];
 
-    if (treeNode.right) {
-      const edge = graph.getEdge(`${treeNode.key}-${treeNode.right.key}`);
-      edges.push(edge ?? newEdge(treeNode.key, treeNode.right.key));
-      getEdges(treeNode.right);
-    }
-  };
+    if (left) edges.push(newEdge(node, left));
+    if (right) edges.push(newEdge(node, right));
+  }
 
-  getEdges(treeRoot);
   return edges;
 };
 
@@ -44,9 +37,14 @@ export const treeArrayToGraph = async (
   treeRoot: TreeNode,
   rootPosition: Coordinate,
 ) => {
-  const newTreeEdges = edgesInTree(graph, treeRoot);
+  const newTreeEdges = edgesInTree(graph, treeArray);
   const edgesNotInNewTree = graph.edges.value
     .filter(edge => !newTreeEdges.some(newEdge => newEdge.id === edge.id));
+
+  const nodesNotInNewTree = graph.nodes.value
+    .filter(node => !treeArray.includes(parseInt(node.id)));
+
+  await Promise.all(nodesNotInNewTree.map(node => graph.removeNode(node.id, { animate: true })));
 
   const rootHeight = treeRoot.height;
 
@@ -56,7 +54,6 @@ export const treeArrayToGraph = async (
     4: 150,
   }
 
-  console.log(rootHeight, depthToXOffset[rootHeight]);
   const positions = getTreeIndexToPosition({
     rootCoordinate: rootPosition,
     xOffset: depthToXOffset[rootHeight] ?? 100,
@@ -64,15 +61,17 @@ export const treeArrayToGraph = async (
     treeDepth: rootHeight,
   })
 
-  for (const nodeIndex in treeArray) {
-    const node = treeArray[nodeIndex];
-    if (!node) continue;
-    await graph.addNode({
-      id: node.toString(),
-      label: node.toString(),
-      ...positions[nodeIndex],
+  await Promise.all(treeArray.map((treeNodeKey, i) => {
+    if (!treeNodeKey) return;
+    const node = graph.getNode(treeNodeKey.toString());
+    if (node) return;
+    return graph.addNode({
+      id: treeNodeKey.toString(),
+      label: treeNodeKey.toString(),
+      ...positions[i],
     }, { animate: true, focus: false });
-  }
+  }));
+
 
   await Promise.all(edgesNotInNewTree.map(edge => graph.removeEdge(edge.id, { animate: true })));
 

@@ -9,10 +9,11 @@
   import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
   import { useTargetNodeColor } from "./theme/useTargetNodeColor";
   import { treeArrayToGraph } from "./tree/treeArrayToGraph";
+  import SimulationPlaybackControls from "@ui/product/sim/SimulationPlaybackControls.vue";
 
   const tree = new AVLTree();
 
-  const key = ref(50);
+  const key = ref(getRandomInRange(1, 999));
 
   const rootPos = { x: 2300, y: 1500 };
 
@@ -28,10 +29,7 @@
     targetNode.value = undefined;
 
     const step = trace.value[newStep];
-    if (step.action === "insert" || step.action === "balance") {
-      treeArrayToGraph(graph.value, step.treeState, tree.root!, rootPos);
-      return;
-    }
+    treeArrayToGraph(graph.value, step.treeState, tree.root!, rootPos);
 
     if (step.action === "compare") {
       const { treeNodeKey } = step;
@@ -44,40 +42,44 @@
     sim.stop();
 
     currTrace.value = tree.insert(key.value);
-    key.value++;
+    key.value = getRandomInRange(1, 999);
 
-    // for adding the root node
-    if (currTrace.value.length === 0) {
-      graph.value.addNode(
-        {
-          id: key.value.toString(),
-          label: key.value.toString(),
-          ...rootPos,
-        },
-        { animate: true }
-      );
-      return;
-    }
     sim.start();
   };
 </script>
 
 <template>
-  <GWell
-    secondary
-    class="rounded-lg flex gap-2 p-2"
-  >
-    <GButton
-      @click="addNode"
-      tertiary
+  <div class="flex flex-col gap-3">
+    <SimulationPlaybackControls :controls="sim" />
+    <GWell
+      secondary
+      class="rounded-lg flex gap-2 p-2"
     >
-      Add Node ({{ key }})
-    </GButton>
-    <GButton
-      @click="graph.reset"
-      tertiary
-    >
-      Reset Graph
-    </GButton>
-  </GWell>
+      <GButton
+        @click="addNode"
+        tertiary
+      >
+        Add Node ({{ key }})
+      </GButton>
+      <GButton
+        @click="graph.reset"
+        tertiary
+      >
+        Reset Graph
+      </GButton>
+      <GButton
+        @click="sim.prevStep"
+        tertiary
+      >
+        Back
+      </GButton>
+      <GButton
+        @click="sim.nextStep"
+        tertiary
+      >
+        Next
+      </GButton>
+      <!-- {{ sim.traceAtStep.value }} -->
+    </GWell>
+  </div>
 </template>
