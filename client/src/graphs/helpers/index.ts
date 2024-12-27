@@ -274,7 +274,8 @@ export const getEdgeWeight = (
 
   if (parseFraction) {
     try {
-      const fracWeight = new Fraction(edge.label)
+      const edgeText = graph.getTheme('edgeText', edge)
+      const fracWeight = new Fraction(edgeText)
       return fracWeight.valueOf()
     } catch {
       return fallbackWeight

@@ -50,7 +50,7 @@
 
 <template>
   <div class="flex flex-col gap-3">
-    <SimulationPlaybackControls :controls="sim" />
+    <!-- <SimulationPlaybackControls :controls="sim" /> -->
     <GWell
       secondary
       class="rounded-lg flex gap-2 p-2"

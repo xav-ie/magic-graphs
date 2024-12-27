@@ -64,7 +64,7 @@ export const getEdgeSchematic = (
    * the number of pixels we space out the edges if there are multiple edges
    * in a path between two nodes
    */
-  const bidirectionalEdgeSpacing = edgeWidth * 1.2
+  const bidirectionalEdgeSpacing = Math.max(edgeWidth * 1.2, 7)
 
   if (multipleEdgesInPath) {
     edgeStart.x += Math.cos(angle + Math.PI / 2) * bidirectionalEdgeSpacing
