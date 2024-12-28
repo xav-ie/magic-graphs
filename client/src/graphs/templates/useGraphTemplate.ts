@@ -35,6 +35,7 @@ export const useGraphTemplate = (graph: Graph) => {
   const updateProductThumbnails = async () => {
     tempCanvas.value.width = 5000;
     tempCanvas.value.height = 5000;
+    await new Promise((resolve) => setTimeout(resolve, 50)); // gives time to load in canvas size
     for (const template of templates.value) {
       tempGraph.load(template.graphState);
       await new Promise((resolve) => setTimeout(resolve, 50)); // gives time to load in new graph
