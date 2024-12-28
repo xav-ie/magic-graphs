@@ -128,9 +128,13 @@ export const useGraphTemplate = (graph: Graph) => {
     load,
     clearUserTemplates,
     removeUserTemplate,
+    updateProductThumbnails,
 
     templates,
     userTemplates,
     productTemplates,
+
+    tempGraph,
+    tempCanvas,
   };
 };
