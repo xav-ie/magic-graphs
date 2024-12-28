@@ -31,9 +31,6 @@ const edgesInTree = (
   return edges;
 };
 
-/**
- *
- */
 export const treeArrayToGraph = async (
   graph: Graph,
   treeArray: TreeNodeKeyArray,
@@ -77,7 +74,6 @@ export const treeArrayToGraph = async (
       ...positions[i],
     }, { animate: true, focus: false });
   }));
-
 
   await Promise.all(edgesNotInNewTree.map(edge => graph.removeEdge(edge.id, { animate: true })));
 

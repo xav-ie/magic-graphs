@@ -50,6 +50,13 @@
           class="w-12 bg-transparent"
         />
       </GButton>
+
+      <GButton
+        @click="tree.balanceTree"
+        tertiary
+      >
+        Balance Tree
+      </GButton>
     </GWell>
   </div>
 </template>

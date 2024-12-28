@@ -2,12 +2,10 @@ import { computed, ref } from "vue";
 import type { Graph } from "@graph/types";
 import { useTargetNodeColor } from "./theme/useTargetNodeColor";
 import { treeArrayToGraph } from "./tree/treeArrayToGraph";
-import type { AVLTree, InsertTrace, RemoveTrace } from "./tree/avl";
+import type { AVLTree, TreeTrace } from "./tree/avl";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 
 const ROOT_POS = { x: 2300, y: 1500 };
-
-type TreeTrace = InsertTrace | RemoveTrace;
 
 export const useTreeSim = (graph: Graph, tree: AVLTree) => {
   const { targetNode, activate } = useTargetNodeColor(graph);
@@ -19,6 +17,7 @@ export const useTreeSim = (graph: Graph, tree: AVLTree) => {
   const sim = useSimulationControls(trace);
 
   sim.onStepChange((newStep) => {
+    console.log('newStep', newStep);
     targetNode.value = undefined;
 
     const step = trace.value[newStep];

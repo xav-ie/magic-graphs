@@ -11,7 +11,15 @@ export const useTree = (graph: Graph) => {
 
   const insertNode = (value: number) => {
     sim.stop();
-    currTrace.value = tree.insert(value);
+    currTrace.value = tree.insert(value, false);
+    sim.start();
+  }
+
+  const balanceTree = () => {
+    sim.stop();
+    currTrace.value = tree.balance();
+    sim.playbackSpeed.value = 2000;
+    if (currTrace.value.length === 0) return
     sim.start();
   }
 
@@ -45,6 +53,7 @@ export const useTree = (graph: Graph) => {
 
     insertNode,
     removeNode,
+    balanceTree,
 
     nodeIdToBalanceFactor,
     nodeIdToHeight,

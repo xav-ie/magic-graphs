@@ -27,9 +27,7 @@ export type RemoveAction = {
   treeState: TreeNodeKeyArray;
 }
 
-export type InsertTrace = CompareAction | BalanceAction | InsertAction;
-
-export type RemoveTrace = CompareAction | BalanceAction | RemoveAction;
+export type TreeTrace = CompareAction | BalanceAction | InsertAction | RemoveAction;
 
 export const getHeight = (node: TreeNode | undefined) => {
   return node ? node.height : 0;
@@ -81,12 +79,12 @@ export class AVLTree {
     return current;
   }
 
-  remove(key: number): RemoveTrace[] {
+  remove(key: number): TreeTrace[] {
     if (!this.root) {
       return [];
     }
 
-    const trace: RemoveTrace[] = [];
+    const trace: TreeTrace[] = [];
     let targetFound = false;
 
     const removeHelper = (parent: TreeNode | undefined, node: TreeNode | undefined, key: number, isLeft: boolean): TreeNode | undefined => {
@@ -169,7 +167,12 @@ export class AVLTree {
     return trace;
   }
 
-  private rebalance(parent: TreeNode | undefined, node: TreeNode, isLeft: boolean, trace: RemoveTrace[]): TreeNode {
+  private rebalance(
+    parent: TreeNode | undefined,
+    node: TreeNode,
+    isLeft: boolean,
+    trace: TreeTrace[]
+  ): TreeNode {
     const balance = getBalance(node);
 
     // Left Left Case
@@ -269,6 +272,31 @@ export class AVLTree {
     return node;
   }
 
+  balance(): TreeTrace[] {
+    const trace: TreeTrace[] = [];
+
+    const balanceNode = (
+      parent: TreeNode | undefined,
+      node: TreeNode | undefined,
+      isLeft: boolean
+    ): TreeNode | undefined => {
+      if (!node) return undefined;
+
+      // Recursively balance left and right subtrees
+      node.left = balanceNode(node, node.left, true);
+      node.right = balanceNode(node, node.right, false);
+
+      // Update height after recursive calls
+      this.updateHeight(node);
+
+      // Use existing rebalance method
+      return this.rebalance(parent, node, isLeft, trace);
+    };
+
+    this.root = balanceNode(undefined, this.root, false);
+    return trace;
+  }
+
   toArray() {
     return getTreeArray({
       root: this.root,
@@ -302,7 +330,7 @@ export class AVLTree {
     return y;
   }
 
-  insert(key: number): InsertTrace[] {
+  insert(key: number, rebalance = true): TreeTrace[] {
     if (!this.root) {
       this.root = new TreeNode(key);
       return [{
@@ -311,7 +339,7 @@ export class AVLTree {
       }];
     }
 
-    const trace: InsertTrace[] = [];
+    const trace: TreeTrace[] = [];
     let justInserted = false;
 
     const insertHelper = (parent: TreeNode | undefined, node: TreeNode | undefined, key: number, isLeft: boolean): TreeNode => {
@@ -350,103 +378,8 @@ export class AVLTree {
       }
 
       this.updateHeight(node);
-      const balance = getBalance(node);
 
-      // Left Left Case
-      if (balance > 1 && key < node.left!.key) {
-        const result = this.rotateRight(node);
-        if (parent) {
-          if (isLeft) parent.left = result;
-          else parent.right = result;
-        } else {
-          this.root = result;
-        }
-        trace.push({
-          action: "balance",
-          method: "left-left",
-          treeState: this.toArray()
-        });
-        if (parent) {
-          if (isLeft) parent.left = node;
-          else parent.right = node;
-        } else {
-          this.root = node;
-        }
-        return result;
-      }
-
-      // Right Right Case
-      if (balance < -1 && key > node.right!.key) {
-        const result = this.rotateLeft(node);
-        if (parent) {
-          if (isLeft) parent.left = result;
-          else parent.right = result;
-        } else {
-          this.root = result;
-        }
-        trace.push({
-          action: "balance",
-          method: "right-right",
-          treeState: this.toArray()
-        });
-        if (parent) {
-          if (isLeft) parent.left = node;
-          else parent.right = node;
-        } else {
-          this.root = node;
-        }
-        return result;
-      }
-
-      // Left Right Case
-      if (balance > 1 && key > node.left!.key) {
-        node.left = this.rotateLeft(node.left!);
-        const result = this.rotateRight(node);
-        if (parent) {
-          if (isLeft) parent.left = result;
-          else parent.right = result;
-        } else {
-          this.root = result;
-        }
-        trace.push({
-          action: "balance",
-          method: "left-right",
-          treeState: this.toArray()
-        });
-        if (parent) {
-          if (isLeft) parent.left = node;
-          else parent.right = node;
-        } else {
-          this.root = node;
-        }
-        return result;
-      }
-
-      // Right Left Case
-      if (balance < -1 && key < node.right!.key) {
-        node.right = this.rotateRight(node.right!);
-        const result = this.rotateLeft(node);
-        if (parent) {
-          if (isLeft) parent.left = result;
-          else parent.right = result;
-        } else {
-          this.root = result;
-        }
-        trace.push({
-          action: "balance",
-          method: "right-left",
-          treeState: this.toArray()
-        });
-        if (parent) {
-          if (isLeft) parent.left = node;
-          else parent.right = node;
-        } else {
-          this.root = node;
-        }
-        return result;
-      }
-
-      return node;
+      return rebalance ? this.rebalance(parent, node, isLeft, trace) : node;
     };
 
     this.root = insertHelper(undefined, this.root, key, false);
