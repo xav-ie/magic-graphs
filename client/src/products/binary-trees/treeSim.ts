@@ -17,7 +17,6 @@ export const useTreeSim = (graph: Graph, tree: AVLTree) => {
   const sim = useSimulationControls(trace);
 
   sim.onStepChange((newStep) => {
-    console.log('newStep', newStep);
     targetNode.value = undefined;
 
     const step = trace.value[newStep];
