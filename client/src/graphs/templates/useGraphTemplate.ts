@@ -1,28 +1,31 @@
 import type { Graph } from "@graph/types";
 import type { GraphTemplate } from "./types";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { 
+  computed, 
+  onMounted, 
+  onUnmounted, 
+  ref 
+} from "vue";
 import {
   centerNodesOnOriginCoordinates,
   getAverageCoordinates,
+  createImageFromCanvasRegion,
 } from "./helpers";
 import { generateId } from "@utils/id";
 import { useLocalStorage } from "@vueuse/core";
 import { getEncapsulatedNodeBox } from "@graph/plugins/marquee/helpers";
 import { useGraph } from "@graph/useGraph";
 import { products } from "@utils/product";
-import type { BoundingBox } from "@shape/types";
-import { getCtx } from "@utils/ctx";
 
 export const useGraphTemplate = (graph: Graph) => {
   const userTemplates = useLocalStorage<GraphTemplate[]>("graph-templates", []);
 
-   const tempCanvas = ref(document.createElement("canvas"));
-   const tempGraph = useGraph(tempCanvas);
-  
-    const productTemplates = ref<GraphTemplate[]>(
-      products.flatMap((p) => p.templates ?? [])
-    );
+  const tempCanvas = ref(document.createElement("canvas"));
+  const tempGraph = useGraph(tempCanvas);
 
+  const productTemplates = ref<GraphTemplate[]>(
+    products.flatMap((p) => p.templates ?? [])
+  );
 
   const templates = computed(() => [
     ...userTemplates.value, // user templates first so easier to find
@@ -30,60 +33,25 @@ export const useGraphTemplate = (graph: Graph) => {
   ]);
 
   const updateProductThumbnails = async () => {
-      tempCanvas.value.width = 5000;
-      tempCanvas.value.height = 5000;
-      await new Promise((resolve) => setTimeout(resolve, 50)); // needed to load initial canvas since size is so large
-      for (const template of templates.value) {
-        tempGraph.load(template.graphState);
-        await new Promise((resolve) => setTimeout(resolve, 50)); // gives time to load in new graph
-        tempGraph.themeName.value = graph.themeName.value;
-        const boundingBox = getEncapsulatedNodeBox(
-          tempGraph.nodes.value,
-          tempGraph
-        );
-        template.thumbnail = createImageFromCanvasRegion(
-          tempCanvas.value,
-          boundingBox
-        );
-      }
-      tempCanvas.value.width = 0; // performance
-      tempCanvas.value.height = 0; // large canvases lag even if not rendered on screen
-    };
-  
-    onMounted(() => {
-      updateProductThumbnails();
-      graph.subscribe("onThemeChange", updateProductThumbnails);
-    });
-  
-    onUnmounted(() => {
-      graph.unsubscribe("onThemeChange", updateProductThumbnails);
-      tempCanvas.value.remove();
-    });
-  
-     const createImageFromCanvasRegion = (
-        canvas: HTMLCanvasElement,
-        boundingBox: BoundingBox,
-      ) => {
-        const { at, width, height } = boundingBox;
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = width;
-        tempCanvas.height = height;
-        const tempCtx = getCtx(tempCanvas);
-      
-        tempCtx.drawImage(
-          canvas,           // Source canvas
-          at.x, at.y,       // Source start x, y
-          width, height,    // Source width, height
-          0, 0,             // Destination start x, y
-          width, height     // Destination width, height
-        );
-      
-        const dataURL = tempCanvas.toDataURL();
-      
-        tempCanvas.remove();
-      
-        return dataURL;
-      };
+    tempCanvas.value.width = 5000;
+    tempCanvas.value.height = 5000;
+    await new Promise((resolve) => setTimeout(resolve, 50)); // needed to load initial canvas since size is so large
+    for (const template of templates.value) {
+      tempGraph.load(template.graphState);
+      await new Promise((resolve) => setTimeout(resolve, 50)); // gives time to load in new graph
+      tempGraph.themeName.value = graph.themeName.value;
+      const boundingBox = getEncapsulatedNodeBox(
+        tempGraph.nodes.value,
+        tempGraph
+      );
+      template.thumbnail = createImageFromCanvasRegion(
+        tempCanvas.value,
+        boundingBox
+      );
+    }
+    tempCanvas.value.width = 0; // performance
+    tempCanvas.value.height = 0; // large canvases lag even if not rendered on screen
+  };
 
   const add = async (
     options: Pick<GraphTemplate, "title" | "description" | "thumbnail">
@@ -114,13 +82,10 @@ export const useGraphTemplate = (graph: Graph) => {
 
     userTemplates.value.unshift({
       id: generateId(),
-      thumbnail,
       isUserAdded: true,
+      thumbnail,
       ...options,
-      graphState: {
-        nodes: graphState.nodes,
-        edges: graphState.edges,
-      },
+      graphState,
     });
 
     tempCanvas.value.width = 0; // performance
@@ -148,6 +113,16 @@ export const useGraphTemplate = (graph: Graph) => {
       (t) => t.id !== templateId
     );
   };
+
+  onMounted(() => {
+    updateProductThumbnails();
+    graph.subscribe("onThemeChange", updateProductThumbnails);
+  });
+
+  onUnmounted(() => {
+    graph.unsubscribe("onThemeChange", updateProductThumbnails);
+    tempCanvas.value.remove();
+  });
 
   return {
     add,

@@ -1,4 +1,5 @@
-import type { Coordinate } from "@shape/types";
+import type { BoundingBox, Coordinate } from "@shape/types";
+import { getCtx } from "@utils/ctx";
 import { average } from "@utils/math";
 
 export const getAverageCoordinates = (coords: Coordinate[]) => {
@@ -26,3 +27,28 @@ export const centerNodesOnOriginCoordinates = <T extends Coordinate>(
 
   return nodes;
 };
+
+export const createImageFromCanvasRegion = (
+    canvas: HTMLCanvasElement,
+    boundingBox: BoundingBox
+  ) => {
+    const { at, width, height } = boundingBox;
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = width;
+    tempCanvas.height = height;
+    const tempCtx = getCtx(tempCanvas);
+
+    tempCtx.drawImage(
+      canvas, // Source canvas
+      at.x, at.y, // Source start x, y
+      width, height, // Source width, height
+      0, 0, // Destination start x, y
+      width, height // Destination width, height
+    );
+
+    const dataURL = tempCanvas.toDataURL();
+
+    tempCanvas.remove();
+
+    return dataURL;
+  };
