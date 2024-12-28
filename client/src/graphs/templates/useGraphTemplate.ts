@@ -1,46 +1,94 @@
 import type { Graph } from "@graph/types";
 import type { GraphTemplate } from "./types";
-import { computed } from "vue";
+import { 
+  computed, 
+  onMounted, 
+  onUnmounted, 
+  ref 
+} from "vue";
 import {
   centerNodesOnOriginCoordinates,
   getAverageCoordinates,
+  createImageFromCanvasRegion,
 } from "./helpers";
 import { generateId } from "@utils/id";
 import { useLocalStorage } from "@vueuse/core";
-import {  useProductThumbnails } from "./useGraphSnapshot";
 import { getEncapsulatedNodeBox } from "@graph/plugins/marquee/helpers";
+import { useGraph } from "@graph/useGraph";
+import { products } from "@utils/product";
 
 export const useGraphTemplate = (graph: Graph) => {
   const userTemplates = useLocalStorage<GraphTemplate[]>("graph-templates", []);
 
-  const { productTemplates, createImageFromCanvasRegion } = useProductThumbnails(graph);
+  const tempCanvas = ref(document.createElement("canvas"));
+  const tempGraph = useGraph(tempCanvas);
+
+  const productTemplates = ref<GraphTemplate[]>(
+    products.flatMap((p) => p.templates ?? [])
+  );
 
   const templates = computed(() => [
     ...userTemplates.value, // user templates first so easier to find
     ...productTemplates.value,
   ]);
 
-  const add = (
+  const updateProductThumbnails = async () => {
+    tempCanvas.value.width = 5000;
+    tempCanvas.value.height = 5000;
+    for (const template of templates.value) {
+      tempGraph.load(template.graphState);
+      await new Promise((resolve) => setTimeout(resolve, 50)); // gives time to load in new graph
+      tempGraph.themeName.value = graph.themeName.value;
+      const boundingBox = getEncapsulatedNodeBox(
+        tempGraph.nodes.value,
+        tempGraph
+      );
+      template.thumbnail = createImageFromCanvasRegion(
+        tempCanvas.value,
+        boundingBox
+      );
+    }
+    tempCanvas.value.width = 0; // performance
+    tempCanvas.value.height = 0; // large canvases lag even if not rendered on screen
+  };
+
+  const add = async (
     options: Pick<GraphTemplate, "title" | "description" | "thumbnail">
   ) => {
+    tempCanvas.value.width = 5000;
+    tempCanvas.value.height = 5000;
+
     const { nodes, edges, canvas } = graph;
 
     if (!canvas.value) throw new Error("no snapshot canvas found");
 
-    const boundingBox = getEncapsulatedNodeBox(nodes.value, graph);
+    const graphState = {
+      nodes: JSON.parse(JSON.stringify(nodes.value)),
+      edges: JSON.parse(JSON.stringify(edges.value)),
+    };
 
-    const thumbnail = createImageFromCanvasRegion(canvas.value, boundingBox);
+    tempGraph.load(graphState);
+    await new Promise((resolve) => setTimeout(resolve, 50)); // gives time to load in new graph
+    tempGraph.themeName.value = graph.themeName.value;
+    const boundingBox = getEncapsulatedNodeBox(
+      tempGraph.nodes.value,
+      tempGraph
+    );
+    const thumbnail = createImageFromCanvasRegion(
+      tempCanvas.value,
+      boundingBox
+    );
 
     userTemplates.value.unshift({
       id: generateId(),
-      thumbnail,
       isUserAdded: true,
+      thumbnail,
       ...options,
-      graphState: {
-        nodes: JSON.parse(JSON.stringify(nodes.value)),
-        edges: JSON.parse(JSON.stringify(edges.value)),
-      },
+      graphState,
     });
+
+    tempCanvas.value.width = 0; // performance
+    tempCanvas.value.height = 0; // large canvases lag even if not rendered on screen
   };
 
   const load = (templateId: GraphTemplate["id"]) => {
@@ -65,14 +113,28 @@ export const useGraphTemplate = (graph: Graph) => {
     );
   };
 
+  onMounted(() => {
+    updateProductThumbnails();
+    graph.subscribe("onThemeChange", updateProductThumbnails);
+  });
+
+  onUnmounted(() => {
+    graph.unsubscribe("onThemeChange", updateProductThumbnails);
+    tempCanvas.value.remove();
+  });
+
   return {
     add,
     load,
     clearUserTemplates,
     removeUserTemplate,
+    updateProductThumbnails,
 
     templates,
     userTemplates,
     productTemplates,
+
+    tempGraph,
+    tempCanvas,
   };
 };
