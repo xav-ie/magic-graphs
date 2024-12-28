@@ -3,31 +3,33 @@ import { TreeNode } from "./treeNode";
 
 export type TreeNodeKeyArray = (TreeNode['key'] | undefined)[];
 
-export type InsertTrace = {
+export type BalanceMethod = "left-left" | "right-right" | "left-right" | "right-left";
+
+export type CompareAction = {
   action: "compare";
   treeNodeKey: number;
   treeState: TreeNodeKeyArray;
-} | {
+}
+
+export type BalanceAction = {
+  action: "balance";
+  method: BalanceMethod;
+  treeState: TreeNodeKeyArray;
+}
+
+export type InsertAction = {
   action: "insert";
   treeState: TreeNodeKeyArray;
-} | {
-  action: "balance";
-  type: "left-left" | "right-right" | "left-right" | "right-left";
-  treeState: TreeNodeKeyArray;
-};
+}
 
-export type RemoveTrace = {
-  action: "compare";
-  treeNodeKey: number;
-  treeState: TreeNodeKeyArray;
-} | {
+export type RemoveAction = {
   action: "remove";
   treeState: TreeNodeKeyArray;
-} | {
-  action: "balance";
-  type: "left-left" | "right-right" | "left-right" | "right-left";
-  treeState: TreeNodeKeyArray;
-};
+}
+
+export type InsertTrace = CompareAction | BalanceAction | InsertAction;
+
+export type RemoveTrace = CompareAction | BalanceAction | RemoveAction;
 
 export class AVLTree {
   root: TreeNode | undefined;
@@ -36,11 +38,25 @@ export class AVLTree {
     this.root = undefined;
   }
 
-  private getHeight(node: TreeNode | undefined): number {
+  getNode(key: number): TreeNode | undefined {
+    let current = this.root;
+    while (current) {
+      if (key === current.key) {
+        return current;
+      } else if (key < current.key) {
+        current = current.left;
+      } else {
+        current = current.right;
+      }
+    }
+    return undefined;
+  }
+
+  getHeight(node: TreeNode | undefined): number {
     return node ? node.height : 0;
   }
 
-  private getBalance(node: TreeNode): number {
+  getBalance(node: TreeNode): number {
     return this.getHeight(node.left) - this.getHeight(node.right);
   }
 
@@ -165,7 +181,7 @@ export class AVLTree {
       }
       trace.push({
         action: "balance",
-        type: "left-left",
+        method: "left-left",
         treeState: this.toArray()
       });
       if (parent) {
@@ -188,7 +204,7 @@ export class AVLTree {
       }
       trace.push({
         action: "balance",
-        type: "right-right",
+        method: "right-right",
         treeState: this.toArray()
       });
       if (parent) {
@@ -212,7 +228,7 @@ export class AVLTree {
       }
       trace.push({
         action: "balance",
-        type: "left-right",
+        method: "left-right",
         treeState: this.toArray()
       });
       if (parent) {
@@ -236,7 +252,7 @@ export class AVLTree {
       }
       trace.push({
         action: "balance",
-        type: "right-left",
+        method: "right-left",
         treeState: this.toArray()
       });
       if (parent) {
@@ -345,7 +361,7 @@ export class AVLTree {
         }
         trace.push({
           action: "balance",
-          type: "left-left",
+          method: "left-left",
           treeState: this.toArray()
         });
         if (parent) {
@@ -368,7 +384,7 @@ export class AVLTree {
         }
         trace.push({
           action: "balance",
-          type: "right-right",
+          method: "right-right",
           treeState: this.toArray()
         });
         if (parent) {
@@ -392,7 +408,7 @@ export class AVLTree {
         }
         trace.push({
           action: "balance",
-          type: "left-right",
+          method: "left-right",
           treeState: this.toArray()
         });
         if (parent) {
@@ -416,7 +432,7 @@ export class AVLTree {
         }
         trace.push({
           action: "balance",
-          type: "right-left",
+          method: "right-left",
           treeState: this.toArray()
         });
         if (parent) {

@@ -31,6 +31,9 @@ const edgesInTree = (
   return edges;
 };
 
+/**
+ *
+ */
 export const treeArrayToGraph = async (
   graph: Graph,
   treeArray: TreeNodeKeyArray,
