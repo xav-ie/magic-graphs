@@ -35,6 +35,12 @@ export const useTree = (graph: Graph) => {
   const nodeIdToBalanceFactor = computed(() => mapNodeIds(tree.getBalance))
   const nodeIdToHeight = computed(() => mapNodeIds(tree.getHeight))
 
+  const getRoot = () => {
+    const { root } = tree
+    if (!root) return undefined
+    return graph.getNode(root.toString())
+  }
+
   return {
     tree,
 
@@ -43,6 +49,8 @@ export const useTree = (graph: Graph) => {
 
     nodeIdToBalanceFactor,
     nodeIdToHeight,
+
+    getRoot,
   }
 }
 

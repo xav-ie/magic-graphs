@@ -2,19 +2,13 @@
   import { ref } from "vue";
   import GWell from "@ui/graph/GWell.vue";
   import GButton from "@ui/graph/button/GButton.vue";
-  import type { TreeControls } from "./useTree";
-  import { getRandomElement } from "@utils/random";
+  import type { TreeControls } from "../useTree";
 
   const props = defineProps<{
     tree: TreeControls;
   }>();
 
   const key = ref(1);
-
-  // const getRandomKey = () => {
-  //   const nodes = props.tree.tree.toArray().filter(Boolean) as number[];
-  //   return getRandomElement(nodes);
-  // }
 
   const removeKey = ref(1);
 
