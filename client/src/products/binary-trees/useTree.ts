@@ -14,8 +14,19 @@ export const useTree = (graph: Graph) => {
     sim.start();
   }
 
+  const removeNode = (value: number) => {
+    sim.stop();
+    currTrace.value = tree.remove(value);
+    console.log(JSON.stringify(currTrace.value, null, 2))
+    sim.start();
+  }
+
   return {
     tree,
+
     insertNode,
+    removeNode,
   }
 }
+
+export type TreeControls = ReturnType<typeof useTree>

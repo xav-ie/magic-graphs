@@ -2,16 +2,18 @@ import { computed, ref } from "vue";
 import type { Graph } from "@graph/types";
 import { useTargetNodeColor } from "./theme/useTargetNodeColor";
 import { treeArrayToGraph } from "./tree/treeArrayToGraph";
-import type { AVLTree, InsertTrace } from "./tree/avl";
+import type { AVLTree, InsertTrace, RemoveTrace } from "./tree/avl";
 import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
 
 const ROOT_POS = { x: 2300, y: 1500 };
+
+type TreeTrace = InsertTrace | RemoveTrace;
 
 export const useTreeSim = (graph: Graph, tree: AVLTree) => {
   const { targetNode, activate } = useTargetNodeColor(graph);
   activate();
 
-  const currTrace = ref<InsertTrace[]>([]);
+  const currTrace = ref<TreeTrace[]>([]);
   const trace = computed(() => currTrace.value);
 
   const sim = useSimulationControls(trace);

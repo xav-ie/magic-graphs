@@ -281,6 +281,7 @@ export const useGraphCRUD = ({
       const removed = await removeEdge(edge.id, {
         broadcast: false,
         history: false,
+        animate: fullOptions.animate,
       })
       if (!removed) continue
       removedEdges.push(removed)

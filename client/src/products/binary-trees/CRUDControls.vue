@@ -2,13 +2,30 @@
   import { ref } from "vue";
   import GWell from "@ui/graph/GWell.vue";
   import GButton from "@ui/graph/button/GButton.vue";
-  import { getRandomInRange } from "@utils/random";
-  import { nonNullGraph as graph } from "@graph/global";
+  import type { TreeControls } from "./useTree";
+  import { getRandomElement } from "@utils/random";
 
-  const key = ref(getRandomInRange(1, 999));
+  const props = defineProps<{
+    tree: TreeControls;
+  }>();
+
+  const key = ref(1);
+
+  // const getRandomKey = () => {
+  //   const nodes = props.tree.tree.toArray().filter(Boolean) as number[];
+  //   return getRandomElement(nodes);
+  // }
+
+  const removeKey = ref(1);
 
   const addNode = () => {
+    console.log("addNode", key.value);
+    props.tree.insertNode(key.value++);
+  };
 
+  const removeNode = () => {
+    console.log("removeNode", removeKey.value);
+    props.tree.removeNode(removeKey.value);
   };
 </script>
 
@@ -23,12 +40,23 @@
         tertiary
       >
         Add Node ({{ key }})
+        <input
+          @click.stop
+          v-model.number="key"
+          class="w-12 bg-transparent"
+        />
       </GButton>
+
       <GButton
-        @click="graph.reset"
+        @click="removeNode"
         tertiary
       >
-        Reset Graph
+        Remove Node ({{ removeKey }})
+        <input
+          @click.stop
+          v-model.number="removeKey"
+          class="w-12 bg-transparent"
+        />
       </GButton>
     </GWell>
   </div>
