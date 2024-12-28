@@ -46,17 +46,20 @@ export const treeArrayToGraph = async (
 
   await Promise.all(nodesNotInNewTree.map(node => graph.removeNode(node.id, { animate: true })));
 
+  // the tree is empty and all the nodes have been removed
+  if (!treeRoot) return;
+
   const rootHeight = treeRoot.height;
 
   const depthToXOffset: Record<number, number> = {
-    2: 150,
-    3: 150,
-    4: 150,
+    2: 175,
+    3: 135,
+    4: 100,
   }
 
   const positions = getTreeIndexToPosition({
     rootCoordinate: rootPosition,
-    xOffset: depthToXOffset[rootHeight] ?? 100,
+    xOffset: depthToXOffset[rootHeight] ?? 80,
     yOffset: 200,
     treeDepth: rootHeight,
   })
@@ -71,7 +74,6 @@ export const treeArrayToGraph = async (
       ...positions[i],
     }, { animate: true, focus: false });
   }));
-
 
   await Promise.all(edgesNotInNewTree.map(edge => graph.removeEdge(edge.id, { animate: true })));
 

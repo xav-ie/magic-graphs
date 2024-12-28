@@ -15,13 +15,6 @@ const info: ProductInfo = {
     thumbnail: '/products/thumbnails/binary-tree.png',
     category: 'data structures',
   },
-  // simulations: (graph: Graph) => [{
-  //   name: 'Dijkstras Algorithm',
-  //   description: 'Finds the shortest path from a source node to all other nodes in a graph',
-  //   thumbnail: '/products/thumbnails/dijkstras.png',
-  //   canRun: canRunDijkstras(graph),
-  //   runner: useSimulationRunner(graph),
-  // }],
 }
 
 export default info

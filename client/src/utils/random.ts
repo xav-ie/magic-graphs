@@ -19,6 +19,6 @@ export const getRandomPointOnCanvas = (canvas: HTMLCanvasElement, buffer = 50) =
  * @param array
  * @returns random element from given array
  */
-export const getRandomElement = <T>(array: T[]) => {
+export const getRandomElement = <T>(array: ArrayLike<T>) => {
   return array[Math.floor(Math.random() * array.length)]
 }
