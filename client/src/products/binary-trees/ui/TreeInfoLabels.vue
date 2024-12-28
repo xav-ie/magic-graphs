@@ -3,8 +3,8 @@
   import GHoverInfoTop from "@ui/graph/GHoverInfoTop.vue";
   import GWell from "@ui/graph/GWell.vue";
   import type { TreeControls } from "../useTree";
-  import { computed } from "vue";
   import { useBalanceFactorLabels } from "./useBalanceFactorLabels";
+import { useHeightLabels } from "./useHeightLabels";
 
   const props = defineProps<{
     tree: TreeControls;
@@ -15,14 +15,15 @@
     unlabel: unlabelBalance,
   } = useBalanceFactorLabels(graph.value, props.tree);
 
+  const {
+    label: labelHeight,
+    unlabel: unlabelHeight,
+  } = useHeightLabels(graph.value, props.tree);
+
   const definitions = {
     balanceFactor:
       "The balance factor of a node is the height of its right subtree minus the height of its left subtree.",
-  };
-
-  const rootBalance = () => {
-    const { tree } = props.tree;
-    return tree.root ? tree.getBalance(tree.root) : undefined;
+    height: "The height of a node is the number of edges on the longest path from the node to a leaf.",
   };
 </script>
 
@@ -36,7 +37,15 @@
       @mouseleave="unlabelBalance"
       :tooltip="definitions.balanceFactor"
     >
-      Balance Factor? {{ rootBalance() }}
+      Balance Factor
+    </GHoverInfoTop>
+
+    <GHoverInfoTop
+      @mouseenter="labelHeight"
+      @mouseleave="unlabelHeight"
+      :tooltip="definitions.height"
+    >
+      Height
     </GHoverInfoTop>
   </GWell>
 </template>

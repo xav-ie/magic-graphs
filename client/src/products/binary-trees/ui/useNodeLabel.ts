@@ -1,4 +1,5 @@
-import { toRef, type MaybeRefOrGetter } from "vue";
+import { toRef } from "vue";
+import type { MaybeRefOrGetter } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 
@@ -11,7 +12,7 @@ type LabelMap = Map<GNode['id'], LabelLike>
 
 const DEFAULT_USETHEME_ID = 'node-labeller'
 
-export const useNodeLabeller = (
+export const useNodeLabel = (
   graph: Graph,
   map: MaybeRefOrGetter<LabelMap>,
   themeId = DEFAULT_USETHEME_ID
@@ -21,6 +22,7 @@ export const useNodeLabeller = (
   const { setTheme, removeTheme } = useTheme(graph, themeId)
 
   const nodeText = (node: GNode) => {
+    if (graph.focus.isFocused(node.id)) return
     const label = mapRef.value.get(node.id)
     if (label === undefined) return
     return label.toString()
