@@ -33,15 +33,15 @@ export const useGraphTemplate = (graph: Graph) => {
       tempCanvas.value.width = 5000;
       tempCanvas.value.height = 5000;
       await new Promise((resolve) => setTimeout(resolve, 50)); // needed to load initial canvas since size is so large
-      for (const product of productTemplates.value) {
-        tempGraph.load(product.graphState);
+      for (const template of templates.value) {
+        tempGraph.load(template.graphState);
         await new Promise((resolve) => setTimeout(resolve, 50)); // gives time to load in new graph
         tempGraph.themeName.value = graph.themeName.value;
         const boundingBox = getEncapsulatedNodeBox(
           tempGraph.nodes.value,
           tempGraph
         );
-        product.thumbnail = createImageFromCanvasRegion(
+        template.thumbnail = createImageFromCanvasRegion(
           tempCanvas.value,
           boundingBox
         );
@@ -85,16 +85,32 @@ export const useGraphTemplate = (graph: Graph) => {
         return dataURL;
       };
 
-  const add = (
+  const add = async (
     options: Pick<GraphTemplate, "title" | "description" | "thumbnail">
   ) => {
+    tempCanvas.value.width = 5000;
+    tempCanvas.value.height = 5000;
+
     const { nodes, edges, canvas } = graph;
 
     if (!canvas.value) throw new Error("no snapshot canvas found");
 
-    const boundingBox = getEncapsulatedNodeBox(nodes.value, graph);
+    const graphState = {
+      nodes: JSON.parse(JSON.stringify(nodes.value)),
+      edges: JSON.parse(JSON.stringify(edges.value)),
+    };
 
-    const thumbnail = createImageFromCanvasRegion(canvas.value, boundingBox);
+    tempGraph.load(graphState);
+    await new Promise((resolve) => setTimeout(resolve, 50)); // gives time to load in new graph
+    tempGraph.themeName.value = graph.themeName.value;
+    const boundingBox = getEncapsulatedNodeBox(
+      tempGraph.nodes.value,
+      tempGraph
+    );
+    const thumbnail = createImageFromCanvasRegion(
+      tempCanvas.value,
+      boundingBox
+    );
 
     userTemplates.value.unshift({
       id: generateId(),
@@ -102,10 +118,13 @@ export const useGraphTemplate = (graph: Graph) => {
       isUserAdded: true,
       ...options,
       graphState: {
-        nodes: JSON.parse(JSON.stringify(nodes.value)),
-        edges: JSON.parse(JSON.stringify(edges.value)),
+        nodes: graphState.nodes,
+        edges: graphState.edges,
       },
     });
+
+    tempCanvas.value.width = 0; // performance
+    tempCanvas.value.height = 0; // large canvases lag even if not rendered on screen
   };
 
   const load = (templateId: GraphTemplate["id"]) => {
