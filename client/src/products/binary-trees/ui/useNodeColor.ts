@@ -4,22 +4,29 @@ import type { GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 import type { Color } from "@utils/colors";
 
-type ColorMap = Map<GNode['id'], Color>
+type ColorMap = Map<GNode['id'], Color>;
+type ColorGetter = (nodeId: GNode['id']) => Color;
 
 const DEFAULT_USETHEME_ID = 'node-colorer'
 
 export const useNodeColor = (
   graph: Graph,
-  map: MaybeRefOrGetter<ColorMap>,
+  mapOrGetter: MaybeRefOrGetter<ColorMap | ColorGetter>,
   themeId = DEFAULT_USETHEME_ID
 ) => {
-  const mapRef = toRef(map)
+  const mapOrGetterRef = toRef(mapOrGetter)
+
+  const get = (nodeId: GNode['id']) => {
+    const map = mapOrGetterRef.value
+    if (typeof map === 'function') return map(nodeId)
+    return map.get(nodeId)
+  }
 
   const { setTheme, removeTheme } = useTheme(graph, themeId)
 
   const nodeColor = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return
-    return mapRef.value.get(node.id)
+    return get(node.id)
   }
 
   const color = () => {
@@ -35,6 +42,7 @@ export const useNodeColor = (
   return {
     color,
     uncolor,
-    map: mapRef,
+
+    mapOrGetterRef,
   }
 }

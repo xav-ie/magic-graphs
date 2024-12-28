@@ -8,22 +8,29 @@ import { useTheme } from "@graph/themes/useTheme";
  */
 type LabelLike = string | number | boolean
 
-type LabelMap = Map<GNode['id'], LabelLike>
+type LabelMap = Map<GNode['id'], LabelLike>;
+type LabelGetter = (nodeId: GNode['id']) => LabelLike;
 
 const DEFAULT_USETHEME_ID = 'node-labeller'
 
 export const useNodeLabel = (
   graph: Graph,
-  map: MaybeRefOrGetter<LabelMap>,
+  mapOrGetter: MaybeRefOrGetter<LabelMap | LabelGetter>,
   themeId = DEFAULT_USETHEME_ID
 ) => {
-  const mapRef = toRef(map)
+  const mapOrGetterRef = toRef(mapOrGetter)
+
+  const get = (nodeId: GNode['id']) => {
+    const map = mapOrGetterRef.value
+    if (typeof map === 'function') return map(nodeId)
+    return map.get(nodeId)
+  }
 
   const { setTheme, removeTheme } = useTheme(graph, themeId)
 
   const nodeText = (node: GNode) => {
     if (graph.focus.isFocused(node.id)) return
-    const label = mapRef.value.get(node.id)
+    const label = get(node.id)
     if (label === undefined) return
     return label.toString()
   }
@@ -39,6 +46,7 @@ export const useNodeLabel = (
   return {
     label,
     unlabel,
-    map: mapRef,
+
+    mapOrGetterRef,
   }
 }
