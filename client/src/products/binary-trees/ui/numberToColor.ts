@@ -28,6 +28,8 @@ export const numberToColor = (options: Options) => {
 
   return (number: number) => {
     const t = (number - min) / (max - min);
+    if (t < 0) return startColor;
+    if (t > 1) return endColor;
     return getColor(t);
   };
 }
