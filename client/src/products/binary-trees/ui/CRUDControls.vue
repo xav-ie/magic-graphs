@@ -13,12 +13,10 @@
   const removeKey = ref(1);
 
   const addNode = () => {
-    console.log("addNode", key.value);
     props.tree.insertNode(key.value++);
   };
 
   const removeNode = () => {
-    console.log("removeNode", removeKey.value);
     props.tree.removeNode(removeKey.value);
   };
 </script>

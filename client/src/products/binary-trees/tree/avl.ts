@@ -31,6 +31,16 @@ export type InsertTrace = CompareAction | BalanceAction | InsertAction;
 
 export type RemoveTrace = CompareAction | BalanceAction | RemoveAction;
 
+export const getHeight = (node: TreeNode | undefined) => {
+  return node ? node.height : 0;
+}
+
+export const getBalance = (node: TreeNode) => {
+  const leftHeight = getHeight(node?.left);
+  const rightHeight = getHeight(node?.right);
+  return leftHeight - rightHeight;
+}
+
 export class AVLTree {
   root: TreeNode | undefined;
 
@@ -52,16 +62,8 @@ export class AVLTree {
     return undefined;
   }
 
-  getHeight(node: TreeNode | undefined): number {
-    return node ? node.height : 0;
-  }
-
-  getBalance(node: TreeNode): number {
-    return this.getHeight(node.left) - this.getHeight(node.right);
-  }
-
   private updateHeight(node: TreeNode): void {
-    node.height = Math.max(this.getHeight(node.left), this.getHeight(node.right)) + 1;
+    node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
   }
 
   private removeMin(node: TreeNode): TreeNode | undefined {
@@ -168,10 +170,10 @@ export class AVLTree {
   }
 
   private rebalance(parent: TreeNode | undefined, node: TreeNode, isLeft: boolean, trace: RemoveTrace[]): TreeNode {
-    const balance = this.getBalance(node);
+    const balance = getBalance(node);
 
     // Left Left Case
-    if (balance > 1 && this.getBalance(node.left!) >= 0) {
+    if (balance > 1 && getBalance(node.left!) >= 0) {
       const result = this.rotateRight(node);
       if (parent) {
         if (isLeft) parent.left = result;
@@ -194,7 +196,7 @@ export class AVLTree {
     }
 
     // Right Right Case
-    if (balance < -1 && this.getBalance(node.right!) <= 0) {
+    if (balance < -1 && getBalance(node.right!) <= 0) {
       const result = this.rotateLeft(node);
       if (parent) {
         if (isLeft) parent.left = result;
@@ -217,7 +219,7 @@ export class AVLTree {
     }
 
     // Left Right Case
-    if (balance > 1 && this.getBalance(node.left!) < 0) {
+    if (balance > 1 && getBalance(node.left!) < 0) {
       node.left = this.rotateLeft(node.left!);
       const result = this.rotateRight(node);
       if (parent) {
@@ -241,7 +243,7 @@ export class AVLTree {
     }
 
     // Right Left Case
-    if (balance < -1 && this.getBalance(node.right!) > 0) {
+    if (balance < -1 && getBalance(node.right!) > 0) {
       node.right = this.rotateRight(node.right!);
       const result = this.rotateLeft(node);
       if (parent) {
@@ -270,7 +272,7 @@ export class AVLTree {
   toArray() {
     return getTreeArray({
       root: this.root,
-      treeDepth: this.getHeight(this.root)
+      treeDepth: getHeight(this.root)
     }).map(node => node?.key);
   }
 
@@ -348,7 +350,7 @@ export class AVLTree {
       }
 
       this.updateHeight(node);
-      const balance = this.getBalance(node);
+      const balance = getBalance(node);
 
       // Left Left Case
       if (balance > 1 && key < node.left!.key) {

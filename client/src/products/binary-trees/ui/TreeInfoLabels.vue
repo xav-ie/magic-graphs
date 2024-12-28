@@ -10,7 +10,7 @@
     tree: TreeControls;
   }>();
 
-  const { label: labelBalance, unlabel: unlabelBalance } =
+  const { activate: labelBalance, deactivate: unlabelBalance } =
     useBalanceFactorLabels(graph.value, props.tree);
 
   const { activate: labelHeight, deactivate: unlabelHeight } = useHeightLabels(

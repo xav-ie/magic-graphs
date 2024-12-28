@@ -41,7 +41,6 @@ export const treeArrayToGraph = async (
   rootPosition: Coordinate,
 ) => {
   const newTreeEdges = edgesInTree(graph, treeArray);
-  console.log(newTreeEdges.map(edge => edge.id));
   const edgesNotInNewTree = graph.edges.value
     .filter(edge => !newTreeEdges.some(newEdge => newEdge.id === edge.id));
 

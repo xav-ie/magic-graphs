@@ -1,6 +1,6 @@
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import type { GNode, Graph } from "@graph/types";
-import { AVLTree } from "./tree/avl";
+import { AVLTree, getBalance, getHeight } from "./tree/avl";
 import { useTreeSim } from "./treeSim";
 import type { TreeNode } from "./tree/treeNode";
 
@@ -18,7 +18,6 @@ export const useTree = (graph: Graph) => {
   const removeNode = (value: number) => {
     sim.stop();
     currTrace.value = tree.remove(value);
-    console.log(JSON.stringify(currTrace.value, null, 2))
     sim.start();
   }
 
@@ -32,8 +31,8 @@ export const useTree = (graph: Graph) => {
     }, new Map())
   }
 
-  const nodeIdToBalanceFactor = computed(() => mapNodeIds(tree.getBalance))
-  const nodeIdToHeight = computed(() => mapNodeIds(tree.getHeight))
+  const nodeIdToBalanceFactor = computed(() => mapNodeIds(getBalance))
+  const nodeIdToHeight = computed(() => mapNodeIds(getHeight))
 
   const getRoot = () => {
     const { root } = tree

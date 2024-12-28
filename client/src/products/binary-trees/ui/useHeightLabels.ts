@@ -10,7 +10,7 @@ export const useHeightLabels = (graph: Graph, tree: TreeControls) => {
 
   const mapColor = numberToColor({
     range: [1, 6],
-    color: [colors.GREEN_700, colors.GREEN_400],
+    color: [colors.GREEN_400, colors.GREEN_700],
   })
 
   const colorGetter = (nodeId: GNode['id']) => mapColor(nodeIdToHeight.value.get(nodeId) ?? 0)
