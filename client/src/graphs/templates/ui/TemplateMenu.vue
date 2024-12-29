@@ -26,7 +26,7 @@
       <slot v-bind="props"></slot>
     </template>
     <GWell
-      class="flex flex-col text-xl font-bold p-3 w-[400px] rounded-lg gap-2"
+      class="flex flex-col text-xl font-bold p-3 w-[400px] max-h-[500px] rounded-lg gap-2"
     >
       <h1 class="text-2xl">Templates</h1>
       <p

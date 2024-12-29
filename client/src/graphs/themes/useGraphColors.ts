@@ -46,11 +46,7 @@ export const useGraphColors = () => computed(() => {
 });
 
 export const useNonNullGraphColors = () => computed(() => {
-  if (!graph.value) {
-    throw 'global graph state not set';
-    console.warn('global graph state not set, defaulting to dark theme');
-    return ThemeToGraphColors.dark;
-  }
+  if (!graph.value) throw 'global graph state not set';
   const theme = graph.value.themeName.value;
   return ThemeToGraphColors[theme];
 });
