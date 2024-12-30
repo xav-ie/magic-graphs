@@ -16,7 +16,7 @@
 </script>
 
 <template>
-  <CPopover :offset="-400">
+  <CPopover>
     <template #activator="{ toggle }">
       <GButton @click="toggle">
         <CIcon icon="settings" />
