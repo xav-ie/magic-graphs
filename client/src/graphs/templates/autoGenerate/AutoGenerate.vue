@@ -5,7 +5,7 @@
   import { nonNullGraph as graph } from "@graph/global";
   import AutoGenerateSettingsMenu from "./AutoGenerateSettingsMenu.vue";
 
-  const { generate, options, resetOptions } = useAutoGenerate(graph.value);
+  const { generate, options } = useAutoGenerate(graph.value);
 </script>
 
 <template>
@@ -19,7 +19,6 @@
     </GButton>
     <AutoGenerateSettingsMenu 
       :options="options" 
-      :reset-options="resetOptions" 
     />
   </div>
 </template>
