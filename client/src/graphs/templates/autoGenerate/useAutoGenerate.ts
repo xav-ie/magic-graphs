@@ -10,9 +10,10 @@ import {
   generateCohesiveEdges,
 } from "./generationAlgorithms/randomGeneration";
 import { AUTO_GENERATE_GRAPH_DEFAULTS } from "./types";
+import { useLocalStorage } from "@vueuse/core";
 
 export const useAutoGenerate = (graph: Graph) => {
-  const options = ref<AutoGenerateGraphOptions>({
+  const options = useLocalStorage<AutoGenerateGraphOptions>("autoGenerateOptions", {
     ...AUTO_GENERATE_GRAPH_DEFAULTS,
   });
 
@@ -33,7 +34,7 @@ export const useAutoGenerate = (graph: Graph) => {
 
   return {
     generate,
-
+    
     options,
     nodes,
     edges,
