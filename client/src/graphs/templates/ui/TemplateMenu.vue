@@ -28,7 +28,10 @@
     <GWell
       class="flex flex-col text-xl font-bold p-3 w-[400px] rounded-lg gap-2"
     >
+    
       <h1 class="text-2xl">Templates</h1>
+      <AutoGenerate />
+      <hr class="my-2" />
       <p
         v-if="templates.length === 0"
         class="font-normal text-base text-center"
@@ -64,8 +67,6 @@
         >Clear All</GButton>
 
       </div>
-      <hr class="my-2" />
-      <AutoGenerate />
     </GWell>
   </CPopover>
 </template>
