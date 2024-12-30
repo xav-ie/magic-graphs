@@ -12,8 +12,10 @@ export const usePersistent = (graph: BaseGraph) => {
       ),
     set: (nodes: GNode[]) => {
       const nodesToAdd = nodes.filter((node) => {
-        const nodeInBlacklist = graph.settings.value.persistentBlacklist.has(node.id)
-        return !nodeInBlacklist
+        const nodeInBlacklist = graph.settings.value.persistentBlacklist.has(
+          node.id
+        );
+        return !nodeInBlacklist;
       });
       localStorage.setItem(
         graph.settings.value.persistentStorageKey + "-nodes",
@@ -31,8 +33,10 @@ export const usePersistent = (graph: BaseGraph) => {
       ),
     set: (edges: GEdge[]) => {
       const edgesToAdd = edges.filter((edge) => {
-        const edgeInBlacklist = graph.settings.value.persistentBlacklist.has(edge.id)
-        return !edgeInBlacklist
+        const edgeInBlacklist = graph.settings.value.persistentBlacklist.has(
+          edge.id
+        );
+        return !edgeInBlacklist;
       });
       localStorage.setItem(
         graph.settings.value.persistentStorageKey + "-edges",
@@ -48,10 +52,11 @@ export const usePersistent = (graph: BaseGraph) => {
     edgeStorage.set(graph.edges.value);
   };
 
-  const load = () => graph.load({
-    nodes: nodeStorage.get(),
-    edges: edgeStorage.get(),
-  });
+  const load = () =>
+    graph.load({
+      nodes: nodeStorage.get(),
+      edges: edgeStorage.get(),
+    });
 
   const trackChangeEvents: GraphEvent[] = [
     "onStructureChange",

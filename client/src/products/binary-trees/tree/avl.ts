@@ -46,6 +46,10 @@ export class AVLTree {
     this.root = undefined;
   }
 
+  reset() {
+    this.root = undefined;
+  }
+
   getNode(key: number): TreeNode | undefined {
     let current = this.root;
     while (current) {

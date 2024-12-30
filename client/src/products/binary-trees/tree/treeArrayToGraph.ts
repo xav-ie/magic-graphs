@@ -49,8 +49,6 @@ export const treeArrayToGraph = async (
   // the tree is empty and all the nodes have been removed
   if (!treeRoot) return;
 
-  const rootHeight = treeRoot.height;
-
   const depthToXOffset: Record<number, number> = {
     2: 175,
     3: 135,
@@ -59,9 +57,9 @@ export const treeArrayToGraph = async (
 
   const positions = getTreeIndexToPosition({
     rootCoordinate: rootPosition,
-    xOffset: depthToXOffset[rootHeight] ?? 80,
+    xOffset: depthToXOffset[treeRoot.height] ?? 80,
     yOffset: 200,
-    treeDepth: rootHeight,
+    treeDepth: treeRoot.height,
   })
 
   await Promise.all(treeArray.map((treeNodeKey, i) => {

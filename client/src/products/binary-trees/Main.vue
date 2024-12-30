@@ -11,6 +11,19 @@
   const graph = useGraph(graphEl, BINARY_TREE_GRAPH_SETTINGS);
 
   const tree = useTree(graph);
+
+  graph.settings.value.shortcutDelete = () => {
+    const { focusedNodes } = graph.focus;
+    if (focusedNodes.value.length !== 1) return
+    tree.removeNode(Number(focusedNodes.value[0].label));
+  };
+
+  graph.settings.value.shortcutUndo = () => {
+    console.log("undo");
+    tree.undo();
+  }
+
+  graph.settings.value.shortcutRedo = () => tree.redo();
 </script>
 
 <template>

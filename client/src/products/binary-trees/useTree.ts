@@ -1,52 +1,80 @@
-import { computed } from "vue";
+import { ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { AVLTree, getBalance, getHeight } from "./tree/avl";
 import { useTreeSim } from "./treeSim";
-import type { TreeNode } from "./tree/treeNode";
+import { useTreeHistory } from "./treeHistory";
+import { TreeNode } from "./tree/treeNode";
+import { graphToAVL } from "./tree/graphToAVL";
 
 export const useTree = (graph: Graph) => {
-  const tree = new AVLTree()
+  const tree = new AVLTree();
 
-  const { currTrace, sim } = useTreeSim(graph, tree)
+  const { simInProgress, runSim } = useTreeSim(graph, tree);
+  const { undoStack, redoStack, undo, redo } = useTreeHistory(graph, tree);
 
-  const insertNode = (value: number) => {
-    sim.stop();
-    currTrace.value = tree.insert(value, false);
-    sim.start();
+  const saveToHistory = () => {
+    const state = JSON.parse(JSON.stringify({ 
+      nodes: graph.nodes.value, 
+      edges: graph.edges.value 
+    }));
+
+    undoStack.value.push(state);
   }
 
-  const balanceTree = () => {
-    sim.stop();
-    currTrace.value = tree.balance();
-    sim.playbackSpeed.value = 2000;
-    if (currTrace.value.length === 0) return
-    sim.start();
-  }
+  const insertNode = async (value: number) => {
+    if (simInProgress.value) return;
+    saveToHistory();
+    const trace = tree.insert(value, false);
+    await runSim(trace);
+    recomputeMaps();
+  };
 
-  const removeNode = (value: number) => {
-    sim.stop();
-    currTrace.value = tree.remove(value);
-    sim.start();
-  }
+  const balanceTree = async () => {
+    if (simInProgress.value) return;
+    saveToHistory();
+    const trace = tree.balance();
+    await runSim(trace);
+    recomputeMaps();
+    undoStack.value.push({ nodes: graph.nodes.value, edges: graph.edges.value });
+  };
+
+  const removeNode = async (value: number) => {
+    if (simInProgress.value) return;
+    saveToHistory();
+    const trace = tree.remove(value);
+    await runSim(trace);
+    recomputeMaps();
+    undoStack.value.push({ nodes: graph.nodes.value, edges: graph.edges.value });
+  };
 
   const mapNodeIds = <T>(getter: (node: TreeNode) => T) => {
     const nodes = graph.nodes.value;
-    return nodes.reduce<Map<GNode['id'], T>>((acc, node) => {
-      const tNode = tree.getNode(Number(node.id))
-      if (!tNode) return acc
-      acc.set(node.id, getter(tNode))
-      return acc
-    }, new Map())
-  }
+    return nodes.reduce<Map<GNode["id"], T>>((acc, node) => {
+      const tNode = tree.getNode(Number(node.id));
+      if (!tNode) return acc;
+      acc.set(node.id, getter(tNode));
+      return acc;
+    }, new Map());
+  };
 
-  const nodeIdToBalanceFactor = computed(() => mapNodeIds(getBalance))
-  const nodeIdToHeight = computed(() => mapNodeIds(getHeight))
+  const nodeIdToBalanceFactor = ref(mapNodeIds(getBalance));
+  const nodeIdToHeight = ref(mapNodeIds(getHeight));
+
+  const recomputeMaps = () => {
+    nodeIdToBalanceFactor.value = mapNodeIds(getBalance);
+    nodeIdToHeight.value = mapNodeIds(getHeight);
+  }
 
   const getRoot = () => {
-    const { root } = tree
-    if (!root) return undefined
-    return graph.getNode(root.toString())
-  }
+    const { root } = tree;
+    if (!root) return undefined;
+    return graph.getNode(root.toString());
+  };
+
+  graph.subscribe("onGraphLoaded", () => {
+    graphToAVL(graph, tree);
+    recomputeMaps();
+  });
 
   return {
     tree,
@@ -59,7 +87,10 @@ export const useTree = (graph: Graph) => {
     nodeIdToHeight,
 
     getRoot,
-  }
-}
 
-export type TreeControls = ReturnType<typeof useTree>
+    undo,
+    redo,
+  };
+};
+
+export type TreeControls = ReturnType<typeof useTree>;
