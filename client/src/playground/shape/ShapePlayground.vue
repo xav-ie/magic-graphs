@@ -63,13 +63,6 @@
         pointB: { x: 900, y: 200 },
         pointC: { x: 700, y: 200 },
         color: colors.BLUE_500,
-        textArea: {
-          text: {
-            content: 'hihidsadsadsadsadsa',
-            fontSize: 20,
-          },
-
-        }
       })
     )
 
