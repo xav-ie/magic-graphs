@@ -13,6 +13,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
     color,
     dash,
     arrowHeadSize,
+    gradientStops,
   } = {
     ...ARROW_DEFAULTS,
     ...options
@@ -52,6 +53,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
     width,
     color,
     dash,
+    gradientStops,
   }
 
   const drawShaft = drawLineWithCtx(shaft as Line);
@@ -59,7 +61,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
     pointA: trianglePtA,
     pointB: trianglePtB,
     pointC: trianglePtC,
-    color,
+    color: (gradientStops && gradientStops.length) ? gradientStops.at(-1)?.color : color,
   });
 
   return (ctx: CanvasRenderingContext2D) => {

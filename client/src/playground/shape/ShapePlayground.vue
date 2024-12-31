@@ -92,7 +92,6 @@
       end: { x: 600, y: 900 },
       color: colors.GRAY_900,
       width: 10,
-      dash: [50, 25],
       arrowHeadSize: (() => {return {arrowHeadHeight: 100, perpLineLength: 50}}),
       textArea: {
         color: colors.PURPLE_500,
