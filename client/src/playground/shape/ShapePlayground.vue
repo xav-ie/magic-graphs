@@ -24,7 +24,7 @@
   const draw = () => {
     const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    const { uturn, cross, ellipse, square, triangle, scribble } = shapes;
+    const { uturn, cross, ellipse, square, triangle, scribble, line } = shapes;
 
     items.value.push(
       ellipse({
@@ -47,6 +47,15 @@
         }
       })
     );
+
+    items.value.push(
+      line({
+        start: { x: 1500, y: 100 },
+        end: { x: 1200, y: 900 },
+        width: 10,
+        gradientStops: [{ offset: 0.1, color: colors.GREEN_400 }, {offset: 0.5, color: colors.RED_600}, { offset: 0.9, color: colors.BLUE_700 }],
+      })
+    )
 
     items.value.push(
       triangle({
