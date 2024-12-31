@@ -44,32 +44,13 @@
         "
         >Reset</GButton
       >
-
       <h2 class="font-bold text-sm">
-        Node spread ({{ options.clusterSpread }})
-      </h2>
-      <InputRange
-        v-model="options.clusterSpread"
-        :min="10"
-        :max="500"
-        class="w-full"
-      />
-      <GButton
-        v-if="
-          options.clusterSpread !== AUTO_GENERATE_GRAPH_DEFAULTS.clusterSpread
-        "
-        @click="
-          options.clusterSpread = AUTO_GENERATE_GRAPH_DEFAULTS.clusterSpread
-        "
-        >Reset</GButton
-      >
-      <h2 class="font-bold text-sm">
-        Max edges per node ({{ options.maxEdgesPerNode }})
+        Max edges per node ({{ options.maxEdgesPerNode! + 1 }})
       </h2>
       <InputRange
         v-model="options.maxEdgesPerNode"
         :min="0"
-        :max="10"
+        :max="9"
         class="w-full"
       />
       <GButton
