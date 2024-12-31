@@ -24,7 +24,7 @@
   const draw = () => {
     const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    const { uturn, cross, ellipse, square, triangle, scribble } = shapes;
+    const { uturn, cross, ellipse, square, triangle, scribble, line } = shapes;
 
     items.value.push(
       ellipse({
@@ -49,18 +49,20 @@
     );
 
     items.value.push(
+      line({
+        start: { x: 1500, y: 100 },
+        end: { x: 1200, y: 900 },
+        width: 10,
+        gradientStops: [{ offset: 0.1, color: colors.GREEN_400 }, {offset: 0.5, color: colors.RED_600}, { offset: 0.9, color: colors.BLUE_700 }],
+      })
+    )
+
+    items.value.push(
       triangle({
         pointA: { x: 800, y: 100 },
         pointB: { x: 900, y: 200 },
         pointC: { x: 700, y: 200 },
         color: colors.BLUE_500,
-        textArea: {
-          text: {
-            content: 'hihidsadsadsadsadsa',
-            fontSize: 20,
-          },
-
-        }
       })
     )
 
@@ -90,7 +92,6 @@
       end: { x: 600, y: 900 },
       color: colors.GRAY_900,
       width: 10,
-      dash: [50, 25],
       arrowHeadSize: (() => {return {arrowHeadHeight: 100, perpLineLength: 50}}),
       textArea: {
         color: colors.PURPLE_500,

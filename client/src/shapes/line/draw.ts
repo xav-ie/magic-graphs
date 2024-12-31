@@ -8,6 +8,7 @@ export const drawLineWithCtx = (line: Line) => (ctx: CanvasRenderingContext2D) =
     width,
     color,
     dash,
+    gradientStops,
   } = {
     ...LINE_DEFAULTS,
     ...line
@@ -21,6 +22,15 @@ export const drawLineWithCtx = (line: Line) => (ctx: CanvasRenderingContext2D) =
   ctx.lineTo(end.x, end.y);
   ctx.lineWidth = width;
   ctx.strokeStyle = color;
+
+  if (gradientStops && gradientStops.length >= 2) {
+    const gradient = ctx.createLinearGradient(start.x, start.y, end.x, end.y);
+    gradientStops.forEach(({ offset, color }) => {
+      gradient.addColorStop(offset, color);
+    });
+    ctx.strokeStyle = gradient;
+  }
+  
   ctx.setLineDash(dash);
   ctx.stroke();
   ctx.closePath();

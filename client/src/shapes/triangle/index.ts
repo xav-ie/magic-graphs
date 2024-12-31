@@ -1,6 +1,7 @@
 import { generateId } from "@utils/id";
 import type {
   Coordinate,
+  GradientStop,
   Shape,
   Stroke,
   TextAreaNoLocation,
@@ -26,6 +27,7 @@ export type Triangle = {
   color?: string;
   stroke?: Stroke;
   textArea?: TextAreaNoLocation;
+  gradientStops?: GradientStop[];
 };
 
 export const TRIANGLE_DEFAULTS = {

@@ -149,3 +149,8 @@ export const STROKE_DEFAULTS = {
   color: 'black',
   width: 0
 }
+
+export type GradientStop = { 
+  offset: number, 
+  color: string 
+}

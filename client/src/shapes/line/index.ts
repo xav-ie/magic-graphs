@@ -1,5 +1,6 @@
 import type {
   Coordinate,
+  GradientStop,
   Shape,
   TextAreaNoLocation
 } from "@shape/types";
@@ -33,6 +34,7 @@ export type Line = {
    * dash: [dashLength, gapLength]
    */
   dash?: [number, number],
+  gradientStops?: GradientStop[],
 }
 
 export const LINE_DEFAULTS = {
@@ -40,6 +42,7 @@ export const LINE_DEFAULTS = {
   textOffsetFromCenter: 0,
   color: 'black',
   dash: [],
+  gradientStops: [],
 } as const
 
 export const line = (options: Line): Shape => {
