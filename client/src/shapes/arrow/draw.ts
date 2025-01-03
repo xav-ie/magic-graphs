@@ -14,6 +14,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
     dash,
     arrowHeadSize,
     gradientStops,
+    arrowHeadShape,
   } = {
     ...ARROW_DEFAULTS,
     ...options
@@ -25,22 +26,10 @@ export const drawArrowWithCtx = (options: Arrow) => {
     arrowHeadHeight, 
     perpLineLength 
   } = arrowHeadSize(width)
-  
+
   const shaftEnd = {
     x: lineEnd.x - arrowHeadHeight * Math.cos(angle),
     y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
-  }
-
-  const trianglePtA = lineEnd;
-
-  const trianglePtB = {
-    x: shaftEnd.x + perpLineLength * Math.cos(angle + Math.PI / 2),
-    y: shaftEnd.y + perpLineLength * Math.sin(angle + Math.PI / 2),
-  }
-
-  const trianglePtC = {
-    x: shaftEnd.x - perpLineLength * Math.cos(angle + Math.PI / 2),
-    y: shaftEnd.y - perpLineLength * Math.sin(angle + Math.PI / 2),
   }
 
   const shaft = {
@@ -55,9 +44,21 @@ export const drawArrowWithCtx = (options: Arrow) => {
     dash,
     gradientStops,
   }
-
   const drawShaft = drawLineWithCtx(shaft as Line);
-  const drawHead = drawTriangleWithCtx({
+
+  const trianglePtA = lineEnd;
+
+  const trianglePtB = {
+    x: shaftEnd.x + perpLineLength * Math.cos(angle + Math.PI / 2),
+    y: shaftEnd.y + perpLineLength * Math.sin(angle + Math.PI / 2),
+  }
+
+  const trianglePtC = {
+    x: shaftEnd.x - perpLineLength * Math.cos(angle + Math.PI / 2),
+    y: shaftEnd.y - perpLineLength * Math.sin(angle + Math.PI / 2),
+  }
+
+  const drawHead = arrowHeadShape ? arrowHeadShape(lineEnd, arrowHeadHeight, perpLineLength) : drawTriangleWithCtx({
     pointA: trianglePtA,
     pointB: trianglePtB,
     pointC: trianglePtC,
