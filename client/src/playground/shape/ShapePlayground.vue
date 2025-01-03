@@ -4,7 +4,7 @@
   import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
   import colors, { AMBER_400 } from "@colors";
   import { shapes } from "@shapes";
-  import type { Shape } from "@shape/types";
+  import type { Coordinate, Shape } from "@shape/types";
   import { getCtx } from "@utils/ctx";
   import ShapePlaygroundToolbar from "./Toolbar.vue";
 
@@ -92,7 +92,16 @@
       end: { x: 600, y: 900 },
       color: colors.GRAY_900,
       width: 10,
-      arrowHeadSize: (() => {return {arrowHeadHeight: 100, perpLineLength: 50}}),
+      arrowHeadSize: (() => { 
+        return { arrowHeadHeight: 100, perpLineLength: 100 } 
+      }),
+      arrowHeadShape: (at: Coordinate, width: number, height: number) => 
+        square({
+          at: { x: at.x - height + 18, y: at.y - height }, 
+          size: height, 
+          color: colors.GRAY_900, 
+          rotation: Math.atan2(100 - 900, 100 - 600) + Math.PI / 4
+        }).drawShape,
       textArea: {
         color: colors.PURPLE_500,
         activeColor: colors.PURPLE_600,
@@ -120,7 +129,7 @@
     items.value.push(
       square({
         at: { x: 600, y: 400 },
-        size:120,
+        size: 120,
         rotation: Math.PI / 0.7,
         color: colors.GREEN_600,
         borderRadius: 25,
