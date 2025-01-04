@@ -1,8 +1,8 @@
 import { rotatePoint } from "@shape/helpers";
-import { drawTriangleWithCtx } from "@shape/triangle/draw";
 import { drawLineWithCtx } from "@shape/line/draw";
 import { UTURN_DEFAULTS } from ".";
 import type { UTurn } from ".";
+import { drawArrowWithCtx } from "@shape/arrow/draw";
 
 export const drawUTurnWithCtx = (options: UTurn) => {
 
@@ -13,15 +13,14 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     downDistance,
     rotation,
     lineWidth,
-    color
+    color,
+    arrowHeadShape,
+    arrowHeadSize,
   } = {
     ...UTURN_DEFAULTS,
     ...options
   }
-
-  const arrowHeadHeight = lineWidth * 2.5;
-  const perpLineLength = arrowHeadHeight / 1.75;
-
+  
   const longLegFrom = rotatePoint({
     x: at.x,
     y: at.y - spacing
@@ -38,7 +37,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
   }, at, rotation);
 
   const shortLegTo = rotatePoint({
-    x: at.x + upDistance - downDistance + arrowHeadHeight,
+    x: at.x + upDistance - downDistance,
     y: at.y + spacing
   }, at, rotation);
 
@@ -47,32 +46,6 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     y: at.y
   }, at, rotation);
 
-  const arrowHeadBaseCenterPoint = shortLegTo
-
-  const trianglePt1 = {
-    x: arrowHeadBaseCenterPoint.x - arrowHeadHeight * Math.cos(rotation),
-    y: arrowHeadBaseCenterPoint.y - arrowHeadHeight * Math.sin(rotation),
-  };
-
-  // +0.01 to overlap 
-  const trianglePt2 = {
-    x: arrowHeadBaseCenterPoint.x - perpLineLength * Math.cos(rotation + Math.PI / 2 + 0.01),
-    y: arrowHeadBaseCenterPoint.y - perpLineLength * Math.sin(rotation + Math.PI / 2 + 0.01),
-  };
-
-  // -0.01 to overlap 
-  const trianglePt3 = {
-    x: arrowHeadBaseCenterPoint.x + perpLineLength * Math.cos(rotation + Math.PI / 2 - 0.01),
-    y: arrowHeadBaseCenterPoint.y + perpLineLength * Math.sin(rotation + Math.PI / 2 - 0.01),
-  };
-
-  const drawHead = drawTriangleWithCtx({
-    pointA: trianglePt1,
-    pointB: trianglePt2,
-    pointC: trianglePt3,
-    color
-  });
-
   const drawLongShaft = drawLineWithCtx({
     start: longLegFrom,
     end: longLegTo,
@@ -80,17 +53,18 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     color
   });
 
-  const drawShortShaft = drawLineWithCtx({
+  const drawArrow = drawArrowWithCtx({
     start: shortLegFrom,
     end: shortLegTo,
     width: lineWidth,
-    color
+    color,
+    arrowHeadSize,
+    arrowHeadShape,
   });
 
   return (ctx: CanvasRenderingContext2D) => {
     drawLongShaft(ctx);
-    drawHead(ctx);
-    drawShortShaft(ctx);
+    drawArrow(ctx)
 
     // draw the part that uturns
     ctx.beginPath();
