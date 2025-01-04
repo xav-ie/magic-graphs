@@ -3,43 +3,50 @@ import type { Coordinate, BoundingBox } from "@shape/types";
 import { lineHitbox } from "@shape/line/hitbox";
 import type { UTurn } from ".";
 import { rectEfficientHitbox } from "@shape/rect/hitbox";
-import { triangleHitbox } from "@shape/triangle/hitbox";
+import { arrowHitbox } from "@shape/arrow/hitbox";
+import { circleHitbox } from "@shape/circle/hitbox";
 
 
 export const uturnHitbox = (uturn: UTurn) => {
   const {
     spacing,
     at,
+    downDistance,
     upDistance,
     lineWidth,
     rotation
   } = uturn;
 
-  // rotated rectangle checked with line
-  const end = rotatePoint({
+  const longLegFrom = rotatePoint({
+    x: at.x,
+    y: at.y - spacing
+  }, at, rotation);
+
+  const longLegTo = rotatePoint({
+    x: at.x + upDistance,
+    y: at.y - spacing
+  }, at, rotation);
+
+  const shortLegFrom = rotatePoint({
+    x: at.x + upDistance,
+    y: at.y + spacing
+  }, at, rotation);
+
+  const shortLegTo = rotatePoint({
+    x: at.x + upDistance - downDistance,
+    y: at.y + spacing
+  }, at, rotation);
+
+  const arcAt = rotatePoint({
     x: at.x + upDistance,
     y: at.y
-  }, at, rotation)
+  }, at, rotation);
 
-  const isInLine = lineHitbox({
-    start: at,
-    end,
-    width: 2 * spacing + lineWidth
-  })
+  const isInLine = lineHitbox({ start: longLegFrom, end: longLegTo, width: lineWidth });
+  const isInArrow = arrowHitbox({ start: shortLegFrom, end: shortLegTo, width: lineWidth });
+  const isInUTurn = circleHitbox({ at: arcAt, radius: spacing + lineWidth / 2 });
 
-  const isInArrowHead = triangleHitbox({
-    pointA: at,
-    pointB: end,
-    pointC: {
-      x: end.x + Math.cos(rotation) * lineWidth * 2,
-      y: end.y + Math.sin(rotation) * lineWidth * 2
-    },
-    stroke: {
-      width: lineWidth
-    }
-  })
-
-  return (point: Coordinate) => isInLine(point);
+  return (point: Coordinate) => isInLine(point) || isInArrow(point) || isInUTurn(point);
 }
 
 export const getUturnBoundingBox = (uturn: UTurn) => () => {

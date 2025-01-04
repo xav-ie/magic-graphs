@@ -13,15 +13,14 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     downDistance,
     rotation,
     lineWidth,
-    color
+    color,
+    arrowHeadShape,
+    arrowHeadSize,
   } = {
     ...UTURN_DEFAULTS,
     ...options
   }
-
-  const arrowHeadHeight = lineWidth * 2.5;
-  const perpLineLength = arrowHeadHeight / 1.75;
-
+  
   const longLegFrom = rotatePoint({
     x: at.x,
     y: at.y - spacing
@@ -59,7 +58,8 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     end: shortLegTo,
     width: lineWidth,
     color,
-    arrowHeadSize: () => ({ arrowHeadHeight, perpLineLength })
+    arrowHeadSize,
+    arrowHeadShape,
   });
 
   return (ctx: CanvasRenderingContext2D) => {
