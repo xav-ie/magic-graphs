@@ -3,6 +3,7 @@ import type { Coordinate, BoundingBox } from "@shape/types";
 import { lineHitbox } from "@shape/line/hitbox";
 import type { UTurn } from ".";
 import { rectEfficientHitbox } from "@shape/rect/hitbox";
+import { triangleHitbox } from "@shape/triangle/hitbox";
 
 
 export const uturnHitbox = (uturn: UTurn) => {
@@ -24,6 +25,18 @@ export const uturnHitbox = (uturn: UTurn) => {
     start: at,
     end,
     width: 2 * spacing + lineWidth
+  })
+
+  const isInArrowHead = triangleHitbox({
+    pointA: at,
+    pointB: end,
+    pointC: {
+      x: end.x + Math.cos(rotation) * lineWidth * 2,
+      y: end.y + Math.sin(rotation) * lineWidth * 2
+    },
+    stroke: {
+      width: lineWidth
+    }
   })
 
   return (point: Coordinate) => isInLine(point);
