@@ -15,6 +15,7 @@ import {
 } from "./text"
 import { getFullTextArea } from "@shape/text"
 import { engageTextarea } from "@shape/textarea"
+import { getArrowHeadSize } from "@shape/helpers"
 
 export type UTurn = {
   id?: string,
@@ -26,10 +27,16 @@ export type UTurn = {
   lineWidth: number,
   color?: string,
   textArea?: TextAreaNoLocation
+  arrowHeadSize?: ((width: number) => {
+    arrowHeadHeight: number,
+    perpLineLength: number,
+  }),
+  arrowHeadShape?: (at: Coordinate, height: number, width: number) => (ctx: CanvasRenderingContext2D) => void
 }
 
 export const UTURN_DEFAULTS = {
   color: 'black',
+  arrowHeadSize: getArrowHeadSize,
 } as const
 
 export const uturn = (options: UTurn): Shape => {
