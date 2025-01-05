@@ -16,6 +16,7 @@ import { squareHitbox, squareEfficientHitbox, getSquareBoundingBox } from "./hit
 import { generateId } from "@utils/id";
 import { getFullTextArea } from "@shape/text";
 import { engageTextarea } from "@shape/textarea";
+import { RECT_DEFAULTS } from "@shape/rect";
 
 export type Square = {
   id?: string
@@ -27,6 +28,8 @@ export type Square = {
   borderRadius?: number
   rotation?: number
 }
+
+export const SQUARE_DEFAULTS = RECT_DEFAULTS
 
 /**
  * squares use rect default values

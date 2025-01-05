@@ -26,12 +26,12 @@ export type UTurn = {
   rotation: number,
   lineWidth: number,
   color?: string,
-  textArea?: TextAreaNoLocation
+  textArea?: TextAreaNoLocation,
   arrowHeadSize?: ((width: number) => {
     arrowHeadHeight: number,
     perpLineLength: number,
   }),
-  arrowHeadShape?: (at: Coordinate, height: number, width: number) => (ctx: CanvasRenderingContext2D) => void
+  arrowHeadShape?: (at: Coordinate, height: number, width: number) => Shape,
 }
 
 export const UTURN_DEFAULTS = {

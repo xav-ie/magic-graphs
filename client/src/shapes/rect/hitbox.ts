@@ -30,7 +30,7 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
 
   const { x, y } = { x: centerX - width / 2, y: centerY - height / 2 };
 
-  if (borderRadius === 0) {
+  if (borderRadius === 0 || borderRadius === undefined) {
     return (
       localPoint.x >= x - strokeWidth / 2 &&
       localPoint.x <= x + width + strokeWidth / 2 &&
@@ -41,10 +41,13 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
 
   const radius = Math.min(borderRadius, width / 2, height / 2);
 
+  const verticalWidth = Math.max(width - 2 * radius, 0);
+  const horizontalHeight = Math.max(height - 2 * radius, 0);
+
   const rectVertical = rectHitbox({
     ...rectangle,
     at: { x: x + radius, y },
-    width: width - 2 * radius,
+    width: verticalWidth,
     borderRadius: 0,
     rotation: 0,
     stroke,
@@ -53,7 +56,7 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
   const rectHorizontal = rectHitbox({
     ...rectangle,
     at: { x, y: y + radius },
-    height: height - 2 * radius,
+    height: horizontalHeight,
     borderRadius: 0,
     rotation: 0,
     stroke,

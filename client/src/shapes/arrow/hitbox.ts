@@ -14,16 +14,23 @@ export const arrowHitbox = (arrow: Arrow) => {
     start,
     end,
     width,
-    arrowHeadSize
+    arrowHeadSize,
+    arrowHeadShape,
   } = {
     ...ARROW_DEFAULTS,
     ...arrow
   }
 
   const isInLine = lineHitbox(arrow);
+
+  const { 
+    arrowHeadHeight, 
+    perpLineLength 
+  } = arrowHeadSize(width)
   
   const arrowHeadTriangle = calculateArrowHeadCorners({ start, end, width, arrowHeadSize });
-  const isInArrowHead = triangleHitbox(arrowHeadTriangle);
+  
+  const isInArrowHead = arrowHeadShape ? arrowHeadShape(end, arrowHeadHeight, perpLineLength).hitbox : triangleHitbox(arrowHeadTriangle);
 
   return (point: Coordinate) => isInLine(point) || isInArrowHead(point);
 };
@@ -44,7 +51,6 @@ export const getArrowBoundingBox = (arrow: Arrow) => () => {
     ...arrow
   }
   const arrowHeadTriangle = calculateArrowHeadCorners({ start, end, width, arrowHeadSize });
-
 
   const minX = Math.min(
     lineTopLeft.x,
