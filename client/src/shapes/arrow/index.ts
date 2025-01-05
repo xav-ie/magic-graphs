@@ -20,7 +20,7 @@ export type Arrow = Line & {
     arrowHeadHeight: number,
     perpLineLength: number,
   }),
-  arrowHeadShape?: (at: Coordinate, height: number, width: number) => (ctx: CanvasRenderingContext2D) => void
+  arrowHeadShape?: (at: Coordinate, height: number, width: number) => Shape
 }
 
 export const ARROW_DEFAULTS = {

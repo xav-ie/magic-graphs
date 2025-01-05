@@ -58,7 +58,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
     y: shaftEnd.y - perpLineLength * Math.sin(angle + Math.PI / 2),
   }
 
-  const drawHead = arrowHeadShape ? arrowHeadShape(lineEnd, arrowHeadHeight, perpLineLength) : drawTriangleWithCtx({
+  const drawHead = arrowHeadShape ? arrowHeadShape(lineEnd, arrowHeadHeight, perpLineLength).drawShape : drawTriangleWithCtx({
     pointA: trianglePtA,
     pointB: trianglePtB,
     pointC: trianglePtC,
