@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { AVLTree, getBalance, getHeight } from "./tree/avl";
 import { useTreeSim } from "./treeSim";
@@ -71,6 +71,11 @@ export const useTree = (graph: Graph) => {
     return graph.getNode(root.toString());
   };
 
+  const isBalanced = computed(() => {
+    const balanceFactors = Array.from(nodeIdToBalanceFactor.value.values());
+    return balanceFactors.every((bf) => bf >= -1 && bf <= 1);
+  })
+
   graph.subscribe("onGraphLoaded", () => {
     graphToAVL(graph, tree);
     recomputeMaps();
@@ -84,6 +89,7 @@ export const useTree = (graph: Graph) => {
     balanceTree,
 
     nodeIdToBalanceFactor,
+    isBalanced,
     nodeIdToHeight,
 
     getRoot,

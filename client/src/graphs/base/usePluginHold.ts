@@ -1,11 +1,11 @@
-import type { Graph } from "@graph/types";
 import type { GraphSettings } from "@graph/settings";
+import type { Ref } from "vue";
 
 type BoolSettingsKeys = {
   [K in keyof GraphSettings]: GraphSettings[K] extends boolean ? K : never;
 }[keyof GraphSettings];
 
-export const usePluginHoldController = (graph: Graph) => {
+export const usePluginHoldController = (settings: Ref<GraphSettings>) => {
   /**
    * maps the setting to the number of holds currently active
    */
@@ -15,6 +15,10 @@ export const usePluginHoldController = (graph: Graph) => {
    * when invoking hold on a particular setting
    */
   const holdIdSet: Set<`${string}-${BoolSettingsKeys}`> = new Set();
+  /**
+   * maps of the settings before the hold went into effect
+   */
+  const holdState: Map<BoolSettingsKeys, boolean> = new Map();
 
   const usePluginHold = (holdId: string) => {
     const hold = (setting: BoolSettingsKeys) => {
@@ -22,26 +26,35 @@ export const usePluginHoldController = (graph: Graph) => {
       if (holdAlreadyActive) return;
 
       const currentHolds = holdCountMap.get(setting) ?? 0;
-      if (currentHolds === 0) graph.settings.value[setting] = false;
+      if (currentHolds === 0) {
+        holdState.set(setting, settings.value[setting]);
+        settings.value[setting] = false;
+      }
 
       holdCountMap.set(setting, currentHolds + 1);
       holdIdSet.add(`${holdId}-${setting}`);
-    }
+    };
 
     const release = (setting: BoolSettingsKeys) => {
+      if (!holdIdSet.has(`${holdId}-${setting}`)) return;
       const currentHolds = holdCountMap.get(setting) ?? 0;
       if (currentHolds === 0) return;
-      if (currentHolds === 1) graph.settings.value[setting] = true;
+      if (currentHolds === 1) {
+        const value = holdState.get(setting);
+        if (value === undefined) throw new Error("holdState not found");
+        settings.value[setting] = value;
+        holdState.delete(setting);
+      }
 
       holdCountMap.set(setting, currentHolds - 1);
       holdIdSet.delete(`${holdId}-${setting}`);
-    }
+    };
 
-    return { 
+    return {
       hold,
       release,
-    }
-  }
+    };
+  };
 
   return usePluginHold;
-}
+};

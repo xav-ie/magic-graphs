@@ -6,12 +6,13 @@ import type { NodeAnchorPlugin } from '../anchors';
 
 export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
   const currentlyDraggingNode = ref<ActiveDragNode | undefined>()
+  const { hold, release } = graph.pluginHoldController('node-drag')
 
   const beginDrag = ({ items, coords }: GraphMouseEvent) => {
     const topItem = items.at(-1)
     if (!topItem || topItem.graphType !== 'node') return
 
-    graph.settings.value.nodeAnchors = false
+    hold('nodeAnchors')
 
     const node = graph.getNode(topItem.id)
     if (!node) return
@@ -24,7 +25,7 @@ export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
     if (!currentlyDraggingNode.value) return
 
     graph.emit('onNodeDrop', currentlyDraggingNode.value.node)
-    graph.settings.value.nodeAnchors = true
+    release('nodeAnchors')
 
     graph.nodeAnchors.setParentNode(currentlyDraggingNode.value.node.id)
     currentlyDraggingNode.value = undefined;

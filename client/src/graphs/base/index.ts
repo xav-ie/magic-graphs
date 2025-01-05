@@ -40,6 +40,7 @@ import type { GraphAtMousePosition } from './types';
 import { useGraphCursor } from './useGraphCursor';
 import { getCanvasCoords } from '@utils/components/useCanvasCoord';
 import { useAnimationController } from '@graph/animationController';
+import { usePluginHoldController } from './usePluginHold';
 
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
@@ -54,6 +55,8 @@ export const useBaseGraph = (
     ...DEFAULT_GRAPH_SETTINGS,
     ...startupSettings,
   })
+
+  const pluginHoldController = usePluginHoldController(settings)
 
   const eventBus = getInitialEventBus()
   const { subscribe, unsubscribe, emit } = generateSubscriber(eventBus)
@@ -342,6 +345,7 @@ export const useBaseGraph = (
     aggregator,
 
     animationController,
+    pluginHoldController,
 
     baseTheme: computed(() => THEMES[themeName.value]),
     themeName,

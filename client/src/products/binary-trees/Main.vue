@@ -6,6 +6,7 @@
   import CRUDControls from "./ui/CRUDControls.vue";
   import TreeInfoLabels from "./ui/TreeInfoLabels.vue";
   import { useTree } from "./useTree";
+  import AddNodePanel from "./ui/AddNodePanel.vue";
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, BINARY_TREE_GRAPH_SETTINGS);
@@ -19,7 +20,6 @@
   };
 
   graph.settings.value.shortcutUndo = () => {
-    console.log("undo");
     tree.undo();
   }
 
@@ -33,6 +33,10 @@
   >
     <template #top-center>
       <CRUDControls :tree="tree" />
+    </template>
+
+    <template #center-left>
+      <AddNodePanel :tree="tree" />
     </template>
 
     <template #bottom-center>

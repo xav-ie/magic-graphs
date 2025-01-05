@@ -7,18 +7,6 @@
   const props = defineProps<{
     tree: TreeControls;
   }>();
-
-  const key = ref(1);
-
-  const removeKey = ref(1);
-
-  const addNode = () => {
-    props.tree.insertNode(key.value++);
-  };
-
-  const removeNode = () => {
-    props.tree.removeNode(removeKey.value);
-  };
 </script>
 
 <template>
@@ -28,31 +16,8 @@
       class="rounded-lg flex gap-2 p-2"
     >
       <GButton
-        @click="addNode"
-        tertiary
-      >
-        Add Node ({{ key }})
-        <input
-          @click.stop
-          v-model.number="key"
-          class="w-12 bg-transparent"
-        />
-      </GButton>
-
-      <GButton
-        @click="removeNode"
-        tertiary
-      >
-        Remove Node ({{ removeKey }})
-        <input
-          @click.stop
-          v-model.number="removeKey"
-          class="w-12 bg-transparent"
-        />
-      </GButton>
-
-      <GButton
         @click="tree.balanceTree"
+        :disabled="props.tree.isBalanced.value"
         tertiary
       >
         Balance Tree
