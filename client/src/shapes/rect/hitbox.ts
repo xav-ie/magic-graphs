@@ -21,8 +21,6 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
     ...rectangle
   };
 
-  console.log(borderRadius);
-
   const centerX = at.x + width / 2;
   const centerY = at.y + height / 2;
 
@@ -32,7 +30,7 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
 
   const { x, y } = { x: centerX - width / 2, y: centerY - height / 2 };
 
-  if (borderRadius === 0) {
+  if (borderRadius === 0 || borderRadius === undefined) {
     return (
       localPoint.x >= x - strokeWidth / 2 &&
       localPoint.x <= x + width + strokeWidth / 2 &&
@@ -45,7 +43,6 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
 
   const verticalWidth = Math.max(width - 2 * radius, 0);
   const horizontalHeight = Math.max(height - 2 * radius, 0);
-
 
   const rectVertical = rectHitbox({
     ...rectangle,
