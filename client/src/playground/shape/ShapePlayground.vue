@@ -101,7 +101,7 @@
           size: height, 
           color: colors.GRAY_900, 
           rotation: Math.atan2(100 - 900, 100 - 600) + Math.PI / 4
-        }).drawShape,
+        }),
       textArea: {
         color: colors.PURPLE_500,
         activeColor: colors.PURPLE_600,

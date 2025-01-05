@@ -7,20 +7,20 @@ import type { Line } from "@shape/line";
 export const drawArrowWithCtx = (options: Arrow) => {
 
   const {
-    start: lineStart,
-    end: lineEnd,
+    start,
+    end,
     width,
     color,
     dash,
-    arrowHeadSize,
     gradientStops,
+    arrowHeadSize,
     arrowHeadShape,
   } = {
     ...ARROW_DEFAULTS,
     ...options
   };
 
-  const angle = Math.atan2(lineEnd.y - lineStart.y, lineEnd.x - lineStart.x);
+  const angle = Math.atan2(end.y - start.y, end.x - start.x);
 
   const { 
     arrowHeadHeight, 
@@ -28,12 +28,12 @@ export const drawArrowWithCtx = (options: Arrow) => {
   } = arrowHeadSize(width)
 
   const shaftEnd = {
-    x: lineEnd.x - arrowHeadHeight * Math.cos(angle),
-    y: lineEnd.y - arrowHeadHeight * Math.sin(angle),
+    x: end.x - arrowHeadHeight * Math.cos(angle),
+    y: end.y - arrowHeadHeight * Math.sin(angle),
   }
 
   const shaft = {
-    start: lineStart,
+    start,
     // Add sines to make solve overlap issue with triangle when drawing (gh issue #24)
     end: {
       x: shaftEnd.x + Math.cos(angle),
@@ -46,7 +46,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
   }
   const drawShaft = drawLineWithCtx(shaft as Line);
 
-  const trianglePtA = lineEnd;
+  const trianglePtA = end;
 
   const trianglePtB = {
     x: shaftEnd.x + perpLineLength * Math.cos(angle + Math.PI / 2),
@@ -58,7 +58,7 @@ export const drawArrowWithCtx = (options: Arrow) => {
     y: shaftEnd.y - perpLineLength * Math.sin(angle + Math.PI / 2),
   }
 
-  const drawHead = arrowHeadShape ? arrowHeadShape(lineEnd, arrowHeadHeight, perpLineLength).drawShape : drawTriangleWithCtx({
+  const drawHead = arrowHeadShape ? arrowHeadShape(end, arrowHeadHeight, perpLineLength).draw : drawTriangleWithCtx({
     pointA: trianglePtA,
     pointB: trianglePtB,
     pointC: trianglePtC,
