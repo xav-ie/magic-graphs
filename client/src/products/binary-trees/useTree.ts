@@ -10,7 +10,7 @@ export const useTree = (graph: Graph) => {
   const tree = new AVLTree();
 
   const { simInProgress, runSim } = useTreeSim(graph, tree);
-  const { undoStack, redoStack, undo, redo } = useTreeHistory(graph, tree);
+  const { undoStack, undo, redo } = useTreeHistory(graph, tree);
 
   const saveToHistory = () => {
     const state = JSON.parse(JSON.stringify({ 
@@ -22,15 +22,13 @@ export const useTree = (graph: Graph) => {
   }
 
   const insertNode = async (value: number) => {
-    if (simInProgress.value) return;
     saveToHistory();
-    const trace = tree.insert(value, false);
+    const trace = tree.insert(value);
     await runSim(trace);
     recomputeMaps();
   };
 
   const balanceTree = async () => {
-    if (simInProgress.value) return;
     saveToHistory();
     const trace = tree.balance();
     await runSim(trace);
@@ -39,13 +37,19 @@ export const useTree = (graph: Graph) => {
   };
 
   const removeNode = async (value: number) => {
-    if (simInProgress.value) return;
     saveToHistory();
     const trace = tree.remove(value);
     await runSim(trace);
     recomputeMaps();
     undoStack.value.push({ nodes: graph.nodes.value, edges: graph.edges.value });
   };
+
+  const resetTree = () => {
+    saveToHistory();
+    tree.reset();
+    graph.reset();
+    recomputeMaps();
+  }
 
   const mapNodeIds = <T>(getter: (node: TreeNode) => T) => {
     const nodes = graph.nodes.value;
@@ -87,6 +91,7 @@ export const useTree = (graph: Graph) => {
     insertNode,
     removeNode,
     balanceTree,
+    resetTree,
 
     nodeIdToBalanceFactor,
     isBalanced,
