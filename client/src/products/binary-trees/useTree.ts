@@ -1,7 +1,7 @@
 import { computed, ref } from "vue";
 import type { GNode, Graph } from "@graph/types";
 import { AVLTree, getBalance, getHeight } from "./tree/avl";
-import { useTreeSim } from "./treeSim";
+import { setTreeSim } from "./treeSim";
 import { useTreeHistory } from "./treeHistory";
 import { TreeNode } from "./tree/treeNode";
 import { graphToAVL } from "./tree/graphToAVL";
@@ -9,7 +9,6 @@ import { graphToAVL } from "./tree/graphToAVL";
 export const useTree = (graph: Graph) => {
   const tree = new AVLTree();
 
-  const { simInProgress, runSim } = useTreeSim(graph, tree);
   const { undoStack, undo, redo } = useTreeHistory(graph, tree);
 
   const saveToHistory = () => {
@@ -24,14 +23,14 @@ export const useTree = (graph: Graph) => {
   const insertNode = async (value: number) => {
     saveToHistory();
     const trace = tree.insert(value);
-    await runSim(trace);
+    setTreeSim({ graph, tree, trace });
     recomputeMaps();
   };
 
   const balanceTree = async () => {
     saveToHistory();
     const trace = tree.balance();
-    await runSim(trace);
+    await setTreeSim({ graph, tree, trace });
     recomputeMaps();
     undoStack.value.push({ nodes: graph.nodes.value, edges: graph.edges.value });
   };
@@ -39,7 +38,7 @@ export const useTree = (graph: Graph) => {
   const removeNode = async (value: number) => {
     saveToHistory();
     const trace = tree.remove(value);
-    await runSim(trace);
+    await setTreeSim({ graph, tree, trace });
     recomputeMaps();
     undoStack.value.push({ nodes: graph.nodes.value, edges: graph.edges.value });
   };

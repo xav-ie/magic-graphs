@@ -12,28 +12,28 @@ export const useTreeHistory = (graph: Graph, tree: AVLTree) => {
   const redoStack = ref<GraphState[]>([]);
 
   const redo = () => {
-	if (redoStack.value.length === 0) return;
-	const state = redoStack.value.pop();
-	if (!state) return;
-	undoStack.value.push(state);
-	graph.load(state);
-  }
+    if (redoStack.value.length === 0) return;
+    const state = redoStack.value.pop();
+    if (!state) return;
+    undoStack.value.push(state);
+    graph.load(state);
+  };
 
   const undo = () => {
-	console.log(undoStack.value);
-	if (undoStack.value.length === 0) return;
-	const state = undoStack.value.pop();
-	if (!state) return;
-	redoStack.value.push(state);
-	console.log(state);
-	graph.load(state);
-  }
+    console.log(undoStack.value);
+    if (undoStack.value.length === 0) return;
+    const state = undoStack.value.pop();
+    if (!state) return;
+    redoStack.value.push(state);
+    console.log(state);
+    graph.load(state);
+  };
 
   return {
-	undo,
-	redo,
+    undo,
+    redo,
 
-	undoStack,
-	redoStack,
+    undoStack,
+    redoStack,
   };
 };
