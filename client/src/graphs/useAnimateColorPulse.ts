@@ -9,11 +9,10 @@ export const useAnimateColorPulse = (graph: Graph) => {
   const edgesToPulseColor = ref<Set<GEdge['id']>>(new Set());
   const animateInterval = ref<NodeJS.Timeout | null>(null);
   const PULSE_COLOR = "#FFFFFF";
-  const baseColor = graph.baseTheme.value.edgeColor;
-
+  
   const easingFunction = EASING_FUNCTIONS["in-out"];
   const PULSE_DURATION = 50; 
-
+  
   const clearAll = () => {
     edgesToPulseColor.value.clear();
     removeAllThemes();  
@@ -21,8 +20,9 @@ export const useAnimateColorPulse = (graph: Graph) => {
       clearInterval(animateInterval.value);
     }
   };
-
+  
   const animate = () => {
+    const baseColor = graph.baseTheme.value.edgeColor;
     const currentTime = Date.now();
     const elapsed = currentTime % PULSE_DURATION;
     const progress = elapsed / PULSE_DURATION;
