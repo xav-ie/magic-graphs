@@ -35,29 +35,36 @@ export const EASING_FUNCTIONS: Record<NamedEasingFunction, EasingFunction> = {
 /**
  * gets an intermediate color value between two colors.
  *
- * @param startColor CSS color string of the start color.
- * @param endColor CSS color string of the end color.
+ * @param colors Array of CSS color strings.
  * @param progress Number between 0 and 1.
  * @returns tinycolor instance representing the interpolated color.
  */
-export const interpolateColor = (
-  startColor: string,
-  endColor: string,
+export const interpolateColors = (
+  colors: string[],
   progress: number
 ) => {
-  const start = tinycolor(startColor);
-  const end = tinycolor(endColor);
-
-  if (!start.isValid || !end.isValid) {
-    throw new Error("Invalid color provided");
+  if (colors.length < 2) {
+    throw new Error("At least two colors are required for interpolation.");
   }
 
-  const startRgb = start.toRgb();
-  const endRgb = end.toRgb();
+  const validColors = colors.map((color) => tinycolor(color));
+  if (validColors.some((color) => !color.isValid())) {
+    throw new Error("Invalid color provided in the list.");
+  }
 
-  const r = startRgb.r + (endRgb.r - startRgb.r) * progress;
-  const g = startRgb.g + (endRgb.g - startRgb.g) * progress;
-  const b = startRgb.b + (endRgb.b - startRgb.b) * progress;
+  const totalSteps = colors.length - 1;
+  const scaledProgress = progress * totalSteps;
+  const startIndex = Math.floor(scaledProgress);
+  const endIndex = Math.min(startIndex + 1, colors.length - 1);
+
+  const localProgress = scaledProgress - startIndex;
+
+  const startRgb = validColors[startIndex].toRgb();
+  const endRgb = validColors[endIndex].toRgb();
+
+  const r = startRgb.r + (endRgb.r - startRgb.r) * localProgress;
+  const g = startRgb.g + (endRgb.g - startRgb.g) * localProgress;
+  const b = startRgb.b + (endRgb.b - startRgb.b) * localProgress;
 
   return tinycolor({ r: Math.round(r), g: Math.round(g), b: Math.round(b) });
 };
