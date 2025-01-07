@@ -1,20 +1,22 @@
-import { ref, watch, onUnmounted } from "vue";
+import { ref, onUnmounted } from "vue";
 import type { GEdge, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
-import { interpolateColor, EASING_FUNCTIONS } from "@utils/animate";
+import { interpolateColors, EASING_FUNCTIONS } from "@utils/animate";
 
 export const useAnimateColorPulse = (graph: Graph) => {
   const { setTheme, removeAllThemes } = useTheme(graph, "pulse_animation");
 
-  const edgesToPulseColor = ref<Map<GEdge["id"], string>>(new Map());
+  const edgesToPulseColor = ref<Set<GEdge['id']>>(new Set());
   const animateInterval = ref<NodeJS.Timeout | null>(null);
+  const PULSE_COLOR = "#FFFFFF";
+  const baseColor = graph.baseTheme.value.edgeColor;
 
   const easingFunction = EASING_FUNCTIONS["in-out"];
-  const PULSE_DURATION = 1000; 
+  const PULSE_DURATION = 50; 
 
   const clearAll = () => {
     edgesToPulseColor.value.clear();
-    removeAllThemes();
+    removeAllThemes();  
     if (animateInterval.value !== null) {
       clearInterval(animateInterval.value);
     }
@@ -22,25 +24,14 @@ export const useAnimateColorPulse = (graph: Graph) => {
 
   const animate = () => {
     const currentTime = Date.now();
-    const currentColor = graph.baseTheme.value.edgeColor;
-    edgesToPulseColor.value.forEach((targetColor) => {
-      const elapsed = currentTime % PULSE_DURATION;
-      const progress = elapsed / PULSE_DURATION;
-      const easedProgress = easingFunction(progress < 0.5 ? progress : 1 - progress); // Oscillate
-
-      const interpolatedColor = interpolateColor(currentColor, targetColor, easedProgress);
-      setTheme("edgeColor", interpolatedColor.toHexString());
-    });
+    const elapsed = currentTime % PULSE_DURATION;
+    const progress = elapsed / PULSE_DURATION;
+    const easedProgress = easingFunction(progress < 0.5 ? progress : 1 - progress); // Oscillate
+    const interpolatedColor = interpolateColors([baseColor, PULSE_COLOR], easedProgress);
+    setTheme("edgeColor", interpolatedColor.toHexString());
   };
- 
 
-  watch(edgesToPulseColor, (newVal) => {
-    if (newVal.size > 0) {
-      animateInterval.value = setInterval(animate, PULSE_DURATION)
-    } else {
-      clearAll();
-    }
-  });
+  animateInterval.value = setInterval(animate, PULSE_DURATION)
 
   onUnmounted(() => {
     clearAll();
@@ -48,6 +39,7 @@ export const useAnimateColorPulse = (graph: Graph) => {
 
   return {
     clearAll,
+
     edgesToPulseColor,
   };
 };

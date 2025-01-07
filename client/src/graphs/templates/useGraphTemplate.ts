@@ -16,6 +16,7 @@ import { useLocalStorage } from "@vueuse/core";
 import { getEncapsulatedNodeBox } from "@graph/plugins/marquee/helpers";
 import { useGraph } from "@graph/useGraph";
 import { products } from "@utils/product";
+import { useAnimateColorPulse } from "@graph/useAnimateColorPulse";
 
 export const useGraphTemplate = (graph: Graph) => {
   const userTemplates = useLocalStorage<GraphTemplate[]>("graph-templates", []);
@@ -115,6 +116,7 @@ export const useGraphTemplate = (graph: Graph) => {
   };
 
   onMounted(() => {
+    useAnimateColorPulse(graph);
     updateProductThumbnails();
     graph.subscribe("onThemeChange", updateProductThumbnails);
   });
