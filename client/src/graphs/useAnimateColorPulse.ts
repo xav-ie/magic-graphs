@@ -8,7 +8,7 @@ export const useAnimateColorPulse = (graph: Graph) => {
 
   const edgesToPulseColor = ref<Set<GEdge['id']>>(new Set());
   const animateInterval = ref<NodeJS.Timeout | null>(null);
-  const PULSE_COLOR = "#FFFFFF";
+  const pulseColor = ref("#FFFFFF");
   
   const easingFunction = EASING_FUNCTIONS["in-out"];
   const PULSE_DURATION = 1000; 
@@ -26,12 +26,12 @@ export const useAnimateColorPulse = (graph: Graph) => {
     const currentTime = Date.now();
     const elapsed = currentTime % PULSE_DURATION;
     const progress = elapsed / PULSE_DURATION;
-    const easedProgress = easingFunction(progress < 0.5 ? progress : 1 - progress); // Oscillate
-    const interpolatedColor = interpolateColors([baseColor, PULSE_COLOR], easedProgress);
+    const easedProgress = easingFunction(progress < 0.5 ? progress : 1 - progress); // oscillate
+    const interpolatedColor = interpolateColors([baseColor, pulseColor.value], easedProgress);
     setTheme("edgeColor", interpolatedColor.toHexString());
   };
 
-  animateInterval.value = setInterval(animate, 50)
+  animateInterval.value = setInterval(animate, 25)
 
   onUnmounted(() => {
     clearAll();
@@ -41,5 +41,6 @@ export const useAnimateColorPulse = (graph: Graph) => {
     clearAll,
 
     edgesToPulseColor,
+    pulseColor,
   };
 };
