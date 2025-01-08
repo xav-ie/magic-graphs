@@ -28,6 +28,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   const currentDraggingAnchor = ref<NodeAnchor | undefined>()
 
   const setParentNode = (nodeId: GNode['id']) => {
+    if (graph.settings.value.nodeAnchors === false) return
     const node = graph.getNode(nodeId)
     if (!node) throw new Error('node not found')
     if (graph.animationController.isAnimating(node.id)) return
