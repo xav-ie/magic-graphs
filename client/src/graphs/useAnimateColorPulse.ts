@@ -1,12 +1,12 @@
-import { ref, onUnmounted, onMounted } from "vue";
-import type { GEdge, Graph } from "@graph/types";
+import { ref, onUnmounted } from "vue";
+import type { GEdge, GNode, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 import { interpolateColors, EASING_FUNCTIONS } from "@utils/animate";
 
 export const useAnimateColorPulse = (graph: Graph) => {
   const { setTheme, removeAllThemes } = useTheme(graph, "pulse_animation");
 
-  const pulsingEdges = ref<Set<GEdge["id"]>>(new Set());
+  const pulsingShapes = ref<Set<GEdge["id"] | GNode["id"]>>(new Set());
   const animateInterval = ref<NodeJS.Timeout | null>(null);
   const pulseColor = ref("#FFFFFF");
 
@@ -14,25 +14,36 @@ export const useAnimateColorPulse = (graph: Graph) => {
   const pulseDuration = ref(1000);
 
   const animate = () => {
-    const baseColor = graph.baseTheme.value.edgeColor;
+    const edgeBaseColor = graph.baseTheme.value.edgeColor;
+    const nodeBorderBaseColor = graph.baseTheme.value.nodeBorderColor;
     const currentTime = Date.now();
     const elapsed = currentTime % pulseDuration.value;
     const progress = elapsed / pulseDuration.value;
     const easedProgress = easingFunction(
       progress < 0.5 ? progress : 1 - progress
     ); // oscillate
-    const interpolatedColor = interpolateColors(
-      [baseColor, pulseColor.value],
+    const interpolatedEdgeColor = interpolateColors(
+      [edgeBaseColor, pulseColor.value],
+      easedProgress
+    );
+    const interpolatedNodeBorderColor = interpolateColors(
+      [nodeBorderBaseColor, pulseColor.value],
       easedProgress
     );
 
     const colorEdge = (edge: GEdge) => {
-      return pulsingEdges.value.has(edge.id)
-        ? interpolatedColor.toHexString()
-        : graph.baseTheme.value.edgeColor;
+      return pulsingShapes.value.has(edge.id)
+        ? interpolatedEdgeColor.toHexString()
+        : edgeBaseColor;
+    };
+    const colorNodeBorder = (node: GNode) => {
+      return pulsingShapes.value.has(node.id)
+        ? interpolatedNodeBorderColor.toHexString()
+        : nodeBorderBaseColor;
     };
 
     setTheme("edgeColor", colorEdge);
+    setTheme("nodeBorderColor", colorNodeBorder);
   };
 
   const activate = () => {
@@ -41,7 +52,7 @@ export const useAnimateColorPulse = (graph: Graph) => {
 
   
   const deactivate = () => {
-    pulsingEdges.value.clear();
+    pulsingShapes.value.clear();
     removeAllThemes();
     if (animateInterval.value !== null) {
       clearInterval(animateInterval.value);
@@ -58,7 +69,7 @@ export const useAnimateColorPulse = (graph: Graph) => {
     activate,
     deactivate,
 
-    pulsingEdges,
+    pulsingShapes,
     pulseColor,
     pulseDuration,
   };
