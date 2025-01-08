@@ -7,6 +7,10 @@
   import TreeInfoLabels from "./ui/TreeInfoLabels.vue";
   import { useTree } from "./useTree";
   import AddNodePanel from "./ui/AddNodePanel.vue";
+  import state from './state'
+  import TreeSimMenu from "./ui/TreeSimMenu.vue";
+
+  const { activeSim } = state
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, BINARY_TREE_GRAPH_SETTINGS);
@@ -15,8 +19,9 @@
 
   graph.settings.value.shortcutDelete = () => {
     const { focusedNodes } = graph.focus;
-    if (focusedNodes.value.length !== 1) return
-    tree.removeNode(Number(focusedNodes.value[0].label));
+    if (focusedNodes.value.length === 1) tree.removeNode(Number(focusedNodes.value[0].label));
+    if (focusedNodes.value.length === graph.nodes.value.length) tree.resetTree()
+    graph.focus.reset()
   };
 
   graph.settings.value.shortcutUndo = () => {
@@ -32,15 +37,25 @@
     :graph="graph"
   >
     <template #top-center>
-      <CRUDControls :tree="tree" />
+      <TreeInfoLabels :tree="tree" />
     </template>
 
     <template #center-left>
-      <AddNodePanel :tree="tree" />
+      <AddNodePanel 
+        v-if="!activeSim"
+        :tree="tree" 
+      />
     </template>
 
     <template #bottom-center>
-      <TreeInfoLabels :tree="tree" />
+      <CRUDControls 
+        v-if="!activeSim"
+        :tree="tree" 
+      />
+      <TreeSimMenu 
+        v-else 
+        :controls="activeSim" 
+      />
     </template>
   </GraphProduct>
 </template>

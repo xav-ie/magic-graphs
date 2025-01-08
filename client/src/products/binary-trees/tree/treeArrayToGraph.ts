@@ -11,21 +11,18 @@ const newEdge = (from: number, to: number) => ({
   label: '',
 });
 
-const edgesInTree = (
-  graph: Graph,
-  treeArray: TreeNodeKeyArray,
-) => {
+const edgesInTree = (treeArray: TreeNodeKeyArray) => {
   const edges: GEdge[] = [];
 
   for (let i = 0; i < treeArray.length; i++) {
     const node = treeArray[i];
-    if (!node) continue;
+    if (node === undefined) continue;
 
     const left = treeArray[2 * i + 1];
     const right = treeArray[2 * i + 2];
 
-    if (left) edges.push(newEdge(node, left));
-    if (right) edges.push(newEdge(node, right));
+    if (left !== undefined) edges.push(newEdge(node, left));
+    if (right !== undefined) edges.push(newEdge(node, right));
   }
 
   return edges;
@@ -37,7 +34,7 @@ export const treeArrayToGraph = async (
   treeRoot: TreeNode,
   rootPosition: Coordinate,
 ) => {
-  const newTreeEdges = edgesInTree(graph, treeArray);
+  const newTreeEdges = edgesInTree(treeArray);
   const edgesNotInNewTree = graph.edges.value
     .filter(edge => !newTreeEdges.some(newEdge => newEdge.id === edge.id));
 
@@ -63,7 +60,7 @@ export const treeArrayToGraph = async (
   })
 
   await Promise.all(treeArray.map((treeNodeKey, i) => {
-    if (!treeNodeKey) return;
+    if (treeNodeKey === undefined) return;
     const node = graph.getNode(treeNodeKey.toString());
     if (node) return;
     return graph.addNode({
@@ -78,7 +75,7 @@ export const treeArrayToGraph = async (
   await new Promise(resolve => setTimeout(resolve, 500));
 
   await Promise.all(treeArray.map((treeNodeKey, i) => {
-    if (!treeNodeKey) return;
+    if (treeNodeKey === undefined) return;
     const node = graph.getNode(treeNodeKey.toString());
     if (!node) return;
     if (node.x === positions[i].x && node.y === positions[i].y) return;
@@ -88,7 +85,7 @@ export const treeArrayToGraph = async (
       durationMs: 750,
     })
   }));
-
+  
   for (const edge of newTreeEdges) {
     await graph.addEdge(edge, { animate: true });
   }

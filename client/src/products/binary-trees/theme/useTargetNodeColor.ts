@@ -8,29 +8,29 @@ const TARGET_COLOR = colors.AMBER_600;
 export const useTargetNodeColor = (graph: Graph) => {
   const { setTheme, removeAllThemes } = useTheme(graph, "tree");
 
-  const targetNode = ref<GNode>();
+  const targetNodeId = ref<GNode['id']>();
 
   const colorNode = (node: GNode) => {
-    if (!targetNode.value) return;
+    if (!targetNodeId.value) return;
 
     if (graph.focus.isFocused(node.id)) return;
-    if (node.id === targetNode.value.id) return TARGET_COLOR;
+    if (node.id === targetNodeId.value) return TARGET_COLOR;
   }
 
-  const activate = (node?: GNode) => {
-    if (node) targetNode.value = node;
+  const activate = (nodeId?: GNode['id']) => {
+    if (nodeId) targetNodeId.value = nodeId;
     setTheme("nodeBorderColor", colorNode);
     setTheme("nodeAnchorColor", colorNode);
   }
 
   const deactivate = () => {
-    targetNode.value = undefined;
+    targetNodeId.value = undefined;
     removeAllThemes();
   }
 
   return {
     activate,
     deactivate,
-    targetNode,
+    targetNodeId,
   };
 };

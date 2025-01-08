@@ -11,45 +11,6 @@ export const useTree = (graph: Graph) => {
 
   const { undoStack, undo, redo } = useTreeHistory(graph, tree);
 
-  const saveToHistory = () => {
-    const state = JSON.parse(JSON.stringify({ 
-      nodes: graph.nodes.value, 
-      edges: graph.edges.value 
-    }));
-
-    undoStack.value.push(state);
-  }
-
-  const insertNode = async (value: number) => {
-    saveToHistory();
-    const trace = tree.insert(value);
-    setTreeSim({ graph, tree, trace });
-    recomputeMaps();
-  };
-
-  const balanceTree = async () => {
-    saveToHistory();
-    const trace = tree.balance();
-    await setTreeSim({ graph, tree, trace });
-    recomputeMaps();
-    undoStack.value.push({ nodes: graph.nodes.value, edges: graph.edges.value });
-  };
-
-  const removeNode = async (value: number) => {
-    saveToHistory();
-    const trace = tree.remove(value);
-    await setTreeSim({ graph, tree, trace });
-    recomputeMaps();
-    undoStack.value.push({ nodes: graph.nodes.value, edges: graph.edges.value });
-  };
-
-  const resetTree = () => {
-    saveToHistory();
-    tree.reset();
-    graph.reset();
-    recomputeMaps();
-  }
-
   const mapNodeIds = <T>(getter: (node: TreeNode) => T) => {
     const nodes = graph.nodes.value;
     return nodes.reduce<Map<GNode["id"], T>>((acc, node) => {
@@ -66,6 +27,44 @@ export const useTree = (graph: Graph) => {
   const recomputeMaps = () => {
     nodeIdToBalanceFactor.value = mapNodeIds(getBalance);
     nodeIdToHeight.value = mapNodeIds(getHeight);
+  }
+
+  const setSim = setTreeSim(recomputeMaps)
+
+  const saveToHistory = () => {
+    const state = JSON.parse(JSON.stringify({ 
+      nodes: graph.nodes.value, 
+      edges: graph.edges.value 
+    }));
+
+    undoStack.value.push(state);
+  }
+
+  const insertNode = async (value: number) => {
+    saveToHistory();
+    const trace = tree.insert(value);
+    setSim({ graph, tree, trace });
+  };
+
+  const balanceTree = async () => {
+    saveToHistory();
+    const trace = tree.balance();
+    setSim({ graph, tree, trace });
+    undoStack.value.push({ nodes: graph.nodes.value, edges: graph.edges.value });
+  };
+
+  const removeNode = async (value: number) => {
+    saveToHistory();
+    const trace = tree.remove(value);
+    setSim({ graph, tree, trace });
+    undoStack.value.push({ nodes: graph.nodes.value, edges: graph.edges.value });
+  };
+
+  const resetTree = () => {
+    saveToHistory();
+    tree.reset();
+    graph.reset();
+    recomputeMaps();
   }
 
   const getRoot = () => {

@@ -1,4 +1,4 @@
-import { ref, type ComputedRef } from "vue";
+import { shallowRef, type ComputedRef } from "vue";
 import type { TreeTrace } from "./tree/avl";
 
 export type TreeSim = {
@@ -12,7 +12,7 @@ export type TreeSim = {
   trace: ComputedRef<TreeTrace[]>;
 };
 
-const activeSim = ref<TreeSim>();
+const activeSim = shallowRef<TreeSim>();
 
 const reset = () => {
   if (activeSim.value) {

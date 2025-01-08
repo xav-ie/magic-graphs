@@ -15,12 +15,12 @@ type SetTreeSimOptions = {
   trace: TreeTrace[];
 };
 
-export const setTreeSim = ({
+export const setTreeSim = (recomputeMaps: () => void) => ({
   graph,
   tree,
   trace
 }: SetTreeSimOptions) => {
-  const { targetNode, activate } = useTargetNodeColor(graph);
+  const { targetNodeId, activate } = useTargetNodeColor(graph);
   activate();
 
   const step = ref(0);
@@ -29,17 +29,23 @@ export const setTreeSim = ({
     const traceAtStep = trace[step.value];
     if (traceAtStep === undefined) return;
 
-    targetNode.value = undefined;
+    targetNodeId.value = undefined;
 
     if (traceAtStep.action === "compare") {
       const { treeNodeKey } = traceAtStep;
-      const node = graph.getNode(treeNodeKey.toString());
-      if (!node) throw new Error("could not find node in graph (avl compare)");
-      targetNode.value = node;
-    } else {
-      await treeArrayToGraph(graph, traceAtStep.treeState, tree.root!, ROOT_POS);
+      targetNodeId.value = treeNodeKey.toString()
     }
+
+    if (traceAtStep.action === 'insert' || traceAtStep.action === 'remove') {
+      const { target } = traceAtStep;
+      targetNodeId.value = target.toString()
+    }
+
+    await treeArrayToGraph(graph, traceAtStep.treeState, tree.root!, ROOT_POS);
+    recomputeMaps();
   }
+
+  runStep();
 
   const next = async () => {
     ++step.value;
@@ -52,9 +58,12 @@ export const setTreeSim = ({
   }
 
   const exit = async () => {
-    step.value = trace.length - 1;
-    await runStep();
+    if (step.value !== trace.length - 1) {
+      step.value = trace.length - 1;
+      runStep();
+    }
     activeSim.value = undefined;
+    targetNodeId.value = undefined;
   }
 
   activeSim.value = {

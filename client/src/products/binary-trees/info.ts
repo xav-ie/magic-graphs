@@ -1,5 +1,5 @@
 import type { ProductInfo } from 'src/types'
-// import type { Graph } from '@graph/types'
+import state from './state'
 
 const info: ProductInfo = {
   route: {
@@ -15,6 +15,7 @@ const info: ProductInfo = {
     thumbnail: '/products/thumbnails/binary-tree.png',
     category: 'data structures',
   },
+  state,
 }
 
 export default info

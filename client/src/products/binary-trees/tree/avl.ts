@@ -7,6 +7,7 @@ export type BalanceMethod = "left-left" | "right-right" | "left-right" | "right-
 
 export type CompareAction = {
   action: "compare";
+  target: number,
   treeNodeKey: number;
   treeState: TreeNodeKeyArray;
 }
@@ -19,11 +20,13 @@ export type BalanceAction = {
 
 export type InsertAction = {
   action: "insert";
+  target: number,
   treeState: TreeNodeKeyArray;
 }
 
 export type RemoveAction = {
   action: "remove";
+  target: number,
   treeState: TreeNodeKeyArray;
 }
 
@@ -99,6 +102,7 @@ export class AVLTree {
       if (!targetFound) {
         trace.push({
           action: "compare",
+          target: key,
           treeNodeKey: node.key,
           treeState: this.toArray(),
         });
@@ -145,6 +149,7 @@ export class AVLTree {
 
         trace.push({
           action: "remove",
+          target: key,
           treeState: this.toArray()
         });
 
@@ -339,6 +344,7 @@ export class AVLTree {
       this.root = new TreeNode(key);
       return [{
         action: "insert",
+        target: key,
         treeState: this.toArray()
       }];
     }
@@ -356,6 +362,7 @@ export class AVLTree {
       trace.push({
         action: "compare",
         treeNodeKey: node.key,
+        target: key,
         treeState: this.toArray()
       });
 
@@ -364,6 +371,7 @@ export class AVLTree {
         if (justInserted) {
           trace.push({
             action: "insert",
+            target: key,
             treeState: this.toArray()
           });
           justInserted = false;
@@ -373,6 +381,7 @@ export class AVLTree {
         if (justInserted) {
           trace.push({
             action: "insert",
+            target: key,
             treeState: this.toArray()
           });
           justInserted = false;
