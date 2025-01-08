@@ -1,4 +1,4 @@
-import { ref, onUnmounted } from "vue";
+import { ref, onUnmounted, onMounted } from "vue";
 import type { GEdge, Graph } from "@graph/types";
 import { useTheme } from "@graph/themes/useTheme";
 import { interpolateColors, EASING_FUNCTIONS } from "@utils/animate";
@@ -12,14 +12,6 @@ export const useAnimateColorPulse = (graph: Graph) => {
 
   const easingFunction = EASING_FUNCTIONS["in-out"];
   const pulseDuration = ref(1000);
-
-  const clearAll = () => {
-    pulsingEdges.value.clear();
-    removeAllThemes();
-    if (animateInterval.value !== null) {
-      clearInterval(animateInterval.value);
-    }
-  };
 
   const animate = () => {
     const baseColor = graph.baseTheme.value.edgeColor;
@@ -42,15 +34,29 @@ export const useAnimateColorPulse = (graph: Graph) => {
 
     setTheme("edgeColor", colorEdge);
   };
+
+  const activate = () => {
+    animateInterval.value = setInterval(animate, 25);
+  }
+
   
-  animateInterval.value = setInterval(animate, 25);
-
+  const deactivate = () => {
+    pulsingEdges.value.clear();
+    removeAllThemes();
+    if (animateInterval.value !== null) {
+      clearInterval(animateInterval.value);
+    }
+  };
+  
   onUnmounted(() => {
-    clearAll();
+    deactivate();
   });
-
+  
+  activate()
+  
   return {
-    clearAll,
+    activate,
+    deactivate,
 
     pulsingEdges,
     pulseColor,
