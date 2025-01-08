@@ -11,7 +11,7 @@ export const useAnimateColorPulse = (graph: Graph) => {
   const PULSE_COLOR = "#FFFFFF";
   
   const easingFunction = EASING_FUNCTIONS["in-out"];
-  const PULSE_DURATION = 50; 
+  const PULSE_DURATION = 1000; 
   
   const clearAll = () => {
     edgesToPulseColor.value.clear();
@@ -31,7 +31,7 @@ export const useAnimateColorPulse = (graph: Graph) => {
     setTheme("edgeColor", interpolatedColor.toHexString());
   };
 
-  animateInterval.value = setInterval(animate, PULSE_DURATION)
+  animateInterval.value = setInterval(animate, 50)
 
   onUnmounted(() => {
     clearAll();
