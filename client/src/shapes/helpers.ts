@@ -1,6 +1,7 @@
 import type { Coordinate } from "@shape/types";
 import { LINE_DEFAULTS } from "./line";
 import type { Arrow } from "./arrow";
+import tinycolor from "tinycolor2";
 
 /**
  * @description rotates a point around a center point by a given angle in radians
@@ -173,3 +174,63 @@ export const calculateArrowHeadCorners = (options: Required<Pick<Arrow, 'start' 
  */
 export const angleDifference = (angleA: number, angleB: number) => 
   Math.abs(Math.atan2(Math.sin(angleA - angleB), Math.cos(angleA - angleB)));
+
+export type GradientStop = {
+  offset: number;
+  color: string; // Can be in any format supported by tinycolor
+};
+
+type GradientStops = GradientStop[];
+
+/**
+ * Interpolates between two colors using tinycolor at a given ratio
+ * @param color1 - The first color (any format supported by tinycolor)
+ * @param color2 - The second color
+ * @param ratio - The ratio to interpolate (0 to 1)
+ * @returns The interpolated color as a hex string
+ */
+const interpolateColor = (color1: string, color2: string, ratio: number) => {
+  const c1 = tinycolor(color1).toRgb();
+  const c2 = tinycolor(color2).toRgb();
+
+  const result = {
+    r: Math.round(c1.r + ratio * (c2.r - c1.r)),
+    g: Math.round(c1.g + ratio * (c2.g - c1.g)),
+    b: Math.round(c1.b + ratio * (c2.b - c1.b)),
+    a: c1.a + ratio * (c2.a - c1.a),
+  };
+
+  return tinycolor(result).toHexString();
+}
+
+/**
+ * Finds the color at a specific percentage in a gradient
+ * @param gradient - The array of gradient stops
+ * @param percentage - The distance along the gradient (0 to 1) to calculate the color for
+ * @returns The color at the specified percentage as a hex string
+ */
+export const getColorAtPercentage = (gradient: GradientStops, percentage: number) => {
+  if (gradient.length === 0) {
+    throw new Error("Gradient must have at least one stop");
+  }
+
+  if (percentage > 1 || percentage < 0) {
+    throw new Error("Percentage must be between 0 and 1");
+  }
+
+  let lowerStop = gradient[0];
+  let upperStop = gradient[gradient.length - 1];
+
+  for (let i = 1; i < gradient.length; i++) {
+    if (percentage <= gradient[i].offset) {
+      lowerStop = gradient[i - 1];
+      upperStop = gradient[i];
+      break;
+    }
+  }
+
+  const range = upperStop.offset - lowerStop.offset;
+  const ratio = range === 0 ? 0 : (percentage - lowerStop.offset) / range;
+
+  return interpolateColor(lowerStop.color, upperStop.color, ratio);
+}
