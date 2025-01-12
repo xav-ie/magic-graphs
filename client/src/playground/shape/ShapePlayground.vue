@@ -72,18 +72,9 @@
         downDistance: 50,
         upDistance: 50,
         lineWidth: 10,
-        color: colors.BLUE_500,
         rotation: Math.PI * 0.2,
         spacing: 20,
-        textArea: {
-          color: colors.PURPLE_500,
-          activeColor: colors.PURPLE_600,
-          text: {
-            content: "5",
-            color: colors.WHITE,
-            fontSize: 20,
-          },
-        },
+        gradientStops: [{ offset: 0.1, color: colors.GREEN_400 }, {offset: 0.5, color: colors.RED_600}, { offset: 0.9, color: colors.BLUE_700 }],
       })
     );
 

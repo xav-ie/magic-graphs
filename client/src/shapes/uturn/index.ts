@@ -1,6 +1,7 @@
 import { generateId } from "@utils/id"
 import type {
   Coordinate,
+  GradientStop,
   Shape,
   TextAreaNoLocation
 } from "@shape/types"
@@ -32,11 +33,13 @@ export type UTurn = {
     perpLineLength: number,
   }),
   arrowHeadShape?: (at: Coordinate, height: number, width: number) => Shape,
+  gradientStops?: GradientStop[],
 }
 
 export const UTURN_DEFAULTS = {
   color: 'black',
   arrowHeadSize: getArrowHeadSize,
+  gradientStops: [] as GradientStop[],
 } as const
 
 export const uturn = (options: UTurn): Shape => {

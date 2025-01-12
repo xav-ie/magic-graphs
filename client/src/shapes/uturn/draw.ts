@@ -3,9 +3,9 @@ import { drawLineWithCtx } from "@shape/line/draw";
 import { UTURN_DEFAULTS } from ".";
 import type { UTurn } from ".";
 import { drawArrowWithCtx } from "@shape/arrow/draw";
+import { getColorAtPercentage } from "@shape/helpers";
 
 export const drawUTurnWithCtx = (options: UTurn) => {
-
   const {
     spacing,
     at,
@@ -16,41 +16,110 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     color,
     arrowHeadShape,
     arrowHeadSize,
+    gradientStops,
   } = {
     ...UTURN_DEFAULTS,
-    ...options
-  }
-  
-  const longLegFrom = rotatePoint({
-    x: at.x,
-    y: at.y - spacing
-  }, at, rotation);
+    ...options,
+  };
 
-  const longLegTo = rotatePoint({
-    x: at.x + upDistance,
-    y: at.y - spacing
-  }, at, rotation);
+  const longLegFrom = rotatePoint(
+    {
+      x: at.x,
+      y: at.y - spacing,
+    },
+    at,
+    rotation
+  );
 
-  const shortLegFrom = rotatePoint({
-    x: at.x + upDistance,
-    y: at.y + spacing
-  }, at, rotation);
+  const longLegTo = rotatePoint(
+    {
+      x: at.x + upDistance,
+      y: at.y - spacing,
+    },
+    at,
+    rotation
+  );
 
-  const shortLegTo = rotatePoint({
-    x: at.x + upDistance - downDistance,
-    y: at.y + spacing
-  }, at, rotation);
+  const shortLegFrom = rotatePoint(
+    {
+      x: at.x + upDistance,
+      y: at.y + spacing,
+    },
+    at,
+    rotation
+  );
 
-  const arcAt = rotatePoint({
-    x: at.x + upDistance,
-    y: at.y
-  }, at, rotation);
+  const shortLegTo = rotatePoint(
+    {
+      x: at.x + upDistance - downDistance,
+      y: at.y + spacing,
+    },
+    at,
+    rotation
+  );
+
+  const arcAt = rotatePoint(
+    {
+      x: at.x + upDistance,
+      y: at.y,
+    },
+    at,
+    rotation
+  );
+
+  const totalLength = upDistance + downDistance + Math.PI * spacing;
+
+  const gradientColorAtCircleStart = getColorAtPercentage(
+    gradientStops,
+    upDistance / totalLength
+  );
+  const gradientColorAtCircleEnd = getColorAtPercentage(
+    gradientStops,
+    (totalLength - downDistance) / totalLength
+  );
+
+  const lineGradient = [
+    ...gradientStops.filter((stop) => stop.offset <= upDistance / totalLength),
+    { offset: 1, color: gradientColorAtCircleStart },
+  ];
+
+  const circleGradient = [
+    { offset: 0, color: gradientColorAtCircleStart },
+    ...gradientStops
+      .filter(
+        (stop) =>
+          stop.offset >= upDistance / totalLength &&
+          stop.offset <= (totalLength - downDistance) / totalLength
+      )
+      .map((stop) => ({
+        offset:
+          (stop.offset - upDistance / totalLength) /
+          ((Math.PI * spacing) / totalLength),
+        color: stop.color,
+      })),
+    { offset: 1, color: gradientColorAtCircleEnd },
+  ];
+
+  const arrowGradient = [
+    { offset: 0, color: gradientColorAtCircleEnd },
+    ...gradientStops
+      .filter(
+        (stop) => stop.offset >= (totalLength - downDistance) / totalLength
+      )
+      .map((stop) => ({
+        offset:
+          (stop.offset - (totalLength - downDistance) / totalLength) /
+          (downDistance / totalLength),
+        color: stop.color,
+      })),
+  ];
 
   const drawLongShaft = drawLineWithCtx({
     start: longLegFrom,
     end: longLegTo,
     width: lineWidth,
-    color
+    color,
+    gradientStops: lineGradient,
   });
 
   const drawArrow = drawArrowWithCtx({
@@ -60,19 +129,42 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     color,
     arrowHeadSize,
     arrowHeadShape,
+    gradientStops: arrowGradient,
   });
 
   return (ctx: CanvasRenderingContext2D) => {
     drawLongShaft(ctx);
-    drawArrow(ctx)
+    drawArrow(ctx);
 
     // draw the part that uturns
     ctx.beginPath();
-    // +0.01, -0.01 to overlap
-    ctx.arc(arcAt.x, arcAt.y, spacing, Math.PI / 2 + rotation + 0.01, -Math.PI / 2 + rotation - 0.01, true);
     ctx.strokeStyle = color;
+
+    if (circleGradient.length >= 2) {
+      const startAngle = Math.PI / 2 + rotation + 0.01;
+      const endAngle = -Math.PI / 2 + rotation - 0.01;
+
+      const endX = arcAt.x + Math.cos(startAngle) * spacing;
+      const endY = arcAt.y + Math.sin(startAngle) * spacing;
+      const startX = arcAt.x + Math.cos(endAngle) * spacing;
+      const startY = arcAt.y + Math.sin(endAngle) * spacing;
+      const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
+      for (const stop of circleGradient) {
+        gradient.addColorStop(stop.offset, stop.color);
+      }
+      ctx.strokeStyle = gradient;
+    }
+    // +0.01, -0.01 to overlap
+    ctx.arc(
+      arcAt.x,
+      arcAt.y,
+      spacing,
+      Math.PI / 2 + rotation + 0.01,
+      -Math.PI / 2 + rotation - 0.01,
+      true
+    );
     ctx.lineWidth = lineWidth;
     ctx.stroke();
     ctx.closePath();
-  }
-}
+  };
+};

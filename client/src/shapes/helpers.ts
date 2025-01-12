@@ -1,4 +1,4 @@
-import type { Coordinate } from "@shape/types";
+import type { Coordinate, GradientStop } from "@shape/types";
 import { LINE_DEFAULTS } from "./line";
 import type { Arrow } from "./arrow";
 import tinycolor from "tinycolor2";
@@ -175,10 +175,6 @@ export const calculateArrowHeadCorners = (options: Required<Pick<Arrow, 'start' 
 export const angleDifference = (angleA: number, angleB: number) => 
   Math.abs(Math.atan2(Math.sin(angleA - angleB), Math.cos(angleA - angleB)));
 
-export type GradientStop = {
-  offset: number;
-  color: string; // Can be in any format supported by tinycolor
-};
 
 type GradientStops = GradientStop[];
 
