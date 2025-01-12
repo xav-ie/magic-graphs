@@ -150,7 +150,7 @@ export const STROKE_DEFAULTS = {
   width: 0
 }
 
-export type GradientStop = { 
-  offset: number, 
-  color: string 
-}
+export type GradientStop = {
+  offset: number;
+  color: string; // Can be in any format supported by tinycolor
+};
