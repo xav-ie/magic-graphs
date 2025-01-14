@@ -4,6 +4,7 @@ import { UTURN_DEFAULTS } from ".";
 import type { UTurn } from ".";
 import { drawArrowWithCtx } from "@shape/arrow/draw";
 import { getColorAtPercentage } from "@shape/helpers";
+import type { GradientStop } from "@shape/types";
 
 export const drawUTurnWithCtx = (options: UTurn) => {
   const {
@@ -67,52 +68,59 @@ export const drawUTurnWithCtx = (options: UTurn) => {
     rotation
   );
 
-  const totalLength = upDistance + downDistance + Math.PI * spacing;
+  let lineGradient: GradientStop[] = [];
+  let circleGradient: GradientStop[] = [];
+  let arrowGradient: GradientStop[] = [];
 
-  const gradientColorAtCircleStart = getColorAtPercentage(
-    gradientStops,
-    upDistance / totalLength
-  );
-  const gradientColorAtCircleEnd = getColorAtPercentage(
-    gradientStops,
-    (totalLength - downDistance) / totalLength
-  );
+  if (gradientStops.length >= 2) {
+    const totalLength = upDistance + downDistance + Math.PI * spacing;
 
-  const lineGradient = [
-    ...gradientStops.filter((stop) => stop.offset <= upDistance / totalLength),
-    { offset: 1, color: gradientColorAtCircleStart },
-  ];
+    const gradientColorAtCircleStart = getColorAtPercentage(
+      gradientStops,
+      upDistance / totalLength
+    );
+    const gradientColorAtCircleEnd = getColorAtPercentage(
+      gradientStops,
+      (totalLength - downDistance) / totalLength
+    );
+  
+    lineGradient = [
+      ...gradientStops.filter((stop) => stop.offset <= upDistance / totalLength),
+      { offset: 1, color: gradientColorAtCircleStart },
+    ];
+  
+    circleGradient = [
+      { offset: 0, color: gradientColorAtCircleStart },
+      ...gradientStops
+        .filter(
+          (stop) =>
+            stop.offset >= upDistance / totalLength &&
+            stop.offset <= (totalLength - downDistance) / totalLength
+        )
+        .map((stop) => ({
+          offset:
+            (stop.offset - upDistance / totalLength) /
+            ((Math.PI * spacing) / totalLength),
+          color: stop.color,
+        })),
+      { offset: 1, color: gradientColorAtCircleEnd },
+    ];
+  
+    arrowGradient = [
+      { offset: 0, color: gradientColorAtCircleEnd },
+      ...gradientStops
+        .filter(
+          (stop) => stop.offset >= (totalLength - downDistance) / totalLength
+        )
+        .map((stop) => ({
+          offset:
+            (stop.offset - (totalLength - downDistance) / totalLength) /
+            (downDistance / totalLength),
+          color: stop.color,
+        })),
+    ];
 
-  const circleGradient = [
-    { offset: 0, color: gradientColorAtCircleStart },
-    ...gradientStops
-      .filter(
-        (stop) =>
-          stop.offset >= upDistance / totalLength &&
-          stop.offset <= (totalLength - downDistance) / totalLength
-      )
-      .map((stop) => ({
-        offset:
-          (stop.offset - upDistance / totalLength) /
-          ((Math.PI * spacing) / totalLength),
-        color: stop.color,
-      })),
-    { offset: 1, color: gradientColorAtCircleEnd },
-  ];
-
-  const arrowGradient = [
-    { offset: 0, color: gradientColorAtCircleEnd },
-    ...gradientStops
-      .filter(
-        (stop) => stop.offset >= (totalLength - downDistance) / totalLength
-      )
-      .map((stop) => ({
-        offset:
-          (stop.offset - (totalLength - downDistance) / totalLength) /
-          (downDistance / totalLength),
-        color: stop.color,
-      })),
-  ];
+  }
 
   const drawLongShaft = drawLineWithCtx({
     start: longLegFrom,

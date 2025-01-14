@@ -3,9 +3,9 @@ import { getConnectedNodes, getEdgesAlongPath } from '@graph/helpers'
 import { getLargestAngularSpace } from '@shape/helpers'
 import type { BaseGraph } from '@graph/base'
 import { GOLDEN_RATIO } from '@utils/math'
-import { uturn } from '@shapes'
 import { edgeArrow } from './edgeArrow'
 import { edgeLine } from './edgeLine'
+import { edgeUTurn } from './edgeUturn'
 import type { ShapeResolverOptions } from './types'
 
 const WHITESPACE_BETWEEN_ARROW_TIP_AND_NODE = 2
@@ -31,6 +31,7 @@ export const getEdgeSchematic = (
 
   const arrow = edgeArrow(edgeShapeOptions)
   const line = edgeLine(edgeShapeOptions)
+  const uturn = edgeUTurn(edgeShapeOptions)
 
   const [from, to] = getConnectedNodes(edge.id, graph)
   const edgesAlongPath = getEdgesAlongPath(from.id, to.id, graph)
