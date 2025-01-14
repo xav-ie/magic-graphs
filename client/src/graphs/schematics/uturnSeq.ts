@@ -1,5 +1,5 @@
 /**
- * sequencing for edge shape animations
+ * sequencing for uturn shape animations
  */
 export const SEQ = {
   IN: {
