@@ -17,7 +17,7 @@ const animateInUTurnBody =
     const mapper = getMapper(...SEQ.IN.BODY);
     const percentage = EASING(mapper(progress));
 
-    const interpolateWidth = interpolate(0, uturnSchema.lineWidth);
+    const interpolateWidth = interpolate(0.00001, uturnSchema.lineWidth);
 
     return {
       lineWidth: interpolateWidth(percentage),
@@ -30,7 +30,7 @@ const animateOutUTurnBody =
     const mapper = getMapper(0, 1);
     const percentage = EASING(mapper(progress));
 
-    const interpolateWidth = interpolate(uturnSchema.lineWidth, 0);
+    const interpolateWidth = interpolate(uturnSchema.lineWidth, 0.00001);
 
     return {
       lineWidth: interpolateWidth(percentage),
