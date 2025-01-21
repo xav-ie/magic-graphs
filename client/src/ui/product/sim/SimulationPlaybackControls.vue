@@ -9,6 +9,7 @@
   import GSpreadSelect from "@ui/graph/select/GSpreadSelect.vue";
   import GButton from "@ui/graph/button/GButton.vue";
   import { DEFAULT_PLAYBACK_SPEED } from "./useSimulationControls";
+  import { onKeyStroke } from "@vueuse/core";
 
   const colors = useNonNullGraphColors();
 
@@ -94,6 +95,25 @@
   const initialItemIndex = PLAYBACK_SPEEDS.findIndex(
     (speed) => speed.value === playbackSpeed.value
   ) ?? 2
+
+  onKeyStroke([" ", "Spacebar"], (e) => {
+    e.preventDefault();
+    if (isOver.value) {
+      restart()
+    } else {
+      togglePause();
+    }
+  });
+
+  onKeyStroke("ArrowLeft", (e) => {
+    e.preventDefault();
+    goPrevStep();
+  });
+
+  onKeyStroke("ArrowRight", (e) => {
+    e.preventDefault();
+    goNextStep();
+  });
 </script>
 
 <template>
