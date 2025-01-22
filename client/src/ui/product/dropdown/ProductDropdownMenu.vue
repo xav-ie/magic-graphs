@@ -20,7 +20,10 @@
 
 <template>
   <GWell class="flex flex-col p-2 w-[400px] h-[500px] overflow-auto rounded-lg">
-    <div v-for="category in PRODUCT_CATEGORY_RANK">
+    <div 
+      v-for="category in PRODUCT_CATEGORY_RANK"
+      :key="category"  
+    >
       <GWell
         v-if="categoryRecord[category].length > 0"
         tertiary

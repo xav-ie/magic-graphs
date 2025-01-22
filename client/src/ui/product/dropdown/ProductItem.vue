@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref } from "vue";
+  import { computed, ref } from "vue";
   import {
     nonNullGraph as graph,
     queuedGraphStateLoadout,
@@ -38,6 +38,13 @@
   setTimeout(() => {
     img.value = props.product.menu.thumbnail;
   }, getRandomInRange(0, 100));
+
+  const allowGoWithGraph = computed(() => {
+    return (
+      !isExternal(props.product) &&
+      (props.product.menu.allowGoWithGraph === undefined && !props.product.menu.allowGoWithGraph)
+    );
+  })
 </script>
 
 <template>
@@ -70,7 +77,7 @@
           go
         </GButton>
         <GButton
-          v-if="!isExternal(product)"
+          v-if="allowGoWithGraph"
           @click="navigateWithGraph(product)"
           tertiary
           class="grid place-items-center w-[120px] text-sm"
