@@ -42,7 +42,7 @@
   const allowGoWithGraph = computed(() => {
     return (
       !isExternal(props.product) &&
-      (props.product.menu.allowGoWithGraph === undefined && !props.product.menu.allowGoWithGraph)
+      (props.product.menu.allowGoWithGraph === undefined || props.product.menu.allowGoWithGraph)
     );
   })
 </script>
