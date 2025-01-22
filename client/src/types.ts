@@ -25,6 +25,10 @@ export type ProductDropdownInfo = {
    * the category of the product
    */
   category: ProductCategory,
+  /**
+   * whether the product allows transfer of graphs between products
+   */
+  allowGoWithGraph?: boolean,
 }
 
 /**
