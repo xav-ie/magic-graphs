@@ -13,6 +13,7 @@ const route: ProductInfo = {
     description: 'A playground for magic shapes',
     thumbnail: '/products/thumbnails/shape-playground.png',
     category: 'developer tools',
+    allowGoWithGraph: false,
   },
 }
 
