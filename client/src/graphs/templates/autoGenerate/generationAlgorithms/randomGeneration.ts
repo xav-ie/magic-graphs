@@ -214,9 +214,9 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
     }
   });
 
-  if (!allowBidirectionalEdges) {
+  if (allowBidirectionalEdges) {
     edges.forEach((edge) => {
-      if (Math.random() < 0.3) {
+      if (Math.random() < 0.1) {
         addConnection(edge.to, edge.from);
       }
     });

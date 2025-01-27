@@ -103,9 +103,15 @@
         >Reset</GButton
       >
       <h2 class="font-bold text-sm">
-        Allow Self Referencing Nodes ?
+        Allow Self Referencing Nodes?
         <input 
           v-model="options.allowUTurnEdges" 
+          type="checkbox">
+      </h2>
+      <h2 class="font-bold text-sm">
+        Allow Bidirecional Edges?
+        <input 
+          v-model="options.allowBidirectionalEdges" 
           type="checkbox">
       </h2>
     </GWell>

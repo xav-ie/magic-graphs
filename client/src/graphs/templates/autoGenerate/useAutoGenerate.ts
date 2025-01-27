@@ -28,7 +28,6 @@ export const useAutoGenerate = (graph: Graph) => {
       origin
     );
     edges.value = generateCohesiveEdges(centeredNodes, options.value);
-    console.log(options.value);
     nodes.value = centeredNodes;
     graph.load({ nodes: nodes.value, edges: edges.value });
   };
