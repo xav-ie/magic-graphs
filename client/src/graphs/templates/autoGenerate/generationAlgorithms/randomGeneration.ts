@@ -91,6 +91,7 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
     minAngleBetweenEdges,
     edgeLabel,
     allowUTurnEdges,
+    allowBidirectionalEdges,
   } = {
     ...GENERATE_COHESIVE_EDGES_DEFAULTS,
     ...options,
@@ -212,6 +213,14 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
       }
     }
   });
+
+  if (!allowBidirectionalEdges) {
+    edges.forEach((edge) => {
+      if (Math.random() < 0.3) {
+        addConnection(edge.to, edge.from);
+      }
+    });
+  }
 
   return edges;
 };
