@@ -102,6 +102,12 @@
         "
         >Reset</GButton
       >
+      <h2 class="font-bold text-sm">
+        Allow Self Referencing Nodes ?
+        <input 
+          v-model="options.allowUTurnEdges" 
+          type="checkbox">
+      </h2>
     </GWell>
   </CPopover>
 </template>
