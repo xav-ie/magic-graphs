@@ -90,6 +90,7 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
     maxNeighbors, 
     minAngleBetweenEdges,
     edgeLabel,
+    allowUTurnEdges,
   } = {
     ...GENERATE_COHESIVE_EDGES_DEFAULTS,
     ...options,
@@ -100,7 +101,15 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
 
   const addConnection = (from: string, to: string) => {
     if (!usedConnections.has(from)) usedConnections.set(from, new Set());
-    usedConnections.get(from)?.add(to);
+    usedConnections.get(from)!.add(to);
+
+    const label = typeof edgeLabel === 'function' ? edgeLabel(from, to) : edgeLabel;
+    edges.push({
+      id: generateId(),
+      from,
+      to,
+      label,
+    });
   };
 
   const distance = (a: GNode, b: GNode): number =>
@@ -135,22 +144,23 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
       }
     }
 
-    const label = typeof edgeLabel === 'function' ? edgeLabel(closestPair!.from, closestPair!.to) : edgeLabel;
-
     if (closestPair) {
       const { from, to } = closestPair;
-      edges.push({
-        id: generateId(),
-        from,
-        to,
-        label,
-      });
+      
       addConnection(from, to);
       connectedNodes.add(to);
       unconnectedNodes.delete(to);
     }
   }
 
+  if (allowUTurnEdges && maxEdgesPerNode >= 2) {
+    const uTurnNodes = nodes.filter(() => Math.random() < 0.3);
+
+    uTurnNodes.forEach((node) => {
+      addConnection(node.id, node.id);
+    })
+  }
+  
   nodes.forEach((fromNode) => {
     const potentialConnections = nodes
       .filter((toNode) => fromNode.id !== toNode.id) // remove self
@@ -196,13 +206,6 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
           });
 
         if (angleCheck) {
-          const label = typeof edgeLabel === 'function' ? edgeLabel(fromNode.id, toNode.id) : edgeLabel;
-          edges.push({
-            id: generateId(),
-            from: fromNode.id,
-            to: toNode.id,
-            label,
-          });
           addConnection(fromNode.id, toNode.id);
           edgesAdded++;
         }

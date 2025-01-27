@@ -20,6 +20,7 @@ type GenerateCohesiveEdgesOptions = {
   maxNeighbors: number;
   minAngleBetweenEdges: number;
   edgeLabel: string | ((fromNode: string, toNode: string) => string);
+  allowUTurnEdges: boolean;
 };
 
 export type PartialGenerateCohesiveEdgesOptions = Partial<GenerateCohesiveEdgesOptions>;
@@ -30,6 +31,7 @@ export const GENERATE_COHESIVE_EDGES_DEFAULTS = {
   maxNeighbors: 4,
   minAngleBetweenEdges: Math.PI / 6,
   edgeLabel: "1",
+  allowUTurnEdges: false,
 } as const;
 
 export type AutoGenerateGraphOptions = 
