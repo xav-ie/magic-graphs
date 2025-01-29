@@ -6,18 +6,24 @@ import { getTextDimensionsOnCanvas } from "./helpers";
 import { useMemoize } from "@vueuse/core";
 
 export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => {
-
-  const { width }  = useMemoize(() => getTextDimensionsOnCanvas(textArea.text))();
-
+  const paddingHorizontal = 20;
+  const paddingVertical = paddingHorizontal;
+  const { width, height, ascent, descent } = useMemoize(() =>
+    getTextDimensionsOnCanvas(textArea.text)
+  )();
   return {
-  width: Math.max(
-    width,
-    textArea.text.fontSize * 2 // default is square background
-  ),
-  height: textArea.text.fontSize * 2, // will need to be extended if text wrap
+    width: Math.max(
+      width + paddingHorizontal,
+      textArea.text.fontSize * 2 // default is square background
+    ),
+    height: Math.max(
+      height + paddingVertical,
+      textArea.text.fontSize * 2 // will need to be extended if text wrap
+    ),
+    ascent,
+    descent,
+  };
 };
-
-}
 
 export const drawTextMatteWithTextArea = (textArea: DeepRequired<TextArea>) => {
   const { color, at } = textArea;
@@ -31,7 +37,8 @@ export const drawTextMatteWithTextArea = (textArea: DeepRequired<TextArea>) => {
   return (ctx: CanvasRenderingContext2D) => matte.drawShape(ctx);
 };
 
-export const drawTextWithTextArea = (textArea: DeepRequired<TextArea>) => (ctx: CanvasRenderingContext2D) => {
+export const drawTextWithTextArea =
+  (textArea: DeepRequired<TextArea>) => (ctx: CanvasRenderingContext2D) => {
     const { at } = textArea;
     const { content, fontSize, fontWeight, color, fontFamily } = textArea.text;
 
@@ -40,18 +47,12 @@ export const drawTextWithTextArea = (textArea: DeepRequired<TextArea>) => (ctx: 
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    const { width } = getTextAreaDimension({
+    const { width, descent, height } = getTextAreaDimension({
       ...textArea,
       at,
     } as DeepRequired<TextArea>);
 
-    const textVerticalOffset = fontSize >= 50 ? 0.3 : 0.1;
-
-    ctx.fillText(
-      content,
-      at.x + width / 2,
-      at.y + fontSize + fontSize ** textVerticalOffset
-    );
+    ctx.fillText(content, at.x + width / 2, at.y + height / 2 + descent / 4);
   };
 
 export const getFullTextArea = (
