@@ -1,7 +1,8 @@
-import type { Coordinate, GradientStop } from "@shape/types";
+import { TEXT_DEFAULTS, type Coordinate, type GradientStop, type Text } from "@shape/types";
 import { LINE_DEFAULTS } from "./line";
 import type { Arrow } from "./arrow";
 import tinycolor from "tinycolor2";
+import { getCtx } from "@utils/ctx";
 
 /**
  * @description rotates a point around a center point by a given angle in radians
@@ -118,23 +119,17 @@ export const getArrowHeadSize = (
 
 /**
  * @description generates a triangle object from the arrow tip
- * 
+ *
  * @param options the arrow
  * @returns the triangle that makes up the arrow tip
  */
 
-export const calculateArrowHeadCorners = (options: Required<Pick<Arrow, 'start' | 'end' | 'width' | 'arrowHeadSize'>>) => {
-  const { 
-    start,
-    end, 
-    width, 
-    arrowHeadSize, 
-  } = options
+export const calculateArrowHeadCorners = (
+  options: Required<Pick<Arrow, "start" | "end" | "width" | "arrowHeadSize">>
+) => {
+  const { start, end, width, arrowHeadSize } = options;
 
-  const { 
-    arrowHeadHeight, 
-    perpLineLength 
-  } = arrowHeadSize(width);
+  const { arrowHeadHeight, perpLineLength } = arrowHeadSize(width);
 
   const directionX = end.x - start.x;
   const directionY = end.y - start.y;
@@ -142,9 +137,9 @@ export const calculateArrowHeadCorners = (options: Required<Pick<Arrow, 'start' 
   const unitX = directionX / length;
   const unitY = directionY / length;
 
-  const tip = { 
-    x: end.x, 
-    y: end.y 
+  const tip = {
+    x: end.x,
+    y: end.y,
   };
 
   const perpX = -unitY * perpLineLength;
@@ -172,9 +167,8 @@ export const calculateArrowHeadCorners = (options: Required<Pick<Arrow, 'start' 
  * @param angleB The second angle in radians.
  * @returns The difference between the two angles in radians.
  */
-export const angleDifference = (angleA: number, angleB: number) => 
+export const angleDifference = (angleA: number, angleB: number) =>
   Math.abs(Math.atan2(Math.sin(angleA - angleB), Math.cos(angleA - angleB)));
-
 
 type GradientStops = GradientStop[];
 
@@ -197,7 +191,7 @@ const interpolateColor = (color1: string, color2: string, ratio: number) => {
   };
 
   return tinycolor(result).toHexString();
-}
+};
 
 /**
  * Finds the color at a specific percentage in a gradient
@@ -205,7 +199,10 @@ const interpolateColor = (color1: string, color2: string, ratio: number) => {
  * @param percentage - The distance along the gradient (0 to 1) to calculate the color for
  * @returns The color at the specified percentage as a hex string
  */
-export const getColorAtPercentage = (gradient: GradientStops, percentage: number) => {
+export const getColorAtPercentage = (
+  gradient: GradientStops,
+  percentage: number
+) => {
   if (gradient.length === 0) {
     throw new Error("Gradient must have at least one stop");
   }
@@ -229,4 +226,37 @@ export const getColorAtPercentage = (gradient: GradientStops, percentage: number
   const ratio = range === 0 ? 0 : (percentage - lowerStop.offset) / range;
 
   return interpolateColor(lowerStop.color, upperStop.color, ratio);
-}
+};
+
+export const getTextDimensionsOnCanvas = (text: Text) => {
+  const {
+    content, 
+    fontSize, 
+    fontWeight, 
+    fontFamily
+  } = {
+    ...TEXT_DEFAULTS,
+    ...text
+  };
+  const canvas = document.createElement("canvas");
+  const ctx = getCtx(canvas);
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+  const metrics = ctx.measureText(content);
+
+  canvas.remove();
+
+  const ascent = metrics.actualBoundingBoxAscent;
+  const descent = metrics.actualBoundingBoxDescent;
+  const height = ascent + descent;
+
+  return {
+    width: metrics.width,
+    height,
+    ascent,
+    descent,
+  };
+};

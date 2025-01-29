@@ -2,14 +2,21 @@ import type { DeepRequired } from "ts-essentials";
 import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
 import type { Coordinate, TextArea, TextAreaNoLocation } from "@shape/types";
 import { rect } from "./rect";
+import { getTextDimensionsOnCanvas } from "./helpers";
 
-export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => ({
+export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => {
+
+  const { width } = getTextDimensionsOnCanvas(textArea.text);
+
+  return {
   width: Math.max(
-    textArea.text.fontSize * 0.6 * textArea.text.content.length,
-    textArea.text.fontSize * 2
+    width,
+    textArea.text.fontSize * 2 // default is square background
   ),
   height: textArea.text.fontSize * 2, // will need to be extended if text wrap
-});
+};
+
+}
 
 export const drawTextMatteWithTextArea = (textArea: DeepRequired<TextArea>) => {
   const { color, at } = textArea;
@@ -25,9 +32,9 @@ export const drawTextMatteWithTextArea = (textArea: DeepRequired<TextArea>) => {
 
 export const drawTextWithTextArea = (textArea: DeepRequired<TextArea>) => (ctx: CanvasRenderingContext2D) => {
     const { at } = textArea;
-    const { content, fontSize, fontWeight, color } = textArea.text;
+    const { content, fontSize, fontWeight, color, fontFamily } = textArea.text;
 
-    ctx.font = `${fontWeight} ${fontSize}px Arial`;
+    ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
     ctx.fillStyle = color;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
