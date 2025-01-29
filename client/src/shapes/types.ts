@@ -123,12 +123,14 @@ export type Text = {
   fontSize?: number,
   fontWeight?: TextFontWeight,
   color?: string,
+  fontFamily?: string
 }
 
 export const TEXT_DEFAULTS = {
   fontSize: 12,
   fontWeight: 'normal',
   color: 'black',
+  fontFamily: 'Arial',
 } as const
 
 export type Stroke = {
