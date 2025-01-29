@@ -240,6 +240,8 @@ export const getTextDimensionsOnCanvas = (text: Text) => {
   };
   const canvas = document.createElement("canvas");
   const ctx = getCtx(canvas);
+  canvas.width = 1;
+  canvas.height = 1;
 
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";

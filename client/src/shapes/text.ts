@@ -3,10 +3,11 @@ import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
 import type { Coordinate, TextArea, TextAreaNoLocation } from "@shape/types";
 import { rect } from "./rect";
 import { getTextDimensionsOnCanvas } from "./helpers";
+import { useMemoize } from "@vueuse/core";
 
 export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => {
 
-  const { width } = getTextDimensionsOnCanvas(textArea.text);
+  const { width }  = useMemoize(() => getTextDimensionsOnCanvas(textArea.text))();
 
   return {
   width: Math.max(
