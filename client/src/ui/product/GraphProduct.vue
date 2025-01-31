@@ -52,37 +52,45 @@
   const graphEl = ref<HTMLCanvasElement>();
 
   useGraphProduct(props.graph);
-  
+
   const graphDragging = ref(false);
-  const computeGraphPointerEvents = computed(() => graphDragging.value ? 'pointer-events-none' : '');
+  const computeGraphPointerEvents = computed(() =>
+    graphDragging.value ? "pointer-events-none" : ""
+  );
 
   onMounted(() => {
     emit("graph-ref", graphEl.value);
 
-    props.graph.subscribe('onMouseDown', () => {
+    props.graph.subscribe("onMouseDown", () => {
       graphDragging.value = true;
-    })
-  
-    props.graph.subscribe('onMouseUp', () => {
+    });
+
+    props.graph.subscribe("onMouseUp", () => {
       graphDragging.value = false;
-    })
+    });
   });
 
   onUnmounted(() => {
-    props.graph.unsubscribe('onMouseDown', () => {});
-    props.graph.unsubscribe('onMouseUp', () => {});
-  })
-
+    props.graph.unsubscribe("onMouseDown", () => {});
+    props.graph.unsubscribe("onMouseUp", () => {});
+  });
 </script>
 
 <template>
-  <GraphCanvas
-    @graph-ref="(el) => (graphEl = el)"
-    :graph="graph"
-  />
+  <GraphCanvas @graph-ref="(el) => (graphEl = el)" :graph="graph" />
 
   <div
-    :class="['absolute', 'top-6', 'w-full', 'flex', 'flex-col', 'justify-center', 'items-center', 'gap-2', computeGraphPointerEvents]"
+    :class="[
+      'absolute',
+      'top-6',
+      'w-full',
+      'flex',
+      'flex-col',
+      'justify-center',
+      'items-center',
+      'gap-2',
+      computeGraphPointerEvents,
+    ]"
   >
     <template v-if="runningSimulation">
       <slot name="top-center-sim"></slot>
@@ -93,7 +101,18 @@
     </template>
   </div>
 
-  <div :class="['absolute', 'grid', 'place-items-center', 'left-4', 'top-0', 'h-full', 'max-w-96', computeGraphPointerEvents]">
+  <div
+    :class="[
+      'absolute',
+      'grid',
+      'place-items-center',
+      'left-4',
+      'top-0',
+      'h-full',
+      'max-w-96',
+      computeGraphPointerEvents,
+    ]"
+  >
     <div
       class="relative max-h-3/4 w-full grid place-items-center overflow-auto"
     >
@@ -107,7 +126,18 @@
     </div>
   </div>
 
-  <div :class="['absolute', 'grid', 'place-items-center', 'right-4', 'top-0', 'h-full', 'max-w-96', computeGraphPointerEvents]">
+  <div
+    :class="[
+      'absolute',
+      'grid',
+      'place-items-center',
+      'right-4',
+      'top-0',
+      'h-full',
+      'max-w-96',
+      computeGraphPointerEvents,
+    ]"
+  >
     <div
       class="relative max-h-3/4 w-full grid place-items-center overflow-auto"
     >
@@ -160,7 +190,16 @@
     </template>
   </div>
 
-  <div :class="['absolute', 'flex', 'gap-2', 'bottom-8', 'right-8', computeGraphPointerEvents]">
+  <div
+    :class="[
+      'absolute',
+      'flex',
+      'gap-2',
+      'bottom-8',
+      'right-8',
+      computeGraphPointerEvents,
+    ]"
+  >
     <ThemeToolbar />
     <FullscreenButton />
   </div>
