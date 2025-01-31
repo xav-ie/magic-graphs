@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref } from "vue";
+  import { computed, onMounted, onUnmounted, ref } from "vue";
   import type { UnwrapRef } from "vue";
   import GraphCanvas from "@graph/Graph.vue";
   import { useGraphProduct } from "@graph/useGraphProduct";
@@ -52,10 +52,27 @@
   const graphEl = ref<HTMLCanvasElement>();
 
   useGraphProduct(props.graph);
+  
+  const graphDragging = ref(false);
+  const computeGraphPointerEvents = computed(() => graphDragging.value ? 'pointer-events-none' : '');
 
   onMounted(() => {
     emit("graph-ref", graphEl.value);
+
+    props.graph.subscribe('onMouseDown', () => {
+      graphDragging.value = true;
+    })
+  
+    props.graph.subscribe('onMouseUp', () => {
+      graphDragging.value = false;
+    })
   });
+
+  onUnmounted(() => {
+    props.graph.unsubscribe('onMouseDown', () => {});
+    props.graph.unsubscribe('onMouseUp', () => {});
+  })
+
 </script>
 
 <template>
@@ -65,7 +82,7 @@
   />
 
   <div
-    class="absolute top-6 w-full flex flex-col justify-center items-center gap-2"
+    :class="['absolute', 'top-6', 'w-full', 'flex', 'flex-col', 'justify-center', 'items-center', 'gap-2', computeGraphPointerEvents]"
   >
     <template v-if="runningSimulation">
       <slot name="top-center-sim"></slot>
@@ -76,7 +93,7 @@
     </template>
   </div>
 
-  <div class="absolute grid place-items-center left-4 top-0 h-full max-w-96">
+  <div :class="['absolute', 'grid', 'place-items-center', 'left-4', 'top-0', 'h-full', 'max-w-96', computeGraphPointerEvents]">
     <div
       class="relative max-h-3/4 w-full grid place-items-center overflow-auto"
     >
@@ -90,7 +107,7 @@
     </div>
   </div>
 
-  <div class="absolute grid place-items-center right-4 top-0 h-full max-w-96">
+  <div :class="['absolute', 'grid', 'place-items-center', 'right-4', 'top-0', 'h-full', 'max-w-96', computeGraphPointerEvents]">
     <div
       class="relative max-h-3/4 w-full grid place-items-center overflow-auto"
     >
@@ -104,11 +121,11 @@
     </div>
   </div>
 
-  <div class="absolute top-6 left-6">
+  <div :class="['absolute', 'top-6', 'left-6', computeGraphPointerEvents]">
     <ProductDropdown />
   </div>
 
-  <div class="absolute top-6 right-6">
+  <div :class="['absolute', 'top-6', 'right-6', computeGraphPointerEvents]">
     <template v-if="runningSimulation">
       <slot name="top-right-sim">
         <StopSimButton @click="stopSimulation" />
@@ -143,7 +160,7 @@
     </template>
   </div>
 
-  <div class="absolute flex gap-2 bottom-8 right-8">
+  <div :class="['absolute', 'flex', 'gap-2', 'bottom-8', 'right-8', computeGraphPointerEvents]">
     <ThemeToolbar />
     <FullscreenButton />
   </div>
