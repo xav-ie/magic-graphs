@@ -40,10 +40,8 @@
   }, getRandomInRange(0, 100));
 
   const allowGoWithGraph = computed(() => {
-    return (
-      !isExternal(props.product) &&
-      (props.product.menu.allowGoWithGraph === undefined || props.product.menu.allowGoWithGraph)
-    );
+    const goWithGraph = props.product.menu.allowGoWithGraph ?? true
+    return !isExternal(props.product) && goWithGraph
   })
 </script>
 

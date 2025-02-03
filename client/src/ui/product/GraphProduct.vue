@@ -54,7 +54,7 @@
   useGraphProduct(props.graph);
 
   const graphDragging = ref(false);
-  const computeGraphPointerEvents = computed(() =>
+  const computedGraphPointerEvents = computed(() =>
     graphDragging.value ? "pointer-events-none" : ""
   );
 
@@ -89,7 +89,7 @@
       'justify-center',
       'items-center',
       'gap-2',
-      computeGraphPointerEvents,
+      computedGraphPointerEvents,
     ]"
   >
     <template v-if="runningSimulation">
@@ -110,7 +110,7 @@
       'top-0',
       'h-full',
       'max-w-96',
-      computeGraphPointerEvents,
+      computedGraphPointerEvents,
     ]"
   >
     <div
@@ -135,7 +135,7 @@
       'top-0',
       'h-full',
       'max-w-96',
-      computeGraphPointerEvents,
+      computedGraphPointerEvents,
     ]"
   >
     <div
@@ -151,11 +151,11 @@
     </div>
   </div>
 
-  <div :class="['absolute', 'top-6', 'left-6', computeGraphPointerEvents]">
+  <div :class="['absolute', 'top-6', 'left-6', computedGraphPointerEvents]">
     <ProductDropdown />
   </div>
 
-  <div :class="['absolute', 'top-6', 'right-6', computeGraphPointerEvents]">
+  <div :class="['absolute', 'top-6', 'right-6', computedGraphPointerEvents]">
     <template v-if="runningSimulation">
       <slot name="top-right-sim">
         <StopSimButton @click="stopSimulation" />
@@ -197,7 +197,7 @@
       'gap-2',
       'bottom-8',
       'right-8',
-      computeGraphPointerEvents,
+      computedGraphPointerEvents,
     ]"
   >
     <ThemeToolbar />
