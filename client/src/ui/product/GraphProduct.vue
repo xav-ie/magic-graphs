@@ -174,7 +174,17 @@
   </div>
 
   <div
-    class="absolute bottom-8 gap-4 w-full flex flex-col justify-center items-center"
+    :class="[
+      'absolute',
+      'bottom-8', 
+      'gap-4', 
+      'w-full', 
+      'flex', 
+      'flex-col', 
+      'justify-center', 
+      'items-center', 
+      computedGraphPointerEvents
+    ]"
   >
     <template v-if="runningSimulation && isActive">
       <slot name="bottom-center-sim">
