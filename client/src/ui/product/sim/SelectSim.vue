@@ -10,6 +10,7 @@
 
   const props = defineProps<{
     simulations: SimulationDeclaration[];
+    disabled?: boolean;
   }>();
 
   const emits = defineEmits<{
@@ -29,6 +30,7 @@
     <template #activator="{ toggle }">
       <GButton
         @click="toggle"
+        :disabled="disabled"
         class="h-14 w-14 rounded-full"
       >
         <CIcon

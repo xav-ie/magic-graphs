@@ -167,6 +167,7 @@
         <SelectSimulation
           @simulation-selected="setActiveSimulation"
           :simulations="simulations"
+          :disabled="graph.annotation.isActive.value"
         />
       </slot>
     </template>
