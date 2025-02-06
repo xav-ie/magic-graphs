@@ -149,6 +149,15 @@ export const useShortcuts = (
 		},
 	}));
 
+	const nameToBindingKeys = computed(() => {
+		const platformBindings = bindings.value[USER_PLATFORM];
+		const nameToBindingKeys: Record<string, string> = {};
+		for (const key in platformBindings) {
+			nameToBindingKeys[platformBindings[key as keyof typeof platformBindings].name] = key;
+		}
+		return nameToBindingKeys;
+	});
+
 	const { isPressed } = useShortcutPressed();
 
 	const handleKeyboardEvents = (ev: KeyboardEvent) => {
@@ -180,6 +189,10 @@ export const useShortcuts = (
 	onUnmounted(() => toast.removeAllGroups());
 
 	return {
+		/**
+		 * a map shortut names and their corresponding bindings in string form based on the platform you are on. Example: { 'Undo', ['Ctrl+Z'] }
+		 */
+		nameToBindingKeys,
 		/**
 		 * functions computed to mirror the actions of the keyboard shortcuts.
 		 * invoking these are the API equivalent of pressing the keyboard shortcuts
