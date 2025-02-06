@@ -17,4 +17,7 @@ export const nonNullGraph = computed(() => {
  */
 export const queuedGraphStateLoadout = shallowRef<{ nodes: GNode[]; edges: GEdge[] }>();
 
+/**
+ * when switching between products, if this is set, the annotations will be loaded with this state
+ */
 export const queuedGraphAnnotationState = shallowRef<Annotation[]>();
