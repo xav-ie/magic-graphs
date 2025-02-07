@@ -39,7 +39,7 @@
 		}"
 	>
 		<slot name="header"></slot>
-		<slot name="content"></slot>
+		<slot></slot>
 		<slot name="footer"></slot>
 	</Dialog>
 </template>
