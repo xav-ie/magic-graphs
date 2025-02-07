@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { ref } from 'vue';
+	import { computed, ref } from 'vue';
 	import GButton from '@ui/graph/button/GButton.vue';
 	import CIcon from '@ui/core/Icon.vue';
 	import GDialog from '@ui/core/GDialog.vue';
@@ -9,6 +9,13 @@
 	const showDialog = ref(false);
 
 	const { nameToBindingKeys } = graph.value.shortcut;
+
+	const keybindings = computed(() => {
+		return {
+			...nameToBindingKeys.value,
+			Fullscreen: 'F',
+		};
+	});
 
 	const convertKeyStringToKeys = (keyString: string) => {
 		const keys = keyString
@@ -52,7 +59,7 @@
 		<h1 class="font-bold text-md">Commands</h1>
 		<GWell class="flex-col w-[500px]">
 			<div
-				v-for="command in Object.keys(nameToBindingKeys)"
+				v-for="command in Object.keys(keybindings)"
 				:key="command"
 				class="flex justify-between py-1 items-center"
 			>
@@ -60,7 +67,7 @@
 				<div class="flex-grow mx-2 border-[1px] border-dashed"></div>
 				<div class="flex py-1">
 					<GWell
-						v-for="keyBinding in convertKeyStringToKeys(nameToBindingKeys[command])"
+						v-for="keyBinding in convertKeyStringToKeys(keybindings[command])"
 						:key="keyBinding"
 						:class="['border-[1px]', 'rounded-md', 'px-2', 'mx-[1px]', 'text-[10px]']"
 					>
