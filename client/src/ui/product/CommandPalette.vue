@@ -10,12 +10,17 @@
 
 	const { nameToBindingKeys } = graph.value.shortcut;
 
-	const keybindings = computed(() => {
+	const keybindings = computed<Record<string, string>>(() => {
 		return {
 			...nameToBindingKeys.value,
 			Fullscreen: 'F',
+			'Pause/Play Simulation': 'Space',
+			'Simulation Step Forward': 'ArrowRight',
+			'Simulation Step Backward': 'ArrowLeft',
 		};
 	});
+
+	// TODO: add categories
 
 	const convertKeyStringToKeys = (keyString: string) => {
 		const keys = keyString
@@ -31,7 +36,7 @@
 </script>
 
 <template>
-	<GButton @click="showDialog = !showDialog">
+	<GButton @click="showDialog = !showDialog" class="aspect-square">
 		<CIcon icon="question_mark"></CIcon>
 	</GButton>
 
@@ -64,7 +69,6 @@
 				class="flex justify-between py-1 items-center"
 			>
 				{{ command }}
-				<div class="flex-grow mx-2 border-[1px] border-dashed"></div>
 				<div class="flex py-1">
 					<GWell
 						v-for="keyBinding in convertKeyStringToKeys(keybindings[command])"
