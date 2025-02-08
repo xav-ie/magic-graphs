@@ -14,8 +14,13 @@
 		return {
 			...nameToBindingKeys.value,
 			Fullscreen: 'F',
+			'Pause/Play Simulation': 'Space',
+			'Simulation Step Forward': 'ArrowRight',
+			'Simulation Step Backward': 'ArrowLeft',
 		};
 	});
+
+	// TODO: add categories
 
 	const convertKeyStringToKeys = (keyString: string) => {
 		const keys = keyString
