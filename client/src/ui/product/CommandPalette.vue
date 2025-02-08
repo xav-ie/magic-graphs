@@ -10,7 +10,7 @@
 
 	const { nameToBindingKeys } = graph.value.shortcut;
 
-	const keybindings = computed(() => {
+	const keybindings = computed<Record<string, string>>(() => {
 		return {
 			...nameToBindingKeys.value,
 			Fullscreen: 'F',
