@@ -14,7 +14,7 @@
 	import FullscreenButton from './FullscreenButton.vue';
 	import ThemeToolbar from './ThemeToolbar.vue';
 	import CommandPalette from './CommandPalette.vue';
-	import ZoomButtons from './ZoomButtons.vue';
+	// import ZoomButtons from './ZoomButtons.vue';
 
 	const props = defineProps<{
 		graph: Graph;
