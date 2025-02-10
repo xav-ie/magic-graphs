@@ -8,6 +8,8 @@ import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
 
+import "material-icons/iconfont/material-icons.css";
+
 const app = createApp(App)
   .use(PrimeVue, { theme: "none" })
   .use(ToastService)

@@ -9,7 +9,7 @@
     return props.icon.endsWith("_outline");
   });
 
-  const defaultClasses = ['select-none']
+  const defaultClasses = ["select-none"];
 
   const iconClass = computed(() => {
     if (isOutlined.value) {
