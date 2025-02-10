@@ -30,6 +30,7 @@
     "vue-router": "^4.0.13"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.14.5",
     "@types/tinycolor2": "^1.4.6",
