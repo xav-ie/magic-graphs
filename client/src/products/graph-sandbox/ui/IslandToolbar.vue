@@ -39,7 +39,8 @@
   const { undo, redo } = graph.value.shortcut.trigger;
 
   const canUndo = computed(() => {
-    const { isActive: annotationActive, canUndo: canUndoAnnotation } = graph.value.annotation;
+    const { isActive: annotationActive, canUndo: canUndoAnnotation } =
+      graph.value.annotation;
     const { canUndo } = graph.value.history;
     const { settings } = graph.value;
     if (annotationActive.value) return canUndoAnnotation.value;
@@ -48,7 +49,8 @@
   });
 
   const canRedo = computed(() => {
-    const { isActive: annotationActive, canRedo: canRedoAnnotation } = graph.value.annotation;
+    const { isActive: annotationActive, canRedo: canRedoAnnotation } =
+      graph.value.annotation;
     const { canRedo } = graph.value.history;
     const { settings } = graph.value;
     if (annotationActive.value) return canRedoAnnotation.value;
@@ -65,7 +67,7 @@
       <GToolbarButton
         @click="graph.settings.value.displayEdgeLabels = true"
         :active="graph.settings.value.displayEdgeLabels"
-        icon="label_outline"
+        icon="label-outline"
       />
 
       <GToolbarDivider />
@@ -73,7 +75,7 @@
       <GToolbarButton
         @click="graph.settings.value.displayEdgeLabels = false"
         :active="!graph.settings.value.displayEdgeLabels"
-        icon="label_off_outline"
+        icon="label-off-outline"
       />
     </ToolbarButtonGroup>
 
@@ -81,7 +83,7 @@
       <GToolbarButton
         @click="graph.settings.value.isGraphDirected = true"
         :active="graph.settings.value.isGraphDirected"
-        icon="arrow_right_alt"
+        icon="arrow-right-thin"
       />
 
       <GToolbarDivider />
@@ -89,38 +91,30 @@
       <GToolbarButton
         @click="graph.settings.value.isGraphDirected = false"
         :active="!graph.settings.value.isGraphDirected"
-        icon="remove"
+        icon="minus"
       />
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup class="gap-0">
-      <GToolbarButton
-        @click="undo"
-        :disabled="!canUndo"
-        icon="undo"
-      />
+      <GToolbarButton @click="undo" :disabled="!canUndo" icon="undo" />
 
       <GToolbarDivider />
 
-      <GToolbarButton
-        @click="redo"
-        :disabled="!canRedo"
-        icon="redo"
-      />
+      <GToolbarButton @click="redo" :disabled="!canRedo" icon="redo" />
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
       <GToolbarButton
         @click="toggleAnnotation"
         :active="graph.annotation.isActive.value"
-        icon="edit"
+        :icon="graph.annotation.isActive.value ? 'pencil' : 'pencil-outline'"
       />
 
       <GraphInfoMenu v-slot="{ toggle, isOpen }">
         <GToolbarButton
           @click="toggle"
           :active="isOpen"
-          icon="info_outline"
+          icon="information-outline"
         />
       </GraphInfoMenu>
 
@@ -128,19 +122,16 @@
         <GToolbarButton
           @click="toggle"
           :active="isOpen"
-          icon="group"
+          icon="account-multiple"
         />
       </CollaborativeSessionMenu>
 
-      <TreeShapeMenu
-        v-slot="{ toggle, isOpen }"
-        :controls="treeControls"
-      >
+      <TreeShapeMenu v-slot="{ toggle, isOpen }" :controls="treeControls">
         <GToolbarButton
           @click="toggle"
           :active="isOpen || treeControls.isActive.value"
           :icon="
-            isOpen || treeControls.isActive.value ? 'forest' : 'forest_outline'
+            isOpen || treeControls.isActive.value ? 'forest' : 'forest-outline'
           "
         />
       </TreeShapeMenu>
@@ -149,7 +140,7 @@
         <GToolbarButton
           @click="toggle"
           :active="isOpen"
-          :icon="isOpen ? 'add_box' : 'add_box_outline'"
+          :icon="isOpen ? 'plus-box' : 'plus-box-outline'"
         />
       </TemplateMenu>
     </ToolbarButtonGroup>

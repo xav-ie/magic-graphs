@@ -45,7 +45,7 @@
   <CPopover :offset="5">
     <template #activator="{ toggle }">
       <GButton @click="toggle">
-        <CIcon icon="settings" />
+        <CIcon icon="cog" />
       </GButton>
     </template>
 

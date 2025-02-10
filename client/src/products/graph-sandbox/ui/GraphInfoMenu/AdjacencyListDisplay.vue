@@ -12,12 +12,12 @@
 
   const getNode = (nodeId: string) => {
     const node = graph.value.getNode(nodeId);
-    if (node === undefined) throw new Error('node not found')
-    return node
+    if (node === undefined) throw new Error("node not found");
+    return node;
   };
 
   const isWeighted = computed(
-    () => graph.value.settings.value.displayEdgeLabels
+    () => graph.value.settings.value.displayEdgeLabels,
   );
 </script>
 
@@ -35,35 +35,23 @@
             <GWell class="px-3 py-2 rounded-md">
               <b>{{ getNode(key).label }}</b>
               links to
-              <b>{{ getCommaList(value.map(n => n.label)) || 'nothing' }}</b>
+              <b>{{ getCommaList(value.map((n) => n.label)) || "nothing" }}</b>
             </GWell>
           </template>
         </CPopoverTooltip>
       </div>
 
-      <CIcon
-        icon="arrow_right"
-        class="text-4xl"
-      />
+      <CIcon icon="arrow-right" class="text-4xl" />
 
       <div class="overflow-auto">
         <div class="flex items-center gap-4">
-          <div
-            v-for="node in value"
-            :key="node.id"
-          >
+          <div v-for="node in value" :key="node.id">
             <CPopoverTooltip>
-              <GNode
-                :node="node"
-                class="relative flex flex-col"
-              >
+              <GNode :node="node" class="relative flex flex-col">
                 <span class="leading-[15px]">
                   {{ node.label }}
                 </span>
-                <span
-                  v-if="isWeighted"
-                  class="leading-[15px] text-[8px]"
-                >
+                <span v-if="isWeighted" class="leading-[15px] text-[8px]">
                   Cost {{ node.weight }}
                 </span>
               </GNode>
@@ -81,12 +69,7 @@
               </template>
             </CPopoverTooltip>
           </div>
-          <h2
-            v-if="value.length === 0"
-            class="opacity-60"
-          >
-            None
-          </h2>
+          <h2 v-if="value.length === 0" class="opacity-60">None</h2>
         </div>
       </div>
     </div>

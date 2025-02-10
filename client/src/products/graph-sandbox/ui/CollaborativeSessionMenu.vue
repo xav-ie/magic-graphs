@@ -13,7 +13,7 @@
   import CButton from "@ui/core/button/Button.vue";
   import CIcon from "@ui/core/Icon.vue";
   import GWell from "@ui/graph/GWell.vue";
-import GInputText from "@ui/graph/input/GInputText.vue";
+  import GInputText from "@ui/graph/input/GInputText.vue";
 
   const router = useRouter();
   const { navigate } = useProductRouting();
@@ -97,17 +97,10 @@ import GInputText from "@ui/graph/input/GInputText.vue";
           class="w-full"
         >
           Generate Link
-          <CIcon
-            icon="link"
-            class="ml-2"
-          />
+          <CIcon icon="link" class="ml-2" />
         </GButton>
 
-        <CButton
-          v-else-if="startingRoom"
-          disabled
-          class="w-full"
-        >
+        <CButton v-else-if="startingRoom" disabled class="w-full">
           Preparing Room...
         </CButton>
 
@@ -122,22 +115,15 @@ import GInputText from "@ui/graph/input/GInputText.vue";
             </span>
             <CIcon
               v-if="!linkCopied"
-              icon="content_copy"
+              icon="content-copy"
               class="group-hover:opacity-100 opacity-0"
             />
-            <CIcon
-              v-if="linkCopied"
-              icon="check"
-              class="text-green-400"
-            />
+            <CIcon v-if="linkCopied" icon="check" class="text-green-400" />
           </GWell>
         </div>
       </div>
 
-      <div
-        v-if="isConnected"
-        class="mt-4 w-full"
-      >
+      <div v-if="isConnected" class="mt-4 w-full">
         <CButton
           @click="stopCollaboration"
           :color="colors.RED_600"

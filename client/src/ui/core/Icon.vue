@@ -5,32 +5,17 @@
     icon: string;
   }>();
 
-  const isOutlined = computed(() => {
-    return props.icon.endsWith("_outline");
-  });
-
-  const defaultClasses = ['select-none']
+  const defaultClasses = ["select-none"];
 
   const iconClass = computed(() => {
-    if (isOutlined.value) {
-      return "material-icons-outlined";
-    }
-
-    return "material-icons";
+    return `mdi mdi-${props.icon}`;
   });
 
   const classes = computed(() => {
     return [...defaultClasses, iconClass.value];
   });
-
-  const icon = computed(() => {
-    // if icon ends with _outline, remove it
-    return props.icon.replace(/_outline$/, "");
-  });
 </script>
 
 <template>
-  <span :class="classes">
-    {{ icon }}
-  </span>
+  <span :class="[classes, 'text-2xl']"></span>
 </template>

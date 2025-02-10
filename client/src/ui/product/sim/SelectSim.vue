@@ -33,14 +33,13 @@
         :disabled="disabled"
         class="h-14 w-14 rounded-full"
       >
-        <CIcon
-          class="text-3xl"
-          icon="play_arrow"
-        />
+        <CIcon class="text-3xl" icon="play" />
       </GButton>
     </template>
 
-    <GWell class="flex flex-col p-2 w-[400px] max-h-[500px] overflow-auto gap-1 rounded-lg">
+    <GWell
+      class="flex flex-col p-2 w-[400px] max-h-[500px] overflow-auto gap-1 rounded-lg"
+    >
       <div
         v-for="simulation in displayedSimulations"
         :key="simulation.name"

@@ -1,5 +1,6 @@
 {
   "vueIndentScriptAndStyle": true,
+  "singleAttributePerLine": true,
   "importOrder": [
     "node:(.*)$",
     "<THIRD_PARTY_MODULES>",
