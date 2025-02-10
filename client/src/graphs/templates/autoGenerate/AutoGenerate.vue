@@ -10,15 +10,10 @@
 
 <template>
   <div class="flex justify-between gap-2">
-    <GButton
-      @click="generate"
-      class="flex-grow"
-    >
-      <CIcon icon="add"></CIcon>
+    <GButton @click="generate" class="flex-grow">
+      <CIcon icon="plus"></CIcon>
       Generate New
     </GButton>
-    <AutoGenerateSettingsMenu 
-      :options="options" 
-    />
+    <AutoGenerateSettingsMenu :options="options" />
   </div>
 </template>

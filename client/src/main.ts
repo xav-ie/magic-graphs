@@ -7,8 +7,7 @@ import "./main.css";
 import PrimeVue from "primevue/config";
 import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
-
-import "material-icons/iconfont/material-icons.css";
+import "@mdi/font/css/materialdesignicons.css";
 
 const app = createApp(App)
   .use(PrimeVue, { theme: "none" })

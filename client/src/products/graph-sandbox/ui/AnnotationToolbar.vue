@@ -7,12 +7,7 @@
   import GToolbarButtonDivider from "@ui/graph/toolbar/GToolbarDivider.vue";
   import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
 
-  const {
-    clear,
-    brushWeight,
-    erasing,
-    color,
-  } = graph.value.annotation;
+  const { clear, brushWeight, erasing, color } = graph.value.annotation;
 
   const selectColor = (newColor: Color) => {
     color.value = newColor;
@@ -42,9 +37,9 @@
     <ToolbarButtonGroup>
       <GToolbarButton
         v-for="color in COLORS"
+        :key="color"
         @click="selectColor(color)"
         :active="isColorActive(color)"
-        :key="color"
       >
         <div :class="['rounded-full', 'p-[3px]']">
           <div
@@ -60,9 +55,9 @@
     <ToolbarButtonGroup>
       <GToolbarButton
         v-for="(weight, index) in BRUSH_WEIGHTS"
+        :key="weight"
         @click="selectBrushWeight(weight)"
         :active="isBrushWeightActive(weight)"
-        :key="weight"
       >
         <div
           :class="['bg-gray-400', 'rounded-md', 'w-[15px]']"
@@ -74,16 +69,9 @@
     <GToolbarButtonDivider />
 
     <ToolbarButtonGroup>
-      <GToolbarButton
-        @click="toggleErasing"
-        :active="erasing"
-        icon="backspace_outline"
-      />
+      <GToolbarButton @click="toggleErasing" :active="erasing" icon="eraser" />
 
-      <GToolbarButton
-        @click="clear"
-        icon="delete_outline"
-      />
+      <GToolbarButton @click="clear" icon="delete-outline" />
     </ToolbarButtonGroup>
   </GToolbar>
 </template>

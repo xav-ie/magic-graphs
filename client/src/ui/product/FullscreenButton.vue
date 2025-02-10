@@ -18,13 +18,10 @@
 </script>
 
 <template>
-  <GButton
-    @click="toggle"
-    class="h-12 w-12"
-  >
+  <GButton @click="toggle" class="h-12 w-12">
     <CIcon
       class="text-3xl"
-      :icon="isFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+      :icon="isFullscreen ? 'fullscreen-exit' : 'fullscreen'"
     />
   </GButton>
 </template>

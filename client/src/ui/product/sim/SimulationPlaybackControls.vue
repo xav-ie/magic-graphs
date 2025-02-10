@@ -18,7 +18,7 @@
   }>();
 
   const { isOver, paused, step, hasBegun, lastStep, playbackSpeed } = toRefs(
-    props.controls
+    props.controls,
   );
 
   const { nextStep, prevStep, setStep, start, stop } = props.controls;
@@ -92,14 +92,14 @@
 
   const speedMenuOpen = ref(false);
 
-  const initialItemIndex = PLAYBACK_SPEEDS.findIndex(
-    (speed) => speed.value === playbackSpeed.value
-  ) ?? 2
+  const initialItemIndex =
+    PLAYBACK_SPEEDS.findIndex((speed) => speed.value === playbackSpeed.value) ??
+    2;
 
   onKeyStroke([" ", "Spacebar"], (e) => {
     e.preventDefault();
     if (isOver.value) {
-      restart()
+      restart();
     } else {
       togglePause();
     }
@@ -126,10 +126,7 @@
         :initial-item-index="initialItemIndex"
       ></GSpreadSelect>
 
-      <GButton
-        v-if="!speedMenuOpen"
-        class="rounded-full"
-      >
+      <GButton v-if="!speedMenuOpen" class="rounded-full">
         <span class="w-12">
           {{ step }}
         </span>
@@ -152,25 +149,21 @@
       <PlaybackButton
         @click="goPrevStep"
         :disabled="!hasBegun"
-        icon="chevron_left"
+        icon="chevron-left"
       />
 
-      <PlaybackButton
-        v-if="isOver"
-        @click="restart"
-        icon="restart_alt"
-      />
+      <PlaybackButton v-if="isOver" @click="restart" icon="restart" />
 
       <PlaybackButton
         v-else
         @click="togglePause"
-        :icon="paused ? 'play_arrow' : 'pause'"
+        :icon="paused ? 'play' : 'pause'"
       />
 
       <PlaybackButton
         @click="goNextStep"
         :disabled="isOver"
-        icon="chevron_right"
+        icon="chevron-right"
       />
     </div>
   </div>
