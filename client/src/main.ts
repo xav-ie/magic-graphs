@@ -1,18 +1,19 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
 
-import './main.css'
+import "./main.css";
 
-import PrimeVue from 'primevue/config';
-import Tooltip from 'primevue/tooltip';
-import ToastService from 'primevue/toastservice'
+import PrimeVue from "primevue/config";
+import "primeicons/primeicons.css";
+import Tooltip from "primevue/tooltip";
+import ToastService from "primevue/toastservice";
 
 const app = createApp(App)
-  .use(PrimeVue, { theme: 'none' })
+  .use(PrimeVue, { theme: "none" })
   .use(ToastService)
-  .use(router)
+  .use(router);
 
-app.directive('tooltip', Tooltip);
+app.directive("tooltip", Tooltip);
 
-app.mount('#app')
+app.mount("#app");
