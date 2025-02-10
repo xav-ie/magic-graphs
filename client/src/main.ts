@@ -5,7 +5,6 @@ import router from "./router";
 import "./main.css";
 
 import PrimeVue from "primevue/config";
-import "primeicons/primeicons.css";
 import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
 
