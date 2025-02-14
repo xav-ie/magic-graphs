@@ -10,7 +10,7 @@ export const drawScribbleWithCtx =
     };
 
     const draw = () => {
-      if (points.length < 2) {
+      if (points.length === 1) {
         circle({
           at: points[0],
           radius: brushWeight / 2,

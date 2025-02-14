@@ -48,9 +48,7 @@ export const useAnnotations = (graph: BaseGraph) => {
    */
   const startDrawing = ({ coords }: GraphMouseEvent) => {
     isDrawing.value = true;
-
     lastPoint.value = coords;
-    batch.value = [coords];
   };
 
   /**
@@ -80,10 +78,10 @@ export const useAnnotations = (graph: BaseGraph) => {
       for (const erasedScribble of erasedScribbles) {
         erasedScribbleIds.value.add(erasedScribble.id);
       }
-
       return;
     }
 
+    if (batch.value.length === 0) batch.value.push(lastPoint.value);
     lastPoint.value = coords;
     batch.value.push(coords);
   };
@@ -93,8 +91,6 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     isDrawing.value = false;
     lastPoint.value = undefined;
-
-    if (batch.value.length === 0) return; // want to draw a circle here with size if the brush
 
     if (erasing.value) {
       const erasedScribbles = scribbles.value.filter((scribble) => {
@@ -109,7 +105,6 @@ export const useAnnotations = (graph: BaseGraph) => {
       scribbles.value = scribbles.value.filter((scribble) => {
         return !erasedScribbleIds.value.has(scribble.id);
       });
-
       erasedScribbleIds.value.clear();
       return;
     }
@@ -141,7 +136,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     if (!isActive.value) return aggregator;
 
     if (erasing.value) {
-      const circle = shapes.circle({
+      const eraserCursor = shapes.circle({
         at: graph.graphAtMousePosition.value.coords,
         radius: ERASER_BRUSH_RADIUS,
         color: colors.TRANSPARENT,
@@ -153,8 +148,8 @@ export const useAnnotations = (graph: BaseGraph) => {
 
       aggregator.push({
         graphType: "annotation",
-        id: circle.id,
-        shape: circle,
+        id: eraserCursor.id,
+        shape: eraserCursor,
         priority: 5050,
       });
     } else if (batch.value.length > 0) {
