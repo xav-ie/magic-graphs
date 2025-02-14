@@ -49,6 +49,7 @@ export const useAnnotations = (graph: BaseGraph) => {
   const startDrawing = ({ coords }: GraphMouseEvent) => {
     isDrawing.value = true;
     lastPoint.value = coords;
+    batch.value = [coords];
   };
 
   /**
@@ -58,6 +59,8 @@ export const useAnnotations = (graph: BaseGraph) => {
    */
   const drawLine = ({ coords }: GraphMouseEvent) => {
     if (!isDrawing.value || !lastPoint.value) return;
+
+    if (batch.value.length === 0) return;
 
     if (erasing.value) {
       const eraserBoundingBox = getCircleBoundingBox({
@@ -81,7 +84,6 @@ export const useAnnotations = (graph: BaseGraph) => {
       return;
     }
 
-    if (batch.value.length === 0) batch.value.push(lastPoint.value);
     lastPoint.value = coords;
     batch.value.push(coords);
   };
