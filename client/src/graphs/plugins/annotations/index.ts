@@ -154,7 +154,7 @@ export const useAnnotations = (graph: BaseGraph) => {
         shape: eraserCursor,
         priority: 5050,
       });
-    } else if (batch.value.length > 0) {
+    } else if (batch.value.length > 0 && isDrawing.value) {
       const incompleteScribble = shapes.scribble({
         type: "draw",
         points: batch.value,

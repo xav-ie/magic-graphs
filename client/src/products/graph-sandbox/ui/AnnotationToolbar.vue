@@ -16,6 +16,7 @@
 
   const selectBrushWeight = (newBrushWeight: number) => {
     brushWeight.value = newBrushWeight;
+    erasing.value = false;
   };
 
   const isColorActive = (newColor: Color) => {
@@ -24,6 +25,7 @@
   };
 
   const isBrushWeightActive = (newBrushWeight: number) => {
+    if (erasing.value) return false;
     return brushWeight.value === newBrushWeight;
   };
 
@@ -69,9 +71,16 @@
     <GToolbarButtonDivider />
 
     <ToolbarButtonGroup>
-      <GToolbarButton @click="toggleErasing" :active="erasing" icon="eraser" />
+      <GToolbarButton
+        @click="toggleErasing"
+        :active="erasing"
+        icon="eraser"
+      />
 
-      <GToolbarButton @click="clear" icon="delete-outline" />
+      <GToolbarButton
+        @click="clear"
+        icon="delete-outline"
+      />
     </ToolbarButtonGroup>
   </GToolbar>
 </template>
