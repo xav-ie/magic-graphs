@@ -117,5 +117,5 @@ export const scribbleEfficientHitbox =
       if (isInLineEfficientHitbox) return true;
     }
 
-    return;
+    return false;
   };
