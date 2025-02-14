@@ -1,62 +1,59 @@
 import type { Coordinate, BoundingBox } from "@shape/types";
-import type { Scribble } from ".";
+import { SCRIBBLE_DEFAULTS, type Scribble } from ".";
 import { rectEfficientHitbox, rectHitbox } from "@shape/rect/hitbox";
 import { lineEfficientHitbox } from "@shape/line/hitbox";
-
+import { circle } from "@shapes";
 
 /**
  * @param point - the point to check if it is in the scribble bounding box
  * @returns a function that checks if the point is in the scribble bounding box
-*/
+ */
 export const scribbleHitbox = (scribble: Scribble) => (point: Coordinate) => {
+  const { type, points, brushWeight } = { ...SCRIBBLE_DEFAULTS, ...scribble };
 
-  const {
-    type,
-    points
-  } = scribble
+  if (type === "erase") return false;
 
-  if (type === 'erase') return false
+  const { topLeft, bottomRight } = getScribbleBoundingBox(scribble)(); // first check boundingbox for efficiency
 
-  const { topLeft, bottomRight } = getScribbleBoundingBox(scribble)()
-
-  const width = bottomRight.x - topLeft.x
-  const height = bottomRight.y - topLeft.y
+  const width = bottomRight.x - topLeft.x;
+  const height = bottomRight.y - topLeft.y;
 
   const isInRectHitbox = rectHitbox({
     at: {
       x: topLeft.x,
-      y: topLeft.y
+      y: topLeft.y,
     },
     width: Math.max(width, 10), // To prevent dots from not having a hitbox: due to drawing with ctx.lineCap = "round"
-    height: Math.max(height, 10) // To prevent dots from not having a hitbox: due to drawing with ctx.lineCap = "round"
+    height: Math.max(height, 10), // To prevent dots from not having a hitbox: due to drawing with ctx.lineCap = "round"
   });
 
-  if (!isInRectHitbox(point)) return false
+  if (!isInRectHitbox(point)) return false;
+
+  if (points.length === 1) {
+    if (circle({ at: points[0], radius: brushWeight }).hitbox(point))
+      return true;
+  }
 
   for (let i = 0; i < points.length - 1; i++) {
     const scribbleSegment = {
       start: points[i],
       end: points[i + 1],
-    }
+    };
 
     const isInLineEfficientHitbox = lineEfficientHitbox(scribbleSegment)({
       at: point,
       width: 1,
       height: 1,
-    })
+    });
 
-    if (isInLineEfficientHitbox) return true
+    if (isInLineEfficientHitbox) return true;
   }
 
-  return false
-
+  return false;
 };
 
 export const getScribbleBoundingBox = (scribble: Scribble) => () => {
-  const {
-    points
-  } = scribble
-  
+  const { points } = scribble;
 
   let minX = points[0].x;
   let minY = points[0].y;
@@ -74,25 +71,24 @@ export const getScribbleBoundingBox = (scribble: Scribble) => () => {
     topLeft: { x: minX, y: minY },
     bottomRight: { x: maxX, y: maxY },
   };
-}
+};
 
 export const scribbleEfficientHitbox = (scribble: Scribble) => {
-  if (scribble.type === 'erase') return (boxToCheck: BoundingBox) => false
+  if (scribble.type === "erase") return (boxToCheck: BoundingBox) => false;
 
-  const { topLeft, bottomRight } = getScribbleBoundingBox(scribble)()
+  const { topLeft, bottomRight } = getScribbleBoundingBox(scribble)();
 
-  const width = bottomRight.x - topLeft.x
-  const height = bottomRight.y - topLeft.y
+  const width = bottomRight.x - topLeft.x;
+  const height = bottomRight.y - topLeft.y;
 
   const isInRectEfficientHitbox = rectEfficientHitbox({
     at: {
       x: topLeft.x,
-      y: topLeft.y
+      y: topLeft.y,
     },
     width: Math.max(width, 10), // To prevent dots from not having a hitbox: due to drawing with ctx.lineCap = "round"
-    height: Math.max(height, 10) // To prevent dots from not having a hitbox: due to drawing with ctx.lineCap = "round"
+    height: Math.max(height, 10), // To prevent dots from not having a hitbox: due to drawing with ctx.lineCap = "round"
   });
 
-  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
-
+  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck);
 };

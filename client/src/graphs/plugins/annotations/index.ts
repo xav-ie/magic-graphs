@@ -12,6 +12,8 @@ import { useAnnotationHistory } from "./history";
 import type { Annotation } from "./types";
 import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
 
+const ERASER_BRUSH_RADIUS = 10;
+
 const graphColor = useNonNullGraphColors();
 
 export const useAnnotations = (graph: BaseGraph) => {
@@ -130,7 +132,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     if (erasing.value) {
       const circle = shapes.circle({
         at: graph.graphAtMousePosition.value.coords,
-        radius: 10,
+        radius: ERASER_BRUSH_RADIUS,
         color: colors.TRANSPARENT,
         stroke: {
           color: graphColor.value.contrast,
