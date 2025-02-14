@@ -1,9 +1,10 @@
-import type {
-  Coordinate,
-  Shape,
-} from "@shape/types";
+import type { Coordinate, Shape } from "@shape/types";
 import { drawScribbleWithCtx } from "./draw";
-import { scribbleHitbox, scribbleEfficientHitbox, getScribbleBoundingBox } from "./hitbox";
+import {
+  scribbleHitbox,
+  scribbleEfficientHitbox,
+  getScribbleBoundingBox,
+} from "./hitbox";
 import { generateId } from "@utils/id";
 
 export type Scribble = {
@@ -17,25 +18,23 @@ export type Scribble = {
 export const SCRIBBLE_DEFAULTS = {
   color: "red",
   brushWeight: 3,
-} as const
+} as const;
 
-export const ERASER_BRUSH_WEIGHT = 50
+export const ERASER_BRUSH_WEIGHT = 50;
 
 export const scribble = (options: Scribble): Shape => {
-
   if (options.points.length < 1) {
-    throw new Error('not enough points to draw scribble')
+    throw new Error("not enough points to draw scribble");
   }
   if (options.brushWeight && options.brushWeight < 1) {
-    throw new Error('brushWeight must be at least "1"')
+    throw new Error('brushWeight must be at least "1"');
   }
-
 
   const shapeHitbox = scribbleHitbox(options);
-  const efficientHitbox = scribbleEfficientHitbox(options)
+  const efficientHitbox = scribbleEfficientHitbox(options);
   const hitbox = (point: Coordinate) => {
-    return shapeHitbox(point)
-  }
+    return shapeHitbox(point);
+  };
 
   const getBoundingBox = getScribbleBoundingBox(options);
 
@@ -43,13 +42,11 @@ export const scribble = (options: Scribble): Shape => {
 
   const draw = (ctx: CanvasRenderingContext2D) => {
     drawShape(ctx);
-  }
-
-
+  };
 
   return {
     id: options.id ?? generateId(),
-    name: 'scribble',
+    name: "scribble",
 
     drawShape,
     draw,
@@ -58,5 +55,5 @@ export const scribble = (options: Scribble): Shape => {
     shapeHitbox,
     efficientHitbox,
     getBoundingBox,
-  }
-}
+  };
+};
