@@ -11,6 +11,7 @@ import { BRUSH_WEIGHTS, COLORS } from "./constants";
 import { useAnnotationHistory } from "./history";
 import type { Annotation } from "./types";
 import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
+import { getCircleBoundingBox } from "@shape/circle/hitbox";
 
 const ERASER_BRUSH_RADIUS = 10;
 
@@ -61,9 +62,19 @@ export const useAnnotations = (graph: BaseGraph) => {
     if (!isDrawing.value || !lastPoint.value) return;
 
     if (erasing.value) {
+      const eraserBoundingBox = getCircleBoundingBox({
+        at: coords,
+        radius: ERASER_BRUSH_RADIUS,
+      })();
+
+      const eraserBoundingBoxLocation = {
+        at: eraserBoundingBox.topLeft,
+        width: eraserBoundingBox.bottomRight.x - eraserBoundingBox.topLeft.x,
+        height: eraserBoundingBox.bottomRight.y - eraserBoundingBox.topLeft.y,
+      };
       const erasedScribbles = scribbles.value.filter((scribble) => {
         const shape = shapes.scribble(scribble);
-        return shape.hitbox(coords);
+        return shape.efficientHitbox(eraserBoundingBoxLocation);
       });
 
       for (const erasedScribble of erasedScribbles) {
