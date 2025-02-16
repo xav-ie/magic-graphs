@@ -8,15 +8,9 @@ import type { Coordinate, BoundingBox } from "@shape/types";
  * @returns a function that checks if the point is in the cross
  */
 export const crossHitbox = (cross: Cross) => {
-  const {
-    at,
-    size,
-    rotation,
-    lineWidth,
-    borderRadius,
-  } = {
+  const { at, size, rotation, lineWidth, borderRadius } = {
     ...CROSS_DEFAULTS,
-    ...cross
+    ...cross,
   };
 
   const halfLineWidth = lineWidth / 2;
@@ -36,38 +30,26 @@ export const crossHitbox = (cross: Cross) => {
     borderRadius,
   });
 
-  return (point: Coordinate) => horizontalHitbox(point) || verticalHitbox(point);
+  return (point: Coordinate) =>
+    horizontalHitbox(point) || verticalHitbox(point);
 };
 
 export const getCrossBoundingBox = (cross: Cross) => () => {
-  const {
-    at,
-    size
-  } = cross
+  const { at, size } = cross;
 
   return {
-    topLeft: {
+    at: {
       x: at.x - size / 2,
-      y: at.y - size / 2
+      y: at.y - size / 2,
     },
-    bottomRight: {
-      x: at.x + size / 2,
-      y: at.y + size / 2
-    }
-  }
-}
+    width: size,
+    height: size,
+  };
+};
 
 export const crossEfficientHitbox = (cross: Cross) => {
+  const crossBoundingBox = getCrossBoundingBox(cross)();
 
-  const {
-    at,
-    size
-  } = cross
-
-  const isInRectEfficientHitbox = rectEfficientHitbox({
-    at: { x: at.x - size / 2, y: at.y - size / 2 },
-    width: size,
-    height: size
-  })
-  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
-}
+  const isInRectEfficientHitbox = rectEfficientHitbox(crossBoundingBox);
+  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck);
+};

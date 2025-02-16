@@ -68,14 +68,9 @@ export const useAnnotations = (graph: BaseGraph) => {
         radius: ERASER_BRUSH_RADIUS,
       })();
 
-      const eraserBoundingBoxLocation = {
-        at: eraserBoundingBox.topLeft,
-        width: eraserBoundingBox.bottomRight.x - eraserBoundingBox.topLeft.x,
-        height: eraserBoundingBox.bottomRight.y - eraserBoundingBox.topLeft.y,
-      };
       const erasedScribbles = scribbles.value.filter((scribble) => {
         const shape = shapes.scribble(scribble);
-        return shape.efficientHitbox(eraserBoundingBoxLocation);
+        return shape.efficientHitbox(eraserBoundingBox);
       });
 
       for (const erasedScribble of erasedScribbles) {

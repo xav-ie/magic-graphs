@@ -1,6 +1,6 @@
 import type { Coordinate, BoundingBox } from "@shape/types";
 import type { Rect } from ".";
-import { RECT_DEFAULTS } from "."
+import { RECT_DEFAULTS } from ".";
 import { circleHitbox } from "@shape/circle/hitbox";
 import { rotatePoint } from "@shape/helpers";
 
@@ -9,22 +9,15 @@ import { rotatePoint } from "@shape/helpers";
  * @returns a function that checks if the point is in the rotated rectangle with rounded corners
  */
 export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
-  const {
-    at,
-    width,
-    height,
-    borderRadius,
-    rotation,
-    stroke
-  } = {
+  const { at, width, height, borderRadius, rotation, stroke } = {
     ...RECT_DEFAULTS,
-    ...rectangle
+    ...rectangle,
   };
 
   const centerX = at.x + width / 2;
   const centerY = at.y + height / 2;
 
-  const strokeWidth = stroke?.width || 0
+  const strokeWidth = stroke?.width || 0;
 
   const localPoint = rotatePoint(point, { x: centerX, y: centerY }, -rotation);
 
@@ -97,43 +90,42 @@ export const rectHitbox = (rectangle: Rect) => (point: Coordinate) => {
 };
 
 export const getRectBoundingBox = (rectangle: Rect) => () => {
-  const {
-    at: rectAt,
-    width: rectWidth,
-    height: rectHeight,
-  } = rectangle;
+  const { at, width, height } = rectangle;
 
-  const rectLeft = Math.min(rectAt.x, rectAt.x + rectWidth);
-  const rectRight = Math.max(rectAt.x, rectAt.x + rectWidth);
-  const rectTop = Math.min(rectAt.y, rectAt.y + rectHeight);
-  const rectBottom = Math.max(rectAt.y, rectAt.y + rectHeight);
   return {
-    topLeft: { x: rectLeft, y: rectTop },
-    bottomRight: { x: rectRight, y: rectBottom },
-  }
-}
-
-export const rectEfficientHitbox = (rectangle: Rect) => (boxToCheck: BoundingBox) => {
-  const {
-    at: boxAt,
-    width: boxWidth,
-    height: boxHeight,
-  } = boxToCheck;
-
-  const { topLeft, bottomRight } = getRectBoundingBox(rectangle)();
-
-  const boxLeft = Math.min(boxAt.x, boxAt.x + boxWidth);
-  const boxRight = Math.max(boxAt.x, boxAt.x + boxWidth);
-  const boxTop = Math.min(boxAt.y, boxAt.y + boxHeight);
-  const boxBottom = Math.max(boxAt.y, boxAt.y + boxHeight);
-
-  if (bottomRight.x <= boxLeft || boxRight <= topLeft.x) {
-    return false;
-  }
-
-  if (bottomRight.y <= boxTop || boxBottom <= topLeft.y) {
-    return false;
-  }
-
-  return true;
+    at,
+    width,
+    height,
+  };
 };
+
+export const rectEfficientHitbox =
+  (rectangle: Rect) => (boxToCheck: BoundingBox) => {
+    const {
+      at: shapeAt,
+      width: shapeWidth,
+      height: shapeHeight,
+    } = getRectBoundingBox(rectangle)();
+
+    const shapeBottomRight = {
+      x: shapeAt.x + shapeWidth,
+      y: shapeAt.y + shapeHeight,
+    };
+
+    const { at: boxAt, width: boxWidth, height: boxHeight } = boxToCheck;
+
+    const boxLeft = Math.min(boxAt.x, boxAt.x + boxWidth);
+    const boxRight = Math.max(boxAt.x, boxAt.x + boxWidth);
+    const boxTop = Math.min(boxAt.y, boxAt.y + boxHeight);
+    const boxBottom = Math.max(boxAt.y, boxAt.y + boxHeight);
+
+    if (shapeBottomRight.x <= boxLeft || boxRight <= shapeAt.x) {
+      return false;
+    }
+
+    if (shapeBottomRight.y <= boxTop || boxBottom <= shapeAt.y) {
+      return false;
+    }
+
+    return true;
+  };

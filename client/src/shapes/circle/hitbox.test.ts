@@ -6,7 +6,7 @@ import {
 } from "@shape/circle/hitbox";
 import type { Coordinate } from "@shape/types";
 import type { Circle } from "@shape/circle";
-import { circleTextHitbox } from '@shape/circle/text';
+import { circleTextHitbox } from "@shape/circle/text";
 
 describe("circleHitbox", () => {
   const testCircle: Circle = {
@@ -14,6 +14,8 @@ describe("circleHitbox", () => {
     radius: 20,
     stroke: { width: 4, color: "black" },
   };
+
+  // TODO: update tests to match new bounding box
 
   const hitbox = circleHitbox(testCircle);
 
@@ -100,36 +102,36 @@ describe("circleEfficientHitbox", () => {
   });
 });
 
-describe('circleTextHitbox', () => {
+describe("circleTextHitbox", () => {
   const testCircle: Circle = {
     at: { x: 50, y: 50 },
     radius: 20,
     textArea: {
       text: {
-        content: '51',
+        content: "51",
         fontSize: 20,
       },
-    }
+    },
   };
 
   const textHitbox = circleTextHitbox(testCircle);
 
-  it('should return true for a point clearly inside the text hitbox', () => {
+  it("should return true for a point clearly inside the text hitbox", () => {
     const insidePoint: Coordinate = { x: 50, y: 50 };
     expect(textHitbox?.(insidePoint)).toBe(true);
   });
 
-  it('should return false for a point clearly outside the text hitbox', () => {
+  it("should return false for a point clearly outside the text hitbox", () => {
     const outsidePoint: Coordinate = { x: 100, y: 100 };
     expect(textHitbox?.(outsidePoint)).toBe(false);
   });
 
-  it('should return true for a point very close to the edge of the text hitbox (inside)', () => {
+  it("should return true for a point very close to the edge of the text hitbox (inside)", () => {
     const closeInsidePoint: Coordinate = { x: 70, y: 70 };
     expect(textHitbox?.(closeInsidePoint)).toBe(true);
   });
 
-  it('should return false for a point very close to the edge of the text hitbox (outside)', () => {
+  it("should return false for a point very close to the edge of the text hitbox (outside)", () => {
     const closeOutsidePoint: Coordinate = { x: 71, y: 71 };
     expect(textHitbox?.(closeOutsidePoint)).toBe(false);
   });

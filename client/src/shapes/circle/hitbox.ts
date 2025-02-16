@@ -1,6 +1,6 @@
-import type { Coordinate, BoundingBox } from "@shape/types"
-import type { Circle } from "@shape/circle"
-import { STROKE_DEFAULTS } from "@shape/types"
+import type { Coordinate, BoundingBox } from "@shape/types";
+import type { Circle } from "@shape/circle";
+import { STROKE_DEFAULTS } from "@shape/types";
 import { rectEfficientHitbox } from "@shape/rect/hitbox";
 
 export const circleHitbox = (circle: Circle) => (point: Coordinate) => {
@@ -9,49 +9,36 @@ export const circleHitbox = (circle: Circle) => (point: Coordinate) => {
 
   const stroke = {
     ...STROKE_DEFAULTS,
-    ...circle.stroke
-  }
+    ...circle.stroke,
+  };
 
-  const radiusWithStroke = circle.radius + (stroke.width / 2);
+  const radiusWithStroke = circle.radius + stroke.width / 2;
 
   return dx ** 2 + dy ** 2 <= radiusWithStroke ** 2;
-}
+};
 
 export const getCircleBoundingBox = (circle: Circle) => () => {
-  const {
-    at,
-    radius,
-  } = circle
+  const { at, radius } = circle;
 
   const { width: borderWidth } = {
     ...STROKE_DEFAULTS,
-    ...circle.stroke
-  }
+    ...circle.stroke,
+  };
 
   return {
-    topLeft: {
-      x: at.x - (radius + (borderWidth / 2)),
-      y: at.y - (radius + (borderWidth / 2))
+    at: {
+      x: at.x - (radius + borderWidth / 2),
+      y: at.y - (radius + borderWidth / 2),
     },
-    bottomRight: {
-      x: at.x + (radius + (borderWidth / 2)),
-      y: at.y + (radius + (borderWidth / 2))
-    }
-  }
-
-}
+    width: radius + borderWidth,
+    height: radius + borderWidth,
+  };
+};
 
 export const circleEfficientHitbox = (circle: Circle) => {
-  const { topLeft, bottomRight } = getCircleBoundingBox(circle)();
+  const circleBoundingBox = getCircleBoundingBox(circle)();
 
-  const isInRectEfficientHitbox = rectEfficientHitbox({
-    at: {
-      x: topLeft.x,
-      y: topLeft.y
-    },
-    width: bottomRight.x - topLeft.x,
-    height: bottomRight.y - topLeft.y
-  });
+  const isInRectEfficientHitbox = rectEfficientHitbox(circleBoundingBox);
 
-  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck)
-}
+  return (boxToCheck: BoundingBox) => isInRectEfficientHitbox(boxToCheck);
+};

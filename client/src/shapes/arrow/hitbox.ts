@@ -5,96 +5,116 @@ import {
   getLineBoundingBox,
 } from "@shape/line/hitbox";
 import { type Arrow } from ".";
-import { ARROW_DEFAULTS } from '.'
-import { triangleEfficientHitbox, triangleHitbox } from "@shape/triangle/hitbox";
+import { ARROW_DEFAULTS } from ".";
+import {
+  triangleEfficientHitbox,
+  triangleHitbox,
+} from "@shape/triangle/hitbox";
 import { calculateArrowHeadCorners } from "@shape/helpers";
 
 export const arrowHitbox = (arrow: Arrow) => {
-  const {
+  const { start, end, width, arrowHeadSize, arrowHeadShape } = {
+    ...ARROW_DEFAULTS,
+    ...arrow,
+  };
+
+  const isInLine = lineHitbox(arrow);
+
+  const { arrowHeadHeight, perpLineLength } = arrowHeadSize(width);
+
+  const arrowHeadTriangle = calculateArrowHeadCorners({
     start,
     end,
     width,
     arrowHeadSize,
-    arrowHeadShape,
-  } = {
-    ...ARROW_DEFAULTS,
-    ...arrow
-  }
+  });
 
-  const isInLine = lineHitbox(arrow);
-
-  const { 
-    arrowHeadHeight, 
-    perpLineLength 
-  } = arrowHeadSize(width)
-  
-  const arrowHeadTriangle = calculateArrowHeadCorners({ start, end, width, arrowHeadSize });
-  
-  const isInArrowHead = arrowHeadShape ? arrowHeadShape(end, arrowHeadHeight, perpLineLength).hitbox : triangleHitbox(arrowHeadTriangle);
+  const isInArrowHead = arrowHeadShape
+    ? arrowHeadShape(end, arrowHeadHeight, perpLineLength).hitbox
+    : triangleHitbox(arrowHeadTriangle);
 
   return (point: Coordinate) => isInLine(point) || isInArrowHead(point);
 };
 
 export const getArrowBoundingBox = (arrow: Arrow) => () => {
-  const { 
-    topLeft: lineTopLeft, 
-    bottomRight: lineBottomRight 
-  } = getLineBoundingBox(arrow)();
+  const { at, width, height } = getLineBoundingBox(arrow)();
+
+  const lineTopLeft = {
+    x: at.x,
+    y: at.y,
+  };
+
+  const lineBottomRight = {
+    x: at.x + width,
+    y: at.y + height,
+  };
 
   const {
     start,
     end,
-    width,
-    arrowHeadSize
+    width: arrowHeadWidth,
+    arrowHeadSize,
   } = {
     ...ARROW_DEFAULTS,
-    ...arrow
-  }
-  const arrowHeadTriangle = calculateArrowHeadCorners({ start, end, width, arrowHeadSize });
+    ...arrow,
+  };
+  const arrowHeadTriangle = calculateArrowHeadCorners({
+    start,
+    end,
+    width: arrowHeadWidth,
+    arrowHeadSize,
+  });
 
   const minX = Math.min(
     lineTopLeft.x,
     arrowHeadTriangle.pointA.x,
     arrowHeadTriangle.pointB.x,
-    arrowHeadTriangle.pointC.x
+    arrowHeadTriangle.pointC.x,
   );
   const maxX = Math.max(
     lineTopLeft.x,
     arrowHeadTriangle.pointA.x,
     arrowHeadTriangle.pointB.x,
-    arrowHeadTriangle.pointC.x
+    arrowHeadTriangle.pointC.x,
   );
   const minY = Math.min(
     lineBottomRight.y,
     arrowHeadTriangle.pointA.y,
     arrowHeadTriangle.pointB.y,
-    arrowHeadTriangle.pointC.y
+    arrowHeadTriangle.pointC.y,
   );
   const maxY = Math.max(
     lineBottomRight.y,
     arrowHeadTriangle.pointA.y,
     arrowHeadTriangle.pointB.y,
-    arrowHeadTriangle.pointC.y
+    arrowHeadTriangle.pointC.y,
   );
 
   return {
-    topLeft: { x: minX, y: minY },
-    bottomRight: { x: maxX, y: maxY },
-  }
+    at: {
+      x: minX,
+      y: minY,
+    },
+    width: maxX - minX,
+    height: maxY - minY,
+  };
 };
 
 export const arrowEfficientHitbox = (arrow: Arrow) => {
   const isInLineEfficientHitbox = lineEfficientHitbox(arrow);
-  const {
+  const { start, end, width, arrowHeadSize } = {
+    ...ARROW_DEFAULTS,
+    ...arrow,
+  };
+  const arrowHeadTriangle = calculateArrowHeadCorners({
     start,
     end,
     width,
-    arrowHeadSize
-  } = {
-    ...ARROW_DEFAULTS,
-    ...arrow
-  }
-  const arrowHeadTriangle = calculateArrowHeadCorners({ start, end, width, arrowHeadSize });
-  const isInArrowHeadEfficientHitbox = triangleEfficientHitbox(arrowHeadTriangle);
-  return (boxToCheck: BoundingBox) => isInLineEfficientHitbox(boxToCheck) || isInArrowHeadEfficientHitbox(boxToCheck);
+    arrowHeadSize,
+  });
+  const isInArrowHeadEfficientHitbox =
+    triangleEfficientHitbox(arrowHeadTriangle);
+  return (boxToCheck: BoundingBox) =>
+    isInLineEfficientHitbox(boxToCheck) ||
+    isInArrowHeadEfficientHitbox(boxToCheck);
 };
