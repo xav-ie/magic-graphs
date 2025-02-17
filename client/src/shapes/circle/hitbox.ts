@@ -30,8 +30,8 @@ export const getCircleBoundingBox = (circle: Circle) => () => {
       x: at.x - (radius + borderWidth / 2),
       y: at.y - (radius + borderWidth / 2),
     },
-    width: radius + borderWidth,
-    height: radius + borderWidth,
+    width: 2 * (radius + borderWidth / 2),
+    height: 2 * (radius + borderWidth / 2),
   };
 };
 
