@@ -62,7 +62,8 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
     updateEncapsulatedNodeBox();
   };
 
-  const beginGroupDrag = ({ items, coords }: GraphMouseEvent) => {
+  const beginGroupDrag = ({ items, coords, event }: GraphMouseEvent) => {
+    if (event.button !== 0) return;
     if (marqueeBox.value) return;
     const topItem = items.at(-1);
     if (topItem?.graphType !== "encapsulated-node-box") return;

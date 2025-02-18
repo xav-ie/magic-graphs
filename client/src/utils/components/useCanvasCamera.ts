@@ -15,7 +15,6 @@ export const useCanvasCamera = () => {
 
     if (event.button !== 2) return;
 
-    console.log("hi");
     event.preventDefault();
     isPanning.value = true;
     panStart.value = { x: event.clientX, y: event.clientY };
