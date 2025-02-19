@@ -36,13 +36,16 @@ export const useCanvasCamera = () => {
     isPanning.value = false;
   };
 
-  const teleportTo = (coords: Coordinate) => {
+  /**
+   * Teleport the canvas to a specific position, centering those coords on the screen
+   * @param options
+   */
+  const teleportTo = (options: ScrollToOptions) => {
     if (parentEl.value) {
-      parentEl.value.scrollTo({
-        left: coords.x,
-        top: coords.y,
-        behavior: "smooth",
-      });
+      const { left = 0, top = 0, behavior } = options;
+      const x = left - window.screen.width / 2;
+      const y = top - window.screen.height / 2;
+      parentEl.value.scrollTo({ left: x, top: y, behavior });
     }
   };
 
