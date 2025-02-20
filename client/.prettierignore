@@ -33,22 +33,18 @@ pnpm-debug.log*
 
 # Ignore build artifacts
 *.cache
-*.next/
-.next/
 out/
-storybook-static/
 .vite/
-.vitepress/
-.svelte-kit/
-.nuxt/
-.docusaurus/
-
-# Ignore IDE/editor-specific files
-.idea/
-*.iml
-.DS_Store
-Thumbs.db
 
 # Ignore Prettier configuration itself (to avoid formatting conflicts)
 .prettierignore
 .prettierrc*
+
+# Ignore config files
+*.config.js
+*.config.cjs
+*.config.mjs
+*.config.json
+
+# Ignore all dot files
+.*
