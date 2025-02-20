@@ -1,25 +1,25 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import { nonNullGraph as graph } from "@graph/global";
-  import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
-  import GToolbar from "@ui/graph/toolbar/GToolbarBase.vue";
-  import GToolbarButton from "@ui/graph/toolbar/GToolbarButton.vue";
-  import GToolbarDivider from "@ui/graph/toolbar/GToolbarDivider.vue";
-  import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
-  import GraphInfoMenu from "./GraphInfoMenu/GraphInfoMenu.vue";
-  import CollaborativeSessionMenu from "./CollaborativeSessionMenu.vue";
-  import TreeShapeMenu from "./TreeShapeMenu.vue";
-  import { useAutoTree } from "./tree/useTreeShaper";
-  import TemplateMenu from "@graph/templates/ui/TemplateMenu.vue";
+  import { computed } from 'vue';
+  import { nonNullGraph as graph } from '@graph/global';
+  import { useGraphTutorial } from '@graph/tutorials/useGraphTutorial';
+  import GToolbar from '@ui/graph/toolbar/GToolbarBase.vue';
+  import GToolbarButton from '@ui/graph/toolbar/GToolbarButton.vue';
+  import GToolbarDivider from '@ui/graph/toolbar/GToolbarDivider.vue';
+  import ToolbarButtonGroup from '@ui/core/toolbar/ToolbarButtonGroup.vue';
+  import GraphInfoMenu from './GraphInfoMenu/GraphInfoMenu.vue';
+  import CollaborativeSessionMenu from './CollaborativeSessionMenu.vue';
+  import TreeShapeMenu from './TreeShapeMenu.vue';
+  import { useAutoTree } from './tree/useTreeShaper';
+  import TemplateMenu from '@graph/templates/ui/TemplateMenu.vue';
 
   const tutorial = useGraphTutorial(graph.value, [
     {
-      dismiss: "onNodeAdded",
-      hint: "Double click on the canvas to add a node.",
+      dismiss: 'onNodeAdded',
+      hint: 'Double click on the canvas to add a node.',
     },
     {
-      dismiss: "onEdgeAdded",
-      hint: "Hover node to show anchors, drag between them to add an edge.",
+      dismiss: 'onEdgeAdded',
+      hint: 'Hover node to show anchors, drag between them to add an edge.',
     },
   ]);
 
@@ -96,11 +96,19 @@
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup class="gap-0">
-      <GToolbarButton @click="undo" :disabled="!canUndo" icon="undo" />
+      <GToolbarButton
+        @click="undo"
+        :disabled="!canUndo"
+        icon="undo"
+      />
 
       <GToolbarDivider />
 
-      <GToolbarButton @click="redo" :disabled="!canRedo" icon="redo" />
+      <GToolbarButton
+        @click="redo"
+        :disabled="!canRedo"
+        icon="redo"
+      />
     </ToolbarButtonGroup>
 
     <ToolbarButtonGroup>
@@ -126,7 +134,10 @@
         />
       </CollaborativeSessionMenu>
 
-      <TreeShapeMenu v-slot="{ toggle, isOpen }" :controls="treeControls">
+      <TreeShapeMenu
+        v-slot="{ toggle, isOpen }"
+        :controls="treeControls"
+      >
         <GToolbarButton
           @click="toggle"
           :active="isOpen || treeControls.isActive.value"

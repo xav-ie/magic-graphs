@@ -1,19 +1,19 @@
 <script setup lang="ts">
-  import type { Graph } from "@graph/types";
-  import InputColor from "@ui/InputColor.vue";
-  import InputRange from "@ui/InputRange.vue";
-  import InputText from "@ui/InputText.vue";
-  import { camelCaseToTitleCase } from "@utils/string";
-  import { THEMES } from "@graph/themes";
-  import CButton from "@ui/core/button/Button.vue";
-  import { useTheme } from "@graph/themes/useTheme";
-  import { ref, watch } from "vue";
+  import type { Graph } from '@graph/types';
+  import InputColor from '@ui/InputColor.vue';
+  import InputRange from '@ui/InputRange.vue';
+  import InputText from '@ui/InputText.vue';
+  import { camelCaseToTitleCase } from '@utils/string';
+  import { THEMES } from '@graph/themes';
+  import CButton from '@ui/core/button/Button.vue';
+  import { useTheme } from '@graph/themes/useTheme';
+  import { ref, watch } from 'vue';
 
   const props = defineProps<{
     graph: Graph;
   }>();
 
-  const { setTheme } = useTheme(props.graph, "playground-theme-controls");
+  const { setTheme } = useTheme(props.graph, 'playground-theme-controls');
 
   const themes = ref(THEMES[props.graph.themeName.value]);
 
@@ -66,18 +66,18 @@
         v-if="
           typeof theme === 'string' && themeKey.toLowerCase().includes('color')
         "
-        v-model="(themes[themeKey] as string)"
+        v-model="themes[themeKey] as string"
         style="width: 100px; height: 30px"
       />
 
       <InputText
         v-else-if="typeof theme === 'string'"
-        v-model="(themes[themeKey] as string)"
+        v-model="themes[themeKey] as string"
       />
 
       <InputRange
         v-else-if="typeof theme === 'number'"
-        v-model="(themes[themeKey] as number)"
+        v-model="themes[themeKey] as number"
         style="width: 100%"
         :min="0"
         :max="100"

@@ -1,5 +1,5 @@
-import type { Coordinate } from "@shape/types";
-import tinycolor from "tinycolor2";
+import type { Coordinate } from '@shape/types';
+import tinycolor from 'tinycolor2';
 
 /**
  * given a time/duration (in milliseconds) and a frame rate (in frames per second),
@@ -11,7 +11,7 @@ import tinycolor from "tinycolor2";
  */
 export const getFrameCountWithDuration = (
   durationMs: number,
-  frameRate: number
+  frameRate: number,
 ) => {
   const seconds = durationMs / 1000;
   return Math.floor(frameRate * seconds);
@@ -19,17 +19,14 @@ export const getFrameCountWithDuration = (
 
 export type EasingFunction = (step: number) => number;
 
-export type NamedEasingFunction =
-  | "linear"
-  | "in-out"
-  | "in"
-  | "out";
+export type NamedEasingFunction = 'linear' | 'in-out' | 'in' | 'out';
 
 export const EASING_FUNCTIONS: Record<NamedEasingFunction, EasingFunction> = {
-  "linear": (step) => step,
-  "in": (step) => step * step,
-  "out": (step) => step * (2 - step),
-  "in-out": (step) => step < 0.5 ? 2 * step * step : -1 + (4 - 2 * step) * step,
+  linear: (step) => step,
+  in: (step) => step * step,
+  out: (step) => step * (2 - step),
+  'in-out': (step) =>
+    step < 0.5 ? 2 * step * step : -1 + (4 - 2 * step) * step,
 };
 
 /**
@@ -39,17 +36,14 @@ export const EASING_FUNCTIONS: Record<NamedEasingFunction, EasingFunction> = {
  * @param progress Number between 0 and 1.
  * @returns tinycolor instance representing the interpolated color.
  */
-export const interpolateColors = (
-  colors: string[],
-  progress: number
-) => {
+export const interpolateColors = (colors: string[], progress: number) => {
   if (colors.length < 2) {
-    throw new Error("At least two colors are required for interpolation.");
+    throw new Error('At least two colors are required for interpolation.');
   }
 
   const validColors = colors.map((color) => tinycolor(color));
   if (validColors.some((color) => !color.isValid())) {
-    throw new Error("Invalid color provided in the list.");
+    throw new Error('Invalid color provided in the list.');
   }
 
   const totalSteps = colors.length - 1;
@@ -88,10 +82,10 @@ export type InterpolateCoordinateOptions = {
    * @default "in-out"
    */
   easeFn?: EasingFunction | NamedEasingFunction;
-}
+};
 
 const INTERPOLATE_COORDINATE_DEFAULTS = {
-  easeFn: "in-out",
+  easeFn: 'in-out',
 } as const;
 
 /**
@@ -115,34 +109,31 @@ const INTERPOLATE_COORDINATE_DEFAULTS = {
  * // {x: 80, y: 40},
  * // {x: 100, y: 50}]
  */
-export const interpolateCoordinates = (options: InterpolateCoordinateOptions) => {
-  const {
-    start,
-    end,
-    numberOfSteps,
-    easeFn,
-  } = {
+export const interpolateCoordinates = (
+  options: InterpolateCoordinateOptions,
+) => {
+  const { start, end, numberOfSteps, easeFn } = {
     ...INTERPOLATE_COORDINATE_DEFAULTS,
-    ...options
+    ...options,
   };
 
-  if (numberOfSteps < 1) throw new Error(`numberOfSteps must be greater than 0, got ${numberOfSteps}`);
-  if (!Number.isInteger(numberOfSteps)) throw new Error(`numberOfSteps must be an integer, got ${numberOfSteps}`);
+  if (numberOfSteps < 1)
+    throw new Error(
+      `numberOfSteps must be greater than 0, got ${numberOfSteps}`,
+    );
+  if (!Number.isInteger(numberOfSteps))
+    throw new Error(`numberOfSteps must be an integer, got ${numberOfSteps}`);
 
   const result: Coordinate[] = [];
 
-  const easing = typeof easeFn === "string" ? EASING_FUNCTIONS[easeFn] : easeFn;
+  const easing = typeof easeFn === 'string' ? EASING_FUNCTIONS[easeFn] : easeFn;
 
   for (let i = 1; i <= numberOfSteps; i++) {
     const progress = i / numberOfSteps;
     const easedProgress = easing(progress);
 
-    const x = Math.round(
-      start.x + (end.x - start.x) * easedProgress
-    );
-    const y = Math.round(
-      start.y + (end.y - start.y) * easedProgress
-    );
+    const x = Math.round(start.x + (end.x - start.x) * easedProgress);
+    const y = Math.round(start.y + (end.y - start.y) * easedProgress);
 
     result.push({ x, y });
   }
@@ -150,7 +141,10 @@ export const interpolateCoordinates = (options: InterpolateCoordinateOptions) =>
   return result;
 };
 
-export type InterpolateCoordinateOverTimeOptions = Omit<InterpolateCoordinateOptions, 'numberOfSteps'> & {
+export type InterpolateCoordinateOverTimeOptions = Omit<
+  InterpolateCoordinateOptions,
+  'numberOfSteps'
+> & {
   /**
    * the duration of the interpolation in milliseconds
    * @default 1000 // (1 second)
@@ -161,7 +155,7 @@ export type InterpolateCoordinateOverTimeOptions = Omit<InterpolateCoordinateOpt
    * @default 60
    */
   frameRate?: number;
-}
+};
 
 const INTERPOLATE_COORDINATE_OVER_TIME_DEFAULTS = {
   durationMs: 1000,
@@ -177,10 +171,12 @@ const INTERPOLATE_COORDINATE_OVER_TIME_DEFAULTS = {
  * @returns an array of interpolated coordinates such that the interpolation
  * takes `durationMs` milliseconds to run though at `frameRate` frames per second.
  */
-export const interpolateCoordinatesOverTime = (options: InterpolateCoordinateOverTimeOptions) => {
+export const interpolateCoordinatesOverTime = (
+  options: InterpolateCoordinateOverTimeOptions,
+) => {
   const { durationMs, frameRate } = {
     ...INTERPOLATE_COORDINATE_OVER_TIME_DEFAULTS,
-    ...options
+    ...options,
   };
 
   const coords = interpolateCoordinates({
@@ -195,5 +191,5 @@ export const interpolateCoordinatesOverTime = (options: InterpolateCoordinateOve
      * interpolation runs at the desired frame rate without a hitch.
      */
     timePerFrameMs: Math.floor(durationMs / coords.length),
-  }
-}
+  };
+};

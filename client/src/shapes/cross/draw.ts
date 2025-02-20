@@ -1,6 +1,6 @@
-import { CROSS_DEFAULTS } from ".";
-import type { Cross } from ".";
-import { drawRectWithCtx } from "@shape/rect/draw";
+import { CROSS_DEFAULTS } from '.';
+import type { Cross } from '.';
+import { drawRectWithCtx } from '@shape/rect/draw';
 
 export const drawCrossWithCtx = (options: Cross) => {
   const {

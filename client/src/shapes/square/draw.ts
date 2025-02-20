@@ -1,5 +1,5 @@
-import type { Square } from ".";
-import { drawRectWithCtx } from "@shape/rect/draw";
+import type { Square } from '.';
+import { drawRectWithCtx } from '@shape/rect/draw';
 
 export const drawSquareWithCtx = (options: Square) => {
   const drawRect = drawRectWithCtx({

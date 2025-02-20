@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import type { TutorialControls } from "@graph/tutorials/types";
-  import TutorialHint from "@graph/tutorials/TutorialHint.vue";
-  import colors from "@utils/colors";
+  import type { TutorialControls } from '@graph/tutorials/types';
+  import TutorialHint from '@graph/tutorials/TutorialHint.vue';
+  import colors from '@utils/colors';
 
   withDefaults(
     defineProps<{
@@ -10,7 +10,7 @@
     }>(),
     {
       color: colors.WHITE + '75',
-    }
+    },
   );
 </script>
 

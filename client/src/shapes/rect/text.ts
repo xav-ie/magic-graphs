@@ -1,24 +1,19 @@
-import { TEXT_DEFAULTS } from "@shape/types";
-import type { Coordinate } from "@shape/types";
-import type { Rect } from "@shape/rect";
+import { TEXT_DEFAULTS } from '@shape/types';
+import type { Coordinate } from '@shape/types';
+import type { Rect } from '@shape/rect';
 import {
   drawTextWithTextArea,
   drawTextMatteWithTextArea,
   getTextAreaDimension,
   getFullTextArea,
-} from "@shape/text";
-import { rectHitbox } from "@shape/rect/hitbox";
-import { RECT_DEFAULTS } from ".";
+} from '@shape/text';
+import { rectHitbox } from '@shape/rect/hitbox';
+import { RECT_DEFAULTS } from '.';
 
 export const getTextAreaLocationOnRect = (rect: Rect) => {
-  const {
-    at,
-    width,
-    height,
-    textArea    
-  } = { ...RECT_DEFAULTS, ...rect };
+  const { at, width, height, textArea } = { ...RECT_DEFAULTS, ...rect };
 
-  if (!textArea) throw new Error("no text area provided");
+  if (!textArea) throw new Error('no text area provided');
 
   const { text } = textArea;
 
@@ -29,7 +24,6 @@ export const getTextAreaLocationOnRect = (rect: Rect) => {
 
   const centerX = at.x + width / 2;
   const centerY = at.y + height / 2;
-
 
   return {
     x: centerX - fontSize,

@@ -1,22 +1,19 @@
-import { TEXT_DEFAULTS } from "@shape/types";
-import type { Coordinate } from "@shape/types";
-import type { Circle } from "@shape/circle";
+import { TEXT_DEFAULTS } from '@shape/types';
+import type { Coordinate } from '@shape/types';
+import type { Circle } from '@shape/circle';
 import {
   drawTextWithTextArea,
   drawTextMatteWithTextArea,
   getTextAreaDimension,
   getFullTextArea,
-} from "@shape/text";
-import { rectHitbox } from "@shape/rect/hitbox";
-import { CIRCLE_DEFAULTS } from ".";
+} from '@shape/text';
+import { rectHitbox } from '@shape/rect/hitbox';
+import { CIRCLE_DEFAULTS } from '.';
 
 export const getTextAreaLocationOnCircle = (circle: Circle) => {
-  const {
-    at,
-    textArea    
-  } = { ...CIRCLE_DEFAULTS, ...circle };
+  const { at, textArea } = { ...CIRCLE_DEFAULTS, ...circle };
 
-  if (!textArea) throw new Error("no text area provided");
+  if (!textArea) throw new Error('no text area provided');
 
   const { text } = textArea;
 

@@ -1,25 +1,25 @@
-import type { Ref } from 'vue'
+import type { Ref } from 'vue';
 
-import { useBaseGraph } from '@graph/base'
-import type { GraphSettings } from '@graph/settings'
+import { useBaseGraph } from '@graph/base';
+import type { GraphSettings } from '@graph/settings';
 
-import { useMarquee } from '@graph/plugins/marquee'
-import { useNodeDrag } from '@graph/plugins/drag'
-import { useNodeAnchors } from '@graph/plugins/anchors'
-import { useShortcuts } from '@graph/plugins/shortcut'
-import { useAnnotations } from '@graph/plugins/annotations'
-import { useFocus } from '@graph/plugins/focus'
-import { useHistory } from '@graph/plugins/history'
-import { usePersistent } from '@graph/plugins/persistent'
-import { useAnimation } from '@graph/plugins/animate'
-import { useInteractive } from '@graph/plugins/interactive'
-import { useCharacteristics } from '@graph/plugins/characteristics'
+import { useMarquee } from '@graph/plugins/marquee';
+import { useNodeDrag } from '@graph/plugins/drag';
+import { useNodeAnchors } from '@graph/plugins/anchors';
+import { useShortcuts } from '@graph/plugins/shortcut';
+import { useAnnotations } from '@graph/plugins/annotations';
+import { useFocus } from '@graph/plugins/focus';
+import { useHistory } from '@graph/plugins/history';
+import { usePersistent } from '@graph/plugins/persistent';
+import { useAnimation } from '@graph/plugins/animate';
+import { useInteractive } from '@graph/plugins/interactive';
+import { useCharacteristics } from '@graph/plugins/characteristics';
 
-import { usePreferredTheme } from '@graph/themes/usePreferredTheme'
-import { useHelpers } from '@graph/helpers/useHelpers'
+import { usePreferredTheme } from '@graph/themes/usePreferredTheme';
+import { useHelpers } from '@graph/helpers/useHelpers';
 
-import { useAdjacencyList } from './useAdjacencyList'
-import { useTransitionMatrix } from './useTransitionMatrix'
+import { useAdjacencyList } from './useAdjacencyList';
+import { useTransitionMatrix } from './useTransitionMatrix';
 
 /**
  * a package brimming with tools for creating and managing graphs bringing
@@ -33,38 +33,38 @@ export const useGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   settings: Partial<GraphSettings> = {},
 ) => {
-  const base = useBaseGraph(canvas, settings)
+  const base = useBaseGraph(canvas, settings);
 
-  const focus = useFocus(base)
-  const history = useHistory(base)
-  const marquee = useMarquee({ ...base, focus })
-  const nodeAnchors = useNodeAnchors({ ...base, focus })
-  const nodeDrag = useNodeDrag({ ...base, nodeAnchors })
-  const annotation = useAnnotations(base)
-  const persistent = usePersistent(base)
-  const preferredTheme = usePreferredTheme(base)
+  const focus = useFocus(base);
+  const history = useHistory(base);
+  const marquee = useMarquee({ ...base, focus });
+  const nodeAnchors = useNodeAnchors({ ...base, focus });
+  const nodeDrag = useNodeDrag({ ...base, nodeAnchors });
+  const annotation = useAnnotations(base);
+  const persistent = usePersistent(base);
+  const preferredTheme = usePreferredTheme(base);
 
   const shortcut = useShortcuts({
     ...base,
     history,
     focus,
     annotation,
-  })
+  });
 
-  const adjacencyList = useAdjacencyList(base)
-  const transitionMatrix = useTransitionMatrix({ ...base, adjacencyList })
+  const adjacencyList = useAdjacencyList(base);
+  const transitionMatrix = useTransitionMatrix({ ...base, adjacencyList });
 
-  const characteristics = useCharacteristics({ ...base, ...adjacencyList })
+  const characteristics = useCharacteristics({ ...base, ...adjacencyList });
   const animate = useAnimation({
     ...base,
     history,
     focus,
     marquee,
-    persistent
-  })
+    persistent,
+  });
 
-  useInteractive(base)
-  const helpers = useHelpers(base)
+  useInteractive(base);
+  const helpers = useHelpers(base);
 
   return {
     ...base,
@@ -90,5 +90,5 @@ export const useGraph = (
     // helper functions
     shortcut,
     helpers,
-  }
-}
+  };
+};

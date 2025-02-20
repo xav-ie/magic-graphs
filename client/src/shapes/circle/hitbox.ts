@@ -1,7 +1,7 @@
-import type { Coordinate, BoundingBox } from "@shape/types";
-import type { Circle } from "@shape/circle";
-import { STROKE_DEFAULTS } from "@shape/types";
-import { rectEfficientHitbox } from "@shape/rect/hitbox";
+import type { Coordinate, BoundingBox } from '@shape/types';
+import type { Circle } from '@shape/circle';
+import { STROKE_DEFAULTS } from '@shape/types';
+import { rectEfficientHitbox } from '@shape/rect/hitbox';
 
 export const circleHitbox = (circle: Circle) => (point: Coordinate) => {
   const dx = point.x - circle.at.x;

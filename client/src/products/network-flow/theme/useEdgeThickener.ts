@@ -1,7 +1,7 @@
-import { onUnmounted } from "vue";
-import { useTheme } from "@graph/themes/useTheme";
-import type { GEdge, Graph } from "@graph/types";
-import { FLOW_USETHEME_ID } from "../constants";
+import { onUnmounted } from 'vue';
+import { useTheme } from '@graph/themes/useTheme';
+import type { GEdge, Graph } from '@graph/types';
+import { FLOW_USETHEME_ID } from '../constants';
 
 const MIN_THICKNESS = 5;
 const MAX_THICKNESS = 25;
@@ -22,11 +22,12 @@ export const useEdgeThickener = (graph: Graph, themeId = FLOW_USETHEME_ID) => {
   const thickener = (edge: GEdge) => {
     const edgeWeight = getEdgeWeight(edge.id);
     if (edgeWeight === 0) return ZERO_THICKNESS;
-    const adjustedWeight = edgeWeight * 2
-    const rawPercentage = (adjustedWeight - MIN_THICKNESS) / (MAX_THICKNESS - MIN_THICKNESS);
+    const adjustedWeight = edgeWeight * 2;
+    const rawPercentage =
+      (adjustedWeight - MIN_THICKNESS) / (MAX_THICKNESS - MIN_THICKNESS);
     const percentage = Math.min(1, Math.max(0, rawPercentage));
-    return ((MAX_THICKNESS - MIN_THICKNESS) * percentage) + MIN_THICKNESS;
-  }
+    return (MAX_THICKNESS - MIN_THICKNESS) * percentage + MIN_THICKNESS;
+  };
 
   const activate = () => setTheme('edgeWidth', thickener);
   const deactivate = () => removeTheme('edgeWidth');
@@ -35,7 +36,7 @@ export const useEdgeThickener = (graph: Graph, themeId = FLOW_USETHEME_ID) => {
 
   return {
     activate,
-    deactivate
+    deactivate,
   };
 };
 

@@ -1,22 +1,19 @@
-import { TEXT_DEFAULTS } from "@shape/types";
-import type { Coordinate } from "@shape/types";
-import type { Ellipse } from "@shape/ellipse";
+import { TEXT_DEFAULTS } from '@shape/types';
+import type { Coordinate } from '@shape/types';
+import type { Ellipse } from '@shape/ellipse';
 import {
   drawTextWithTextArea,
   drawTextMatteWithTextArea,
   getTextAreaDimension,
   getFullTextArea,
-} from "@shape/text";
-import { rectHitbox } from "@shape/rect/hitbox";
-import { ELLIPSE_DEFAULTS } from ".";
+} from '@shape/text';
+import { rectHitbox } from '@shape/rect/hitbox';
+import { ELLIPSE_DEFAULTS } from '.';
 
 export const getTextAreaLocationOnEllipse = (ellipse: Ellipse) => {
-  const {
-    at,
-    textArea    
-  } = { ...ELLIPSE_DEFAULTS, ...ellipse };
+  const { at, textArea } = { ...ELLIPSE_DEFAULTS, ...ellipse };
 
-  if (!textArea) throw new Error("no text area provided");
+  if (!textArea) throw new Error('no text area provided');
 
   const { text } = textArea;
 

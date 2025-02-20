@@ -1,4 +1,4 @@
-import colors from "@utils/colors";
+import colors from '@utils/colors';
 
 export const COLORS = [
   colors.RED_600,

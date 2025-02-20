@@ -1,22 +1,25 @@
-import type { RemoveAnyArray } from "@utils/types"
+import type { RemoveAnyArray } from '@utils/types';
 
 /**
  * taking some data that may be a plain value or a function that returns that value
  *
  * @template T - the type of the value
  * @template K - the type of the arguments necessary in order to resolve the value
-*/
-export type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T)
+ */
+export type MaybeGetter<T, K extends any[] = []> = T | ((...arg: K) => T);
 
 /**
  * the value of a MaybeGetter
  */
-export type UnwrapMaybeGetter<T> = T extends MaybeGetter<infer U, infer _> ? U : T
+export type UnwrapMaybeGetter<T> =
+  T extends MaybeGetter<infer U, infer _> ? U : T;
 
 /**
  * the parameters of a MaybeGetter
  */
-export type MaybeGetterParams<T> = RemoveAnyArray<T extends MaybeGetter<infer _, infer K> ? K : []>
+export type MaybeGetterParams<T> = RemoveAnyArray<
+  T extends MaybeGetter<infer _, infer K> ? K : []
+>;
 
 /**
  * unwraps a MaybeGetter into a value of type T.
@@ -27,9 +30,12 @@ export type MaybeGetterParams<T> = RemoveAnyArray<T extends MaybeGetter<infer _,
  * @example getValue(5) // 5
  * getValue(() => 5) // 5
  */
-export const getValue = <T, K extends any[]>(value: MaybeGetter<T, K>, ...args: K) => {
+export const getValue = <T, K extends any[]>(
+  value: MaybeGetter<T, K>,
+  ...args: K
+) => {
   if (typeof value === 'function') {
-    return (value as (...args: K) => T)(...args)
+    return (value as (...args: K) => T)(...args);
   }
-  return value
-}
+  return value;
+};

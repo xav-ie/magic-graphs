@@ -1,8 +1,8 @@
-import type { GEdge, GNode } from "@graph/types";
-import type { AutoGenerateGraphOptions } from "@graph/templates/autoGenerate/types";
-import { ref } from "vue";
-import { generateId } from "@utils/id";
-import { graphLabelGetter, LETTERS } from "@graph/labels";
+import type { GEdge, GNode } from '@graph/types';
+import type { AutoGenerateGraphOptions } from '@graph/templates/autoGenerate/types';
+import { ref } from 'vue';
+import { generateId } from '@utils/id';
+import { graphLabelGetter, LETTERS } from '@graph/labels';
 
 /**
  * Generates a set of nodes
@@ -35,14 +35,14 @@ export const generateNodes = (nodeCount: number) => {
 export const generateEdges = (
   nodes: GNode[],
   edgeCount: number,
-  edgeLabel: AutoGenerateGraphOptions["edgeLabel"]
+  edgeLabel: AutoGenerateGraphOptions['edgeLabel'],
 ) => {
   const edges: GEdge[] = [];
   for (let i = 0; i < edgeCount; i++) {
     const fromNode = nodes[Math.floor(Math.random() * nodes.length)];
     const toNode = nodes[Math.floor(Math.random() * nodes.length)];
     const label =
-      typeof edgeLabel === "function"
+      typeof edgeLabel === 'function'
         ? edgeLabel(fromNode.id, toNode.id)
         : edgeLabel!;
     if (fromNode.id !== toNode.id) {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import CIcon from "@ui/core/Icon.vue";
+  import CIcon from '@ui/core/Icon.vue';
 </script>
 
 <template>
@@ -12,7 +12,10 @@
       <div
         class="bg-gray-900 rounded-full h-60 w-60 flex items-center justify-center"
       >
-        <CIcon style="font-size: 150px" icon="rabbit-variant-outline" />
+        <CIcon
+          style="font-size: 150px"
+          icon="rabbit-variant-outline"
+        />
       </div>
       <h1>
         <span class="text-4xl">Poof!</span>
@@ -20,7 +23,10 @@
         Looks like
         <span class="text-magic">Magic Algorithms</span>
         pulled a disappearing act. Cast this spell to
-        <router-link to="/" class="text-blue-500 hover:underline">
+        <router-link
+          to="/"
+          class="text-blue-500 hover:underline"
+        >
           return
         </router-link>
         .

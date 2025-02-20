@@ -1,19 +1,19 @@
-import type { GraphThemeRaw } from "../types";
+import type { GraphThemeRaw } from '../types';
 
 export type NonColorGraphThemes = Pick<
   GraphThemeRaw,
-  'nodeShape' |
-  'nodeSize' |
-  'nodeBorderWidth' |
-  'nodeTextSize' |
-  'nodeAnchorRadius' |
-  'edgeWidth' |
-  'edgeTextSize' |
-  'nodeText' |
-  'edgeText' |
-  'edgeTextFontWeight' |
-  'linkPreviewWidth'
->
+  | 'nodeShape'
+  | 'nodeSize'
+  | 'nodeBorderWidth'
+  | 'nodeTextSize'
+  | 'nodeAnchorRadius'
+  | 'edgeWidth'
+  | 'edgeTextSize'
+  | 'nodeText'
+  | 'edgeText'
+  | 'edgeTextFontWeight'
+  | 'linkPreviewWidth'
+>;
 
 /**
  * themes that do not depend on color scheme
@@ -31,4 +31,4 @@ export const NON_COLOR_THEMES: NonColorGraphThemes = {
   edgeText: ({ label }) => label,
   edgeTextFontWeight: 'bold',
   linkPreviewWidth: 10,
-}
+};

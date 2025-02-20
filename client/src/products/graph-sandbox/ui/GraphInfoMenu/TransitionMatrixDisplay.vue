@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import colors from "@colors";
-  import { nonNullGraph as graph } from "@graph/global";
-  import { useTransitionMatrix } from "@graph/useTransitionMatrix";
-  import TransitionMatrixLabel from "./TransitionMatrixLabel.vue";
-  import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
+  import { computed } from 'vue';
+  import colors from '@colors';
+  import { nonNullGraph as graph } from '@graph/global';
+  import { useTransitionMatrix } from '@graph/useTransitionMatrix';
+  import TransitionMatrixLabel from './TransitionMatrixLabel.vue';
+  import { useNonNullGraphColors } from '@graph/themes/useGraphColors';
 
   const { transitionMatrix } = useTransitionMatrix(graph.value);
 

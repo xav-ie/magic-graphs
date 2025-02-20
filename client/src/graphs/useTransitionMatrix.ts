@@ -1,7 +1,7 @@
-import { computed } from "vue";
-import type { BaseGraph } from "./base";
-import type { GNode, Weight } from "./types";
-import type { AdjacencyLists, WeightedAdjacencyList } from "./useAdjacencyList";
+import { computed } from 'vue';
+import type { BaseGraph } from './base';
+import type { GNode, Weight } from './types';
+import type { AdjacencyLists, WeightedAdjacencyList } from './useAdjacencyList';
 
 /**
  * a 2D array (matrix) where matrix[i][j] represents the absolute weight of
@@ -17,12 +17,12 @@ export type TransitionMatrix<T extends Weight = number> = T[][];
  */
 export const getTransitionMatrix = <T extends Weight>(
   adjList: Readonly<WeightedAdjacencyList<T>>,
-  nodeToIndex: Map<GNode['id'], number>
+  nodeToIndex: Map<GNode['id'], number>,
 ) => {
   const nodeCount = Object.keys(adjList).length;
 
   const matrix: TransitionMatrix<T> = Array.from({ length: nodeCount }, () =>
-    Array(nodeCount).fill(0)
+    Array(nodeCount).fill(0),
   );
 
   for (const [nodeId, neighbors] of Object.entries(adjList)) {
@@ -37,21 +37,30 @@ export const getTransitionMatrix = <T extends Weight>(
   return matrix;
 };
 
-export const useTransitionMatrix = (graph: BaseGraph & {
-  adjacencyList: Pick<AdjacencyLists, 'weightedAdjacencyList' | 'weightedFracAdjacencyList'>
-}) => {
-  const {
-    weightedAdjacencyList,
-    weightedFracAdjacencyList,
-  } = graph.adjacencyList;
+export const useTransitionMatrix = (
+  graph: BaseGraph & {
+    adjacencyList: Pick<
+      AdjacencyLists,
+      'weightedAdjacencyList' | 'weightedFracAdjacencyList'
+    >;
+  },
+) => {
+  const { weightedAdjacencyList, weightedFracAdjacencyList } =
+    graph.adjacencyList;
 
   const transitionMatrix = computed(() => {
-    return getTransitionMatrix(weightedAdjacencyList.value, graph.nodeIdToIndex.value);
-  })
+    return getTransitionMatrix(
+      weightedAdjacencyList.value,
+      graph.nodeIdToIndex.value,
+    );
+  });
 
   const fracTransitionMatrix = computed(() => {
-    return getTransitionMatrix(weightedFracAdjacencyList.value, graph.nodeIdToIndex.value);
-  })
+    return getTransitionMatrix(
+      weightedFracAdjacencyList.value,
+      graph.nodeIdToIndex.value,
+    );
+  });
 
   return {
     /**

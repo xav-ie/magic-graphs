@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import GButton from "@ui/graph/button/GButton.vue";
-import CIcon from "@ui/core/Icon.vue";
+  import GButton from '@ui/graph/button/GButton.vue';
+  import CIcon from '@ui/core/Icon.vue';
 
-defineProps<{
-  icon: string;
-}>();
+  defineProps<{
+    icon: string;
+  }>();
 </script>
 
 <template>

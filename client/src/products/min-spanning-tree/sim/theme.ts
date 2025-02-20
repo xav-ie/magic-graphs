@@ -1,19 +1,19 @@
-import { computed } from "vue";
-import type { GEdge, Graph } from "@graph/types";
-import type { MSTTrace } from "./runner";
-import type { SimulationControls } from "@ui/product/sim/types";
-import { useTheme } from "@graph/themes/useTheme";
+import { computed } from 'vue';
+import type { GEdge, Graph } from '@graph/types';
+import type { MSTTrace } from './runner';
+import type { SimulationControls } from '@ui/product/sim/types';
+import { useTheme } from '@graph/themes/useTheme';
 
 /**
  * dims the color of the edge if it is not in the MST to ${DIM_FACTOR}%
  */
 const DIM_FACTOR = 20;
 
-export const MST_USETHEME_ID = "mst";
+export const MST_USETHEME_ID = 'mst';
 
 export const useSimulationTheme = (
   graph: Graph,
-  sim: SimulationControls<MSTTrace>
+  sim: SimulationControls<MSTTrace>,
 ) => {
   const { traceArray: trace } = sim;
   const { setTheme, removeAllThemes } = useTheme(graph, MST_USETHEME_ID);
@@ -27,7 +27,7 @@ export const useSimulationTheme = (
     const inMST = mstAtStep.value.some((e) => e.id === edge.id);
     if (inMST) return color;
     else return color + DIM_FACTOR;
-  }
+  };
 
   const colorEdgeText = (edge: GEdge) => {
     if (graph.focus.isFocused(edge.id)) return;
@@ -36,19 +36,19 @@ export const useSimulationTheme = (
     const inMST = mstAtStep.value.some((e) => e.id === edge.id);
     if (inMST) return color;
     else return color + DIM_FACTOR;
-  }
+  };
 
   const activate = () => {
-    setTheme("edgeColor", colorEdge);
-    setTheme("edgeTextColor", colorEdgeText);
-  }
+    setTheme('edgeColor', colorEdge);
+    setTheme('edgeTextColor', colorEdgeText);
+  };
 
   const deactivate = () => {
     removeAllThemes();
-  }
+  };
 
   return {
     activate,
     deactivate,
-  }
-}
+  };
+};

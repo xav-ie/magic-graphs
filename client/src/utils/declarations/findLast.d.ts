@@ -4,15 +4,15 @@ declare global {
   interface Array<T> {
     findLast<S extends T>(
       predicate: (value: T, index: number, array: T[]) => value is S,
-      thisArg?: any
+      thisArg?: any,
     ): S | undefined;
     findLast(
       predicate: (value: T, index: number, array: T[]) => unknown,
-      thisArg?: any
+      thisArg?: any,
     ): T | undefined;
     findLastIndex(
       predicate: (value: T, index: number, array: T[]) => unknown,
-      thisArg?: any
+      thisArg?: any,
     ): number;
   }
 }

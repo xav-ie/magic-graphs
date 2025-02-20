@@ -23,7 +23,8 @@ export type NodeIdToDepth = Map<GNode['id'], number>;
  */
 export const getNodeDepths = (startNode: GNode, adjList: AdjacencyList) => {
   const nodeIdToDepth: NodeIdToDepth = new Map();
-  if (!adjList[startNode.id]) throw new Error(`node with id ${startNode.id} not found in adj list`);
+  if (!adjList[startNode.id])
+    throw new Error(`node with id ${startNode.id} not found in adj list`);
 
   let queue = [startNode.id];
   const visited = new Set(queue);
@@ -51,15 +52,16 @@ export const getNodeDepths = (startNode: GNode, adjList: AdjacencyList) => {
 
   return {
     nodeIdToDepth,
-    depthToNodeIds: Array
-      .from(nodeIdToDepth)
-      .reduce<GNode['id'][][]>((acc, [nodeId, depth]) => {
+    depthToNodeIds: Array.from(nodeIdToDepth).reduce<GNode['id'][][]>(
+      (acc, [nodeId, depth]) => {
         if (!acc[depth]) {
           acc[depth] = [];
         }
         acc[depth].push(nodeId);
         return acc;
-      }, []),
+      },
+      [],
+    ),
     /**
      * depth of the tree. root node is at depth 0.
      */
@@ -77,6 +79,6 @@ export const getNodeDepths = (startNode: GNode, adjList: AdjacencyList) => {
 export const useNodeDepth = (graph: Graph, startNode: Ref<GNode>) => {
   const { adjacencyList } = useAdjacencyList(graph);
   return computed(() => getNodeDepths(startNode.value, adjacencyList.value));
-}
+};
 
 export type NodeDepth = ReturnType<typeof getNodeDepths>;

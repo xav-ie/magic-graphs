@@ -13,7 +13,7 @@ export const GRAPH_BUTTON_ID = {
   clearLocalStorage: 'clear-local-storage',
   persistentGraphClone: 'persistent-graph-clone',
   log: 'log',
-  bfsColorize: 'toggle-bfs-colorize'
+  bfsColorize: 'toggle-bfs-colorize',
 } as const;
 
 type GraphButtonIdMap = typeof GRAPH_BUTTON_ID;
@@ -23,9 +23,9 @@ type GraphButtonId = GraphButtonIdMap[keyof GraphButtonIdMap];
  * @describes a button that can be added to the graph toolbar
  */
 export type GraphPlaygroundButton = {
-  cond?: () => boolean,
-  label: () => string,
-  action: () => void,
-  color: () => string,
-  id: GraphButtonId,
-}
+  cond?: () => boolean;
+  label: () => string;
+  action: () => void;
+  color: () => string;
+  id: GraphButtonId;
+};

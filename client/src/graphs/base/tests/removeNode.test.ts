@@ -9,11 +9,11 @@ describe('base graph - removeNode', () => {
     graph.nodes.value = [];
     const node1 = graph.addNode({
       x: 0,
-      y: 0
+      y: 0,
     });
     const node2 = graph.addNode({
       x: 1,
-      y: 1
+      y: 1,
     });
 
     if (!node1 || !node2) {
@@ -28,7 +28,7 @@ describe('base graph - removeNode', () => {
     graph.nodes.value = [];
     const node = graph.addNode({
       x: 1,
-      y: 1
+      y: 1,
     });
     graph.removeNode('invalid-id');
     expect(graph.nodes.value).toMatchObject([node]);
@@ -50,5 +50,5 @@ describe('base graph - removeNode', () => {
     graph.removeNode(node1.id);
     expect(graph.nodes.value).toMatchObject([node2]);
     expect(graph.edges.value).toEqual([]);
-  })
+  });
 });

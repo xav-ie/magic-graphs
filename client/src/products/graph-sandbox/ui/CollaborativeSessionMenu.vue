@@ -1,19 +1,19 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue";
-  import { useRouter } from "vue-router";
-  import { nonNullGraph as graph } from "@graph/global";
-  import { collabControls, myCollaboratorProfile } from "@graph/collab";
-  import { debounce } from "@utils/debounce";
-  import colors from "@utils/colors";
-  import { productIdToProduct, useProductRouting } from "@utils/product";
-  import { generateId } from "@utils/id";
-  import GraphSandboxProductInfo from "../info";
-  import CPopover from "@ui/core/Popover.vue";
-  import GButton from "@ui/graph/button/GButton.vue";
-  import CButton from "@ui/core/button/Button.vue";
-  import CIcon from "@ui/core/Icon.vue";
-  import GWell from "@ui/graph/GWell.vue";
-  import GInputText from "@ui/graph/input/GInputText.vue";
+  import { computed, ref } from 'vue';
+  import { useRouter } from 'vue-router';
+  import { nonNullGraph as graph } from '@graph/global';
+  import { collabControls, myCollaboratorProfile } from '@graph/collab';
+  import { debounce } from '@utils/debounce';
+  import colors from '@utils/colors';
+  import { productIdToProduct, useProductRouting } from '@utils/product';
+  import { generateId } from '@utils/id';
+  import GraphSandboxProductInfo from '../info';
+  import CPopover from '@ui/core/Popover.vue';
+  import GButton from '@ui/graph/button/GButton.vue';
+  import CButton from '@ui/core/button/Button.vue';
+  import CIcon from '@ui/core/Icon.vue';
+  import GWell from '@ui/graph/GWell.vue';
+  import GInputText from '@ui/graph/input/GInputText.vue';
 
   const router = useRouter();
   const { navigate } = useProductRouting();
@@ -45,7 +45,7 @@
       linkCopied.value = true;
       resetLinkCopied();
     } catch (e) {
-      console.error("Failed to copy link to clipboard", e);
+      console.error('Failed to copy link to clipboard', e);
     }
   };
 
@@ -97,10 +97,17 @@
           class="w-full"
         >
           Generate Link
-          <CIcon icon="link" class="ml-2" />
+          <CIcon
+            icon="link"
+            class="ml-2"
+          />
         </GButton>
 
-        <CButton v-else-if="startingRoom" disabled class="w-full">
+        <CButton
+          v-else-if="startingRoom"
+          disabled
+          class="w-full"
+        >
           Preparing Room...
         </CButton>
 
@@ -118,12 +125,19 @@
               icon="content-copy"
               class="group-hover:opacity-100 opacity-0"
             />
-            <CIcon v-if="linkCopied" icon="check" class="text-green-400" />
+            <CIcon
+              v-if="linkCopied"
+              icon="check"
+              class="text-green-400"
+            />
           </GWell>
         </div>
       </div>
 
-      <div v-if="isConnected" class="mt-4 w-full">
+      <div
+        v-if="isConnected"
+        class="mt-4 w-full"
+      >
         <CButton
           @click="stopCollaboration"
           :color="colors.RED_600"

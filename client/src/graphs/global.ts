@@ -5,17 +5,20 @@ import type { Annotation } from './plugins/annotations/types';
 export const graph = shallowRef<Graph>();
 
 export const nonNullGraph = computed(() => {
-	if (!graph.value) {
-		throw new Error('global graph state is undefined');
-	}
+  if (!graph.value) {
+    throw new Error('global graph state is undefined');
+  }
 
-	return graph.value;
+  return graph.value;
 });
 
 /**
  * when switching between products, if this is set, the graph will be loaded with this state
  */
-export const queuedGraphStateLoadout = shallowRef<{ nodes: GNode[]; edges: GEdge[] }>();
+export const queuedGraphStateLoadout = shallowRef<{
+  nodes: GNode[];
+  edges: GEdge[];
+}>();
 
 /**
  * when switching between products, if this is set, the annotations will be loaded with this state

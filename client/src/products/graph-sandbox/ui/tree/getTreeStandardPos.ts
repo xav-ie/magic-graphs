@@ -1,13 +1,13 @@
-import type { GNode, Graph } from "@graph/types";
-import type { NodeDepth } from "@product/search-visualizer/useNodeDepth";
-import type { Coordinate } from "@shape/types";
-import { roundToNearestN } from "@utils/math";
+import type { GNode, Graph } from '@graph/types';
+import type { NodeDepth } from '@product/search-visualizer/useNodeDepth';
+import type { Coordinate } from '@shape/types';
+import { roundToNearestN } from '@utils/math';
 
 export const getTreeStandardPos = (
   graph: Pick<Graph, 'getNode'>,
   rootPosition: Coordinate,
   nodeDepths: NodeDepth,
-  treeOffset: { xOffset: number, yOffset: number }
+  treeOffset: { xOffset: number; yOffset: number },
 ) => {
   const { xOffset, yOffset } = treeOffset;
   const { depthToNodeIds } = nodeDepths;
@@ -16,7 +16,7 @@ export const getTreeStandardPos = (
 
   for (let i = 1; i < depthToNodeIds.length; i++) {
     const nodeIds = depthToNodeIds[i];
-    const xOffsetPerNode = []
+    const xOffsetPerNode = [];
 
     const hasMiddleNode = nodeIds.length % 2 === 1;
     if (hasMiddleNode) {
@@ -48,4 +48,4 @@ export const getTreeStandardPos = (
   }
 
   return newNodePositions;
-}
+};

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import { ref } from "vue";
-  import { useGraph } from "@graph/useGraph";
-  import GraphProduct from "@ui/product/GraphProduct.vue";
-  import { BASIC_SEARCH_GRAPH_SETTINGS } from "./settings";
+  import { ref } from 'vue';
+  import { useGraph } from '@graph/useGraph';
+  import GraphProduct from '@ui/product/GraphProduct.vue';
+  import { BASIC_SEARCH_GRAPH_SETTINGS } from './settings';
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, BASIC_SEARCH_GRAPH_SETTINGS);

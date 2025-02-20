@@ -1,4 +1,4 @@
-import type { ProductInfo } from 'src/types'
+import type { ProductInfo } from 'src/types';
 
 const route: ProductInfo = {
   route: {
@@ -15,6 +15,6 @@ const route: ProductInfo = {
     category: 'developer tools',
     allowGoWithGraph: false,
   },
-}
+};
 
-export default route
+export default route;

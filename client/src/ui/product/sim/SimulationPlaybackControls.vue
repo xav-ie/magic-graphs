@@ -1,15 +1,15 @@
 <script setup lang="ts">
-  import { onUnmounted, ref, toRefs } from "vue";
-  import type { UnwrapRef } from "vue";
-  import { nonNullGraph as graph } from "@graph/global";
-  import type { SimulationControls } from "./types";
-  import PlaybackButton from "./PlaybackButton.vue";
-  import ProgressBar from "./Progressbar.vue";
-  import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
-  import GSpreadSelect from "@ui/graph/select/GSpreadSelect.vue";
-  import GButton from "@ui/graph/button/GButton.vue";
-  import { DEFAULT_PLAYBACK_SPEED } from "./useSimulationControls";
-  import { onKeyStroke } from "@vueuse/core";
+  import { onUnmounted, ref, toRefs } from 'vue';
+  import type { UnwrapRef } from 'vue';
+  import { nonNullGraph as graph } from '@graph/global';
+  import type { SimulationControls } from './types';
+  import PlaybackButton from './PlaybackButton.vue';
+  import ProgressBar from './Progressbar.vue';
+  import { useNonNullGraphColors } from '@graph/themes/useGraphColors';
+  import GSpreadSelect from '@ui/graph/select/GSpreadSelect.vue';
+  import GButton from '@ui/graph/button/GButton.vue';
+  import { DEFAULT_PLAYBACK_SPEED } from './useSimulationControls';
+  import { onKeyStroke } from '@vueuse/core';
 
   const colors = useNonNullGraphColors();
 
@@ -61,31 +61,31 @@
     paused.value = true;
   };
 
-  graph.value.subscribe("onStructureChange", pause);
+  graph.value.subscribe('onStructureChange', pause);
 
   onUnmounted(() => {
-    graph.value.unsubscribe("onStructureChange", pause);
+    graph.value.unsubscribe('onStructureChange', pause);
   });
 
   const PLAYBACK_SPEEDS = [
     {
-      label: "0.25x",
+      label: '0.25x',
       value: DEFAULT_PLAYBACK_SPEED / 0.25,
     },
     {
-      label: "0.5x",
+      label: '0.5x',
       value: DEFAULT_PLAYBACK_SPEED / 0.5,
     },
     {
-      label: "1x",
+      label: '1x',
       value: DEFAULT_PLAYBACK_SPEED,
     },
     {
-      label: "2x",
+      label: '2x',
       value: DEFAULT_PLAYBACK_SPEED / 2,
     },
     {
-      label: "4x",
+      label: '4x',
       value: DEFAULT_PLAYBACK_SPEED / 4,
     },
   ] as const;
@@ -96,7 +96,7 @@
     PLAYBACK_SPEEDS.findIndex((speed) => speed.value === playbackSpeed.value) ??
     2;
 
-  onKeyStroke([" ", "Spacebar"], (e) => {
+  onKeyStroke([' ', 'Spacebar'], (e) => {
     e.preventDefault();
     if (isOver.value) {
       restart();
@@ -105,12 +105,12 @@
     }
   });
 
-  onKeyStroke("ArrowLeft", (e) => {
+  onKeyStroke('ArrowLeft', (e) => {
     e.preventDefault();
     goPrevStep();
   });
 
-  onKeyStroke("ArrowRight", (e) => {
+  onKeyStroke('ArrowRight', (e) => {
     e.preventDefault();
     goNextStep();
   });
@@ -126,7 +126,10 @@
         :initial-item-index="initialItemIndex"
       ></GSpreadSelect>
 
-      <GButton v-if="!speedMenuOpen" class="rounded-full">
+      <GButton
+        v-if="!speedMenuOpen"
+        class="rounded-full"
+      >
         <span class="w-12">
           {{ step }}
         </span>
@@ -152,7 +155,11 @@
         icon="chevron-left"
       />
 
-      <PlaybackButton v-if="isOver" @click="restart" icon="restart" />
+      <PlaybackButton
+        v-if="isOver"
+        @click="restart"
+        icon="restart"
+      />
 
       <PlaybackButton
         v-else

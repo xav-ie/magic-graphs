@@ -1,22 +1,22 @@
-import type { Coordinate, Shape } from "@shape/types";
-import { drawScribbleWithCtx } from "./draw";
+import type { Coordinate, Shape } from '@shape/types';
+import { drawScribbleWithCtx } from './draw';
 import {
   scribbleHitbox,
   scribbleEfficientHitbox,
   getScribbleBoundingBox,
-} from "./hitbox";
-import { generateId } from "@utils/id";
+} from './hitbox';
+import { generateId } from '@utils/id';
 
 export type Scribble = {
   id?: string;
-  type: "draw" | "erase";
+  type: 'draw' | 'erase';
   color?: string;
   brushWeight?: number;
   points: Coordinate[];
 };
 
 export const SCRIBBLE_DEFAULTS = {
-  color: "red",
+  color: 'red',
   brushWeight: 3,
 } as const;
 
@@ -24,7 +24,7 @@ export const ERASER_BRUSH_WEIGHT = 50;
 
 export const scribble = (options: Scribble): Shape => {
   if (options.points.length < 1) {
-    throw new Error("not enough points to draw scribble");
+    throw new Error('not enough points to draw scribble');
   }
   if (options.brushWeight && options.brushWeight < 1) {
     throw new Error('brushWeight must be at least "1"');
@@ -46,7 +46,7 @@ export const scribble = (options: Scribble): Shape => {
 
   return {
     id: options.id ?? generateId(),
-    name: "scribble",
+    name: 'scribble',
 
     drawShape,
     draw,

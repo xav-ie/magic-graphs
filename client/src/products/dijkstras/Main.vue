@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import { ref } from "vue";
-  import { useGraph } from "@graph/useGraph";
-  import GraphProduct from "@ui/product/GraphProduct.vue";
-  import CostDisplay from "./ui/CostDisplay.vue";
-  import { DIJKSTRAS_GRAPH_SETTINGS } from "./settings";
+  import { ref } from 'vue';
+  import { useGraph } from '@graph/useGraph';
+  import GraphProduct from '@ui/product/GraphProduct.vue';
+  import CostDisplay from './ui/CostDisplay.vue';
+  import { DIJKSTRAS_GRAPH_SETTINGS } from './settings';
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, DIJKSTRAS_GRAPH_SETTINGS);

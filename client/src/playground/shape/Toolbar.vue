@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import { computed, toRefs } from "vue";
-  import type { Shape } from "@shape/types";
-  import { useHeatmap } from "@playground/shape/useHeatmap";
-  import Button from "@ui/core/button/Button.vue";
-  import InputRange from "@ui/InputRange.vue";
-  import { getCtx } from "@utils/ctx";
+  import { computed, toRefs } from 'vue';
+  import type { Shape } from '@shape/types';
+  import { useHeatmap } from '@playground/shape/useHeatmap';
+  import Button from '@ui/core/button/Button.vue';
+  import InputRange from '@ui/InputRange.vue';
+  import { getCtx } from '@utils/ctx';
 
   const props = defineProps<{
     canvas: HTMLCanvasElement | undefined;
@@ -23,17 +23,17 @@
   } = useHeatmap(canvas, items);
 
   const heatmapBtnText = computed(() =>
-    heatmapActive.value ? "Hide Heatmap" : "Show Heatmap"
+    heatmapActive.value ? 'Hide Heatmap' : 'Show Heatmap',
   );
 
   const toggleHeatmapModeButtonText = computed(() =>
-    heatmapMode.value === "efficient" ? "Precise Heatmap" : "Efficient Heatmap"
+    heatmapMode.value === 'efficient' ? 'Precise Heatmap' : 'Efficient Heatmap',
   );
 
   const fn = () => {
     const ctx = getCtx(canvas);
     items.value[2].activateTextArea?.(ctx, (str) => {
-      console.log("value", str);
+      console.log('value', str);
     });
   };
 </script>

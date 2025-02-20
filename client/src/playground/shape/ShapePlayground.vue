@@ -1,24 +1,24 @@
 <script setup lang="ts">
-  import { ref, computed } from "vue";
-  import { useDark, useWindowSize } from "@vueuse/core";
-  import ResponsiveCanvas from "@utils/components/ResponsiveCanvas.vue";
-  import colors, { AMBER_400 } from "@colors";
-  import { shapes } from "@shapes";
-  import type { Coordinate, Shape } from "@shape/types";
-  import { getCtx } from "@utils/ctx";
-  import ShapePlaygroundToolbar from "./Toolbar.vue";
+  import { ref, computed } from 'vue';
+  import { useDark, useWindowSize } from '@vueuse/core';
+  import ResponsiveCanvas from '@utils/components/ResponsiveCanvas.vue';
+  import colors, { AMBER_400 } from '@colors';
+  import { shapes } from '@shapes';
+  import type { Coordinate, Shape } from '@shape/types';
+  import { getCtx } from '@utils/ctx';
+  import ShapePlaygroundToolbar from './Toolbar.vue';
 
   const canvas = ref<HTMLCanvasElement>();
   const isDark = useDark();
 
   const color = computed(() =>
-    isDark.value ? colors.GRAY_800 : colors.GRAY_200
+    isDark.value ? colors.GRAY_800 : colors.GRAY_200,
   );
 
   const items = ref<Shape[]>([]);
 
   const patternColor = computed(
-    () => (isDark.value ? colors.GRAY_200 : colors.GRAY_700) + "15"
+    () => (isDark.value ? colors.GRAY_200 : colors.GRAY_700) + '15',
   );
 
   const draw = () => {
@@ -35,7 +35,7 @@
         stroke: {
           color: colors.BLUE_700,
           width: 10,
-          dash: [10, 5]
+          dash: [10, 5],
         },
         textArea: {
           text: {
@@ -43,9 +43,9 @@
             color: colors.WHITE,
             fontSize: 10,
           },
-          color: colors.TRANSPARENT
-        }
-      })
+          color: colors.TRANSPARENT,
+        },
+      }),
     );
 
     items.value.push(
@@ -53,9 +53,13 @@
         start: { x: 1500, y: 100 },
         end: { x: 1200, y: 900 },
         width: 10,
-        gradientStops: [{ offset: 0.1, color: colors.GREEN_400 }, {offset: 0.5, color: colors.RED_600}, { offset: 0.9, color: colors.BLUE_700 }],
-      })
-    )
+        gradientStops: [
+          { offset: 0.1, color: colors.GREEN_400 },
+          { offset: 0.5, color: colors.RED_600 },
+          { offset: 0.9, color: colors.BLUE_700 },
+        ],
+      }),
+    );
 
     items.value.push(
       triangle({
@@ -63,8 +67,8 @@
         pointB: { x: 900, y: 200 },
         pointC: { x: 700, y: 200 },
         color: colors.BLUE_500,
-      })
-    )
+      }),
+    );
 
     items.value.push(
       uturn({
@@ -74,8 +78,12 @@
         lineWidth: 10,
         rotation: Math.PI * 0.2,
         spacing: 20,
-        gradientStops: [{ offset: 0.1, color: colors.GREEN_400 }, {offset: 0.5, color: colors.RED_600}, { offset: 0.9, color: colors.BLUE_700 }],
-      })
+        gradientStops: [
+          { offset: 0.1, color: colors.GREEN_400 },
+          { offset: 0.5, color: colors.RED_600 },
+          { offset: 0.9, color: colors.BLUE_700 },
+        ],
+      }),
     );
 
     const lineTest = shapes.arrow({
@@ -83,26 +91,26 @@
       end: { x: 600, y: 900 },
       color: colors.GRAY_900,
       width: 10,
-      arrowHeadSize: (() => { 
-        return { arrowHeadHeight: 100, perpLineLength: 100 } 
-      }),
-      arrowHeadShape: (at: Coordinate, width: number, height: number) => 
+      arrowHeadSize: () => {
+        return { arrowHeadHeight: 100, perpLineLength: 100 };
+      },
+      arrowHeadShape: (at: Coordinate, width: number, height: number) =>
         square({
-          at: { x: at.x - height + 18, y: at.y - height }, 
-          size: height, 
-          color: colors.GRAY_900, 
-          rotation: Math.atan2(100 - 900, 100 - 600) + Math.PI / 4
+          at: { x: at.x - height + 18, y: at.y - height },
+          size: height,
+          color: colors.GRAY_900,
+          rotation: Math.atan2(100 - 900, 100 - 600) + Math.PI / 4,
         }),
       textArea: {
         color: colors.PURPLE_500,
         activeColor: colors.PURPLE_600,
         text: {
-          content: "5",
+          content: '5',
           color: colors.WHITE,
           fontSize: 20,
         },
       },
-    })
+    });
 
     items.value.push(lineTest);
 
@@ -114,7 +122,7 @@
         rotation: Math.PI / 0.6,
         borderRadius: 10,
         lineWidth: 80,
-      })
+      }),
     );
 
     items.value.push(
@@ -127,7 +135,7 @@
         stroke: {
           color: colors.YELLOW_200,
           width: 10,
-          dash: [10, 5]
+          dash: [10, 5],
         },
         textArea: {
           text: {
@@ -135,10 +143,10 @@
             color: colors.WHITE,
             fontSize: 20,
           },
-          color: AMBER_400
-        }
-      })
-    )
+          color: AMBER_400,
+        },
+      }),
+    );
 
     items.value.push(
       scribble({
@@ -146,18 +154,18 @@
         brushWeight: 10,
         points: [
           { x: 534, y: 612 },
-          { x: 535, y: 612 }
-        ]
-      })
-    )
+          { x: 535, y: 612 },
+        ],
+      }),
+    );
 
     items.value.forEach((item) => item.draw(ctx));
   };
 
-  document.addEventListener("resize", draw);
+  document.addEventListener('resize', draw);
 
-  document.addEventListener("keyup", (e) => {
-    if (e.code === "Space") draw();
+  document.addEventListener('keyup', (e) => {
+    if (e.code === 'Space') draw();
   });
 
   setTimeout(draw, 100);

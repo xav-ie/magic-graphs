@@ -1,15 +1,15 @@
 <script setup lang="ts">
-  import { ref, watch, computed } from "vue";
-  import { useElementSize } from "@vueuse/core";
-  import { debounce } from "@utils/debounce";
-  import { useClassAttrs } from "@ui/useClassAttrs";
-  import { cross } from "@shapes";
-  import type { Color } from "@colors";
-  import { getCtx } from "@utils/ctx";
-  import CoordinateIndicator from "./CoordinateIndicator.vue";
-  import { useCanvasCoords } from "./useCanvasCoord";
-  import { usePinchToZoom } from "./usePinchToZoom";
-import { useStorePanZoomState } from "./useStorePanZoomState";
+  import { ref, watch, computed } from 'vue';
+  import { useElementSize } from '@vueuse/core';
+  import { debounce } from '@utils/debounce';
+  import { useClassAttrs } from '@ui/useClassAttrs';
+  import { cross } from '@shapes';
+  import type { Color } from '@colors';
+  import { getCtx } from '@utils/ctx';
+  import CoordinateIndicator from './CoordinateIndicator.vue';
+  import { useCanvasCoords } from './useCanvasCoord';
+  import { usePinchToZoom } from './usePinchToZoom';
+  import { useStorePanZoomState } from './useStorePanZoomState';
 
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
@@ -36,16 +36,16 @@ import { useStorePanZoomState } from "./useStorePanZoomState";
   const heightProp = computed(() => props?.canvasHeight ?? 3_000);
 
   const emit = defineEmits<{
-    (e: "canvasRef", value: HTMLCanvasElement | undefined): void;
-    (e: "widthChange", value: number): void;
-    (e: "heightChange", value: number): void;
+    (e: 'canvasRef', value: HTMLCanvasElement | undefined): void;
+    (e: 'widthChange', value: number): void;
+    (e: 'heightChange', value: number): void;
   }>();
 
   const DEFAULT_PARENT_CLASSES = [
-    "w-full",
-    "h-full",
-    "relative",
-    "overflow-auto",
+    'w-full',
+    'h-full',
+    'relative',
+    'overflow-auto',
   ];
 
   const callerClasses = useClassAttrs();
@@ -56,7 +56,7 @@ import { useStorePanZoomState } from "./useStorePanZoomState";
 
   const emitRef = (el: HTMLCanvasElement | undefined) => {
     mainCanvasRef.value = el;
-    emit("canvasRef", el);
+    emit('canvasRef', el);
   };
 
   const parentEl = ref<HTMLDivElement>();
@@ -128,20 +128,20 @@ import { useStorePanZoomState } from "./useStorePanZoomState";
   watch(parentWidth, () => {
     setCanvasSize();
     drawBackgroundPattern();
-    emit("widthChange", canvasWidth.value);
+    emit('widthChange', canvasWidth.value);
   });
 
   watch(parentHeight, () => {
     setCanvasSize();
     drawBackgroundPattern();
-    emit("heightChange", canvasHeight.value);
+    emit('heightChange', canvasHeight.value);
   });
 
   watch([widthProp, heightProp], () => {
     setCanvasSize();
     drawBackgroundPattern();
-    emit("widthChange", canvasWidth.value);
-    emit("heightChange", canvasHeight.value);
+    emit('widthChange', canvasWidth.value);
+    emit('heightChange', canvasHeight.value);
   });
 
   watch(() => props.patternColor, drawBackgroundPattern);
@@ -184,7 +184,7 @@ import { useStorePanZoomState } from "./useStorePanZoomState";
     ></div>
 
     <canvas
-      :ref="(emitRef as any)"
+      :ref="emitRef as any"
       :width="canvasWidth"
       :height="canvasHeight"
       :class="[`w-[${canvasWidth}px]`, `h-[${canvasHeight}px]`]"

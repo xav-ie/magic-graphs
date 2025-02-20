@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue";
-  import tinycolor from "tinycolor2";
-  import { twMerge } from "tailwind-merge";
-  import { useClassAttrs } from "@ui/useClassAttrs";
+  import { computed, ref } from 'vue';
+  import tinycolor from 'tinycolor2';
+  import { twMerge } from 'tailwind-merge';
+  import { useClassAttrs } from '@ui/useClassAttrs';
 
   const props = defineProps<{
     /**
@@ -24,7 +24,7 @@
     if (!props.color) return;
     const tinycolorInstance = tinycolor(props.color);
     if (!tinycolorInstance.isValid()) {
-      throw new Error("invalid color provided to button");
+      throw new Error('invalid color provided to button');
     }
     return tinycolorInstance;
   });
@@ -47,31 +47,31 @@
   const parentClassList = useClassAttrs();
 
   const defaultButtonClasses = [
-    "px-2",
-    "py-1",
+    'px-2',
+    'py-1',
 
-    "bg-gray-800",
-    "text-gray-200",
+    'bg-gray-800',
+    'text-gray-200',
 
-    "dark:bg-gray-200",
-    "dark:text-gray-800",
+    'dark:bg-gray-200',
+    'dark:text-gray-800',
 
-    "hover:bg-gray-700",
-    "dark:hover:bg-gray-300",
+    'hover:bg-gray-700',
+    'dark:hover:bg-gray-300',
 
-    "rounded-md",
-    "cursor-pointer",
-    "font-bold",
+    'rounded-md',
+    'cursor-pointer',
+    'font-bold',
 
     'transition',
     'duration-100',
 
     'select-none',
 
-    "flex",
-    "justify-center",
-    "items-center",
-    "text-center",
+    'flex',
+    'justify-center',
+    'items-center',
+    'text-center',
   ];
 
   const classes = computed(() => {
@@ -87,14 +87,14 @@
     }
 
     if (!color.value) return;
-    return color.value.isDark() ? "white" : "black";
+    return color.value.isDark() ? 'white' : 'black';
   });
 
   const styles = computed(() => {
     const disabledStyles = {
-      pointerEvents: "none",
+      pointerEvents: 'none',
       opacity: 0.5,
-      cursor: "not-allowed",
+      cursor: 'not-allowed',
     } as const;
 
     const colorStyles = {

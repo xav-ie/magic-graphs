@@ -11,16 +11,20 @@ import tinycolor from 'tinycolor2';
  * @param angle - the angle in radians that the pointToRotate will rotate by
  * @returns the new point after rotation
  */
-export const rotatePoint = (pointToRotate: Coordinate, centerPoint: Coordinate, angle: number) => {
-	const cosA = Math.cos(angle);
-	const sinA = Math.sin(angle);
-	const dx = pointToRotate.x - centerPoint.x;
-	const dy = pointToRotate.y - centerPoint.y;
+export const rotatePoint = (
+  pointToRotate: Coordinate,
+  centerPoint: Coordinate,
+  angle: number,
+) => {
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+  const dx = pointToRotate.x - centerPoint.x;
+  const dy = pointToRotate.y - centerPoint.y;
 
-	return {
-		x: centerPoint.x + (dx * cosA - dy * sinA),
-		y: centerPoint.y + (dx * sinA + dy * cosA),
-	};
+  return {
+    x: centerPoint.x + (dx * cosA - dy * sinA),
+    y: centerPoint.y + (dx * sinA + dy * cosA),
+  };
 };
 
 /**
@@ -31,17 +35,17 @@ export const rotatePoint = (pointToRotate: Coordinate, centerPoint: Coordinate, 
  * @param angle - the angle in radians that the pointToRotate will rotate by
  */
 export const rotatePointInPlace = (
-	pointToRotate: Coordinate,
-	centerPoint: Coordinate,
-	angle: number,
+  pointToRotate: Coordinate,
+  centerPoint: Coordinate,
+  angle: number,
 ) => {
-	const cosA = Math.cos(angle);
-	const sinA = Math.sin(angle);
-	const dx = pointToRotate.x - centerPoint.x;
-	const dy = pointToRotate.y - centerPoint.y;
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+  const dx = pointToRotate.x - centerPoint.x;
+  const dy = pointToRotate.y - centerPoint.y;
 
-	pointToRotate.x = centerPoint.x + (dx * cosA - dy * sinA);
-	pointToRotate.y = centerPoint.y + (dx * sinA + dy * cosA);
+  pointToRotate.x = centerPoint.x + (dx * cosA - dy * sinA);
+  pointToRotate.y = centerPoint.y + (dx * sinA + dy * cosA);
 };
 
 /**
@@ -52,9 +56,9 @@ export const rotatePointInPlace = (
  * @returns the angle between the two points in radians
  */
 export const getAngle = (point1: Coordinate, point2: Coordinate) => {
-	const { x: x1, y: y1 } = point1;
-	const { x: x2, y: y2 } = point2;
-	return Math.atan2(y2 - y1, x2 - x1);
+  const { x: x1, y: y1 } = point1;
+  const { x: x2, y: y2 } = point2;
+  return Math.atan2(y2 - y1, x2 - x1);
 };
 
 /**
@@ -64,28 +68,34 @@ export const getAngle = (point1: Coordinate, point2: Coordinate) => {
  * @param points - the list of points
  * @returns the midpoint of the largest angular space
  */
-export const getLargestAngularSpace = (center: Coordinate, points: Coordinate[]) => {
-	if (points.length === 0) return 0;
-	const [firstPoint] = points;
-	if (points.length === 1) return getAngle(center, firstPoint) + Math.PI;
+export const getLargestAngularSpace = (
+  center: Coordinate,
+  points: Coordinate[],
+) => {
+  if (points.length === 0) return 0;
+  const [firstPoint] = points;
+  if (points.length === 1) return getAngle(center, firstPoint) + Math.PI;
 
-	const angles = points
-		.map((point) => getAngle(center, point))
-		.sort((angleA, angleB) => angleA - angleB);
+  const angles = points
+    .map((point) => getAngle(center, point))
+    .sort((angleA, angleB) => angleA - angleB);
 
-	let maxAngularDistance = 0;
-	let maxAngularDistanceIndex = 0;
+  let maxAngularDistance = 0;
+  let maxAngularDistanceIndex = 0;
 
-	for (let i = 0; i < angles.length; i++) {
-		const nextAngle = (i + 1) % angles.length;
-		const angularDistance = (angles[nextAngle] - angles[i] + 2 * Math.PI) % (2 * Math.PI);
-		if (angularDistance > maxAngularDistance) {
-			maxAngularDistance = angularDistance;
-			maxAngularDistanceIndex = i;
-		}
-	}
+  for (let i = 0; i < angles.length; i++) {
+    const nextAngle = (i + 1) % angles.length;
+    const angularDistance =
+      (angles[nextAngle] - angles[i] + 2 * Math.PI) % (2 * Math.PI);
+    if (angularDistance > maxAngularDistance) {
+      maxAngularDistance = angularDistance;
+      maxAngularDistanceIndex = i;
+    }
+  }
 
-	return (angles[maxAngularDistanceIndex] + maxAngularDistance / 2) % (2 * Math.PI);
+  return (
+    (angles[maxAngularDistanceIndex] + maxAngularDistance / 2) % (2 * Math.PI)
+  );
 };
 
 /**
@@ -95,13 +105,15 @@ export const getLargestAngularSpace = (center: Coordinate, points: Coordinate[])
  * @returns the arrowhead height and the arrowhead base length
  */
 
-export const getArrowHeadSize = (arrowWidth: Arrow['width'] = LINE_DEFAULTS.width) => {
-	const arrowHeadHeight = arrowWidth * 2.5;
-	const perpLineLength = arrowHeadHeight / 1.75;
-	return {
-		arrowHeadHeight,
-		perpLineLength,
-	};
+export const getArrowHeadSize = (
+  arrowWidth: Arrow['width'] = LINE_DEFAULTS.width,
+) => {
+  const arrowHeadHeight = arrowWidth * 2.5;
+  const perpLineLength = arrowHeadHeight / 1.75;
+  return {
+    arrowHeadHeight,
+    perpLineLength,
+  };
 };
 
 /**
@@ -112,40 +124,40 @@ export const getArrowHeadSize = (arrowWidth: Arrow['width'] = LINE_DEFAULTS.widt
  */
 
 export const calculateArrowHeadCorners = (
-	options: Required<Pick<Arrow, 'start' | 'end' | 'width' | 'arrowHeadSize'>>,
+  options: Required<Pick<Arrow, 'start' | 'end' | 'width' | 'arrowHeadSize'>>,
 ) => {
-	const { start, end, width, arrowHeadSize } = options;
+  const { start, end, width, arrowHeadSize } = options;
 
-	const { arrowHeadHeight, perpLineLength } = arrowHeadSize(width);
+  const { arrowHeadHeight, perpLineLength } = arrowHeadSize(width);
 
-	const directionX = end.x - start.x;
-	const directionY = end.y - start.y;
-	const length = Math.sqrt(directionX ** 2 + directionY ** 2);
-	const unitX = directionX / length;
-	const unitY = directionY / length;
+  const directionX = end.x - start.x;
+  const directionY = end.y - start.y;
+  const length = Math.sqrt(directionX ** 2 + directionY ** 2);
+  const unitX = directionX / length;
+  const unitY = directionY / length;
 
-	const tip = {
-		x: end.x,
-		y: end.y,
-	};
+  const tip = {
+    x: end.x,
+    y: end.y,
+  };
 
-	const perpX = -unitY * perpLineLength;
-	const perpY = unitX * perpLineLength;
+  const perpX = -unitY * perpLineLength;
+  const perpY = unitX * perpLineLength;
 
-	const baseLeft = {
-		x: end.x - unitX * arrowHeadHeight + perpX,
-		y: end.y - unitY * arrowHeadHeight + perpY,
-	};
-	const baseRight = {
-		x: end.x - unitX * arrowHeadHeight - perpX,
-		y: end.y - unitY * arrowHeadHeight - perpY,
-	};
+  const baseLeft = {
+    x: end.x - unitX * arrowHeadHeight + perpX,
+    y: end.y - unitY * arrowHeadHeight + perpY,
+  };
+  const baseRight = {
+    x: end.x - unitX * arrowHeadHeight - perpX,
+    y: end.y - unitY * arrowHeadHeight - perpY,
+  };
 
-	return {
-		pointA: tip,
-		pointB: baseLeft,
-		pointC: baseRight,
-	};
+  return {
+    pointA: tip,
+    pointB: baseLeft,
+    pointC: baseRight,
+  };
 };
 
 /**
@@ -155,7 +167,7 @@ export const calculateArrowHeadCorners = (
  * @returns The difference between the two angles in radians.
  */
 export const angleDifference = (angleA: number, angleB: number) =>
-	Math.abs(Math.atan2(Math.sin(angleA - angleB), Math.cos(angleA - angleB)));
+  Math.abs(Math.atan2(Math.sin(angleA - angleB), Math.cos(angleA - angleB)));
 
 type GradientStops = GradientStop[];
 
@@ -167,17 +179,17 @@ type GradientStops = GradientStop[];
  * @returns The interpolated color as a hex string
  */
 const interpolateColor = (color1: string, color2: string, ratio: number) => {
-	const c1 = tinycolor(color1).toRgb();
-	const c2 = tinycolor(color2).toRgb();
+  const c1 = tinycolor(color1).toRgb();
+  const c2 = tinycolor(color2).toRgb();
 
-	const result = {
-		r: Math.round(c1.r + ratio * (c2.r - c1.r)),
-		g: Math.round(c1.g + ratio * (c2.g - c1.g)),
-		b: Math.round(c1.b + ratio * (c2.b - c1.b)),
-		a: c1.a + ratio * (c2.a - c1.a),
-	};
+  const result = {
+    r: Math.round(c1.r + ratio * (c2.r - c1.r)),
+    g: Math.round(c1.g + ratio * (c2.g - c1.g)),
+    b: Math.round(c1.b + ratio * (c2.b - c1.b)),
+    a: c1.a + ratio * (c2.a - c1.a),
+  };
 
-	return tinycolor(result).toHexString();
+  return tinycolor(result).toHexString();
 };
 
 /**
@@ -186,28 +198,31 @@ const interpolateColor = (color1: string, color2: string, ratio: number) => {
  * @param percentage - The distance along the gradient (0 to 1) to calculate the color for
  * @returns The color at the specified percentage as a hex string
  */
-export const getColorAtPercentage = (gradient: GradientStops, percentage: number) => {
-	if (gradient.length === 0) {
-		throw new Error('Gradient must have at least one stop');
-	}
+export const getColorAtPercentage = (
+  gradient: GradientStops,
+  percentage: number,
+) => {
+  if (gradient.length === 0) {
+    throw new Error('Gradient must have at least one stop');
+  }
 
-	if (percentage > 1 || percentage < 0) {
-		throw new Error('Percentage must be between 0 and 1');
-	}
+  if (percentage > 1 || percentage < 0) {
+    throw new Error('Percentage must be between 0 and 1');
+  }
 
-	let lowerStop = gradient[0];
-	let upperStop = gradient[gradient.length - 1];
+  let lowerStop = gradient[0];
+  let upperStop = gradient[gradient.length - 1];
 
-	for (let i = 1; i < gradient.length; i++) {
-		if (percentage <= gradient[i].offset) {
-			lowerStop = gradient[i - 1];
-			upperStop = gradient[i];
-			break;
-		}
-	}
+  for (let i = 1; i < gradient.length; i++) {
+    if (percentage <= gradient[i].offset) {
+      lowerStop = gradient[i - 1];
+      upperStop = gradient[i];
+      break;
+    }
+  }
 
-	const range = upperStop.offset - lowerStop.offset;
-	const ratio = range === 0 ? 0 : (percentage - lowerStop.offset) / range;
+  const range = upperStop.offset - lowerStop.offset;
+  const ratio = range === 0 ? 0 : (percentage - lowerStop.offset) / range;
 
-	return interpolateColor(lowerStop.color, upperStop.color, ratio);
+  return interpolateColor(lowerStop.color, upperStop.color, ratio);
 };

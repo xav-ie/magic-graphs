@@ -6,7 +6,7 @@ import {
   getDirectedOutboundEdges,
   getFracWeightBetweenNodes,
   getUndirectedOutboundEdges,
-  getWeightBetweenNodes
+  getWeightBetweenNodes,
 } from '@graph/helpers';
 import type { GraphSettings } from './settings';
 import type { Fraction } from 'mathjs';
@@ -19,19 +19,23 @@ export type AdjacencyList = Record<string, string[]>;
 
 export const getDirectedGraphAdjacencyList = (graph: BaseGraph) => {
   return graph.nodes.value.reduce<AdjacencyList>((acc, node) => {
-    acc[node.id] = getDirectedOutboundEdges(node.id, graph.edges.value).map(edge => edge.to);
+    acc[node.id] = getDirectedOutboundEdges(node.id, graph.edges.value).map(
+      (edge) => edge.to,
+    );
     return acc;
   }, {});
-}
+};
 
 export const getUndirectedGraphAdjacencyList = (graph: BaseGraph) => {
   return graph.nodes.value.reduce<AdjacencyList>((acc, node) => {
-    acc[node.id] = getUndirectedOutboundEdges(node.id, graph.edges.value).map(edge => {
-      return edge.from === node.id ? edge.to : edge.from;
-    });
+    acc[node.id] = getUndirectedOutboundEdges(node.id, graph.edges.value).map(
+      (edge) => {
+        return edge.from === node.id ? edge.to : edge.from;
+      },
+    );
     return acc;
   }, {});
-}
+};
 
 /**
  * creates an adjacency list mapping node ids to the node ids of their neighbors
@@ -43,9 +47,11 @@ export const getUndirectedGraphAdjacencyList = (graph: BaseGraph) => {
  */
 export const getAdjacencyList = (graph: BaseGraph) => {
   const { isGraphDirected } = graph.settings.value;
-  const fn = isGraphDirected ? getDirectedGraphAdjacencyList : getUndirectedGraphAdjacencyList;
+  const fn = isGraphDirected
+    ? getDirectedGraphAdjacencyList
+    : getUndirectedGraphAdjacencyList;
   return fn(graph);
-}
+};
 
 /**
  * creates a human readable adjacency list mapping node labels to the labels of their neighbors
@@ -60,15 +66,16 @@ export const getLabelAdjacencyList = (graph: BaseGraph) => {
 
   return adjListEntries.reduce<AdjacencyList>((acc, [keyNodeId, toNodeIds]) => {
     const keyNode = graph.getNode(keyNodeId);
-    const toNodes = toNodeIds.map(to => graph.getNode(to));
+    const toNodes = toNodeIds.map((to) => graph.getNode(to));
 
     if (!keyNode) throw new Error('the "key node" is missing from the graph');
-    if (toNodes.some(node => !node)) throw new Error('a "to node" is missing from the graph');
+    if (toNodes.some((node) => !node))
+      throw new Error('a "to node" is missing from the graph');
 
-    acc[keyNode.label] = (toNodes as GNode[]).map(node => node.label);
+    acc[keyNode.label] = (toNodes as GNode[]).map((node) => node.label);
     return acc;
   }, {});
-}
+};
 
 /**
  * a mapping of nodes to their neighbors where
@@ -82,32 +89,37 @@ export type FullNodeAdjacencyList = Record<GNode['id'], GNode[]>;
  * @param graph the graph instance
  * @returns an adjacency list using ids of nodes as keys and the full node objects as values
  * @example getFullNodeAdjacencyList(graph)
-  * // {
-  * // 'abc123': [{ id: 'def456', label: 'B', x: 0, y: 0 }],
-  * // 'def456': [{ id: 'abc123', label: 'A', x: 100, y: 100 }]
-  * // }
+ * // {
+ * // 'abc123': [{ id: 'def456', label: 'B', x: 0, y: 0 }],
+ * // 'def456': [{ id: 'abc123', label: 'A', x: 100, y: 100 }]
+ * // }
  */
 export const getFullNodeAdjacencyList = (graph: BaseGraph) => {
   const adjList = getAdjacencyList(graph);
   const adjListEntries = Object.entries(adjList);
 
-  return adjListEntries.reduce<FullNodeAdjacencyList>((acc, [keyNodeId, toNodeIds]) => {
-    acc[keyNodeId] = toNodeIds.map(to => graph.getNode(to)!);
-    return acc;
-  }, {});
-}
+  return adjListEntries.reduce<FullNodeAdjacencyList>(
+    (acc, [keyNodeId, toNodeIds]) => {
+      acc[keyNodeId] = toNodeIds.map((to) => graph.getNode(to)!);
+      return acc;
+    },
+    {},
+  );
+};
 
 /**
  * a mapping of nodes to their neighbors where neighbors are the full node objects
  * along with the weight of the edge connecting them to the key node
  */
-export type WeightedAdjacencyList<T extends Weight = number> = Record<GNode['id'], (GNode & {
-  /**
-   * the weight of the edge that connects the key node to the neighbor node
-   */
-  weight: T;
-})[]>;
-
+export type WeightedAdjacencyList<T extends Weight = number> = Record<
+  GNode['id'],
+  (GNode & {
+    /**
+     * the weight of the edge that connects the key node to the neighbor node
+     */
+    weight: T;
+  })[]
+>;
 
 /**
  * creates an adjacency list mapping node ids to nodes along with a added field `weight` that
@@ -127,14 +139,17 @@ export const getWeightedAdjacencyList = (graph: BaseGraph) => {
   const adjList = getAdjacencyList(graph);
   const adjListEntries = Object.entries(adjList);
 
-  return adjListEntries.reduce<WeightedAdjacencyList>((acc, [keyNodeId, toNodeIds]) => {
-    acc[keyNodeId] = toNodeIds.map(toNodeId => ({
-      ...graph.getNode(toNodeId)!,
-      weight: getWeightBetweenNodes(keyNodeId, toNodeId, graph)
-    }))
-    return acc;
-  }, {});
-}
+  return adjListEntries.reduce<WeightedAdjacencyList>(
+    (acc, [keyNodeId, toNodeIds]) => {
+      acc[keyNodeId] = toNodeIds.map((toNodeId) => ({
+        ...graph.getNode(toNodeId)!,
+        weight: getWeightBetweenNodes(keyNodeId, toNodeId, graph),
+      }));
+      return acc;
+    },
+    {},
+  );
+};
 
 /**
  * the same as `getWeightedAdjacencyList` but with the weight type as a {@link Fraction}
@@ -144,13 +159,16 @@ export const getFracWeightedAdjacencyList = (graph: BaseGraph) => {
   const adjList = getAdjacencyList(graph);
   const adjListEntries = Object.entries(adjList);
 
-  return adjListEntries.reduce<WeightedAdjacencyList<Fraction>>((acc, [keyNodeId, toNodeIds]) => {
-    acc[keyNodeId] = toNodeIds.map(toNodeId => ({
-      ...graph.getNode(toNodeId)!,
-      weight: getFracWeightBetweenNodes(keyNodeId, toNodeId, graph)
-    }))
-    return acc;
-  }, {});
+  return adjListEntries.reduce<WeightedAdjacencyList<Fraction>>(
+    (acc, [keyNodeId, toNodeIds]) => {
+      acc[keyNodeId] = toNodeIds.map((toNodeId) => ({
+        ...graph.getNode(toNodeId)!,
+        weight: getFracWeightBetweenNodes(keyNodeId, toNodeId, graph),
+      }));
+      return acc;
+    },
+    {},
+  );
 };
 
 /**
@@ -189,13 +207,13 @@ export const useAdjacencyList = (graph: BaseGraph) => {
 
     directedAdjacencyList.value = getDirectedGraphAdjacencyList(graph);
     undirectedAdjacencyList.value = getUndirectedGraphAdjacencyList(graph);
-  }
+  };
 
   update();
 
   const checkSettingsDiffForUpdate = (diff: DeepPartial<GraphSettings>) => {
     if ('isGraphDirected' in diff) update();
-  }
+  };
 
   graph.subscribe('onStructureChange', update);
   graph.subscribe('onSettingsChange', checkSettingsDiffForUpdate);

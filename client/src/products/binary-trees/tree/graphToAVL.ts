@@ -1,5 +1,5 @@
-import type { Graph } from "@graph/types";
-import type { AVLTree } from "./avl";
+import type { Graph } from '@graph/types';
+import type { AVLTree } from './avl';
 
 export const graphToAVL = (graph: Graph, tree: AVLTree) => {
   tree.reset();
@@ -7,11 +7,11 @@ export const graphToAVL = (graph: Graph, tree: AVLTree) => {
 
   const { getInboundEdges, getChildrenOfNode } = graph.helpers;
   const newRoot = graph.nodes.value.find(
-    (node) => getInboundEdges(node.id).length === 0
+    (node) => getInboundEdges(node.id).length === 0,
   );
 
   if (!newRoot) {
-    console.warn("could not parse tree from graph");
+    console.warn('could not parse tree from graph');
     return graph.reset();
   }
 

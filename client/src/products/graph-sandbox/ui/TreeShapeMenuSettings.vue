@@ -1,15 +1,15 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import { TREE_FORMATION_OPTIONS_DEFAULTS } from "./tree/useTreeShaper";
+  import { computed } from 'vue';
+  import { TREE_FORMATION_OPTIONS_DEFAULTS } from './tree/useTreeShaper';
   import type {
     AutoTreeControls,
     TreeFormationOptions,
-  } from "./tree/useTreeShaper";
-  import CPopover from "@ui/core/Popover.vue";
-  import GWell from "@ui/graph/GWell.vue";
-  import GButton from "@ui/graph/button/GButton.vue";
-  import InputRange from "@ui/InputRange.vue";
-  import CIcon from "@ui/core/Icon.vue";
+  } from './tree/useTreeShaper';
+  import CPopover from '@ui/core/Popover.vue';
+  import GWell from '@ui/graph/GWell.vue';
+  import GButton from '@ui/graph/button/GButton.vue';
+  import InputRange from '@ui/InputRange.vue';
+  import CIcon from '@ui/core/Icon.vue';
 
   const props = defineProps<{
     controls: AutoTreeControls;
@@ -35,7 +35,7 @@
     debouncedUpdateShape();
   };
 
-  const setShape = (shape: TreeFormationOptions["shape"]) => {
+  const setShape = (shape: TreeFormationOptions['shape']) => {
     options.value.shape = shape;
     updateShape();
   };

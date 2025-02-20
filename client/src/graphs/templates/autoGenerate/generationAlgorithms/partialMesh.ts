@@ -1,9 +1,9 @@
-import type { GEdge, GNode } from "@graph/types";
-import { generateId } from "@utils/id";
-import type { AutoGenerateGraphOptions } from "@graph/templates/autoGenerate/types";
+import type { GEdge, GNode } from '@graph/types';
+import { generateId } from '@utils/id';
+import type { AutoGenerateGraphOptions } from '@graph/templates/autoGenerate/types';
 
 type GeneratePartialMeshOptions = {
-  edgeLabel: AutoGenerateGraphOptions["edgeLabel"];
+  edgeLabel: AutoGenerateGraphOptions['edgeLabel'];
   connectionProbability: number;
   maxConnectionsPerNode: number;
 };
@@ -11,14 +11,14 @@ type GeneratePartialMeshOptions = {
 type PartialGeneratePartialMeshOptions = Partial<GeneratePartialMeshOptions>;
 
 const GENERATE_PARTIAL_MESH_DEFAULTS = {
-  edgeLabel: "1",
+  edgeLabel: '1',
   connectionProbability: 0.5,
   maxConnectionsPerNode: Infinity,
 } as const;
 
 export const generatePartialMesh = (
   nodes: GNode[],
-  options: PartialGeneratePartialMeshOptions = {}
+  options: PartialGeneratePartialMeshOptions = {},
 ) => {
   const { edgeLabel, connectionProbability, maxConnectionsPerNode } = {
     ...GENERATE_PARTIAL_MESH_DEFAULTS,
@@ -36,7 +36,7 @@ export const generatePartialMesh = (
     if (existingEdges.has(edgeKey)) return;
 
     const label =
-      typeof edgeLabel === "function" ? edgeLabel(from, to) : edgeLabel!;
+      typeof edgeLabel === 'function' ? edgeLabel(from, to) : edgeLabel!;
     edges.push({
       id: generateId(),
       from,

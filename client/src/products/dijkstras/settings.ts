@@ -1,10 +1,10 @@
-import type { GraphSettings } from "@graph/settings";
+import type { GraphSettings } from '@graph/settings';
 
 /**
  * settings for dijkstras useGraph instance
  */
 export const DIJKSTRAS_GRAPH_SETTINGS: Partial<GraphSettings> = {
-  persistentStorageKey: "dijkstras",
+  persistentStorageKey: 'dijkstras',
   userAddedEdgeRuleNoSelfLoops: true,
   userAddedEdgeRuleOneEdgePerPath: true,
   edgeInputToLabel: (input) => {
@@ -14,4 +14,4 @@ export const DIJKSTRAS_GRAPH_SETTINGS: Partial<GraphSettings> = {
     if (isNegative) return;
     return number.toString();
   },
-}
+};

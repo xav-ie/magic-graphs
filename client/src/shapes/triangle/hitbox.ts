@@ -1,7 +1,7 @@
-import type { Coordinate, BoundingBox } from "@shape/types";
-import type { Triangle } from ".";
-import { rectEfficientHitbox } from "@shape/rect/hitbox";
-import { lineHitbox } from "@shape/line/hitbox";
+import type { Coordinate, BoundingBox } from '@shape/types';
+import type { Triangle } from '.';
+import { rectEfficientHitbox } from '@shape/rect/hitbox';
+import { lineHitbox } from '@shape/line/hitbox';
 
 /**
  * uses barycentric coordinate system for triangles. dont ask me, im not that smart.

@@ -1,6 +1,6 @@
 import { computed } from 'vue';
-import TarjanGraph from './tarjans'
-import type { GEdge, GNode } from "@graph/types";
+import TarjanGraph from './tarjans';
+import type { GEdge, GNode } from '@graph/types';
 import type { BaseGraph } from '@graph/base';
 import type { AdjacencyLists } from '@graph/useAdjacencyList';
 
@@ -15,24 +15,28 @@ export type NodeIdToComponent = Map<GNode['id'], number>;
  * maps the index of a strongly connected component to a set of indices of
  * strongly connected components that are adjacent to it.
  */
-export type ComponentAdjacencyMap = Map<number, Set<number>>
+export type ComponentAdjacencyMap = Map<number, Set<number>>;
 
 /**
  * uses Tarjan's algorithm to find the strongly connected components of a graph
  */
 export const getStronglyConnectedComponents: GetComponents = (nodes, edges) => {
   const tarjan = new TarjanGraph(nodes.length);
-  const nodeIds = nodes.map(node => node.id);
+  const nodeIds = nodes.map((node) => node.id);
 
   for (const edge of edges) {
     tarjan.addEdge(nodeIds.indexOf(edge.from), nodeIds.indexOf(edge.to));
   }
 
   const result = tarjan.SCC();
-  return result.map(component => component.map(nodeIndex => nodes[nodeIndex]));
-}
+  return result.map((component) =>
+    component.map((nodeIndex) => nodes[nodeIndex]),
+  );
+};
 
-export const useStronglyConnectedComponents = (graph: BaseGraph & AdjacencyLists) => {
+export const useStronglyConnectedComponents = (
+  graph: BaseGraph & AdjacencyLists,
+) => {
   const { nodes, edges, adjacencyList } = graph;
 
   const stronglyConnectedComponents = computed(() => {
@@ -45,7 +49,7 @@ export const useStronglyConnectedComponents = (graph: BaseGraph & AdjacencyLists
       for (const { id } of scc) acc.set(id, i);
       return acc;
     }, new Map());
-  })
+  });
 
   /**
    * a map that maps each strongly connected component in the graph to the
@@ -75,7 +79,9 @@ export const useStronglyConnectedComponents = (graph: BaseGraph & AdjacencyLists
     stronglyConnectedComponents,
     nodeIdToConnectedComponent,
     componentAdjacencyMap,
-  }
-}
+  };
+};
 
-export type CharacteristicSCC = ReturnType<typeof useStronglyConnectedComponents>;
+export type CharacteristicSCC = ReturnType<
+  typeof useStronglyConnectedComponents
+>;

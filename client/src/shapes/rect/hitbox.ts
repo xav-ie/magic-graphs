@@ -1,8 +1,8 @@
-import type { Coordinate, BoundingBox } from "@shape/types";
-import type { Rect } from ".";
-import { RECT_DEFAULTS } from ".";
-import { circleHitbox } from "@shape/circle/hitbox";
-import { rotatePoint } from "@shape/helpers";
+import type { Coordinate, BoundingBox } from '@shape/types';
+import type { Rect } from '.';
+import { RECT_DEFAULTS } from '.';
+import { circleHitbox } from '@shape/circle/hitbox';
+import { rotatePoint } from '@shape/helpers';
 
 /**
  * @param point - the point to check if it is in the rotated rectangle

@@ -1,4 +1,4 @@
-import type { GraphSettings } from "@graph/settings";
+import type { GraphSettings } from '@graph/settings';
 
 /**
  * settings for graph sandbox useGraph instance

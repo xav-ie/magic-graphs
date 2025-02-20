@@ -1,27 +1,22 @@
-import { TEXT_DEFAULTS } from "@shape/types";
-import type { Coordinate } from "@shape/types";
-import type { Triangle } from "@shape/triangle";
+import { TEXT_DEFAULTS } from '@shape/types';
+import type { Coordinate } from '@shape/types';
+import type { Triangle } from '@shape/triangle';
 import {
   drawTextWithTextArea,
   drawTextMatteWithTextArea,
   getTextAreaDimension,
   getFullTextArea,
-} from "@shape/text";
-import { rectHitbox } from "@shape/rect/hitbox";
-import { TRIANGLE_DEFAULTS } from ".";
+} from '@shape/text';
+import { rectHitbox } from '@shape/rect/hitbox';
+import { TRIANGLE_DEFAULTS } from '.';
 
 export const getTextAreaLocationOnTriangle = (triangle: Triangle) => {
-  const { 
-    pointA, 
-    pointB, 
-    pointC, 
-    textArea 
-  } = { 
-    ...TRIANGLE_DEFAULTS, 
-    ...triangle 
+  const { pointA, pointB, pointC, textArea } = {
+    ...TRIANGLE_DEFAULTS,
+    ...triangle,
   };
 
-  if (!textArea) throw new Error("no text area provided");
+  if (!textArea) throw new Error('no text area provided');
 
   const { text } = textArea;
 

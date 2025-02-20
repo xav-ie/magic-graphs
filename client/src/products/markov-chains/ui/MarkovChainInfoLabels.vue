@@ -1,13 +1,13 @@
 <script setup lang="ts">
-  import { nonNullGraph as graph } from "@graph/global";
-  import { usePeriodicityLabels } from "./usePeriodicityLabels";
-  import { useSCCColorizer } from "@product/graph-sandbox/ui/GraphInfoMenu/useSCCColorizer";
-  import { useIllegalStateColorizer } from "./useIllegalStateColorizer";
-  import { useLabelSteadyState } from "./useLabelSteadyState";
-  import type { MarkovChain } from "../markov/useMarkovChain";
-  import GHoverInfoTop from "@ui/graph/GHoverInfoTop.vue";
-  import GWell from "@ui/graph/GWell.vue";
-  import definitions from "../markov/definitions";
+  import { nonNullGraph as graph } from '@graph/global';
+  import { usePeriodicityLabels } from './usePeriodicityLabels';
+  import { useSCCColorizer } from '@product/graph-sandbox/ui/GraphInfoMenu/useSCCColorizer';
+  import { useIllegalStateColorizer } from './useIllegalStateColorizer';
+  import { useLabelSteadyState } from './useLabelSteadyState';
+  import type { MarkovChain } from '../markov/useMarkovChain';
+  import GHoverInfoTop from '@ui/graph/GHoverInfoTop.vue';
+  import GWell from '@ui/graph/GWell.vue';
+  import definitions from '../markov/definitions';
 
   const props = defineProps<{
     markov: MarkovChain;
@@ -15,7 +15,7 @@
 
   const { label: labelPeriods, unlabel: unlabelPeriods } = usePeriodicityLabels(
     graph.value,
-    props.markov
+    props.markov,
   );
 
   const { label: labelSteadyState, unlabel: unlabelSteadyState } =
@@ -25,7 +25,7 @@
     useIllegalStateColorizer(graph.value, props.markov);
 
   const { colorize: colorizeCommClass, decolorize: decolorizeCommClass } =
-    useSCCColorizer(graph.value, "markov-communicating-class");
+    useSCCColorizer(graph.value, 'markov-communicating-class');
 </script>
 
 <template>
@@ -38,7 +38,7 @@
       @mouseleave="decolorizeIllegalState"
       :tooltip="definitions.valid"
     >
-      Valid? {{ markov.illegalNodeIds.value.size === 0 ? "Yes" : "No" }}
+      Valid? {{ markov.illegalNodeIds.value.size === 0 ? 'Yes' : 'No' }}
     </GHoverInfoTop>
 
     <GHoverInfoTop
@@ -46,11 +46,11 @@
       @mouseleave="unlabelPeriods"
       :tooltip="definitions.periodic"
     >
-      Periodic? {{ markov.isPeriodic.value ? "Yes" : "No" }}
+      Periodic? {{ markov.isPeriodic.value ? 'Yes' : 'No' }}
     </GHoverInfoTop>
 
     <GHoverInfoTop :tooltip="definitions.absorbing">
-      Absorbing? {{ markov.isAbsorbing.value ? "Yes" : "No" }}
+      Absorbing? {{ markov.isAbsorbing.value ? 'Yes' : 'No' }}
     </GHoverInfoTop>
 
     <GHoverInfoTop
@@ -67,7 +67,7 @@
       @mouseleave="unlabelSteadyState"
       :tooltip="definitions.steadyState"
     >
-      Unique Steady State? {{ markov.steadyState.value ? "Yes" : "No" }}
+      Unique Steady State? {{ markov.steadyState.value ? 'Yes' : 'No' }}
     </GHoverInfoTop>
   </GWell>
 </template>

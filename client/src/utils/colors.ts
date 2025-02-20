@@ -1,4 +1,3 @@
-
 /**
  * alias used for all types that represent a color value
  */
@@ -9,70 +8,70 @@ export type Color = string;
  */
 export const isHexStandard = (color: Color) => {
   return /^#[0-9A-F]{6}$/i.test(color);
-}
+};
 
 /**
  * check if a color is a hex color with an alpha channel - #xxxxxxxx
  */
 export const isHexAlpha = (color: Color) => {
   return /^#[0-9A-F]{8}$/i.test(color);
-}
+};
 
 /**
  * check if a color is a hex color - #xxxxxx or #xxxxxxxx
  */
 export const isHex = (color: Color) => {
   return isHexStandard(color) || isHexAlpha(color);
-}
+};
 
 /**
  * check if a color is a standard rgb color - rgb(xxx, xxx, xxx)
  */
 export const isRgbStandard = (color: Color) => {
   return /^rgb\(\d{1,3},\d{1,3},\d{1,3}\)$/i.test(color);
-}
+};
 
 /**
  * check if a color is an rgb color - rgba(xxx, xxx, xxx, xxx)
  */
 export const isRgbAlpha = (color: Color) => {
   return /^rgba\(\d{1,3},\d{1,3},\d{1,3},\d{1,3}\)$/i.test(color);
-}
+};
 
 /**
  * check if a color is an rgb color - rgb(xxx, xxx, xxx) or rgba(xxx, xxx, xxx, xxx)
  */
 export const isRgb = (color: Color) => {
   return isRgbStandard(color) || isRgbAlpha(color);
-}
+};
 
 /**
  * check if a color is an hsl color - hsl(xxx, xxx%, xxx%)
  */
 export const isHslStandard = (color: Color) => {
   return /^hsl\(\d{1,3},\d{1,3}%,\d{1,3}%\)$/i.test(color);
-}
+};
 
 /**
  * check if a color is an hsl color - hsla(xxx, xxx%, xxx%, xxx)
  */
 export const isHslAlpha = (color: Color) => {
   return /^hsla\(\d{1,3},\d{1,3}%,\d{1,3}%,\d{1,3}\)$/i.test(color);
-}
+};
 
 /**
  * check if a color is an hsl color - hsl(xxx, xxx%, xxx%) or hsla(xxx, xxx%, xxx%, xxx)
  */
 export const isHsl = (color: Color) => {
   return isHslStandard(color) || isHslAlpha(color);
-}
+};
 
 /**
  * check if a color is a valid color - hex, rgb, or hsl including their alpha channel variants
  */
 export const isColor = (color: Color) => {
   return isHex(color) || isRgb(color) || isHsl(color);
-}
+};
 
 /**
  * adjust a color by a certain amount - the hex color hex format
@@ -88,26 +87,24 @@ export const adjustHex = (color: Color, amount: number): Color => {
 
   const rgb = [
     (colorInt >> 16) + amount,
-    (colorInt >> 8 & 0x00FF) + amount,
-    (colorInt & 0x0000FF) + amount,
+    ((colorInt >> 8) & 0x00ff) + amount,
+    (colorInt & 0x0000ff) + amount,
   ];
 
   const colorStr = rgb
-    .map((v) => Math.min(Math.max(v, 0), 255)
-      .toString(16)
-      .padStart(2, '0'))
+    .map((v) => Math.min(Math.max(v, 0), 255).toString(16).padStart(2, '0'))
     .join('');
 
   return `#${colorStr}`;
-}
+};
 
 export const darkenHex = (color: Color, amount: number): Color => {
   return adjustHex(color, -amount);
-}
+};
 
 export const lightenHex = (color: Color, amount: number): Color => {
   return adjustHex(color, amount);
-}
+};
 
 /**
  * calculates the relative luminance of a HEX color
@@ -130,11 +127,7 @@ export const getLuminance = (hex: Color) => {
 
   const cleanHex = hex.length === 6 ? hex.slice(1) : hex.slice(1, 7);
   const bigint = parseInt(cleanHex, 16);
-  const rgb = [
-    (bigint >> 16) & 255,
-    (bigint >> 8) & 255,
-    bigint & 255,
-  ];
+  const rgb = [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
 
   const luminance = (channel: number) => {
     const c = channel / 255;
@@ -146,8 +139,7 @@ export const getLuminance = (hex: Color) => {
     0.7152 * luminance(rgb[1]) +
     0.0722 * luminance(rgb[2])
   );
-}
-
+};
 
 /**
  * all tailwind gray colors
@@ -302,7 +294,6 @@ export const SKY_600 = '#0284c7';
 export const SKY_700 = '#0369a1';
 export const SKY_800 = '#075985';
 export const SKY_900 = '#0c4a6e';
-
 
 /**
  * all tailwind blue colors

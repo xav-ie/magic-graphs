@@ -1,5 +1,5 @@
-import type { GraphSettings } from "@graph/settings";
-import type { Ref } from "vue";
+import type { GraphSettings } from '@graph/settings';
+import type { Ref } from 'vue';
 
 type BoolSettingsKeys = {
   [K in keyof GraphSettings]: GraphSettings[K] extends boolean ? K : never;
@@ -41,7 +41,7 @@ export const usePluginHoldController = (settings: Ref<GraphSettings>) => {
       if (currentHolds === 0) return;
       if (currentHolds === 1) {
         const value = holdState.get(setting);
-        if (value === undefined) throw new Error("holdState not found");
+        if (value === undefined) throw new Error('holdState not found');
         settings.value[setting] = value;
         holdState.delete(setting);
       }

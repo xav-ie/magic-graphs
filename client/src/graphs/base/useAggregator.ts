@@ -1,57 +1,64 @@
-import { onMounted, onUnmounted, ref } from "vue"
-import type { Ref } from "vue"
-import type { Aggregator, UpdateAggregator } from "@graph/types"
-import type { Emitter as GraphEventEmitter } from "@graph/events"
-import type { Coordinate } from "@shape/types"
+import { onMounted, onUnmounted, ref } from 'vue';
+import type { Ref } from 'vue';
+import type { Aggregator, UpdateAggregator } from '@graph/types';
+import type { Emitter as GraphEventEmitter } from '@graph/events';
+import type { Coordinate } from '@shape/types';
 
 export type UseAggregatorOptions = {
-  canvas: Ref<HTMLCanvasElement | null | undefined>
-  emit: GraphEventEmitter
-}
+  canvas: Ref<HTMLCanvasElement | null | undefined>;
+  emit: GraphEventEmitter;
+};
 
 export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
-  const aggregator = ref<Aggregator>([])
-  const updateAggregator: UpdateAggregator[] = []
+  const aggregator = ref<Aggregator>([]);
+  const updateAggregator: UpdateAggregator[] = [];
 
   const repaintLoop = () => {
-    if (!canvas.value) return
-    const ctx = canvas.value.getContext('2d')
-    if (!ctx) return
-    ctx.clearRect(0, 0, canvas.value.width, canvas.value.height)
+    if (!canvas.value) return;
+    const ctx = canvas.value.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.value.width, canvas.value.height);
 
-    const evaluateAggregator = updateAggregator.reduce<Aggregator>((acc, fn) => fn(acc), [])
-    aggregator.value = [...evaluateAggregator.sort((a, b) => a.priority - b.priority)]
+    const evaluateAggregator = updateAggregator.reduce<Aggregator>(
+      (acc, fn) => fn(acc),
+      [],
+    );
+    aggregator.value = [
+      ...evaluateAggregator.sort((a, b) => a.priority - b.priority),
+    ];
 
-    const indexOfLastEdge = aggregator.value.findLastIndex(item => item.graphType === 'edge')
-    const beforeLastEdge = aggregator.value.slice(0, indexOfLastEdge + 1)
-    const afterLastEdge = aggregator.value.slice(indexOfLastEdge + 1)
+    const indexOfLastEdge = aggregator.value.findLastIndex(
+      (item) => item.graphType === 'edge',
+    );
+    const beforeLastEdge = aggregator.value.slice(0, indexOfLastEdge + 1);
+    const afterLastEdge = aggregator.value.slice(indexOfLastEdge + 1);
 
     for (const item of beforeLastEdge) {
-      item.shape.drawShape(ctx)
+      item.shape.drawShape(ctx);
     }
 
     for (const item of beforeLastEdge) {
-      item.shape.drawTextAreaMatte?.(ctx)
+      item.shape.drawTextAreaMatte?.(ctx);
     }
 
     for (const item of beforeLastEdge) {
-      item.shape.drawText?.(ctx)
+      item.shape.drawText?.(ctx);
     }
 
     for (const item of afterLastEdge) {
-      item.shape.draw(ctx)
+      item.shape.draw(ctx);
     }
 
-    emit('onRepaint', ctx, 'loop')
-  }
+    emit('onRepaint', ctx, 'loop');
+  };
 
-  const loop = setInterval(repaintLoop, 1000 / 60)
+  const loop = setInterval(repaintLoop, 1000 / 60);
 
   onUnmounted(() => {
-    clearInterval(loop)
-  })
+    clearInterval(loop);
+  });
 
-  setTimeout(repaintLoop, 1000)
+  setTimeout(repaintLoop, 1000);
 
   /**
    * get all schema items at given coordinates
@@ -63,12 +70,15 @@ export const useAggregator = ({ canvas, emit }: UseAggregatorOptions) => {
   const getSchemaItemsByCoordinates = (coords: Coordinate) => {
     return aggregator.value
       .sort((a, b) => a.priority - b.priority)
-      .filter(item => item.shape.shapeHitbox(coords) || item.shape.textHitbox?.(coords))
-  }
+      .filter(
+        (item) =>
+          item.shape.shapeHitbox(coords) || item.shape.textHitbox?.(coords),
+      );
+  };
 
   return {
     aggregator,
     updateAggregator,
     getSchemaItemsByCoordinates,
-  }
-}
+  };
+};
