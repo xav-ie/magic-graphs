@@ -1,13 +1,13 @@
-import { computed, ref, watch } from "vue";
-import type { GNode, Graph } from "@graph/types";
-import { dijkstras } from "./dijkstra";
-import state from "../state";
-import { useTransitionMatrix } from "@graph/useTransitionMatrix";
+import { computed, ref, watch } from 'vue';
+import type { GNode, Graph } from '@graph/types';
+import { dijkstras } from './dijkstra';
+import state from '../state';
+import { useTransitionMatrix } from '@graph/useTransitionMatrix';
 
 export type DijkstrasOutput = {
   startNode: GNode;
   distances: Record<GNode['id'], number>;
-}
+};
 
 export type DijkstrasTraceAtStep = {
   /**
@@ -24,7 +24,7 @@ export type DijkstrasTraceAtStep = {
    * the nodes that are currently in the queue
    */
   queue: Set<GNode['id']>;
-}
+};
 
 export const useDijkstra = (graph: Graph) => {
   const trace = ref<DijkstrasTraceAtStep[]>([]);
@@ -34,7 +34,7 @@ export const useDijkstra = (graph: Graph) => {
   const { transitionMatrix } = useTransitionMatrix(graph);
 
   const update = () => {
-    const startNode = startNodeState.get(graph)
+    const startNode = startNodeState.get(graph);
     if (!startNode) return;
     const index = graph.nodeIdToIndex.value.get(startNode.id)!;
 
@@ -47,23 +47,23 @@ export const useDijkstra = (graph: Graph) => {
     trace.value = res.trace.map(({ currentNode, distances, queue }) => ({
       currentNode: graph.nodes.value[currentNode ?? -1] ?? undefined,
       distances: Object.fromEntries(
-        distances.map((distance, i) => [graph.nodes.value[i].id, distance])
+        distances.map((distance, i) => [graph.nodes.value[i].id, distance]),
       ),
-      queue: new Set(queue.map(i => graph.nodes.value[i.node].id))
-    }))
+      queue: new Set(queue.map((i) => graph.nodes.value[i.node].id)),
+    }));
 
     output.value = {
       startNode: startNode,
       distances: Object.fromEntries(
-        res.res.map((distance, i) => [graph.nodes.value[i].id, distance])
-      )
-    }
-  }
+        res.res.map((distance, i) => [graph.nodes.value[i].id, distance]),
+      ),
+    };
+  };
 
   watch([startNodeState.ref, transitionMatrix], update, { immediate: true });
 
   return {
     output,
     trace: computed(() => trace.value),
-  }
+  };
 };

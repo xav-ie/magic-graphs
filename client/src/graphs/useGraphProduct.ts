@@ -5,9 +5,9 @@ import { collabControls } from '@graph/collab';
 import type { ProductInfo } from 'src/types';
 import { routeToProduct } from '@utils/product';
 import {
-	graph as globalGraph,
-	queuedGraphStateLoadout,
-	queuedGraphAnnotationState,
+  graph as globalGraph,
+  queuedGraphStateLoadout,
+  queuedGraphAnnotationState,
 } from '@graph/global';
 
 /**
@@ -18,46 +18,48 @@ import {
  * @param product the product info for the product (inferred from the route if not provided)
  */
 export const useGraphProduct = (graph: Graph, product?: ProductInfo) => {
-	const route = useRoute();
+  const route = useRoute();
 
-	if (!product) {
-		const productForCurrentRoute = routeToProduct[route.path];
-		if (!productForCurrentRoute) throw new Error(`no product found for route ${route.path}`);
-		product = productForCurrentRoute;
-	}
+  if (!product) {
+    const productForCurrentRoute = routeToProduct[route.path];
+    if (!productForCurrentRoute)
+      throw new Error(`no product found for route ${route.path}`);
+    product = productForCurrentRoute;
+  }
 
-	const { connectToRoom } = collabControls;
-	const roomId = route.query.rid;
+  const { connectToRoom } = collabControls;
+  const roomId = route.query.rid;
 
-	const { productId, name } = product;
-	document.title = `${name} - Magic Algorithms`;
+  const { productId, name } = product;
+  document.title = `${name} - Magic Algorithms`;
 
-	globalGraph.value = graph;
+  globalGraph.value = graph;
 
-	setTimeout(() => {
-		if (!queuedGraphStateLoadout.value) return;
-		graph.load(queuedGraphStateLoadout.value);
-		queuedGraphStateLoadout.value = undefined;
-	}, 5);
+  setTimeout(() => {
+    if (!queuedGraphStateLoadout.value) return;
+    graph.load(queuedGraphStateLoadout.value);
+    queuedGraphStateLoadout.value = undefined;
+  }, 5);
 
-	setTimeout(() => {
-		if (!queuedGraphAnnotationState.value) return;
-		graph.annotation.load(queuedGraphAnnotationState.value);
-		queuedGraphAnnotationState.value = undefined;
-	}, 5);
+  setTimeout(() => {
+    if (!queuedGraphAnnotationState.value) return;
+    graph.annotation.load(queuedGraphAnnotationState.value);
+    queuedGraphAnnotationState.value = undefined;
+  }, 5);
 
-	onMounted(() => {
-		if (!roomId) return;
-		if (typeof roomId !== 'string') return console.error('room id must be a string');
+  onMounted(() => {
+    if (!roomId) return;
+    if (typeof roomId !== 'string')
+      return console.error('room id must be a string');
 
-		connectToRoom({
-			graph,
-			roomId,
-			productId,
-		});
-	});
+    connectToRoom({
+      graph,
+      roomId,
+      productId,
+    });
+  });
 
-	onBeforeUnmount(() => {
-		product.state?.reset();
-	});
+  onBeforeUnmount(() => {
+    product.state?.reset();
+  });
 };

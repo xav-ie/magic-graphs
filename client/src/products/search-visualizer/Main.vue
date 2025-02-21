@@ -1,20 +1,20 @@
 <script setup lang="ts">
-  import { ref, computed, watch } from "vue";
-  import { useLocalStorage } from "@vueuse/core";
-  import { useAdjacencyList } from "@graph/useAdjacencyList";
-  import { useGraph } from "@graph/useGraph";
-  import type { Trace } from "./types";
-  import { algos } from "./algos";
-  import CodeEditor from "./components/CodeEditor.vue";
-  import TraceOutput from "./components/TraceOutput.vue";
-  import Graph from "@graph/Graph.vue";
+  import { ref, computed, watch } from 'vue';
+  import { useLocalStorage } from '@vueuse/core';
+  import { useAdjacencyList } from '@graph/useAdjacencyList';
+  import { useGraph } from '@graph/useGraph';
+  import type { Trace } from './types';
+  import { algos } from './algos';
+  import CodeEditor from './components/CodeEditor.vue';
+  import TraceOutput from './components/TraceOutput.vue';
+  import Graph from '@graph/Graph.vue';
 
   const trace = ref<Trace>([]);
 
   const graphEl = ref<HTMLCanvasElement>();
 
   const graph = useGraph(graphEl, {
-    persistentStorageKey: "search-visualizer-graph",
+    persistentStorageKey: 'search-visualizer-graph',
   });
 
   const { labelAdjacencyList } = useAdjacencyList(graph);
@@ -28,15 +28,15 @@
         get(target, prop, receiver) {
           trace.value.push(prop.toString());
           if (trace.value.length > 100)
-            throw new Error("Infinite loop detected");
+            throw new Error('Infinite loop detected');
           if (!Reflect.has(target, prop))
             throw new Error(`Node "${prop.toString()}" not found in graph`);
           return Reflect.get(target, prop, receiver);
         },
-      })
+      }),
   );
 
-  const argName = "graph";
+  const argName = 'graph';
   const userFuncSig = `function traverse(${argName}) { // 🔒`;
 
   const getDecoratedAlgorithm = (algo: string) =>
@@ -47,15 +47,15 @@
    * and closing brackets
    */
   const decoratedAlgorithm = useLocalStorage(
-    "userFn",
-    getDecoratedAlgorithm(algos.BFS)
+    'userFn',
+    getDecoratedAlgorithm(algos.BFS),
   );
 
   /**
    * extracts the runnable algorithm code from the decoration code
    */
   const algorithm = computed(() =>
-    decoratedAlgorithm.value.split("\n").slice(1, -1).join("\n")
+    decoratedAlgorithm.value.split('\n').slice(1, -1).join('\n'),
   );
 
   /**
@@ -67,20 +67,20 @@
    * stores any errors that occur during algorithm execution.
    * User facing, so it should be a legible string
    */
-  const algorithmError = ref("");
+  const algorithmError = ref('');
 
   /**
    * runs the algorithm on the graph and collects the traversal trace + any errors
    */
   const runAlgorithm = () => {
     try {
-      algorithmError.value = "";
+      algorithmError.value = '';
       trace.value = [];
       algorithmFunc.value(trappedGraph.value);
     } catch (error) {
       if (error && error instanceof Error)
         algorithmError.value = `${error.name}: ${error.message}`;
-      else algorithmError.value = "An unknown error occurred";
+      else algorithmError.value = 'An unknown error occurred';
     }
   };
 

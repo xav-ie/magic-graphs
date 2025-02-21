@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import { useTinycolor } from "@ui/useTinycolor";
-  import colors from "@utils/colors";
-  import { computed, ref, toRef } from "vue";
+  import { useTinycolor } from '@ui/useTinycolor';
+  import colors from '@utils/colors';
+  import { computed, ref, toRef } from 'vue';
 
   const props = withDefaults(
     defineProps<{
@@ -13,19 +13,21 @@
       active: false,
       outlineColor: colors.WHITE,
       color: colors.GRAY_700,
-    }
+    },
   );
 
-  const outlineColorRef = toRef(props, "outlineColor");
+  const outlineColorRef = toRef(props, 'outlineColor');
   const outlineColor = useTinycolor(outlineColorRef);
 
   const hoverColorHex = computed(() => {
     const isDark = outlineColor.value.isDark();
-    const newColor = isDark ? outlineColor.value.lighten(30) : outlineColor.value.darken(30)
+    const newColor = isDark
+      ? outlineColor.value.lighten(30)
+      : outlineColor.value.darken(30);
     return newColor.toHexString();
   });
 
-  const colorRef = toRef(props, "color");
+  const colorRef = toRef(props, 'color');
   const color = useTinycolor(colorRef);
 
   const textColorHex = computed(() => {
@@ -36,9 +38,9 @@
     if (props.active) return props.outlineColor;
     if (hovered.value) return hoverColorHex.value;
     return colors.TRANSPARENT;
-  })
+  });
 
-  const classes = ["cursor-pointer", "rounded-xl", "p-1", "border-2"];
+  const classes = ['cursor-pointer', 'rounded-xl', 'p-1', 'border-2'];
 
   const hovered = ref(false);
 </script>

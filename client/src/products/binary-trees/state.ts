@@ -1,5 +1,5 @@
-import { shallowRef, type ComputedRef } from "vue";
-import type { TreeTrace } from "./tree/avl";
+import { shallowRef, type ComputedRef } from 'vue';
+import type { TreeTrace } from './tree/avl';
 
 export type TreeSim = {
   step: ComputedRef<number>;
@@ -19,7 +19,7 @@ const reset = () => {
     activeSim.value.exit();
     activeSim.value = undefined;
   }
-}
+};
 
 export default {
   activeSim,

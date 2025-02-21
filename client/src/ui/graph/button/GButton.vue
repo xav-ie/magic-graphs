@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import CButton from "@ui/core/button/Button.vue";
-  import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
+  import { computed } from 'vue';
+  import CButton from '@ui/core/button/Button.vue';
+  import { useNonNullGraphColors } from '@graph/themes/useGraphColors';
 
   const colors = useNonNullGraphColors();
 
@@ -15,7 +15,7 @@
       secondary: false,
       tertiary: false,
       contrast: false,
-    }
+    },
   );
 
   const color = computed(() => {

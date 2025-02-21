@@ -1,6 +1,6 @@
-import { SCRIBBLE_DEFAULTS, ERASER_BRUSH_WEIGHT } from ".";
-import type { Scribble } from ".";
-import { circle } from "@shape/circle";
+import { SCRIBBLE_DEFAULTS, ERASER_BRUSH_WEIGHT } from '.';
+import type { Scribble } from '.';
+import { circle } from '@shape/circle';
 
 export const drawScribbleWithCtx =
   (scribble: Scribble) => (ctx: CanvasRenderingContext2D) => {
@@ -19,8 +19,8 @@ export const drawScribbleWithCtx =
         return;
       }
       ctx.strokeStyle = color;
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       ctx.lineWidth = brushWeight;
       ctx.beginPath();
       const [first, ...rest] = points;
@@ -30,7 +30,7 @@ export const drawScribbleWithCtx =
     };
 
     const erase = () => {
-      ctx.globalCompositeOperation = "destination-out";
+      ctx.globalCompositeOperation = 'destination-out';
       ctx.lineWidth = ERASER_BRUSH_WEIGHT;
 
       for (let i = 0; i < points.length - 1; i++) {
@@ -57,11 +57,11 @@ export const drawScribbleWithCtx =
         }
       }
 
-      ctx.globalCompositeOperation = "source-over";
+      ctx.globalCompositeOperation = 'source-over';
     };
 
-    type === "draw" ? draw() : erase();
+    type === 'draw' ? draw() : erase();
 
-    ctx.lineCap = "butt";
-    ctx.lineJoin = "miter";
+    ctx.lineCap = 'butt';
+    ctx.lineJoin = 'miter';
   };

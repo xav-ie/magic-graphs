@@ -1,6 +1,6 @@
-import colors from '@colors'
-import { NON_COLOR_THEMES } from './universal'
-import type { GraphThemeRaw } from '../types'
+import colors from '@colors';
+import { NON_COLOR_THEMES } from './universal';
+import type { GraphThemeRaw } from '../types';
 
 export const LIGHT_THEME: GraphThemeRaw = {
   nodeColor: colors.GRAY_50,
@@ -26,4 +26,4 @@ export const LIGHT_THEME: GraphThemeRaw = {
   marqueeEncapsulatedNodeBoxColor: colors.BLUE_700 + '05',
 
   ...NON_COLOR_THEMES,
-}
+};

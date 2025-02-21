@@ -1,19 +1,19 @@
-import type { BoundingBox, Coordinate } from "@shape/types";
-import { getCtx } from "@utils/ctx";
-import { average } from "@utils/math";
+import type { BoundingBox, Coordinate } from '@shape/types';
+import { getCtx } from '@utils/ctx';
+import { average } from '@utils/math';
 
 export const getAverageCoordinates = (coords: Coordinate[]) => {
-  const x = coords.map(coord => coord.x);
-  const y = coords.map(coord => coord.y);
+  const x = coords.map((coord) => coord.x);
+  const y = coords.map((coord) => coord.y);
   return {
     x: average(x),
     y: average(y),
-  }
+  };
 };
 
 export const centerNodesOnOriginCoordinates = <T extends Coordinate>(
   nodes: T[],
-  targetOrigin: Coordinate
+  targetOrigin: Coordinate,
 ) => {
   const averageCoordinates = getAverageCoordinates(nodes);
 
@@ -29,26 +29,30 @@ export const centerNodesOnOriginCoordinates = <T extends Coordinate>(
 };
 
 export const createImageFromCanvasRegion = (
-    canvas: HTMLCanvasElement,
-    boundingBox: BoundingBox
-  ) => {
-    const { at, width, height } = boundingBox;
-    const tempCanvas = document.createElement("canvas");
-    tempCanvas.width = width;
-    tempCanvas.height = height;
-    const tempCtx = getCtx(tempCanvas);
+  canvas: HTMLCanvasElement,
+  boundingBox: BoundingBox,
+) => {
+  const { at, width, height } = boundingBox;
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = width;
+  tempCanvas.height = height;
+  const tempCtx = getCtx(tempCanvas);
 
-    tempCtx.drawImage(
-      canvas, // Source canvas
-      at.x, at.y, // Source start x, y
-      width, height, // Source width, height
-      0, 0, // Destination start x, y
-      width, height // Destination width, height
-    );
+  tempCtx.drawImage(
+    canvas, // Source canvas
+    at.x,
+    at.y, // Source start x, y
+    width,
+    height, // Source width, height
+    0,
+    0, // Destination start x, y
+    width,
+    height, // Destination width, height
+  );
 
-    const dataURL = tempCanvas.toDataURL();
+  const dataURL = tempCanvas.toDataURL();
 
-    tempCanvas.remove();
+  tempCanvas.remove();
 
-    return dataURL;
-  };
+  return dataURL;
+};

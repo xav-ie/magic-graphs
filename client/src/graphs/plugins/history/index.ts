@@ -1,17 +1,17 @@
-import { computed, ref } from "vue";
-import type { BaseGraph } from "@graph/base";
-import type { GNode } from "@graph/types";
+import { computed, ref } from 'vue';
+import type { BaseGraph } from '@graph/base';
+import type { GNode } from '@graph/types';
 import {
   DEFAULT_REDO_HISTORY_OPTIONS,
-  DEFAULT_UNDO_HISTORY_OPTIONS
-} from "./types";
+  DEFAULT_UNDO_HISTORY_OPTIONS,
+} from './types';
 import type {
   HistoryRecord,
   RedoHistoryOptions,
   UndoHistoryOptions,
   GNodeMoveRecord,
 } from './types';
-import type { Coordinate } from "@shape/types";
+import type { Coordinate } from '@shape/types';
 
 /**
  * the max number of history records to keep in the undo and redo stacks
@@ -33,24 +33,26 @@ export const useHistory = (graph: BaseGraph) => {
     if (undoStack.value.length > MAX_HISTORY) {
       undoStack.value.shift();
     }
-  }
+  };
 
   const addToRedoStack = (record: HistoryRecord) => {
     redoStack.value.push(record);
     if (redoStack.value.length > MAX_HISTORY) {
       redoStack.value.shift();
     }
-  }
+  };
 
   graph.subscribe('onNodeAdded', (node, { history }) => {
     if (!history) return;
     addToUndoStack({
       action: 'add',
-      affectedItems: [{
-        graphType: 'node',
-        data: node,
-      }]
-    })
+      affectedItems: [
+        {
+          graphType: 'node',
+          data: node,
+        },
+      ],
+    });
   });
 
   graph.subscribe('onBulkNodeAdded', (nodes, { history }) => {
@@ -60,70 +62,89 @@ export const useHistory = (graph: BaseGraph) => {
       affectedItems: nodes.map((node) => ({
         graphType: 'node',
         data: node,
-      }))
-    })
+      })),
+    });
   });
 
   graph.subscribe('onNodeRemoved', (removedNode, removedEdges, { history }) => {
     if (!history) return;
 
-    const edgeRecords = removedEdges.map((edge) => ({
-      graphType: 'edge',
-      data: edge,
-    } as const));
+    const edgeRecords = removedEdges.map(
+      (edge) =>
+        ({
+          graphType: 'edge',
+          data: edge,
+        }) as const,
+    );
 
     addToUndoStack({
       action: 'remove',
-      affectedItems: [{
-        graphType: 'node',
-        data: removedNode,
-      }, ...edgeRecords],
-    })
+      affectedItems: [
+        {
+          graphType: 'node',
+          data: removedNode,
+        },
+        ...edgeRecords,
+      ],
+    });
   });
 
-  graph.subscribe('onBulkNodeRemoved', (removedNodes, removedEdges, { history }) => {
-    if (!history) return;
+  graph.subscribe(
+    'onBulkNodeRemoved',
+    (removedNodes, removedEdges, { history }) => {
+      if (!history) return;
 
-    const nodeRecords = removedNodes.map((node) => ({
-      graphType: 'node',
-      data: node,
-    } as const));
+      const nodeRecords = removedNodes.map(
+        (node) =>
+          ({
+            graphType: 'node',
+            data: node,
+          }) as const,
+      );
 
-    const edgeRecords = removedEdges.map((edge) => ({
-      graphType: 'edge',
-      data: edge,
-    } as const));
+      const edgeRecords = removedEdges.map(
+        (edge) =>
+          ({
+            graphType: 'edge',
+            data: edge,
+          }) as const,
+      );
 
-    addToUndoStack({
-      action: 'remove',
-      affectedItems: [...nodeRecords, ...edgeRecords],
-    })
-  });
+      addToUndoStack({
+        action: 'remove',
+        affectedItems: [...nodeRecords, ...edgeRecords],
+      });
+    },
+  );
 
   graph.subscribe('onEdgeLabelEdited', (edge, oldLabel, { history }) => {
     if (!history) return;
     addToUndoStack({
       action: 'edit',
-      affectedItems: [{
-        graphType: 'edge',
-        data: {
-          id: edge.id,
-          from: oldLabel,
-          to: edge.label,
+      affectedItems: [
+        {
+          graphType: 'edge',
+          data: {
+            id: edge.id,
+            from: oldLabel,
+            to: edge.label,
+          },
         },
-      }]
-    })
-  })
+      ],
+    });
+  });
 
   graph.subscribe('onEdgeAdded', (edge, { history }) => {
     if (!history) return;
     addToUndoStack({
       action: 'add',
-      affectedItems: [{
-        graphType: 'edge',
-        data: edge,
-      }]
-    })
+      affectedItems: [
+        {
+          graphType: 'edge',
+          data: edge,
+        },
+      ],
+    });
   });
 
   graph.subscribe('onBulkEdgeAdded', (edges, { history }) => {
@@ -133,19 +154,21 @@ export const useHistory = (graph: BaseGraph) => {
       affectedItems: edges.map((edge) => ({
         graphType: 'edge',
         data: edge,
-      }))
-    })
-  })
+      })),
+    });
+  });
 
   graph.subscribe('onEdgeRemoved', (edge, { history }) => {
     if (!history) return;
     addToUndoStack({
       action: 'remove',
-      affectedItems: [{
-        graphType: 'edge',
-        data: edge,
-      }]
-    })
+      affectedItems: [
+        {
+          graphType: 'edge',
+          data: edge,
+        },
+      ],
+    });
   });
 
   graph.subscribe('onBulkEdgeRemoved', (edges, { history }) => {
@@ -155,28 +178,30 @@ export const useHistory = (graph: BaseGraph) => {
       affectedItems: edges.map((edge) => ({
         graphType: 'edge',
         data: edge,
-      }))
-    })
+      })),
+    });
   });
 
   const groupDrag = ref<{
-    startingCoordinates: Coordinate,
-    nodes: Readonly<GNode[]>,
+    startingCoordinates: Coordinate;
+    nodes: Readonly<GNode[]>;
   }>();
 
   graph.subscribe('onGroupDragStart', (nodes, startingCoordinates) => {
     groupDrag.value = {
       startingCoordinates,
       nodes,
-    }
-  })
+    };
+  });
 
   graph.subscribe('onGroupDrop', (nodes, endingCoordinates) => {
-    if (!groupDrag.value) throw new Error('dropped a group we didn\'t know was being dragged');
-    if (groupDrag.value.nodes.length !== nodes.length) throw new Error('group size mismatch');
+    if (!groupDrag.value)
+      throw new Error("dropped a group we didn't know was being dragged");
+    if (groupDrag.value.nodes.length !== nodes.length)
+      throw new Error('group size mismatch');
 
-    const dy = groupDrag.value.startingCoordinates.y - endingCoordinates.y
-    const dx = groupDrag.value.startingCoordinates.x - endingCoordinates.x
+    const dy = groupDrag.value.startingCoordinates.y - endingCoordinates.y;
+    const dx = groupDrag.value.startingCoordinates.x - endingCoordinates.x;
     const c = Math.sqrt(dy ** 2 + dx ** 2);
 
     if (c < MIN_DISTANCE) return;
@@ -189,9 +214,9 @@ export const useHistory = (graph: BaseGraph) => {
           id: node.id,
           from: { x: node.x + dx, y: node.y + dy },
           to: { x: node.x, y: node.y },
-        }
-      }))
-    })
+        },
+      })),
+    });
   });
 
   const movingNode = ref<GNodeMoveRecord['data']>();
@@ -201,28 +226,31 @@ export const useHistory = (graph: BaseGraph) => {
       id: node.id,
       from: { x: node.x, y: node.y },
       to: { x: node.x, y: node.y },
-    }
-  })
+    };
+  });
 
   graph.subscribe('onNodeDrop', (node) => {
-    if (!movingNode.value) throw new Error('dropped a node we didn\'t know was being dragged');
+    if (!movingNode.value)
+      throw new Error("dropped a node we didn't know was being dragged");
     if (movingNode.value.id !== node.id) throw new Error('node ID mismatch');
     movingNode.value.to = { x: node.x, y: node.y };
 
-    const dy = movingNode.value.from.y - movingNode.value.to.y
-    const dx = movingNode.value.from.x - movingNode.value.to.x
+    const dy = movingNode.value.from.y - movingNode.value.to.y;
+    const dx = movingNode.value.from.x - movingNode.value.to.x;
     const c = Math.sqrt(dy ** 2 + dx ** 2);
 
     if (c < MIN_DISTANCE) return;
 
     addToUndoStack({
       action: 'move',
-      affectedItems: [{
-        graphType: 'node',
-        data: movingNode.value,
-      }]
-    })
-  })
+      affectedItems: [
+        {
+          graphType: 'node',
+          data: movingNode.value,
+        },
+      ],
+    });
+  });
 
   const undo = (options: Partial<UndoHistoryOptions> = {}) => {
     const record = undoStack.value.pop();
@@ -236,7 +264,7 @@ export const useHistory = (graph: BaseGraph) => {
     });
 
     return record;
-  }
+  };
 
   const redo = (options: Partial<RedoHistoryOptions> = {}) => {
     const record = redoStack.value.pop();
@@ -250,7 +278,7 @@ export const useHistory = (graph: BaseGraph) => {
     });
 
     return record;
-  }
+  };
 
   const undoHistoryRecord = (record: HistoryRecord) => {
     if (record.action === 'add') {
@@ -284,7 +312,7 @@ export const useHistory = (graph: BaseGraph) => {
         graph.editEdgeLabel(item.data.id, item.data.from, { history: false });
       }
     }
-  }
+  };
 
   const redoHistoryRecord = (record: HistoryRecord) => {
     if (record.action === 'add') {
@@ -318,12 +346,12 @@ export const useHistory = (graph: BaseGraph) => {
         graph.editEdgeLabel(item.data.id, item.data.to, { history: false });
       }
     }
-  }
+  };
 
   const clearHistory = () => {
     undoStack.value = [];
     redoStack.value = [];
-  }
+  };
 
   return {
     /**
@@ -364,7 +392,7 @@ export const useHistory = (graph: BaseGraph) => {
      * clears the undo and redo stacks
      */
     clearHistory,
-  }
+  };
 };
 
 export type GraphHistoryControls = ReturnType<typeof useHistory>;
@@ -373,5 +401,5 @@ export type GraphHistoryPlugin = {
    * controls for undoing and redoing actions in the graph
    * such as adding, removing, moving, and editing nodes and edges
    */
-  history: GraphHistoryControls
-}
+  history: GraphHistoryControls;
+};

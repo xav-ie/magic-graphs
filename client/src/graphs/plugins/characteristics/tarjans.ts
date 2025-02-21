@@ -27,7 +27,7 @@ class TarjanGraph {
     low: number[],
     disc: number[],
     stackMember: boolean[],
-    st: number[]
+    st: number[],
   ) {
     // Initialize discovery time and low value
     disc[u] = this.Time;

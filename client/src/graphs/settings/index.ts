@@ -1,5 +1,5 @@
-import type { SchemaItem, GNode, GEdge } from "@graph/types";
-import { fractionToDecimal } from "@utils/fracDecConverter";
+import type { SchemaItem, GNode, GEdge } from '@graph/types';
+import { fractionToDecimal } from '@utils/fracDecConverter';
 
 /**
  * BASE GRAPH SETTINGS
@@ -34,23 +34,23 @@ export type BaseGraphSettings = {
    * @default true
    */
   isGraphDirected: boolean;
-}
+};
 
 export const DEFAULT_BASE_SETTINGS: BaseGraphSettings = {
   displayEdgeLabels: true,
   edgeLabelsEditable: true,
   edgeInputToLabel: (input: string) => {
-    const trimmed = input.trim()
-    if (!trimmed) return
-    const decimalNum = fractionToDecimal(trimmed)?.toFixed(2)
-    if (decimalNum === "Infinity") return '∞'
-    else if (decimalNum === "-Infinity") return '-∞'
-    else if (decimalNum === undefined && isNaN(Number(trimmed))) return
-    return decimalNum ?? trimmed
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    const decimalNum = fractionToDecimal(trimmed)?.toFixed(2);
+    if (decimalNum === 'Infinity') return '∞';
+    else if (decimalNum === '-Infinity') return '-∞';
+    else if (decimalNum === undefined && isNaN(Number(trimmed))) return;
+    return decimalNum ?? trimmed;
   },
   newNodeLabelGetter: null,
   isGraphDirected: true,
-}
+};
 
 /**
  * FOCUS GRAPH SETTINGS
@@ -66,12 +66,12 @@ export type FocusGraphSettings = {
    * @default []
    */
   focusBlacklist: string[];
-}
+};
 
 export const DEFAULT_FOCUS_SETTINGS: FocusGraphSettings = {
   focusable: true,
   focusBlacklist: [],
-}
+};
 
 /**
  * DRAGGABLE GRAPH SETTINGS
@@ -82,11 +82,11 @@ export type DraggableGraphSettings = {
    * @default true
    */
   draggable: boolean;
-}
+};
 
 export const DEFAULT_DRAGGABLE_SETTINGS: DraggableGraphSettings = {
   draggable: true,
-}
+};
 
 /**
  * NODE ANCHOR GRAPH SETTINGS
@@ -97,12 +97,12 @@ export type NodeAnchorGraphSettings = {
    * enabling edge creation
    * @default true
    */
-  nodeAnchors: boolean
-}
+  nodeAnchors: boolean;
+};
 
 export const DEFAULT_NODE_ANCHOR_SETTINGS: NodeAnchorGraphSettings = {
-  nodeAnchors: true
-}
+  nodeAnchors: true,
+};
 
 /**
  * MARQUEE GRAPH SETTINGS
@@ -118,12 +118,12 @@ export type MarqueeGraphSettings = {
    * @default ['node', 'edge']
    */
   marqueeSelectableGraphTypes: SchemaItem['graphType'][];
-}
+};
 
 export const DEFAULT_MARQUEE_SETTINGS: MarqueeGraphSettings = {
   marquee: true,
   marqueeSelectableGraphTypes: ['node', 'edge'],
-}
+};
 
 /**
  * INTERACTIVE GRAPH SETTINGS
@@ -139,27 +139,27 @@ export type InteractiveGraphSettings = {
    * the default {@link GEdge.label | label} assigned to edges when created using the UI
    * @default '1'
    */
-  userAddedEdgeLabel: string,
+  userAddedEdgeLabel: string;
   /**
    * whether to allow self loops.
    * relevant on directed graphs where a node can have an edge to itself
    * @default false
    */
-  userAddedEdgeRuleNoSelfLoops: boolean,
+  userAddedEdgeRuleNoSelfLoops: boolean;
   /**
    * whether to allow only one edge per path between two nodes.
    * relevant on directed graphs where multiple edges can exist between two nodes
    * @default false
    */
-  userAddedEdgeRuleOneEdgePerPath: boolean,
-}
+  userAddedEdgeRuleOneEdgePerPath: boolean;
+};
 
 export const DEFAULT_INTERACTIVE_SETTINGS: InteractiveGraphSettings = {
   interactive: true,
   userAddedEdgeLabel: '1',
   userAddedEdgeRuleNoSelfLoops: false,
   userAddedEdgeRuleOneEdgePerPath: false,
-}
+};
 
 /**
  * PERSISTENT GRAPH SETTINGS
@@ -174,19 +174,19 @@ export type PersistentGraphSettings = {
    * the key used for saving the graph in {@link localStorage | local storage}
    * @default "graph"
    */
-  persistentStorageKey: string,
+  persistentStorageKey: string;
   /**
    * set of node or edge ids that will not be saved through graph persistence
    * @default new Set()
    */
-  persistentBlacklist: Set<GNode['id'] | GEdge['id']>
-}
+  persistentBlacklist: Set<GNode['id'] | GEdge['id']>;
+};
 
 export const DEFAULT_PERSISTENT_SETTINGS: PersistentGraphSettings = {
   persistent: true,
   persistentStorageKey: 'graph',
-  persistentBlacklist: new Set()
-}
+  persistentBlacklist: new Set(),
+};
 
 export type ShortcutGraphSettings = {
   /**
@@ -243,7 +243,7 @@ export type ShortcutGraphSettings = {
    * @default true
    */
   shortcutSave: boolean | (() => void);
-}
+};
 
 export const DEFAULT_SHORTCUT_SETTINGS: ShortcutGraphSettings = {
   shortcuts: true,
@@ -253,21 +253,19 @@ export const DEFAULT_SHORTCUT_SETTINGS: ShortcutGraphSettings = {
   shortcutDelete: true,
   shortcutEscape: true,
   shortcutSave: true,
-}
+};
 
 /**
  * represents all settings on a graph instance
  */
-export type GraphSettings = (
-  BaseGraphSettings &
+export type GraphSettings = BaseGraphSettings &
   FocusGraphSettings &
   DraggableGraphSettings &
   NodeAnchorGraphSettings &
   MarqueeGraphSettings &
   InteractiveGraphSettings &
   PersistentGraphSettings &
-  ShortcutGraphSettings
-)
+  ShortcutGraphSettings;
 
 /**
  * the default settings for a graph instance
@@ -281,4 +279,4 @@ export const DEFAULT_GRAPH_SETTINGS = {
   ...DEFAULT_INTERACTIVE_SETTINGS,
   ...DEFAULT_PERSISTENT_SETTINGS,
   ...DEFAULT_SHORTCUT_SETTINGS,
-} as const satisfies GraphSettings
+} as const satisfies GraphSettings;

@@ -1,10 +1,16 @@
-import { graphLabelGetter, LETTERS } from "@graph/labels";
-import type { GEdge, GNode } from "@graph/types";
-import { generateId } from "@utils/id";
-import { ref } from "vue";
-import { angleDifference } from "@shape/helpers";
-import type { PartialGenerateClusterNodesOptions, PartialGenerateCohesiveEdgesOptions } from "@graph/templates/autoGenerate/types";
-import { GENERATE_CLUSTER_GRAPH_DEFAULTS, GENERATE_COHESIVE_EDGES_DEFAULTS } from "@graph/templates/autoGenerate/types";
+import { graphLabelGetter, LETTERS } from '@graph/labels';
+import type { GEdge, GNode } from '@graph/types';
+import { generateId } from '@utils/id';
+import { ref } from 'vue';
+import { angleDifference } from '@shape/helpers';
+import type {
+  PartialGenerateClusterNodesOptions,
+  PartialGenerateCohesiveEdgesOptions,
+} from '@graph/templates/autoGenerate/types';
+import {
+  GENERATE_CLUSTER_GRAPH_DEFAULTS,
+  GENERATE_COHESIVE_EDGES_DEFAULTS,
+} from '@graph/templates/autoGenerate/types';
 
 /**
  * Generates an array of nodes distributed across multiple clusters.
@@ -16,14 +22,9 @@ import { GENERATE_CLUSTER_GRAPH_DEFAULTS, GENERATE_COHESIVE_EDGES_DEFAULTS } fro
  * @returns An array of nodes distributed across multiple clusters.
  */
 export const generateClusterNodes = (
-  options: PartialGenerateClusterNodesOptions = {}
+  options: PartialGenerateClusterNodesOptions = {},
 ): GNode[] => {
-  const { 
-    clusterCount, 
-    maxNodesPerCluster, 
-    minDistance, 
-    clusterSpread 
-  } = {
+  const { clusterCount, maxNodesPerCluster, minDistance, clusterSpread } = {
     ...GENERATE_CLUSTER_GRAPH_DEFAULTS,
     ...options,
   };
@@ -56,7 +57,7 @@ export const generateClusterNodes = (
         outwardSteps++;
       } while (
         nodes.value.some(
-          (node) => Math.hypot(node.x - x, node.y - y) < minDistance
+          (node) => Math.hypot(node.x - x, node.y - y) < minDistance,
         ) &&
         outwardSteps < 100
       );
@@ -83,11 +84,14 @@ export const generateClusterNodes = (
  * @param minAngleBetweenEdges - The minimum angle between edges `IN RADIANS`.
  * @returns An array of edges between nodes.
  */
-export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCohesiveEdgesOptions = {}): GEdge[] => {
-  const { 
-    maxEdgesPerNode, 
-    connectionProbability, 
-    maxNeighbors, 
+export const generateCohesiveEdges = (
+  nodes: GNode[],
+  options: PartialGenerateCohesiveEdgesOptions = {},
+): GEdge[] => {
+  const {
+    maxEdgesPerNode,
+    connectionProbability,
+    maxNeighbors,
     minAngleBetweenEdges,
     edgeLabel,
     allowUTurnEdges,
@@ -104,7 +108,8 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
     if (!usedConnections.has(from)) usedConnections.set(from, new Set());
     usedConnections.get(from)!.add(to);
 
-    const label = typeof edgeLabel === 'function' ? edgeLabel(from, to) : edgeLabel;
+    const label =
+      typeof edgeLabel === 'function' ? edgeLabel(from, to) : edgeLabel;
     edges.push({
       id: generateId(),
       from,
@@ -124,8 +129,8 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
 
   while (unconnectedNodes.size > 0) {
     let closestPair: {
-      from: GNode["id"];
-      to: GNode["id"];
+      from: GNode['id'];
+      to: GNode['id'];
       dist: number;
     } | null = null;
 
@@ -147,7 +152,7 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
 
     if (closestPair) {
       const { from, to } = closestPair;
-      
+
       addConnection(from, to);
       connectedNodes.add(to);
       unconnectedNodes.delete(to);
@@ -159,9 +164,9 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
 
     uTurnNodes.forEach((node) => {
       addConnection(node.id, node.id);
-    })
+    });
   }
-  
+
   nodes.forEach((fromNode) => {
     const potentialConnections = nodes
       .filter((toNode) => fromNode.id !== toNode.id) // remove self
@@ -184,24 +189,24 @@ export const generateCohesiveEdges = (nodes: GNode[], options: PartialGenerateCo
       ) {
         const newPotentialEdgeAngle = Math.atan2(
           toNode.y - fromNode.y,
-          toNode.x - fromNode.x
+          toNode.x - fromNode.x,
         );
         const angleCheck = edges
           .filter((e) => e.from === fromNode.id || e.to === fromNode.id)
           .every((e) => {
             const otherNode = nodes.find((node) =>
-              e.from === fromNode.id ? node.id === e.to : node.id === e.from
+              e.from === fromNode.id ? node.id === e.to : node.id === e.from,
             );
             if (!otherNode) {
               return false;
             }
             const otherNodeAngle = Math.atan2(
               otherNode.y - fromNode.y,
-              otherNode.x - fromNode.x
+              otherNode.x - fromNode.x,
             );
             const angleDiff = angleDifference(
               newPotentialEdgeAngle,
-              otherNodeAngle
+              otherNodeAngle,
             );
             return angleDiff > minAngleBetweenEdges;
           });

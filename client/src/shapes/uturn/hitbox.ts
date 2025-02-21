@@ -1,10 +1,10 @@
-import { rotatePoint } from "@shape/helpers";
-import type { Coordinate, BoundingBox } from "@shape/types";
-import { lineHitbox } from "@shape/line/hitbox";
-import type { UTurn } from ".";
-import { rectEfficientHitbox } from "@shape/rect/hitbox";
-import { arrowHitbox } from "@shape/arrow/hitbox";
-import { circleHitbox } from "@shape/circle/hitbox";
+import { rotatePoint } from '@shape/helpers';
+import type { Coordinate, BoundingBox } from '@shape/types';
+import { lineHitbox } from '@shape/line/hitbox';
+import type { UTurn } from '.';
+import { rectEfficientHitbox } from '@shape/rect/hitbox';
+import { arrowHitbox } from '@shape/arrow/hitbox';
+import { circleHitbox } from '@shape/circle/hitbox';
 
 export const uturnHitbox = (uturn: UTurn) => {
   const { spacing, at, downDistance, upDistance, lineWidth, rotation } = uturn;

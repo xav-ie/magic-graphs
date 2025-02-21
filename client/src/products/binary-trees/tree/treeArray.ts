@@ -1,4 +1,4 @@
-import type { TreeNode } from "./treeNode";
+import type { TreeNode } from './treeNode';
 
 /**
  * the node at the index of the tree or undefined if the tree index is empty
@@ -12,8 +12,8 @@ export const getTreeArray = ({
   root,
   treeDepth,
 }: {
-  root: TreeNode | undefined,
-  treeDepth: number,
+  root: TreeNode | undefined;
+  treeDepth: number;
 }) => {
   const treeIndexToNodeId: TreeArray = [];
   if (!root) return treeIndexToNodeId;
@@ -33,4 +33,4 @@ export const getTreeArray = ({
   }
 
   return treeIndexToNodeId;
-}
+};

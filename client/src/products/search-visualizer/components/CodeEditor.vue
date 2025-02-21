@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import { Codemirror } from "vue-codemirror";
-  import { javascript } from "@codemirror/lang-javascript";
-  import { oneDark } from "@codemirror/theme-one-dark";
-  import type { EditorState } from "@codemirror/state";
-  import readOnlyRangesExtension from "codemirror-readonly-ranges";
-  import { CODE_MIRROR_DARK_BACKGROUND } from "../colors";
+  import { computed } from 'vue';
+  import { Codemirror } from 'vue-codemirror';
+  import { javascript } from '@codemirror/lang-javascript';
+  import { oneDark } from '@codemirror/theme-one-dark';
+  import type { EditorState } from '@codemirror/state';
+  import readOnlyRangesExtension from 'codemirror-readonly-ranges';
+  import { CODE_MIRROR_DARK_BACKGROUND } from '../colors';
 
   const code = defineModel<string>();
 
@@ -49,13 +49,7 @@
       :style="{
         backgroundColor: `#${CODE_MIRROR_DARK_BACKGROUND}`,
       }"
-      :class="[
-        'absolute',
-        'top-0',
-        'w-full',
-        'h-full',
-        '-z-10',
-      ]"
+      :class="['absolute', 'top-0', 'w-full', 'h-full', '-z-10']"
     ></div>
   </div>
 </template>

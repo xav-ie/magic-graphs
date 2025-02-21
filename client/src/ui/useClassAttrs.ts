@@ -1,4 +1,4 @@
-import { computed, useAttrs } from "vue";
+import { computed, useAttrs } from 'vue';
 
 /**
  * extracts the classes of a component assigned by the parent caller
@@ -24,7 +24,8 @@ export const useClassAttrs = () => {
 
   return computed<string[]>(() => {
     if (!classAttr) return [];
-    if (typeof classAttr !== "string") throw new Error("class attribute must be a string");
-    return classAttr.split(" ")
+    if (typeof classAttr !== 'string')
+      throw new Error('class attribute must be a string');
+    return classAttr.split(' ');
   });
 };

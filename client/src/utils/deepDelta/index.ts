@@ -2,7 +2,8 @@
  * recursively compare two objects and return the delta
  */
 
-const isObj = (obj: any) => Object.prototype.toString.call(obj) === '[object Object]'
+const isObj = (obj: any) =>
+  Object.prototype.toString.call(obj) === '[object Object]';
 
 /**
  * gets the delta between two objects
@@ -11,8 +12,10 @@ const isObj = (obj: any) => Object.prototype.toString.call(obj) === '[object Obj
  * @param newObject
  * @returns an object with only the changes, the values are the new values
  */
-export const delta = (oldObject: Record<any, any>, newObject: Record<any, any>) => {
-
+export const delta = (
+  oldObject: Record<any, any>,
+  newObject: Record<any, any>,
+) => {
   const output: Record<any, any> = {};
 
   if (!oldObject) return newObject;
@@ -28,7 +31,6 @@ export const delta = (oldObject: Record<any, any>, newObject: Record<any, any>) 
   }
 
   for (const key of oldObjectKeys) {
-
     if (isObj(oldObject[key])) {
       const diffObj = delta(oldObject[key], newObject[key]);
       if (diffObj) output[key] = diffObj;
@@ -36,12 +38,10 @@ export const delta = (oldObject: Record<any, any>, newObject: Record<any, any>) 
     }
 
     if (Array.isArray(oldObject[key])) {
-      if (JSON.stringify(oldObject[key]) !== JSON.stringify(newObject[key])) output[key] = newObject[key];
+      if (JSON.stringify(oldObject[key]) !== JSON.stringify(newObject[key]))
+        output[key] = newObject[key];
       continue;
-    }
-
-    else if (oldObject[key] !== newObject[key]) output[key] = newObject[key];
-
+    } else if (oldObject[key] !== newObject[key]) output[key] = newObject[key];
   }
 
   return Object.keys(output).length ? output : null;

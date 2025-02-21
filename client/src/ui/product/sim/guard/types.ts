@@ -1,4 +1,3 @@
-
 /**
  * text explaining why cant the simulation run on the given graph
  */
@@ -6,15 +5,15 @@ export type ReasonText = {
   /**
    * a title for the reason
    */
- title: string
+  title: string;
   /**
    * a longer description that will display as a hint or tooltip
    * for the user
    */
-  description: string
-}
+  description: string;
+};
 
-export type ReasonTextGetter = (...args: any[]) => ReasonText
+export type ReasonTextGetter = (...args: any[]) => ReasonText;
 
 /**
  * themes the graph to highlight the reason why the simulation cannot run
@@ -23,12 +22,12 @@ export type ReasonThemer = {
   /**
    * activates the theme
    */
-  theme: () => void
+  theme: () => void;
   /**
    * deactivates the theme
    */
-  untheme: () => void
-}
+  untheme: () => void;
+};
 
 /**
  * text and themer for the reason why the simulation cannot run
@@ -37,5 +36,5 @@ export type Reason = ReasonText & {
   /**
    * a themer for the reason
    */
-  themer?: ReasonThemer
-}
+  themer?: ReasonThemer;
+};

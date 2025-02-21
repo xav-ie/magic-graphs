@@ -1,7 +1,7 @@
-import type { GEdge, Graph } from "@graph/types";
+import type { GEdge, Graph } from '@graph/types';
 
-export type Parent = Map<string, string>
-export type Rank = Map<string, number>
+export type Parent = Map<string, string>;
+export type Rank = Map<string, number>;
 
 export const kruskal = (graph: Graph) => {
   const { nodes, edges } = graph;
@@ -62,4 +62,4 @@ export const kruskal = (graph: Graph) => {
   };
 
   return run();
-}
+};

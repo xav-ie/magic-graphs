@@ -1,36 +1,30 @@
-import { TEXT_DEFAULTS } from "@shape/types";
-import type { Coordinate } from "@shape/types";
-import type { Line } from "@shape/line";
+import { TEXT_DEFAULTS } from '@shape/types';
+import type { Coordinate } from '@shape/types';
+import type { Line } from '@shape/line';
 import {
   drawTextWithTextArea,
   drawTextMatteWithTextArea,
   getTextAreaDimension,
   getFullTextArea,
-} from "@shape/text";
-import { rectHitbox } from "@shape/rect/hitbox";
-import { getAngle } from "@shape/helpers";
-import { LINE_DEFAULTS } from ".";
+} from '@shape/text';
+import { rectHitbox } from '@shape/rect/hitbox';
+import { getAngle } from '@shape/helpers';
+import { LINE_DEFAULTS } from '.';
 
 export const getTextAreaLocationOnLine = (line: Line) => {
-
-  const {
-    textOffsetFromCenter,
-    start,
-    end,
-    textArea,
-  } = {
+  const { textOffsetFromCenter, start, end, textArea } = {
     ...LINE_DEFAULTS,
     ...line,
-  }
+  };
 
-  if (!textArea) throw new Error('no text area provided')
+  if (!textArea) throw new Error('no text area provided');
 
   const { text } = textArea;
 
   const { fontSize } = {
     ...TEXT_DEFAULTS,
     ...text,
-  }
+  };
 
   const angle = getAngle(start, end);
 
@@ -42,9 +36,9 @@ export const getTextAreaLocationOnLine = (line: Line) => {
 
   return {
     x: textX - fontSize,
-    y: textY - fontSize
-  }
-}
+    y: textY - fontSize,
+  };
+};
 
 /**
  * @description checks if the point is in the text label of the line
@@ -63,11 +57,11 @@ export const lineTextHitbox = (line: Line) => {
   const isInTextHitbox = rectHitbox({
     at: fullTextArea.at,
     width,
-    height
+    height,
   });
 
   return (point: Coordinate) => isInTextHitbox(point);
-}
+};
 
 export const drawTextAreaMatteOnLine = (line: Line) => {
   if (!line.textArea) return;
@@ -87,7 +81,7 @@ export const drawTextOnLine = (line: Line) => {
 
   const drawText = drawTextWithTextArea(fullTextArea);
   return (ctx: CanvasRenderingContext2D) => drawText(ctx);
-}
+};
 
 export const drawTextAreaOnLine = (line: Line) => {
   const drawMatte = drawTextAreaMatteOnLine(line);
@@ -98,5 +92,5 @@ export const drawTextAreaOnLine = (line: Line) => {
   return (ctx: CanvasRenderingContext2D) => {
     drawMatte(ctx);
     drawText(ctx);
-  }
-}
+  };
+};

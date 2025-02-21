@@ -1,8 +1,11 @@
-import type { ProductInfo } from 'src/types'
-import type { Graph } from '@graph/types'
-import { useKruskalSimulationRunner, usePrimSimulationRunner } from './sim/runner'
-import { canRunMST } from './sim/guard'
-import templates from './templates'
+import type { ProductInfo } from 'src/types';
+import type { Graph } from '@graph/types';
+import {
+  useKruskalSimulationRunner,
+  usePrimSimulationRunner,
+} from './sim/runner';
+import { canRunMST } from './sim/guard';
+import templates from './templates';
 
 const info: ProductInfo = {
   route: {
@@ -18,23 +21,25 @@ const info: ProductInfo = {
     thumbnail: '/products/thumbnails/mst.png',
     category: 'algorithms',
   },
-  simulations: (graph: Graph) => ([
+  simulations: (graph: Graph) => [
     {
-      name: 'Kruskal\'s Algorithm',
-      description: 'Sort edges by weight and add them to the MST if they do not create a cycle',
+      name: "Kruskal's Algorithm",
+      description:
+        'Sort edges by weight and add them to the MST if they do not create a cycle',
       thumbnail: '/products/thumbnails/mst.png',
       canRun: canRunMST(graph),
       runner: useKruskalSimulationRunner(graph),
     },
     {
-      name: 'Prim\'s Algorithm',
-      description: 'Start with a single vertex and grow the MST by adding the smallest edge',
+      name: "Prim's Algorithm",
+      description:
+        'Start with a single vertex and grow the MST by adding the smallest edge',
       thumbnail: '/products/thumbnails/mst.png',
       canRun: canRunMST(graph),
       runner: usePrimSimulationRunner(graph),
-    }
-  ]),
+    },
+  ],
   templates,
-}
+};
 
-export default info
+export default info;

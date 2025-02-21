@@ -1,10 +1,10 @@
-import { ref } from "vue";
-import type { Graph } from "@graph/types";
-import type { AVLTree } from "./tree/avl";
+import { ref } from 'vue';
+import type { Graph } from '@graph/types';
+import type { AVLTree } from './tree/avl';
 
 type GraphState = {
-  nodes: Graph["nodes"]["value"];
-  edges: Graph["edges"]["value"];
+  nodes: Graph['nodes']['value'];
+  edges: Graph['edges']['value'];
 };
 
 export const useTreeHistory = (graph: Graph, tree: AVLTree) => {

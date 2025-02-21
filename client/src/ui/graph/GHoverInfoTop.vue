@@ -1,7 +1,7 @@
 <script setup lang="ts">
   // modifies GHoverInfo to invert offset when tooltip content appears
   // above the activator
-  import GHoverInfo from "./GHoverInfo.vue";
+  import GHoverInfo from './GHoverInfo.vue';
 
   withDefaults(
     defineProps<{
@@ -10,7 +10,7 @@
     }>(),
     {
       offset: -4,
-    }
+    },
   );
 </script>
 

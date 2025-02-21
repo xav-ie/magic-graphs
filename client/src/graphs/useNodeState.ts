@@ -1,7 +1,7 @@
-import { computed, readonly, ref } from "vue";
-import type { GNode, Graph } from "@graph/types";
-import { selectNode } from "@graph/select";
-import { useGTextTip } from "@ui/useGTextTip";
+import { computed, readonly, ref } from 'vue';
+import type { GNode, Graph } from '@graph/types';
+import { selectNode } from '@graph/select';
+import { useGTextTip } from '@ui/useGTextTip';
 
 type NodeStateOptions = {
   /**
@@ -9,60 +9,56 @@ type NodeStateOptions = {
    * @default 'select a node'
    */
   setterTextTip: string;
-}
+};
 
 const DEFAULT_NODE_STATE_OPTIONS: NodeStateOptions = {
-  setterTextTip: 'select a node'
-}
+  setterTextTip: 'select a node',
+};
 
 /**
  * a utility for managing the state of a node, providing
  * getters and setters for the node and a way to cancel the setter
  */
-export const useNodeState = (
-  options: Partial<NodeStateOptions> = {},
-) => {
-  const {
-    setterTextTip,
-  } = {
+export const useNodeState = (options: Partial<NodeStateOptions> = {}) => {
+  const { setterTextTip } = {
     ...DEFAULT_NODE_STATE_OPTIONS,
-    ...options
-  }
+    ...options,
+  };
 
   const node = ref<GNode>();
   const isSetting = ref(false);
 
   let cancelNodeSetter = () => {};
 
-  const { showText, hideText } = useGTextTip(setterTextTip)
+  const { showText, hideText } = useGTextTip(setterTextTip);
 
   const get = (graph: Graph) => {
     if (!node.value) return;
     return graph.getNode(node.value.id);
-  }
+  };
 
   const set = async (graph: Graph) => {
     if (isSetting.value) return;
     isSetting.value = true;
 
-    const { selectedItemPromise, cancelSelection } = selectNode(graph)
-    cancelNodeSetter = cancelSelection
-    showText()
-    node.value = await selectedItemPromise()
-    hideText()
+    const { selectedItemPromise, cancelSelection } = selectNode(graph);
+    cancelNodeSetter = cancelSelection;
+    showText();
+    node.value = await selectedItemPromise();
+    hideText();
 
     isSetting.value = false;
-  }
+  };
 
   const cancelSet = () => {
-    hideText()
-    cancelNodeSetter()
+    hideText();
+    cancelNodeSetter();
   };
 
   const reset = () => {
-    node.value = undefined
-    cancelSet()
-  }
+    node.value = undefined;
+    cancelSet();
+  };
 
   return {
     /**
@@ -102,4 +98,4 @@ export const useNodeState = (
      */
     reset,
   };
-}
+};

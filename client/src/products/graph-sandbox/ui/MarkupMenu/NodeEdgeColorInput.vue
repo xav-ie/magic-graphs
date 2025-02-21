@@ -1,11 +1,14 @@
 <script setup lang="ts">
-  import { ref } from "vue";
-  import type { Graph } from "@graph/types";
-  import { useTheme } from "@graph/themes/useTheme";
-  import type { ColorMap } from "@product/graph-sandbox/theme/useMarkupColorizer";
-  import type { Color } from "@utils/colors";
-  import { DEFAULT_MARKUP_COLOR, MARKUP_USETHEME_ID } from "@product/graph-sandbox/constants";
-  import InputColor from "./InputColor.vue";
+  import { ref } from 'vue';
+  import type { Graph } from '@graph/types';
+  import { useTheme } from '@graph/themes/useTheme';
+  import type { ColorMap } from '@product/graph-sandbox/theme/useMarkupColorizer';
+  import type { Color } from '@utils/colors';
+  import {
+    DEFAULT_MARKUP_COLOR,
+    MARKUP_USETHEME_ID,
+  } from '@product/graph-sandbox/constants';
+  import InputColor from './InputColor.vue';
 
   const props = defineProps<{
     graph: Graph;
@@ -15,10 +18,10 @@
   const getColor = () => {
     const highlightedIds = Array.from(props.graph.focus.focusedItemIds.value);
     const itemColors = new Set(
-      highlightedIds.map((id) => props.colorMap.get(id))
+      highlightedIds.map((id) => props.colorMap.get(id)),
     );
-    if (itemColors.has(undefined)) return
-    if (itemColors.size !== 1) return
+    if (itemColors.has(undefined)) return;
+    if (itemColors.size !== 1) return;
     const color = itemColors.values().next().value;
     if (!color) return DEFAULT_MARKUP_COLOR;
     return color;
@@ -46,11 +49,11 @@
      * have a chance to set the color of the just added node or edge
      */
     activeColor.value = getColor();
-  }
+  };
 
   props.graph.subscribe('onNodeAdded', colorAddedItem);
   props.graph.subscribe('onEdgeAdded', colorAddedItem);
-  props.graph.subscribe("onFocusChange", recalculateActiveColor);
+  props.graph.subscribe('onFocusChange', recalculateActiveColor);
 
   const { setTheme } = useTheme(props.graph, MARKUP_USETHEME_ID + '-preview');
   const colorLinkPreview = () => activeColor.value ?? DEFAULT_MARKUP_COLOR;

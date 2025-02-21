@@ -1,17 +1,17 @@
 <script setup lang="ts">
-  import { ref } from "vue";
-  import type { ProductInfo } from "src/types";
-  import ProductCatalog from "./ProductCatalog.vue";
+  import { ref } from 'vue';
+  import type { ProductInfo } from 'src/types';
+  import ProductCatalog from './ProductCatalog.vue';
 
   const infoModules = import.meta.glob<{
     default: ProductInfo;
-  }>("/src/**/info.ts", { eager: true });
+  }>('/src/**/info.ts', { eager: true });
 
   const productInfos = Object.values(infoModules).map((m) => m.default);
 
   // pull all products we can display on the main menu
   const products = ref(
-    productInfos.filter((info) => info?.menu) as Required<ProductInfo>[]
+    productInfos.filter((info) => info?.menu) as Required<ProductInfo>[],
   );
 </script>
 
@@ -25,9 +25,7 @@
       >
         Magic Algorithms
       </h1>
-      <h3 class="font-bold text-2xl">
-        Select An Experience
-      </h3>
+      <h3 class="font-bold text-2xl">Select An Experience</h3>
     </div>
 
     <ProductCatalog :products="products" />

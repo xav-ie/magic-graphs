@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue";
-  import GButton from "@ui/graph/button/GButton.vue";
-  import CIcon from "@ui/core/Icon.vue";
-  import GDialog from "@ui/core/GDialog.vue";
-  import GWell from "@ui/graph/GWell.vue";
-  import { nonNullGraph as graph } from "@graph/global";
+  import { computed, ref } from 'vue';
+  import GButton from '@ui/graph/button/GButton.vue';
+  import CIcon from '@ui/core/Icon.vue';
+  import GDialog from '@ui/core/GDialog.vue';
+  import GWell from '@ui/graph/GWell.vue';
+  import { nonNullGraph as graph } from '@graph/global';
 
   const showDialog = ref(false);
 
@@ -13,10 +13,10 @@
   const keybindings = computed<Record<string, string>>(() => {
     return {
       ...nameToBindingKeys.value,
-      Fullscreen: "F",
-      "Pause/Play Simulation": "Space",
-      "Simulation Step Forward": "ArrowRight",
-      "Simulation Step Backward": "ArrowLeft",
+      Fullscreen: 'F',
+      'Pause/Play Simulation': 'Space',
+      'Simulation Step Forward': 'ArrowRight',
+      'Simulation Step Backward': 'ArrowLeft',
     };
   });
 
@@ -24,23 +24,29 @@
 
   const convertKeyStringToKeys = (keyString: string) => {
     const keys = keyString
-      .split("+")
+      .split('+')
       .map((key) => key.trim())
-      .filter((key) => key !== "");
+      .filter((key) => key !== '');
     return keys;
   };
 
   const redirect = (route: string) => {
-    window.open(route, "_blank");
+    window.open(route, '_blank');
   };
 </script>
 
 <template>
-  <GButton @click="showDialog = !showDialog" class="aspect-square">
+  <GButton
+    @click="showDialog = !showDialog"
+    class="aspect-square"
+  >
     <CIcon icon="help"></CIcon>
   </GButton>
 
-  <GDialog v-model:visible="showDialog" header="Help">
+  <GDialog
+    v-model:visible="showDialog"
+    header="Help"
+  >
     <GWell class="mb-6">
       <GButton
         @click="

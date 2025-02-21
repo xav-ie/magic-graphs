@@ -1,12 +1,12 @@
 <script setup lang="ts">
-  import type { AutoGenerateGraphOptions } from "./types";
-  import { toRef } from "vue";
-  import CIcon from "@ui/core/Icon.vue";
-  import CPopover from "@ui/core/Popover.vue";
-  import GWell from "@ui/graph/GWell.vue";
-  import GButton from "@ui/graph/button/GButton.vue";
-  import InputRange from "@ui/InputRange.vue";
-  import { AUTO_GENERATE_GRAPH_DEFAULTS } from "./types";
+  import type { AutoGenerateGraphOptions } from './types';
+  import { toRef } from 'vue';
+  import CIcon from '@ui/core/Icon.vue';
+  import CPopover from '@ui/core/Popover.vue';
+  import GWell from '@ui/graph/GWell.vue';
+  import GButton from '@ui/graph/button/GButton.vue';
+  import InputRange from '@ui/InputRange.vue';
+  import { AUTO_GENERATE_GRAPH_DEFAULTS } from './types';
 
   const props = defineProps<{
     options: AutoGenerateGraphOptions;
@@ -104,15 +104,17 @@
       >
       <h2 class="font-bold text-sm">
         Allow Self Referencing Nodes?
-        <input 
-          v-model="options.allowUTurnEdges" 
-          type="checkbox">
+        <input
+          v-model="options.allowUTurnEdges"
+          type="checkbox"
+        />
       </h2>
       <h2 class="font-bold text-sm">
         Allow Bidirecional Edges?
-        <input 
-          v-model="options.allowBidirectionalEdges" 
-          type="checkbox">
+        <input
+          v-model="options.allowBidirectionalEdges"
+          type="checkbox"
+        />
       </h2>
     </GWell>
   </CPopover>

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import InputCheckbox from '@ui/InputCheckbox.vue';
-import type { GraphPlaygroundControls } from './types';
-import { capitalize } from '@utils/string';
+  import InputCheckbox from '@ui/InputCheckbox.vue';
+  import type { GraphPlaygroundControls } from './types';
+  import { capitalize } from '@utils/string';
 
-defineProps<{
-  playgroundControls: GraphPlaygroundControls;
-}>();
+  defineProps<{
+    playgroundControls: GraphPlaygroundControls;
+  }>();
 </script>
 
 <template>

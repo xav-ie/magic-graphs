@@ -1,4 +1,4 @@
-import type { ProductInfo } from 'src/types'
+import type { ProductInfo } from 'src/types';
 
 const info: ProductInfo = {
   route: {
@@ -14,6 +14,6 @@ const info: ProductInfo = {
     thumbnail: '/products/thumbnails/graph-playground.png',
     category: 'developer tools',
   },
-}
+};
 
-export default info
+export default info;

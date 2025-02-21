@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { Trace } from "../types";
+  import type { Trace } from '../types';
   defineProps<{
     trace: Trace;
     error: string;
@@ -7,7 +7,9 @@
 </script>
 
 <template>
-  <div class="h-full w-full rounded-t-2xl flex items-center gap-4 bg-gray-900 text-white pl-8">
+  <div
+    class="h-full w-full rounded-t-2xl flex items-center gap-4 bg-gray-900 text-white pl-8"
+  >
     <h1
       v-if="error"
       class="text-red-500 text-2xl font-bold"

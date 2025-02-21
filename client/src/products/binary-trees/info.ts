@@ -1,5 +1,5 @@
-import type { ProductInfo } from 'src/types'
-import state from './state'
+import type { ProductInfo } from 'src/types';
+import state from './state';
 
 const info: ProductInfo = {
   route: {
@@ -16,6 +16,6 @@ const info: ProductInfo = {
     category: 'data structures',
   },
   state,
-}
+};
 
-export default info
+export default info;

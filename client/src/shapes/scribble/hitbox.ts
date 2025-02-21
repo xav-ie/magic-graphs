@@ -1,8 +1,8 @@
-import type { Coordinate, BoundingBox } from "@shape/types";
-import { SCRIBBLE_DEFAULTS, type Scribble } from ".";
-import { rectEfficientHitbox, rectHitbox } from "@shape/rect/hitbox";
-import { lineEfficientHitbox } from "@shape/line/hitbox";
-import { circleEfficientHitbox, circleHitbox } from "@shape/circle/hitbox";
+import type { Coordinate, BoundingBox } from '@shape/types';
+import { SCRIBBLE_DEFAULTS, type Scribble } from '.';
+import { rectEfficientHitbox, rectHitbox } from '@shape/rect/hitbox';
+import { lineEfficientHitbox } from '@shape/line/hitbox';
+import { circleEfficientHitbox, circleHitbox } from '@shape/circle/hitbox';
 
 /**
  * @param point - the point to check if it is in the scribble bounding box
@@ -11,7 +11,7 @@ import { circleEfficientHitbox, circleHitbox } from "@shape/circle/hitbox";
 export const scribbleHitbox = (scribble: Scribble) => (point: Coordinate) => {
   const { type, points, brushWeight } = { ...SCRIBBLE_DEFAULTS, ...scribble };
 
-  if (type === "erase") return false;
+  if (type === 'erase') return false;
 
   const { at, width, height } = getScribbleBoundingBox(scribble)(); // first check boundingbox for efficiency
 
@@ -73,7 +73,7 @@ export const getScribbleBoundingBox = (scribble: Scribble) => () => {
 
 export const scribbleEfficientHitbox =
   (scribble: Scribble) => (boxToCheck: BoundingBox) => {
-    if (scribble.type === "erase") return false;
+    if (scribble.type === 'erase') return false;
 
     const { at, width, height } = getScribbleBoundingBox(scribble)();
 

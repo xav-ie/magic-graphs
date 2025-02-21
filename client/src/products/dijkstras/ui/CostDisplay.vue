@@ -1,13 +1,13 @@
 <script setup lang="ts">
-  import type { GNode } from "@graph/types";
-  import { nonNullGraph as graph } from "@graph/global";
-  import colors from "@colors";
-  import { SIM_COLORS, INF_STR } from "../sim/theme";
+  import type { GNode } from '@graph/types';
+  import { nonNullGraph as graph } from '@graph/global';
+  import colors from '@colors';
+  import { SIM_COLORS, INF_STR } from '../sim/theme';
 
   const { getTheme, focus } = graph.value;
   const { isFocused } = focus;
 
-  const getNodeCosts = (node: GNode) => getTheme("nodeText", node);
+  const getNodeCosts = (node: GNode) => getTheme('nodeText', node);
 
   const costToColor = (strCost: string) => {
     if (strCost === INF_STR) return colors.RED_800;
@@ -21,24 +21,27 @@
     return colors.RED_600;
   };
 
-  const isExplored = (node: GNode) => getTheme("nodeBorderColor", node) === SIM_COLORS.EXPLORED;
-  const isQueued = (node: GNode) => getTheme("nodeBorderColor", node) === SIM_COLORS.QUEUED;
-  const isSource = (node: GNode) => getTheme("nodeBorderColor", node) === SIM_COLORS.SOURCE;
+  const isExplored = (node: GNode) =>
+    getTheme('nodeBorderColor', node) === SIM_COLORS.EXPLORED;
+  const isQueued = (node: GNode) =>
+    getTheme('nodeBorderColor', node) === SIM_COLORS.QUEUED;
+  const isSource = (node: GNode) =>
+    getTheme('nodeBorderColor', node) === SIM_COLORS.SOURCE;
 
   const exploreStateColor = (node: GNode) => {
     if (isExplored(node)) return SIM_COLORS.EXPLORED;
     if (isQueued(node)) return SIM_COLORS.QUEUED;
     if (isSource(node)) return SIM_COLORS.SOURCE;
-    if (isFocused(node.id)) return getTheme("nodeBorderColor", node);
+    if (isFocused(node.id)) return getTheme('nodeBorderColor', node);
     return colors.GRAY_600;
   };
 
   const exploreStateText = (node: GNode) => {
-    if (isExplored(node)) return "Explored";
-    if (isQueued(node)) return "Queued";
-    if (isSource(node)) return "Source";
-    if (isFocused(node.id)) return "Highlighted";
-    return "Unexplored";
+    if (isExplored(node)) return 'Explored';
+    if (isQueued(node)) return 'Queued';
+    if (isSource(node)) return 'Source';
+    if (isFocused(node.id)) return 'Highlighted';
+    return 'Unexplored';
   };
 </script>
 

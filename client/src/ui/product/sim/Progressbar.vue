@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import { PROGRESS_DEFAULTS } from "./progressTypes";
-  import type { ProgressOptions } from "./progressTypes";
-  import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
+  import { computed } from 'vue';
+  import { PROGRESS_DEFAULTS } from './progressTypes';
+  import type { ProgressOptions } from './progressTypes';
+  import { useNonNullGraphColors } from '@graph/themes/useGraphColors';
 
   const colors = useNonNullGraphColors();
 
@@ -24,7 +24,7 @@
   const getStepFromMouseEvent = (event: MouseEvent) => {
     const progressBar = event.currentTarget;
     if (!(progressBar instanceof HTMLElement))
-      throw new Error("Invalid target");
+      throw new Error('Invalid target');
 
     const clickPosition = event.offsetX;
     const progressBarWidth = progressBar.offsetWidth;

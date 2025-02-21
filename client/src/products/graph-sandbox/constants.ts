@@ -1,16 +1,16 @@
-import colors from "@utils/colors";
+import colors from '@utils/colors';
 
 /**
  * the theme id of the markup menu
  */
-export const MARKUP_USETHEME_ID = "markup";
+export const MARKUP_USETHEME_ID = 'markup';
 
 /**
  * size options for nodes and edges in the markup menu
  */
-export const MARKUP_SIZES = ["XS", "SM", "MD", "LG", "XL"] as const;
+export const MARKUP_SIZES = ['XS', 'SM', 'MD', 'LG', 'XL'] as const;
 
-export const DEFAULT_MARKUP_SIZE = "MD";
+export const DEFAULT_MARKUP_SIZE = 'MD';
 
 /**
  * color options for nodes and edges in the markup menu
@@ -33,7 +33,7 @@ export const SIZE_TO_RADIUS = {
   SM: 30,
   MD: 35,
   LG: 40,
-  XL: 45
+  XL: 45,
 } as const;
 
 /**
@@ -44,5 +44,5 @@ export const SIZE_TO_WIDTH = {
   SM: 8,
   MD: 10,
   LG: 12,
-  XL: 14
+  XL: 14,
 } as const;

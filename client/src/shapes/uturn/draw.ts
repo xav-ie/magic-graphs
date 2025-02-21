@@ -1,10 +1,10 @@
-import { rotatePoint } from "@shape/helpers";
-import { drawLineWithCtx } from "@shape/line/draw";
-import { UTURN_DEFAULTS } from ".";
-import type { UTurn } from ".";
-import { drawArrowWithCtx } from "@shape/arrow/draw";
-import { getColorAtPercentage } from "@shape/helpers";
-import type { GradientStop } from "@shape/types";
+import { rotatePoint } from '@shape/helpers';
+import { drawLineWithCtx } from '@shape/line/draw';
+import { UTURN_DEFAULTS } from '.';
+import type { UTurn } from '.';
+import { drawArrowWithCtx } from '@shape/arrow/draw';
+import { getColorAtPercentage } from '@shape/helpers';
+import type { GradientStop } from '@shape/types';
 
 export const drawUTurnWithCtx = (options: UTurn) => {
   const {
@@ -29,7 +29,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
       y: at.y - spacing,
     },
     at,
-    rotation
+    rotation,
   );
 
   const longLegTo = rotatePoint(
@@ -38,7 +38,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
       y: at.y - spacing,
     },
     at,
-    rotation
+    rotation,
   );
 
   const shortLegFrom = rotatePoint(
@@ -47,7 +47,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
       y: at.y + spacing,
     },
     at,
-    rotation
+    rotation,
   );
 
   const shortLegTo = rotatePoint(
@@ -56,7 +56,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
       y: at.y + spacing,
     },
     at,
-    rotation
+    rotation,
   );
 
   const arcAt = rotatePoint(
@@ -65,7 +65,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
       y: at.y,
     },
     at,
-    rotation
+    rotation,
   );
 
   let lineGradient: GradientStop[] = [];
@@ -77,25 +77,27 @@ export const drawUTurnWithCtx = (options: UTurn) => {
 
     const gradientColorAtCircleStart = getColorAtPercentage(
       gradientStops,
-      upDistance / totalLength
+      upDistance / totalLength,
     );
     const gradientColorAtCircleEnd = getColorAtPercentage(
       gradientStops,
-      (totalLength - downDistance) / totalLength
+      (totalLength - downDistance) / totalLength,
     );
-  
+
     lineGradient = [
-      ...gradientStops.filter((stop) => stop.offset <= upDistance / totalLength),
+      ...gradientStops.filter(
+        (stop) => stop.offset <= upDistance / totalLength,
+      ),
       { offset: 1, color: gradientColorAtCircleStart },
     ];
-  
+
     circleGradient = [
       { offset: 0, color: gradientColorAtCircleStart },
       ...gradientStops
         .filter(
           (stop) =>
             stop.offset >= upDistance / totalLength &&
-            stop.offset <= (totalLength - downDistance) / totalLength
+            stop.offset <= (totalLength - downDistance) / totalLength,
         )
         .map((stop) => ({
           offset:
@@ -105,12 +107,12 @@ export const drawUTurnWithCtx = (options: UTurn) => {
         })),
       { offset: 1, color: gradientColorAtCircleEnd },
     ];
-  
+
     arrowGradient = [
       { offset: 0, color: gradientColorAtCircleEnd },
       ...gradientStops
         .filter(
-          (stop) => stop.offset >= (totalLength - downDistance) / totalLength
+          (stop) => stop.offset >= (totalLength - downDistance) / totalLength,
         )
         .map((stop) => ({
           offset:
@@ -119,7 +121,6 @@ export const drawUTurnWithCtx = (options: UTurn) => {
           color: stop.color,
         })),
     ];
-
   }
 
   const drawLongShaft = drawLineWithCtx({
@@ -169,7 +170,7 @@ export const drawUTurnWithCtx = (options: UTurn) => {
       spacing,
       Math.PI / 2 + rotation + 0.01,
       -Math.PI / 2 + rotation - 0.01,
-      true
+      true,
     );
     ctx.lineWidth = lineWidth;
     ctx.stroke();

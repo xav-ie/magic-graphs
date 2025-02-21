@@ -8,21 +8,23 @@ type Options = {
   /**
    * the range of numbers to interpolate between.
    */
-  range: [number, number],
+  range: [number, number];
   /**
    * the range of colors to interpolate between.
    * if only a single color is provided, the color will be interpolated between the provided color
    * and a darker version of the color.
    */
-  color: Color | [Color, Color]
+  color: Color | [Color, Color];
 };
 
 export const numberToColor = (options: Options) => {
   const [min, max] = options.range;
-  const startColor = Array.isArray(options.color) ? options.color[0] : options.color;
-  const endColor = Array.isArray(options.color) ? options.color[1] : tinycolor(options.color)
-    .darken(50)
-    .toString();
+  const startColor = Array.isArray(options.color)
+    ? options.color[0]
+    : options.color;
+  const endColor = Array.isArray(options.color)
+    ? options.color[1]
+    : tinycolor(options.color).darken(50).toString();
 
   const getColor = interpolate(startColor, endColor);
 
@@ -32,4 +34,4 @@ export const numberToColor = (options: Options) => {
     if (t > 1) return endColor;
     return getColor(t);
   };
-}
+};

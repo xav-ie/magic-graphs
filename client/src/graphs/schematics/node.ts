@@ -1,11 +1,11 @@
-import type { ThemeGetter } from '@graph/themes/getThemeResolver'
-import type { GNode, SchemaItem } from '@graph/types'
-import { square } from '@shapes'
-import colors from '@colors'
-import type { GraphAnimationController } from '@graph/animationController'
-import { nodeCircle } from './nodeCircle'
+import type { ThemeGetter } from '@graph/themes/getThemeResolver';
+import type { GNode, SchemaItem } from '@graph/types';
+import { square } from '@shapes';
+import colors from '@colors';
+import type { GraphAnimationController } from '@graph/animationController';
+import { nodeCircle } from './nodeCircle';
 
-export type SupportedNodeShapes = 'circle' | 'square'
+export type SupportedNodeShapes = 'circle' | 'square';
 
 export const getNodeSchematic = (
   node: GNode,
@@ -14,22 +14,22 @@ export const getNodeSchematic = (
 ): Omit<SchemaItem, 'priority'> | undefined => {
   const circle = nodeCircle({
     controller: animationController,
-    id: node.id
-  })
+    id: node.id,
+  });
 
-  const color = getTheme('nodeColor', node)
-  const borderColor = getTheme('nodeBorderColor', node)
-  const size = getTheme('nodeSize', node)
-  const borderWidth = getTheme('nodeBorderWidth', node)
-  const text = getTheme('nodeText', node)
-  const textSize = getTheme('nodeTextSize', node)
-  const textColor = getTheme('nodeTextColor', node)
-  const shape = getTheme('nodeShape', node)
+  const color = getTheme('nodeColor', node);
+  const borderColor = getTheme('nodeBorderColor', node);
+  const size = getTheme('nodeSize', node);
+  const borderWidth = getTheme('nodeBorderWidth', node);
+  const text = getTheme('nodeText', node);
+  const textSize = getTheme('nodeTextSize', node);
+  const textColor = getTheme('nodeTextColor', node);
+  const shape = getTheme('nodeShape', node);
 
   const circleShape = circle({
     at: {
       x: node.x,
-      y: node.y
+      y: node.y,
     },
     radius: size,
     color: color,
@@ -44,14 +44,14 @@ export const getNodeSchematic = (
         fontWeight: 'bold',
         color: textColor,
       },
-      color: colors.TRANSPARENT
-    }
-  })
+      color: colors.TRANSPARENT,
+    },
+  });
 
   const squareShape = square({
     at: {
       x: node.x - size,
-      y: node.y - size
+      y: node.y - size,
     },
     size: size * 2,
     color: color,
@@ -66,13 +66,13 @@ export const getNodeSchematic = (
         fontWeight: 'bold',
         color: textColor,
       },
-      color: colors.TRANSPARENT
-    }
-  })
+      color: colors.TRANSPARENT,
+    },
+  });
 
   return {
     shape: shape === 'circle' ? circleShape : squareShape,
     id: node.id,
     graphType: 'node',
-  }
-}
+  };
+};

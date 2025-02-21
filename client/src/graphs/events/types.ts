@@ -1,6 +1,6 @@
-import type { DeepPartial, DeepReadonly } from "ts-essentials";
-import type { GEdge, GNode } from "@graph/types";
-import type { GraphSettings } from "@graph/settings";
+import type { DeepPartial, DeepReadonly } from 'ts-essentials';
+import type { GEdge, GNode } from '@graph/types';
+import type { GraphSettings } from '@graph/settings';
 import type {
   AddNodeOptions,
   RemoveNodeOptions,
@@ -8,16 +8,16 @@ import type {
   AddEdgeOptions,
   RemoveEdgeOptions,
   EditEdgeLabelOptions,
-} from "@graph/base/types";
-import type { NodeAnchor } from "@graph/plugins/anchors/types";
-import type { GraphThemeName } from "@graph/themes";
+} from '@graph/base/types';
+import type { NodeAnchor } from '@graph/plugins/anchors/types';
+import type { GraphThemeName } from '@graph/themes';
 import type {
   HistoryRecord,
   RedoHistoryOptions,
   UndoHistoryOptions,
-} from "@graph/plugins/history/types";
-import type { BoundingBox, Coordinate } from "@shape/types";
-import type { GraphMouseEvent } from "@graph/base/types";
+} from '@graph/plugins/history/types';
+import type { BoundingBox, Coordinate } from '@shape/types';
+import type { GraphMouseEvent } from '@graph/base/types';
 
 export type BaseGraphEventMap = {
   /**
@@ -38,7 +38,7 @@ export type BaseGraphEventMap = {
    */
   onBulkNodeAdded: (
     nodes: Readonly<GNode[]>,
-    options: DeepReadonly<AddNodeOptions>
+    options: DeepReadonly<AddNodeOptions>,
   ) => void;
   /**
    * when a node is {@link Graph.removeNode | removed} from the graph
@@ -46,7 +46,7 @@ export type BaseGraphEventMap = {
   onNodeRemoved: (
     removedNode: GNode,
     removedEdges: Readonly<GEdge[]>,
-    options: DeepReadonly<RemoveNodeOptions>
+    options: DeepReadonly<RemoveNodeOptions>,
   ) => void;
   /**
    * when multiple nodes are removed from the graph as a group
@@ -54,7 +54,7 @@ export type BaseGraphEventMap = {
   onBulkNodeRemoved: (
     removedNodes: Readonly<GNode[]>,
     removedEdges: Readonly<GEdge[]>,
-    options: DeepReadonly<RemoveNodeOptions>
+    options: DeepReadonly<RemoveNodeOptions>,
   ) => void;
   /**
    * when a node is {@link Graph.moveNode | moved} to a new position on the canvas
@@ -65,7 +65,7 @@ export type BaseGraphEventMap = {
    */
   onBulkNodeMoved: (
     nodes: Readonly<GNode[]>,
-    options: DeepReadonly<MoveNodeOptions>
+    options: DeepReadonly<MoveNodeOptions>,
   ) => void;
   /**
    * when an edge is {@link Graph.addEdge | added} to the graph
@@ -76,18 +76,21 @@ export type BaseGraphEventMap = {
    */
   onBulkEdgeAdded: (
     edges: Readonly<GEdge[]>,
-    options: DeepReadonly<AddEdgeOptions>
+    options: DeepReadonly<AddEdgeOptions>,
   ) => void;
   /**
    * when an edge is {@link Graph.removeEdge | removed} from the graph
    */
-  onEdgeRemoved: (edge: GEdge, options: DeepReadonly<RemoveEdgeOptions>) => void;
+  onEdgeRemoved: (
+    edge: GEdge,
+    options: DeepReadonly<RemoveEdgeOptions>,
+  ) => void;
   /**
    * when multiple edges are removed from the graph as a group
    */
   onBulkEdgeRemoved: (
     edges: Readonly<GEdge[]>,
-    options: DeepReadonly<RemoveEdgeOptions>
+    options: DeepReadonly<RemoveEdgeOptions>,
   ) => void;
   /**
    * when an edge's text label is {@link Graph.editEdgeLabel | edited}
@@ -95,7 +98,7 @@ export type BaseGraphEventMap = {
   onEdgeLabelEdited: (
     edge: GEdge,
     oldLabel: GEdge['label'],
-    options: DeepReadonly<EditEdgeLabelOptions>
+    options: DeepReadonly<EditEdgeLabelOptions>,
   ) => void;
   /**
    * when the canvas is repainted
@@ -108,7 +111,10 @@ export type BaseGraphEventMap = {
    * when the node that the user is hovering over changes.
    * undefined if the user is not hovering over a node
    */
-  onNodeHoverChange: (newNode: GNode | undefined, oldNode: GNode | undefined) => void;
+  onNodeHoverChange: (
+    newNode: GNode | undefined,
+    oldNode: GNode | undefined,
+  ) => void;
   /**
    * when the graph is {@link Graph.load | loaded} with new nodes and edges.
    */
@@ -157,7 +163,7 @@ export type BaseGraphEventMap = {
    * when the {@link Graph.settings | settings} of the graph have changed
    */
   onSettingsChange: (diff: DeepPartial<GraphSettings>) => void;
-}
+};
 
 export type HistoryGraphEventMap = {
   /**
@@ -165,16 +171,16 @@ export type HistoryGraphEventMap = {
    */
   onUndo: (
     historyRecord: DeepReadonly<HistoryRecord>,
-    options: DeepReadonly<UndoHistoryOptions>
+    options: DeepReadonly<UndoHistoryOptions>,
   ) => void;
   /**
    * when the redo action is triggered
    */
   onRedo: (
     historyRecord: DeepReadonly<HistoryRecord>,
-    options: DeepReadonly<RedoHistoryOptions>
+    options: DeepReadonly<RedoHistoryOptions>,
   ) => void;
-}
+};
 
 export type FocusGraphEventMap = {
   /**
@@ -182,9 +188,9 @@ export type FocusGraphEventMap = {
    */
   onFocusChange: (
     newItemIds: Readonly<Set<string>>,
-    oldItemIds: Readonly<Set<string>>
+    oldItemIds: Readonly<Set<string>>,
   ) => void;
-}
+};
 
 export type DraggableGraphEventMap = {
   /**
@@ -195,7 +201,7 @@ export type DraggableGraphEventMap = {
    * when the user drops a node
    */
   onNodeDrop: (node: GNode) => void;
-}
+};
 
 export type NodeAnchorGraphEventMap = {
   /**
@@ -203,16 +209,16 @@ export type NodeAnchorGraphEventMap = {
    */
   onNodeAnchorDragStart: (
     parentNode: GNode,
-    nodeAnchor: Readonly<NodeAnchor>
+    nodeAnchor: Readonly<NodeAnchor>,
   ) => void;
   /**
    * when the user drops a node anchor
    */
   onNodeAnchorDrop: (
     parentNode: GNode,
-    nodeAnchor: Readonly<NodeAnchor>
+    nodeAnchor: Readonly<NodeAnchor>,
   ) => void;
-}
+};
 
 export type MarqueeGraphEventMap = {
   /**
@@ -220,14 +226,14 @@ export type MarqueeGraphEventMap = {
    */
   onGroupDragStart: (
     nodes: Readonly<GNode[]>,
-    startingCoordinates: Readonly<Coordinate>
+    startingCoordinates: Readonly<Coordinate>,
   ) => void;
   /**
    * when the user drops a marquee drag
    */
   onGroupDrop: (
     nodes: Readonly<GNode[]>,
-    endCoordinates: Readonly<Coordinate>
+    endCoordinates: Readonly<Coordinate>,
   ) => void;
   /**
    * when the user starts a marquee selection
@@ -237,18 +243,16 @@ export type MarqueeGraphEventMap = {
    * when the user ends a marquee selection
    */
   onMarqueeEndSelection: (marqueeBox: Readonly<BoundingBox>) => void;
-}
+};
 
-export type AnnotationGraphEventMap = {}
+export type AnnotationGraphEventMap = {};
 
-export type PersistentGraphEventMap = {}
+export type PersistentGraphEventMap = {};
 
-export type GraphEventMap = (
-  BaseGraphEventMap &
+export type GraphEventMap = BaseGraphEventMap &
   HistoryGraphEventMap &
   FocusGraphEventMap &
   DraggableGraphEventMap &
   NodeAnchorGraphEventMap &
   MarqueeGraphEventMap &
-  PersistentGraphEventMap
-)
+  PersistentGraphEventMap;

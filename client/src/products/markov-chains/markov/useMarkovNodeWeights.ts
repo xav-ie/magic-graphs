@@ -1,6 +1,6 @@
-import { computed } from "vue"
-import { Fraction } from "mathjs";
-import type { GNode, Graph } from "@graph/types"
+import { computed } from 'vue';
+import { Fraction } from 'mathjs';
+import type { GNode, Graph } from '@graph/types';
 
 /**
  * a map of node ids to the sum of their outgoing edge weights
@@ -12,25 +12,29 @@ export type NodeIdToOutgoingWeight = Map<GNode['id'], Fraction>;
  * for a markov chain
  */
 export const useMarkovNodeWeights = (graph: Graph) => {
-  const { getOutboundEdges, getEdgeWeightFraction } = graph.helpers
+  const { getOutboundEdges, getEdgeWeightFraction } = graph.helpers;
 
   const nodeIdToOutgoingWeight = computed(() => {
     return graph.nodes.value.reduce<NodeIdToOutgoingWeight>((acc, node) => {
       const outgoingEdges = getOutboundEdges(node.id);
-      const weights = outgoingEdges.map((edge) => getEdgeWeightFraction(edge.id));
+      const weights = outgoingEdges.map((edge) =>
+        getEdgeWeightFraction(edge.id),
+      );
 
       const sum = weights.reduce((acc, curr) => acc.add(curr), new Fraction(0));
       acc.set(node.id, sum);
 
       return acc;
     }, new Map());
-  })
+  });
 
   const illegalNodeIds = computed(() => {
     return new Set(
       graph.nodes.value
-        .filter((node) => nodeIdToOutgoingWeight.value.get(node.id)?.valueOf() !== 1)
-        .map((node) => node.id)
+        .filter(
+          (node) => nodeIdToOutgoingWeight.value.get(node.id)?.valueOf() !== 1,
+        )
+        .map((node) => node.id),
     );
   });
 
@@ -44,6 +48,6 @@ export const useMarkovNodeWeights = (graph: Graph) => {
      */
     illegalNodeIds,
   };
-}
+};
 
-export type MarkovNodeWeights = ReturnType<typeof useMarkovNodeWeights>
+export type MarkovNodeWeights = ReturnType<typeof useMarkovNodeWeights>;

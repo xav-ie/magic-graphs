@@ -1,6 +1,6 @@
-import { BASICS_STEPS } from "@graph/tutorials/sequences/basics";
-import type { Graph } from "@graph/types";
-import type { TutorialSequence } from "@graph/tutorials/types";
+import { BASICS_STEPS } from '@graph/tutorials/sequences/basics';
+import type { Graph } from '@graph/types';
+import type { TutorialSequence } from '@graph/tutorials/types';
 
 /**
  * pre-defined sequence for basic graph editing.
@@ -28,13 +28,15 @@ const BASICS_SEQUENCE: (graph: Graph) => TutorialSequence = (graph: Graph) => {
     // createSelfDirectedEdge,
     editEdgeWeight,
     removeElement,
-    goodbye
-  ]
-}
+    goodbye,
+  ];
+};
 
 /**
  * contains pre-defined sequences for common use cases
  */
-export const SEQUENCES: (graph: Graph) => Record<string, TutorialSequence> = (graph: Graph) => ({
-  basics: BASICS_SEQUENCE(graph)
+export const SEQUENCES: (graph: Graph) => Record<string, TutorialSequence> = (
+  graph: Graph,
+) => ({
+  basics: BASICS_SEQUENCE(graph),
 });

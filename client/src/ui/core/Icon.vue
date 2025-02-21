@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import { computed } from "vue";
+  import { computed } from 'vue';
 
   const props = defineProps<{
     icon: string;
   }>();
 
-  const defaultClasses = ["select-none"];
+  const defaultClasses = ['select-none'];
 
   const iconClass = computed(() => {
     return `mdi mdi-${props.icon}`;

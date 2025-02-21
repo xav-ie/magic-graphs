@@ -1,8 +1,8 @@
-import { computed } from "vue";
-import type { Ref } from "vue";
-import type { GNode, Graph } from "@graph/types";
-import type { AdjacencyList } from "@graph/useAdjacencyList";
-import { lowestPrimeFactor, gcd } from "@utils/math";
+import { computed } from 'vue';
+import type { Ref } from 'vue';
+import type { GNode, Graph } from '@graph/types';
+import type { AdjacencyList } from '@graph/useAdjacencyList';
+import { lowestPrimeFactor, gcd } from '@utils/math';
 
 /**
  * because we dont know how many possible paths
@@ -22,11 +22,14 @@ const MAX_VISITATIONS = 100;
  * @param adjacencyMap the adjacency map of the component
  * @returns an array of the number of steps it took for a path to return to the start node
  */
-const getStepsToStart = (adjacencyList: AdjacencyList, startNodeId: GNode['id']) => {
+const getStepsToStart = (
+  adjacencyList: AdjacencyList,
+  startNodeId: GNode['id'],
+) => {
   /**
    * a queue of nodes to visit and the number of steps it took to get there
    */
-  const queue: [GNode['id'], number][] = [[startNodeId, 0]]
+  const queue: [GNode['id'], number][] = [[startNodeId, 0]];
 
   /**
    * keeps tabs on the number of times a node has been visited
@@ -41,7 +44,7 @@ const getStepsToStart = (adjacencyList: AdjacencyList, startNodeId: GNode['id'])
    *
    * [1, 2, 3] means there are 3 paths that took 1, 2, and 3 steps
    */
-  const stepsToStart = new Set<number>()
+  const stepsToStart = new Set<number>();
 
   while (queue.length > 0) {
     const [nodeId, steps] = queue.shift()!;
@@ -63,9 +66,12 @@ const getStepsToStart = (adjacencyList: AdjacencyList, startNodeId: GNode['id'])
   }
 
   return stepsToStart;
-}
+};
 
-const getPeriod = (adjacencyList: AdjacencyList, recurrentClass: Set<GNode['id']>) => {
+const getPeriod = (
+  adjacencyList: AdjacencyList,
+  recurrentClass: Set<GNode['id']>,
+) => {
   if (recurrentClass.size === 1) return 1;
 
   const startNodeId = recurrentClass.values().next().value;
@@ -77,7 +83,7 @@ const getPeriod = (adjacencyList: AdjacencyList, recurrentClass: Set<GNode['id']
 
   const period = Array.from(stepsToStart).reduce((acc, curr) => gcd(acc, curr));
   return lowestPrimeFactor(period);
-}
+};
 
 /**
  * reactive periodicity of a markov chain
@@ -89,20 +95,20 @@ const getPeriod = (adjacencyList: AdjacencyList, recurrentClass: Set<GNode['id']
  */
 export const useMarkovPeriodicity = (
   graph: Graph,
-  recurrentClasses: Ref<Set<GNode['id']>[]>
+  recurrentClasses: Ref<Set<GNode['id']>[]>,
 ) => {
-  const { adjacencyList } = graph.adjacencyList
+  const { adjacencyList } = graph.adjacencyList;
 
   const recurrentClassPeriods = computed(() => {
     // console.log(getPeriod(adjacencyList.value, recurrentClasses.value[0]));
-    const res = recurrentClasses
-      .value
-      .map(recurrentClass => getPeriod(adjacencyList.value, recurrentClass));
+    const res = recurrentClasses.value.map((recurrentClass) =>
+      getPeriod(adjacencyList.value, recurrentClass),
+    );
     return res;
   });
 
   const isPeriodic = computed(() => {
-    return recurrentClassPeriods.value.some(period => period > 1);
+    return recurrentClassPeriods.value.some((period) => period > 1);
   });
 
   return {
@@ -114,8 +120,8 @@ export const useMarkovPeriodicity = (
     /**
      * whether or not the markov chain in the graph is periodic
      */
-    isPeriodic
-  }
-}
+    isPeriodic,
+  };
+};
 
 export type MarkovPeriodicity = ReturnType<typeof useMarkovPeriodicity>;

@@ -1,32 +1,32 @@
-import type { DeepReadonly } from "ts-essentials"
-import type { Graph } from "@graph/types"
-import { useNodeEdgeTheme } from "./theme/useNodeEdgeThemer"
-import { CANT_RUN_REASONS } from "./constants"
-import type { Reason } from "./types"
-import { useCycleColorizer } from "@product/graph-sandbox/ui/GraphInfoMenu/useCycleColorizer"
+import type { DeepReadonly } from 'ts-essentials';
+import type { Graph } from '@graph/types';
+import { useNodeEdgeTheme } from './theme/useNodeEdgeThemer';
+import { CANT_RUN_REASONS } from './constants';
+import type { Reason } from './types';
+import { useCycleColorizer } from '@product/graph-sandbox/ui/GraphInfoMenu/useCycleColorizer';
 
 /**
  * determines if the simulation can run.
  * returning a {@link Reason} fails the check for `Reason`, otherwise it passes.
  * simulations must pass all checks to clear {@link SimulationGuard.check}
  */
-export type SimulationGuardCheck = () => DeepReadonly<Reason> | undefined
+export type SimulationGuardCheck = () => DeepReadonly<Reason> | undefined;
 
 /**
  * a builder to create a guard for simulations to ensure the graph is compatible
  * with the simulation before running it
  */
 export class SimulationGuard {
-  graph: Graph
-  checks: SimulationGuardCheck[] = []
+  graph: Graph;
+  checks: SimulationGuardCheck[] = [];
 
-  color: ReturnType<typeof useNodeEdgeTheme>
-  cycle: ReturnType<typeof useCycleColorizer>
+  color: ReturnType<typeof useNodeEdgeTheme>;
+  cycle: ReturnType<typeof useCycleColorizer>;
 
   constructor(g: Graph) {
-    this.graph = g
-    this.color = useNodeEdgeTheme(this.graph)
-    this.cycle = useCycleColorizer(this.graph)
+    this.graph = g;
+    this.color = useNodeEdgeTheme(this.graph);
+    this.cycle = useCycleColorizer(this.graph);
   }
 
   /**
@@ -34,15 +34,15 @@ export class SimulationGuard {
    */
   weighted() {
     const isWeighted = () => {
-      if (this.graph.settings.value.displayEdgeLabels) return
+      if (this.graph.settings.value.displayEdgeLabels) return;
       return {
         themer: this.color.edges(),
-        ...CANT_RUN_REASONS.NOT_WEIGHTED
-      }
-    }
+        ...CANT_RUN_REASONS.NOT_WEIGHTED,
+      };
+    };
 
-    this.checks.push(isWeighted)
-    return this
+    this.checks.push(isWeighted);
+    return this;
   }
 
   /**
@@ -50,15 +50,15 @@ export class SimulationGuard {
    */
   unweighted() {
     const isUnweighted = () => {
-      if (!this.graph.settings.value.displayEdgeLabels) return
+      if (!this.graph.settings.value.displayEdgeLabels) return;
       return {
         themer: this.color.edges(),
         ...CANT_RUN_REASONS.NOT_UNWEIGHTED,
-      }
-    }
+      };
+    };
 
-    this.checks.push(isUnweighted)
-    return this
+    this.checks.push(isUnweighted);
+    return this;
   }
 
   /**
@@ -66,15 +66,15 @@ export class SimulationGuard {
    */
   directed() {
     const isDirected = () => {
-      if (this.graph.settings.value.isGraphDirected) return
+      if (this.graph.settings.value.isGraphDirected) return;
       return {
         themer: this.color.edges(),
         ...CANT_RUN_REASONS.NOT_DIRECTED,
-      }
-    }
+      };
+    };
 
-    this.checks.push(isDirected)
-    return this
+    this.checks.push(isDirected);
+    return this;
   }
 
   /**
@@ -82,15 +82,15 @@ export class SimulationGuard {
    */
   undirected() {
     const isUndirected = () => {
-      if (!this.graph.settings.value.isGraphDirected) return
+      if (!this.graph.settings.value.isGraphDirected) return;
       return {
         themer: this.color.edges(),
         ...CANT_RUN_REASONS.NOT_UNDIRECTED,
-      }
-    }
+      };
+    };
 
-    this.checks.push(isUndirected)
-    return this
+    this.checks.push(isUndirected);
+    return this;
   }
 
   /**
@@ -99,15 +99,15 @@ export class SimulationGuard {
    */
   minNodes(minNodes: number) {
     const hasNodes = () => {
-      if (this.graph.nodes.value.length >= minNodes) return
+      if (this.graph.nodes.value.length >= minNodes) return;
       return {
         themer: this.color.nodes(),
         ...CANT_RUN_REASONS.NOT_ENOUGH_NODES(minNodes),
-      }
-    }
+      };
+    };
 
-    this.checks.push(hasNodes)
-    return this
+    this.checks.push(hasNodes);
+    return this;
   }
 
   /**
@@ -116,15 +116,15 @@ export class SimulationGuard {
    */
   minEdges(minEdges: number) {
     const hasEdges = () => {
-      if (this.graph.edges.value.length >= minEdges) return
+      if (this.graph.edges.value.length >= minEdges) return;
       return {
         themer: this.color.edges(),
         ...CANT_RUN_REASONS.NOT_ENOUGH_EDGES(minEdges),
-      }
-    }
+      };
+    };
 
-    this.checks.push(hasEdges)
-    return this
+    this.checks.push(hasEdges);
+    return this;
   }
 
   /**
@@ -132,12 +132,12 @@ export class SimulationGuard {
    */
   connected() {
     const isConnected = () => {
-      if (this.graph.characteristics.isConnected.value) return
-      return CANT_RUN_REASONS.NOT_CONNECTED
-    }
+      if (this.graph.characteristics.isConnected.value) return;
+      return CANT_RUN_REASONS.NOT_CONNECTED;
+    };
 
-    this.checks.push(isConnected)
-    return this
+    this.checks.push(isConnected);
+    return this;
   }
 
   /**
@@ -145,18 +145,18 @@ export class SimulationGuard {
    */
   acyclic() {
     const isAcyclic = () => {
-      if (this.graph.characteristics.isAcyclic.value) return
+      if (this.graph.characteristics.isAcyclic.value) return;
       return {
         themer: {
           theme: this.cycle.colorize,
           untheme: this.cycle.decolorize,
         },
         ...CANT_RUN_REASONS.NOT_ACYCLIC,
-      }
-    }
+      };
+    };
 
-    this.checks.push(isAcyclic)
-    return this
+    this.checks.push(isAcyclic);
+    return this;
   }
 
   /**
@@ -164,12 +164,12 @@ export class SimulationGuard {
    */
   bipartite() {
     const isBipartite = () => {
-      if (this.graph.characteristics.isBipartite.value) return
-      return CANT_RUN_REASONS.NOT_BIPARTITE
-    }
+      if (this.graph.characteristics.isBipartite.value) return;
+      return CANT_RUN_REASONS.NOT_BIPARTITE;
+    };
 
-    this.checks.push(isBipartite)
-    return this
+    this.checks.push(isBipartite);
+    return this;
   }
 
   /**
@@ -179,17 +179,17 @@ export class SimulationGuard {
     const nonNegativeWeights = () => {
       const negativeEdgeIds = this.graph.edges.value
         .filter((e) => this.graph.helpers.getEdgeWeight(e.id) < 0)
-        .map((e) => e.id)
+        .map((e) => e.id);
 
-      if (negativeEdgeIds.length === 0) return
+      if (negativeEdgeIds.length === 0) return;
       return {
         themer: this.color.edges(negativeEdgeIds),
         ...CANT_RUN_REASONS.NEGATIVE_EDGE_WEIGHTS,
-      }
-    }
+      };
+    };
 
-    this.checks.push(nonNegativeWeights)
-    return this
+    this.checks.push(nonNegativeWeights);
+    return this;
   }
 
   /**
@@ -199,17 +199,17 @@ export class SimulationGuard {
     const positiveWeights = () => {
       const negativeOrZeroEdgeIds = this.graph.edges.value
         .filter((e) => this.graph.helpers.getEdgeWeight(e.id) <= 0)
-        .map((e) => e.id)
+        .map((e) => e.id);
 
-      if (negativeOrZeroEdgeIds.length === 0) return
+      if (negativeOrZeroEdgeIds.length === 0) return;
       return {
         themer: this.color.edges(negativeOrZeroEdgeIds),
         ...CANT_RUN_REASONS.NON_POSITIVE_EDGE_WEIGHTS,
-      }
-    }
+      };
+    };
 
-    this.checks.push(positiveWeights)
-    return this
+    this.checks.push(positiveWeights);
+    return this;
   }
 
   /**
@@ -219,17 +219,17 @@ export class SimulationGuard {
     const noSelfReferencing = () => {
       const selfReferencingEdgeIds = this.graph.edges.value
         .filter((e) => e.from === e.to)
-        .map((e) => e.id)
+        .map((e) => e.id);
 
-      if (selfReferencingEdgeIds.length === 0) return
+      if (selfReferencingEdgeIds.length === 0) return;
       return {
         themer: this.color.edges(selfReferencingEdgeIds),
         ...CANT_RUN_REASONS.NO_SELF_REFERENCING_EDGES,
-      }
-    }
+      };
+    };
 
-    this.checks.push(noSelfReferencing)
-    return this
+    this.checks.push(noSelfReferencing);
+    return this;
   }
 
   /**
@@ -238,17 +238,17 @@ export class SimulationGuard {
    */
   noBidirectionalEdges() {
     const noBidirectional = () => {
-      const { bidirectionalEdges } = this.graph.characteristics
-      const edgeIds = bidirectionalEdges.value.map((e) => e.id)
-      if (edgeIds.length === 0) return
+      const { bidirectionalEdges } = this.graph.characteristics;
+      const edgeIds = bidirectionalEdges.value.map((e) => e.id);
+      if (edgeIds.length === 0) return;
       return {
         themer: this.color.edges(edgeIds),
         ...CANT_RUN_REASONS.NO_BIDIRECTIONAL_EDGES,
-      }
-    }
+      };
+    };
 
-    this.checks.push(noBidirectional)
-    return this
+    this.checks.push(noBidirectional);
+    return this;
   }
 
   /**
@@ -259,11 +259,11 @@ export class SimulationGuard {
    */
   valid(predicate: () => boolean, invalidationReason: Reason) {
     const isInvalid = () => {
-      if (!predicate()) return invalidationReason
-    }
+      if (!predicate()) return invalidationReason;
+    };
 
-    this.checks.push(isInvalid)
-    return this
+    this.checks.push(isInvalid);
+    return this;
   }
 
   /**
@@ -272,10 +272,10 @@ export class SimulationGuard {
   build() {
     return () => {
       for (const check of this.checks) {
-        const reason = check()
-        if (reason) return reason
+        const reason = check();
+        if (reason) return reason;
       }
-    }
+    };
   }
 
   /**
@@ -283,6 +283,6 @@ export class SimulationGuard {
    * @returns a {@link Reason} if it cant or `undefined` if it can
    */
   check() {
-    return this.build()()
+    return this.build()();
   }
 }

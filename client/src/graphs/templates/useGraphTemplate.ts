@@ -1,30 +1,25 @@
-import type { Graph } from "@graph/types";
-import type { GraphTemplate } from "./types";
-import { 
-  computed, 
-  onMounted, 
-  onUnmounted, 
-  ref 
-} from "vue";
+import type { Graph } from '@graph/types';
+import type { GraphTemplate } from './types';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import {
   centerNodesOnOriginCoordinates,
   getAverageCoordinates,
   createImageFromCanvasRegion,
-} from "./helpers";
-import { generateId } from "@utils/id";
-import { useLocalStorage } from "@vueuse/core";
-import { getEncapsulatedNodeBox } from "@graph/plugins/marquee/helpers";
-import { useGraph } from "@graph/useGraph";
-import { products } from "@utils/product";
+} from './helpers';
+import { generateId } from '@utils/id';
+import { useLocalStorage } from '@vueuse/core';
+import { getEncapsulatedNodeBox } from '@graph/plugins/marquee/helpers';
+import { useGraph } from '@graph/useGraph';
+import { products } from '@utils/product';
 
 export const useGraphTemplate = (graph: Graph) => {
-  const userTemplates = useLocalStorage<GraphTemplate[]>("graph-templates", []);
+  const userTemplates = useLocalStorage<GraphTemplate[]>('graph-templates', []);
 
-  const tempCanvas = ref(document.createElement("canvas"));
+  const tempCanvas = ref(document.createElement('canvas'));
   const tempGraph = useGraph(tempCanvas);
 
   const productTemplates = ref<GraphTemplate[]>(
-    products.flatMap((p) => p.templates ?? [])
+    products.flatMap((p) => p.templates ?? []),
   );
 
   const templates = computed(() => [
@@ -42,11 +37,11 @@ export const useGraphTemplate = (graph: Graph) => {
       tempGraph.themeName.value = graph.themeName.value;
       const boundingBox = getEncapsulatedNodeBox(
         tempGraph.nodes.value,
-        tempGraph
+        tempGraph,
       );
       template.thumbnail = createImageFromCanvasRegion(
         tempCanvas.value,
-        boundingBox
+        boundingBox,
       );
     }
     tempCanvas.value.width = 0; // performance
@@ -54,14 +49,14 @@ export const useGraphTemplate = (graph: Graph) => {
   };
 
   const add = async (
-    options: Pick<GraphTemplate, "title" | "description" | "thumbnail">
+    options: Pick<GraphTemplate, 'title' | 'description' | 'thumbnail'>,
   ) => {
     tempCanvas.value.width = 5000;
     tempCanvas.value.height = 5000;
 
     const { nodes, edges, canvas } = graph;
 
-    if (!canvas.value) throw new Error("no snapshot canvas found");
+    if (!canvas.value) throw new Error('no snapshot canvas found');
 
     const graphState = {
       nodes: JSON.parse(JSON.stringify(nodes.value)),
@@ -73,11 +68,11 @@ export const useGraphTemplate = (graph: Graph) => {
     tempGraph.themeName.value = graph.themeName.value;
     const boundingBox = getEncapsulatedNodeBox(
       tempGraph.nodes.value,
-      tempGraph
+      tempGraph,
     );
     const thumbnail = createImageFromCanvasRegion(
       tempCanvas.value,
-      boundingBox
+      boundingBox,
     );
 
     userTemplates.value.unshift({
@@ -92,7 +87,7 @@ export const useGraphTemplate = (graph: Graph) => {
     tempCanvas.value.height = 0; // large canvases lag even if not rendered on screen
   };
 
-  const load = (templateId: GraphTemplate["id"]) => {
+  const load = (templateId: GraphTemplate['id']) => {
     const template = templates.value.find((t) => t.id === templateId);
     if (!template) {
       throw new Error(`template could not be loaded: ${templateId} not found`);
@@ -108,19 +103,19 @@ export const useGraphTemplate = (graph: Graph) => {
 
   const clearUserTemplates = () => (userTemplates.value = []);
 
-  const removeUserTemplate = (templateId: GraphTemplate["id"]) => {
+  const removeUserTemplate = (templateId: GraphTemplate['id']) => {
     userTemplates.value = userTemplates.value.filter(
-      (t) => t.id !== templateId
+      (t) => t.id !== templateId,
     );
   };
 
   onMounted(() => {
     updateProductThumbnails();
-    graph.subscribe("onThemeChange", updateProductThumbnails);
+    graph.subscribe('onThemeChange', updateProductThumbnails);
   });
 
   onUnmounted(() => {
-    graph.unsubscribe("onThemeChange", updateProductThumbnails);
+    graph.unsubscribe('onThemeChange', updateProductThumbnails);
     tempCanvas.value.remove();
   });
 

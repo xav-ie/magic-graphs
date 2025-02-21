@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import GToolbarButton from "@ui/graph/toolbar/GToolbarButton.vue";
-  import GToolbarBase from "@ui/graph/toolbar/GToolbarBase.vue";
-  import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
+  import GToolbarButton from '@ui/graph/toolbar/GToolbarButton.vue';
+  import GToolbarBase from '@ui/graph/toolbar/GToolbarBase.vue';
+  import ToolbarButtonGroup from '@ui/core/toolbar/ToolbarButtonGroup.vue';
 </script>
 
 <template>

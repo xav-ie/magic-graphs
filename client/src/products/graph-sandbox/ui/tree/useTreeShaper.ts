@@ -1,10 +1,10 @@
-import { computed, onUnmounted, ref, watch } from "vue";
-import type { GNode, Graph } from "@graph/types";
-import { getNodeDepths } from "@product/search-visualizer/useNodeDepth";
-import type { GNodeMoveRecord } from "@graph/plugins/history/types";
-import { debounce } from "@utils/debounce";
-import { getTreeStandardPos } from "./getTreeStandardPos";
-import { getTreeBinaryPos } from "./getTreeBinaryPos";
+import { computed, onUnmounted, ref, watch } from 'vue';
+import type { GNode, Graph } from '@graph/types';
+import { getNodeDepths } from '@product/search-visualizer/useNodeDepth';
+import type { GNodeMoveRecord } from '@graph/plugins/history/types';
+import { debounce } from '@utils/debounce';
+import { getTreeStandardPos } from './getTreeStandardPos';
+import { getTreeBinaryPos } from './getTreeBinaryPos';
 
 export type TreeFormationOptions = {
   /**
@@ -12,39 +12,39 @@ export type TreeFormationOptions = {
    * must be greater than 100
    * @default 250
    */
-  durationMs: number,
+  durationMs: number;
   /**
    * the horizontal offset between nodes at the same depth.
    * @default 250
    */
-  xOffset: number,
+  xOffset: number;
   /**
    * the vertical offset between nodes at different depths.
    * @default 200
    */
-  yOffset: number,
+  yOffset: number;
   /**
    * the shape of the tree to form
    * @default 'standard'
    */
-  shape: 'standard' | 'binary',
-}
+  shape: 'standard' | 'binary';
+};
 
 export const TREE_FORMATION_OPTIONS_DEFAULTS = {
   durationMs: 250,
   xOffset: 250,
   yOffset: 200,
   shape: 'standard',
-} as const
+} as const;
 
 export const useMoveNodesIntoTreeFormation = (
   graph: Graph,
-  options: Partial<TreeFormationOptions> = {}
+  options: Partial<TreeFormationOptions> = {},
 ) => {
   const treeOptions = {
     ...TREE_FORMATION_OPTIONS_DEFAULTS,
     ...options,
-  }
+  };
 
   const optionsRef = ref(treeOptions);
 
@@ -57,14 +57,12 @@ export const useMoveNodesIntoTreeFormation = (
   const getNewNodePositions = (rootNode: GNode) => {
     const { adjacencyList } = graph.adjacencyList;
     const nodeDepths = getNodeDepths(rootNode, adjacencyList.value);
-    const getPositions = optionsRef.value.shape === 'standard' ? getTreeStandardPos : getTreeBinaryPos;
-    return getPositions(
-      graph,
-      rootNode,
-      nodeDepths,
-      optionsRef.value,
-    );
-  }
+    const getPositions =
+      optionsRef.value.shape === 'standard'
+        ? getTreeStandardPos
+        : getTreeBinaryPos;
+    return getPositions(graph, rootNode, nodeDepths, optionsRef.value);
+  };
 
   const shapeGraph = async (rootNode: GNode) => {
     if (reshapingActive.value) return;
@@ -74,14 +72,15 @@ export const useMoveNodesIntoTreeFormation = (
 
     reshapingActive.value = true;
 
-    const affectedItems: GNodeMoveRecord[] = []
+    const affectedItems: GNodeMoveRecord[] = [];
 
     for (const [nodeId, endCoords] of newPositions) {
       const node = graph.getNode(nodeId);
       if (!node) throw new Error(`Node with id ${nodeId} not found`);
       const startCoords = { x: node.x, y: node.y };
 
-      if (startCoords.x === endCoords.x && startCoords.y === endCoords.y) continue;
+      if (startCoords.x === endCoords.x && startCoords.y === endCoords.y)
+        continue;
 
       affectedItems.push({
         graphType: 'node',
@@ -89,8 +88,8 @@ export const useMoveNodesIntoTreeFormation = (
           id: node.id,
           from: startCoords,
           to: endCoords,
-        }
-      })
+        },
+      });
 
       graph.animate.node({
         nodeId: node.id,
@@ -99,7 +98,7 @@ export const useMoveNodesIntoTreeFormation = (
         // we do this already but in batch at the end
         history: false,
         persist: false,
-      })
+      });
     }
 
     // wait for all animations to finish
@@ -110,17 +109,17 @@ export const useMoveNodesIntoTreeFormation = (
       graph.history.addToUndoStack({
         action: 'move',
         affectedItems,
-      })
+      });
     }
 
     reshapingActive.value = false;
-  }
+  };
 
   return {
     shapeGraph,
     reshapingActive,
     options: optionsRef,
-  }
+  };
 };
 
 export type AutoTreeOptions = TreeFormationOptions & {
@@ -128,12 +127,12 @@ export type AutoTreeOptions = TreeFormationOptions & {
    * debounce time in milliseconds to wait before reshaping the graph
    * @default 500 // half a second
    */
-  debounceMs: number,
-}
+  debounceMs: number;
+};
 
 export const AUTO_TREE_OPTIONS_DEFAULTS = {
   debounceMs: 500,
-} as const
+} as const;
 
 /**
  * automatically reshapes the graph into a tree formation
@@ -143,13 +142,10 @@ export const useAutoTree = (
   graph: Graph,
   options: Partial<AutoTreeOptions> = {},
 ) => {
-  const {
-    debounceMs,
-    ...treeOptions
-  } = {
+  const { debounceMs, ...treeOptions } = {
     ...AUTO_TREE_OPTIONS_DEFAULTS,
     ...options,
-  }
+  };
 
   const rootNodeId = ref<GNode['id']>();
   const isActive = ref(false);
@@ -161,7 +157,7 @@ export const useAutoTree = (
     const rootNode = graph.getNode(rootNodeId.value);
     if (!rootNode) return;
     treeControls.shapeGraph(rootNode);
-  }
+  };
 
   const debouncedUpdateShape = debounce(updateShape, debounceMs);
 
@@ -170,19 +166,19 @@ export const useAutoTree = (
     graph.subscribe('onNodeDrop', debouncedUpdateShape);
     graph.subscribe('onGroupDrop', debouncedUpdateShape);
     isActive.value = true;
-  }
+  };
 
   const deactivate = () => {
     graph.unsubscribe('onStructureChange', debouncedUpdateShape);
     graph.unsubscribe('onNodeDrop', debouncedUpdateShape);
     graph.unsubscribe('onGroupDrop', debouncedUpdateShape);
     isActive.value = false;
-  }
+  };
 
   // eagerly shape the graph when the root node changes
   watch(rootNodeId, () => {
     if (isActive.value) updateShape();
-  })
+  });
 
   onUnmounted(deactivate);
 
@@ -195,6 +191,6 @@ export const useAutoTree = (
     debouncedUpdateShape,
     ...treeControls,
   };
-}
+};
 
 export type AutoTreeControls = ReturnType<typeof useAutoTree>;

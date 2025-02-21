@@ -1,9 +1,7 @@
 <script setup lang="ts">
-  import InputText from "primevue/inputtext";
+  import InputText from 'primevue/inputtext';
 </script>
 
 <template>
-  <InputText 
-    @keydown.stop
-  />
+  <InputText @keydown.stop />
 </template>

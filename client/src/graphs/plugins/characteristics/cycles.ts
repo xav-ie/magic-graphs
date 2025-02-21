@@ -1,8 +1,8 @@
-import type { BaseGraph } from "@graph/base";
-import type { CharacteristicSCC } from "./scc";
-import type { AdjacencyList, AdjacencyLists } from "@graph/useAdjacencyList";
-import type { GNode } from "@graph/types";
-import { computed } from "vue";
+import type { BaseGraph } from '@graph/base';
+import type { CharacteristicSCC } from './scc';
+import type { AdjacencyList, AdjacencyLists } from '@graph/useAdjacencyList';
+import type { GNode } from '@graph/types';
+import { computed } from 'vue';
 
 type GetCycles = (adjList: AdjacencyList) => GNode['id'][][];
 
@@ -25,7 +25,7 @@ export const getCycles: GetCycles = (adjList) => {
         const cycleStartIndex = stack.indexOf(neighbor);
         const cycle = stack.slice(cycleStartIndex);
         const sortedCycle = [...cycle].sort(); // Ensure consistent ordering
-        if (!cycles.some(existing => areArraysEqual(existing, sortedCycle))) {
+        if (!cycles.some((existing) => areArraysEqual(existing, sortedCycle))) {
           cycles.push(sortedCycle);
         }
       }
@@ -38,7 +38,7 @@ export const getCycles: GetCycles = (adjList) => {
   // Helper function to check if two arrays are equal (ignoring order)
   const areArraysEqual = (arr1: string[], arr2: string[]): boolean => {
     if (arr1.length !== arr2.length) return false;
-    return arr1.every(item => arr2.includes(item));
+    return arr1.every((item) => arr2.includes(item));
   };
 
   // Check all connected components
@@ -48,30 +48,32 @@ export const getCycles: GetCycles = (adjList) => {
     }
   }
 
-  return cycles
-}
+  return cycles;
+};
 
-export const useCycles = (graph: BaseGraph & CharacteristicSCC & AdjacencyLists) => {
+export const useCycles = (
+  graph: BaseGraph & CharacteristicSCC & AdjacencyLists,
+) => {
   const { settings, stronglyConnectedComponents, adjacencyList } = graph;
 
   const cycles = computed(() => {
-    const { isGraphDirected } = settings.value
+    const { isGraphDirected } = settings.value;
     if (!isGraphDirected) {
-      const res = getCycles(adjacencyList.value)
-      return res.sort((a, b) => a.length - b.length)
+      const res = getCycles(adjacencyList.value);
+      return res.sort((a, b) => a.length - b.length);
     }
 
     return stronglyConnectedComponents.value
-      .filter(scc => scc.length > 1)
-      .map(scc => scc.map(node => node.id))
-  })
+      .filter((scc) => scc.length > 1)
+      .map((scc) => scc.map((node) => node.id));
+  });
 
   const nodeIdToCycle = computed(() => {
     return cycles.value.reduce((acc, cycle, i) => {
       for (const nodeId of cycle) acc.set(nodeId, i);
       return acc;
     }, new Map<GNode['id'], number>());
-  })
+  });
 
   const isAcyclic = computed(() => cycles.value.length === 0);
 
@@ -79,7 +81,7 @@ export const useCycles = (graph: BaseGraph & CharacteristicSCC & AdjacencyLists)
     cycles,
     nodeIdToCycle,
     isAcyclic,
-  }
-}
+  };
+};
 
 export type CharacteristicCycles = ReturnType<typeof useCycles>;
