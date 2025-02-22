@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, watch, computed } from "vue";
+  import { ref, watch, computed, onUnmounted } from "vue";
   import { useElementSize } from "@vueuse/core";
   import { debounce } from "@utils/debounce";
   import { useClassAttrs } from "@ui/useClassAttrs";
@@ -11,13 +11,12 @@
   import { usePinchToZoom } from "./usePinchToZoom";
   import { useStorePanZoomState } from "./useStorePanZoomState";
   import { useCanvasCamera } from "./useCanvasCamera";
+  import { onMounted } from "vue";
 
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
 
   const loading = ref(true);
-
-  useCanvasCamera();
 
   const mainCanvasRef = ref<HTMLCanvasElement>();
   const bgCanvas = ref<HTMLCanvasElement>();
@@ -64,6 +63,8 @@
 
   const parentEl = ref<HTMLDivElement>();
   const { height: parentWidth, width: parentHeight } = useElementSize(parentEl);
+
+  const { startPan, pan, endPan } = useCanvasCamera(parentEl);
 
   const setCanvasSize = () => {
     canvasWidth.value = widthProp.value;
@@ -170,14 +171,38 @@
 
     debouncedDrawBackgroundPattern();
   });
+
+  onMounted(() => {
+    if (!parentEl.value) return;
+
+    parentEl.value.addEventListener("mousedown", startPan);
+    parentEl.value.addEventListener("mousemove", pan);
+    parentEl.value.addEventListener("mouseup", endPan);
+    parentEl.value.addEventListener("mouseleave", endPan);
+    parentEl.value.addEventListener("contextmenu", (event) =>
+      event.preventDefault(),
+    );
+  });
+
+  onUnmounted(() => {
+    if (!parentEl.value) return;
+
+    parentEl.value.removeEventListener("mousedown", startPan);
+    parentEl.value.removeEventListener("mousemove", pan);
+    parentEl.value.removeEventListener("mouseup", endPan);
+    parentEl.value.removeEventListener("mouseleave", endPan);
+    parentEl.value.removeEventListener("contextmenu", (event) =>
+      event.preventDefault(),
+    );
+  });
 </script>
 
 <template>
   <!-- <CoordinateIndicator :coords="coords" /> -->
   <div
     ref="parentEl"
-    :class="parentElClasses"
     id="responsive-canvas-container"
+    :class="parentElClasses"
   >
     <!-- prevents canvas contents from jumping after the loading is completed -->
     <div
@@ -188,10 +213,10 @@
 
     <canvas
       :ref="emitRef as any"
+      id="responsive-canvas"
       :width="canvasWidth"
       :height="canvasHeight"
       :class="[`w-[${canvasWidth}px]`, `h-[${canvasHeight}px]`]"
-      id="responsive-canvas"
     ></canvas>
 
     <canvas
