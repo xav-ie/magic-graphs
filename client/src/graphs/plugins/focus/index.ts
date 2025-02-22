@@ -5,6 +5,7 @@ import type { BaseGraph } from "@graph/base";
 import { useTheme } from "@graph/themes/useTheme";
 import { getCtx } from "@utils/ctx";
 import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "./constants";
+import { MOUSE_BUTTONS } from "@graph/global";
 
 export const useFocus = (graph: BaseGraph) => {
   const { setTheme } = useTheme(graph, FOCUS_THEME_ID);
@@ -63,7 +64,7 @@ export const useFocus = (graph: BaseGraph) => {
   };
 
   const handleFocusChange = ({ items, coords, event }: GraphMouseEvent) => {
-    if (event.button !== 0) return;
+    if (event.button !== MOUSE_BUTTONS.left) return;
 
     const topItem = items.at(-1);
     if (!topItem) return shiftKeyHeldDown.value ? undefined : resetFocus();

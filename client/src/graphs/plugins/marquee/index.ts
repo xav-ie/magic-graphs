@@ -9,6 +9,7 @@ import type { BaseGraph } from "@graph/base";
 import type { GraphMouseEvent } from "@graph/base/types";
 import type { GraphFocusPlugin } from "../focus";
 import { getEncapsulatedNodeBox } from "./helpers";
+import { MOUSE_BUTTONS } from "@graph/global";
 
 export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
   const marqueeBox = ref<BoundingBox | undefined>();
@@ -40,7 +41,7 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
     coords,
     event,
   }: GraphMouseEvent) => {
-    if (event.button !== 0) return;
+    if (event.button !== MOUSE_BUTTONS.left) return;
     const topItem = items.at(-1);
     if (topItem?.graphType !== "encapsulated-node-box") showNodeAnchors();
     if (!topItem) engageMarqueeBox(coords);
@@ -63,7 +64,7 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
   };
 
   const beginGroupDrag = ({ items, coords, event }: GraphMouseEvent) => {
-    if (event.button !== 0) return;
+    if (event.button !== MOUSE_BUTTONS.left) return;
     if (marqueeBox.value) return;
     const topItem = items.at(-1);
     if (topItem?.graphType !== "encapsulated-node-box") return;
