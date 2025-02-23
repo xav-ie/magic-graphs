@@ -20,8 +20,6 @@
     };
   });
 
-  // TODO: add categories
-
   const convertKeyStringToKeys = (keyString: string) => {
     const keys = keyString
       .split('+')
