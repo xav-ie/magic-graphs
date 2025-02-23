@@ -1,30 +1,39 @@
-import { useRoute, useRouter } from "vue-router"
-import type { Graph } from "@graph/types"
-import type { ProductInfo, SimulationDeclarationGetter } from "src/types"
+import { useRoute, useRouter } from 'vue-router';
+import type { Graph } from '@graph/types';
+import type { ProductInfo, SimulationDeclarationGetter } from 'src/types';
 
 // imports all route.ts files dynamically
 const infoModules = import.meta.glob<{
-  default: ProductInfo
-}>('/src/**/info.ts', { eager: true })
+  default: ProductInfo;
+}>('/src/**/info.ts', { eager: true });
 
-export const products = Object.values(infoModules).flatMap((mod) => mod.default)
-export const productRoutes = products.map((product) => product.route)
+export const products = Object.values(infoModules).flatMap(
+  (mod) => mod.default,
+);
+export const productRoutes = products.map((product) => product.route);
 
-export type ProductMap = Record<ProductInfo['productId'], ProductInfo>
+export type ProductMap = Record<ProductInfo['productId'], ProductInfo>;
 
-export const productIdToProduct = products.reduce<ProductMap>((acc, product) => {
-  acc[product.productId] = product
-  return acc
-}, {});
+export const productIdToProduct = products.reduce<ProductMap>(
+  (acc, product) => {
+    acc[product.productId] = product;
+    return acc;
+  },
+  {},
+);
 
-export type ProductInfoWithMenu = ProductInfo & Required<Pick<ProductInfo, "menu">>;
+export type ProductInfoWithMenu = ProductInfo &
+  Required<Pick<ProductInfo, 'menu'>>;
 
-export type RouteToProduct = Record<string, ProductInfo>
+export type RouteToProduct = Record<string, ProductInfo>;
 
-export const routeToProduct = products.reduce<RouteToProduct>((acc, product) => {
-  acc[product.route.path] = product
-  return acc
-}, {})
+export const routeToProduct = products.reduce<RouteToProduct>(
+  (acc, product) => {
+    acc[product.route.path] = product;
+    return acc;
+  },
+  {},
+);
 
 /**
  * initializes the simulation declarations for all products with the context of the
@@ -40,7 +49,7 @@ export const getAllSimulationDeclarations = (graph: Graph) => {
     .flat();
 
   return simulations;
-}
+};
 
 /**
  * gets the simulation declarations for a specific product
@@ -54,7 +63,7 @@ export const getAllSimulationDeclarations = (graph: Graph) => {
  */
 export const getSimulationDeclarationsForProduct = (
   graph: Graph,
-  simDeclarationsGetter?: ProductInfo['simulations']
+  simDeclarationsGetter?: ProductInfo['simulations'],
 ) => {
   const route = useRoute();
 
@@ -66,7 +75,7 @@ export const getSimulationDeclarationsForProduct = (
 
   const getter = simDeclarationsGetter ?? getAllSimulationDeclarations;
   return getter(graph);
-}
+};
 
 /**
  * @returns handlers for routing between products
@@ -77,16 +86,16 @@ export const useProductRouting = () => {
 
   const productLink = (productRoute: string) => {
     const roomId = route.query.rid;
-    const roomIdValid = typeof roomId === "string" && roomId.length > 0;
+    const roomIdValid = typeof roomId === 'string' && roomId.length > 0;
     return roomIdValid ? `${productRoute}?rid=${roomId}` : productRoute;
   };
 
   const navigate = (product: ProductInfo) => {
     const redirectLink = product.route?.redirect?.toString();
-    const goingExternal = redirectLink?.startsWith("http");
+    const goingExternal = redirectLink?.startsWith('http');
 
     if (redirectLink && goingExternal) {
-      return window.open(redirectLink, "_blank");
+      return window.open(redirectLink, '_blank');
     }
 
     router.push(productLink(product.route.path));
@@ -96,7 +105,7 @@ export const useProductRouting = () => {
     navigate,
     productLink,
   };
-}
+};
 
 /**
  * products are ranked by category in this order on the product dropdown menu
@@ -107,9 +116,9 @@ export const PRODUCT_CATEGORY_RANK = [
   'data structures',
   'math',
   'developer tools',
-] as const
+] as const;
 
-export type ProductCategory = typeof PRODUCT_CATEGORY_RANK[number]
+export type ProductCategory = (typeof PRODUCT_CATEGORY_RANK)[number];
 
 /**
  * get the product at the current route
@@ -117,11 +126,11 @@ export type ProductCategory = typeof PRODUCT_CATEGORY_RANK[number]
 export const getCurrentProduct = () => {
   const route = useRoute();
   return routeToProduct[route.path];
-}
+};
 
 /**
  * true if the product is external and will be opened in a new tab
  */
 export const isExternal = (product: ProductInfo) => {
   return 'redirect' in product.route;
-}
+};

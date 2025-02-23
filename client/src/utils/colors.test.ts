@@ -1,8 +1,8 @@
-import { test, describe, expect } from 'vitest'
+import { test, describe, expect } from 'vitest';
 
 test('true is true', () => {
-  expect(true).toBe(true)
-})
+  expect(true).toBe(true);
+});
 
 // import {
 //   isHex,
@@ -100,7 +100,6 @@ test('true is true', () => {
 //     expect(isHslStandard('hsl(360, 100%, 100%)%')).toBe(false) // invalid character
 //   })
 // })
-
 
 // describe('isRgb', () => {
 //   test('returns true if a string is a valid rgb color', () => {

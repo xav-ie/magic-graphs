@@ -1,9 +1,8 @@
-
 /**
  * the golden ratio constant.
  * {@link} https://en.wikipedia.org/wiki/Golden_ratio
  */
-export const GOLDEN_RATIO = 1.618
+export const GOLDEN_RATIO = 1.618;
 
 /**
  * rounds a number to the nearest multiple of another number
@@ -17,7 +16,7 @@ export const GOLDEN_RATIO = 1.618
  */
 export const roundToNearestN = (nearest: number) => (n: number) => {
   return Math.round(n / nearest) * nearest;
-}
+};
 
 /**
  * rounds a number to the nearest integer
@@ -49,7 +48,7 @@ export const getPrimeFactors = (num: number) => {
   }
 
   return factors;
-}
+};
 
 /**
  * get the lowest prime factor of a number
@@ -63,7 +62,7 @@ export const getPrimeFactors = (num: number) => {
 export const lowestPrimeFactor = (num: number) => {
   if (num === 1) return 1; // 1 has no prime factors
   return Math.min(...getPrimeFactors(num));
-}
+};
 
 /**
  * get the greatest common divisor of two numbers.
@@ -79,14 +78,14 @@ export const lowestPrimeFactor = (num: number) => {
 export const gcd = (a: number, b: number): number => {
   if (b === 0) return a;
   return gcd(b, a % b);
-}
+};
 
 /**
  * check if two numbers are within a certain tolerance of each other
  */
 export const within = (tolerance: number) => (a: number, b: number) => {
   return Math.abs(a - b) <= tolerance;
-}
+};
 
 /**
  * get the average of an array of numbers
@@ -99,4 +98,4 @@ export const within = (tolerance: number) => (a: number, b: number) => {
 export const average = (arr: number[]) => {
   if (arr.length === 0) return 0;
   return arr.reduce((acc, val) => acc + val, 0) / arr.length;
-}
+};

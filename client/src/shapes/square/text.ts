@@ -1,22 +1,18 @@
-import { TEXT_DEFAULTS } from "@shape/types";
-import type { Coordinate } from "@shape/types";
-import type { Square } from "@shape/square";
+import { TEXT_DEFAULTS } from '@shape/types';
+import type { Coordinate } from '@shape/types';
+import type { Square } from '@shape/square';
 import {
   drawTextWithTextArea,
   drawTextMatteWithTextArea,
   getTextAreaDimension,
   getFullTextArea,
-} from "@shape/text";
-import { rectHitbox } from "@shape/rect/hitbox";
+} from '@shape/text';
+import { rectHitbox } from '@shape/rect/hitbox';
 
 export const getTextAreaLocationOnSquare = (square: Square) => {
-  const {
-    at,
-    size,
-    textArea
-  } = square;
+  const { at, size, textArea } = square;
 
-  if (!textArea) throw new Error("no text area provided");
+  if (!textArea) throw new Error('no text area provided');
 
   const { text } = textArea;
 
@@ -25,8 +21,8 @@ export const getTextAreaLocationOnSquare = (square: Square) => {
     ...text,
   };
 
-  const centerX = at.x + size / 2
-  const centerY = at.y + size / 2
+  const centerX = at.x + size / 2;
+  const centerY = at.y + size / 2;
 
   return {
     x: centerX - fontSize,
@@ -51,7 +47,7 @@ export const squareTextHitbox = (square: Square) => {
   const isInTextHitbox = rectHitbox({
     at: fullTextArea.at,
     width,
-    height
+    height,
   });
 
   return (point: Coordinate) => isInTextHitbox(point);

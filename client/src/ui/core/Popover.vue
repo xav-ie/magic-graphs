@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import { ref } from "vue";
-  import Popover from "primevue/popover";
+  import { ref } from 'vue';
+  import Popover from 'primevue/popover';
 
   withDefaults(
     defineProps<{
@@ -12,7 +12,7 @@
     }>(),
     {
       offset: 12,
-    }
+    },
   );
 
   const op = ref();

@@ -1,6 +1,6 @@
-import type { Graph } from "@graph/types";
-import { useGraphTutorial } from "@graph/tutorials/useGraphTutorial";
-import { SEQUENCES } from "@graph/tutorials/sequences";
+import type { Graph } from '@graph/types';
+import { useGraphTutorial } from '@graph/tutorials/useGraphTutorial';
+import { SEQUENCES } from '@graph/tutorials/sequences';
 
 /**
  * implements useGraphTutorial with the basics tutorial sequence
@@ -9,4 +9,5 @@ import { SEQUENCES } from "@graph/tutorials/sequences";
  * @param graph the useGraph instance to apply the tutorial to
  * @returns an object containing controls for the tutorial
  */
-export const useBasicsTutorial = (graph: Graph) => useGraphTutorial(graph, SEQUENCES(graph).basics);
+export const useBasicsTutorial = (graph: Graph) =>
+  useGraphTutorial(graph, SEQUENCES(graph).basics);

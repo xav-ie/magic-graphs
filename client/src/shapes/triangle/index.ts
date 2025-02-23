@@ -1,23 +1,23 @@
-import { generateId } from "@utils/id";
+import { generateId } from '@utils/id';
 import type {
   Coordinate,
   GradientStop,
   Shape,
   Stroke,
   TextAreaNoLocation,
-} from "@shape/types";
+} from '@shape/types';
 import {
   drawTextAreaOnTriangle,
   drawTextAreaMatteOnTriangle,
   drawTextOnTriangle,
   triangleTextHitbox,
-} from './text'
+} from './text';
 import {
   triangleHitbox,
   triangleEfficientHitbox,
   getTriangleBoundingBox,
-} from "./hitbox";
-import { drawTriangleWithCtx } from "./draw";
+} from './hitbox';
+import { drawTriangleWithCtx } from './draw';
 
 export type Triangle = {
   id?: string;
@@ -31,7 +31,7 @@ export type Triangle = {
 };
 
 export const TRIANGLE_DEFAULTS = {
-  color: "black",
+  color: 'black',
 } as const;
 
 export const triangle = (options: Triangle): Shape => {
@@ -57,7 +57,7 @@ export const triangle = (options: Triangle): Shape => {
 
   return {
     id: options.id ?? generateId(),
-    name: "triangle",
+    name: 'triangle',
 
     draw,
     drawShape,

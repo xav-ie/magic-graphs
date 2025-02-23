@@ -1,24 +1,33 @@
-import { computed, onMounted, onUnmounted, ref } from "vue";
-import type { Ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import type { Ref } from 'vue';
 
 /**
  * gets the canvas coordinates with a mouse event on a *potentially* transformed canvas
  */
-export const getCanvasCoords = (ev: MouseEvent, ctx: CanvasRenderingContext2D) => {
+export const getCanvasCoords = (
+  ev: MouseEvent,
+  ctx: CanvasRenderingContext2D,
+) => {
   const transform = ctx.getTransform();
   const invertedTransform = transform.inverse();
-  const { offsetX, offsetY } = ev
+  const { offsetX, offsetY } = ev;
   return {
-    x: invertedTransform.a * offsetX + invertedTransform.c * offsetY + invertedTransform.e,
-    y: invertedTransform.b * offsetX + invertedTransform.d * offsetY + invertedTransform.f,
+    x:
+      invertedTransform.a * offsetX +
+      invertedTransform.c * offsetY +
+      invertedTransform.e,
+    y:
+      invertedTransform.b * offsetX +
+      invertedTransform.d * offsetY +
+      invertedTransform.f,
     scale: transform.a,
-  }
-}
+  };
+};
 
 export const getCanvasScale = (ctx: CanvasRenderingContext2D) => {
   const transform = ctx.getTransform();
   return transform.a;
-}
+};
 
 /**
  * reactive coordinates for the responsive canvas that track over the mouse position
@@ -58,23 +67,23 @@ export const useCanvasCoords = ({
 
   onMounted(async () => {
     const parentEl = await getParentEl();
-    parentEl.addEventListener("mousemove", updateMousePos);
-    parentEl.addEventListener("scroll", updateCanvasCoords);
+    parentEl.addEventListener('mousemove', updateMousePos);
+    parentEl.addEventListener('scroll', updateCanvasCoords);
   });
 
   onUnmounted(async () => {
     const parentEl = await getParentEl();
-    parentEl.removeEventListener("mousemove", updateMousePos);
-    parentEl.removeEventListener("scroll", updateCanvasCoords);
+    parentEl.removeEventListener('mousemove', updateMousePos);
+    parentEl.removeEventListener('scroll', updateCanvasCoords);
   });
 
   return {
     canvasCoords,
     humanCoords: computed(() => ({
-      x: canvasCoords.value.x - (canvasWidth.value / 2),
-      y: (canvasCoords.value.y - (canvasHeight.value / 2)) * -1,
-    }))
+      x: canvasCoords.value.x - canvasWidth.value / 2,
+      y: (canvasCoords.value.y - canvasHeight.value / 2) * -1,
+    })),
   };
-}
+};
 
 export type CanvasCoords = ReturnType<typeof useCanvasCoords>;

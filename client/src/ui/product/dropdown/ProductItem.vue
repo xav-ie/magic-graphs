@@ -1,22 +1,22 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue";
+  import { computed, ref } from 'vue';
   import {
     nonNullGraph as graph,
     queuedGraphStateLoadout,
     queuedGraphAnnotationState,
-  } from "@graph/global";
+  } from '@graph/global';
   import {
     useProductRouting,
     getCurrentProduct,
     isExternal,
-  } from "@utils/product";
-  import type { ProductInfoWithMenu } from "@utils/product";
-  import GVerticalCardButton from "@ui/graph/button/GVerticalCardButton.vue";
-  import GButton from "@ui/graph/button/GButton.vue";
-  import type { ProductInfo } from "src/types";
-  import CIcon from "@ui/core/Icon.vue";
-  import GWell from "@ui/graph/GWell.vue";
-  import { getRandomInRange } from "@utils/random";
+  } from '@utils/product';
+  import type { ProductInfoWithMenu } from '@utils/product';
+  import GVerticalCardButton from '@ui/graph/button/GVerticalCardButton.vue';
+  import GButton from '@ui/graph/button/GButton.vue';
+  import type { ProductInfo } from 'src/types';
+  import CIcon from '@ui/core/Icon.vue';
+  import GWell from '@ui/graph/GWell.vue';
+  import { getRandomInRange } from '@utils/random';
 
   const { navigate } = useProductRouting();
   const currentProduct = getCurrentProduct();
@@ -36,7 +36,7 @@
 
   const hovered = ref(false);
 
-  const img = ref("");
+  const img = ref('');
   setTimeout(
     () => {
       img.value = props.product.menu.thumbnail;

@@ -1,7 +1,11 @@
-import { computed, ref, toRef, watch } from "vue";
-import type { ComputedRef, MaybeRef } from "vue";
-import type { OnStepChangeCallback, SimulationControls, SimulationTrace } from "@ui/product/sim/types";
-import { useLocalStorage } from "@vueuse/core";
+import { computed, ref, toRef, watch } from 'vue';
+import type { ComputedRef, MaybeRef } from 'vue';
+import type {
+  OnStepChangeCallback,
+  SimulationControls,
+  SimulationTrace,
+} from '@ui/product/sim/types';
+import { useLocalStorage } from '@vueuse/core';
 
 type SimulationControlsOptions = {
   /**
@@ -18,14 +22,14 @@ export const DEFAULT_PLAYBACK_SPEED = 1000;
 
 export const useSimulationControls = <T>(
   traceInput: ComputedRef<SimulationTrace<T>> | SimulationTrace<T>,
-  options: SimulationControlsOptions = {}
+  options: SimulationControlsOptions = {},
 ): SimulationControls<T> => {
-  const lastStepOption = toRef(options.lastStep)
+  const lastStepOption = toRef(options.lastStep);
 
   const trace = computed(() => {
     if ('value' in traceInput) return traceInput.value;
     return traceInput;
-  })
+  });
 
   /**
    * the last step of the simulation
@@ -49,7 +53,10 @@ export const useSimulationControls = <T>(
   /**
    * the playback speed in ms per step of the simulation
    */
-  const playbackSpeed = useLocalStorage('simulation-playback-speed', DEFAULT_PLAYBACK_SPEED);
+  const playbackSpeed = useLocalStorage(
+    'simulation-playback-speed',
+    DEFAULT_PLAYBACK_SPEED,
+  );
 
   /**
    * whether the simulation is actively being played back (even if paused)
@@ -140,22 +147,24 @@ export const useSimulationControls = <T>(
     for (const cb of stepChangeSubs) {
       cb(newStep, oldStep);
     }
-  }
+  };
 
   watch(step, emitStepChange);
 
   const traceAtStep = computed(() => {
     if (Array.isArray(trace.value)) return trace.value[step.value];
     return trace.value(step.value);
-  })
+  });
 
   /**
    * allows users to subscribe to step changes
    */
   const onStepChange = (cb: OnStepChangeCallback) => {
     stepChangeSubs.add(cb);
-    return () => { stepChangeSubs.delete(cb) };
-  }
+    return () => {
+      stepChangeSubs.delete(cb);
+    };
+  };
 
   return {
     nextStep,

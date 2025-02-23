@@ -1,14 +1,14 @@
-import { ref } from "vue";
-import type { Aggregator } from "@graph/types";
-import { useTheme } from "@graph/themes/useTheme";
-import { MARQUEE_CONSTANTS } from "@graph/plugins/marquee/types";
-import colors from "@colors";
-import { rect } from "@shapes";
-import type { BoundingBox, Coordinate } from "@shape/types";
-import type { BaseGraph } from "@graph/base";
-import type { GraphMouseEvent } from "@graph/base/types";
-import type { GraphFocusPlugin } from "../focus";
-import { getEncapsulatedNodeBox } from "./helpers";
+import { ref } from 'vue';
+import type { Aggregator } from '@graph/types';
+import { useTheme } from '@graph/themes/useTheme';
+import { MARQUEE_CONSTANTS } from '@graph/plugins/marquee/types';
+import colors from '@colors';
+import { rect } from '@shapes';
+import type { BoundingBox, Coordinate } from '@shape/types';
+import type { BaseGraph } from '@graph/base';
+import type { GraphMouseEvent } from '@graph/base/types';
+import type { GraphFocusPlugin } from '../focus';
+import { getEncapsulatedNodeBox } from './helpers';
 import { MOUSE_BUTTONS } from "@graph/global";
 
 export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
@@ -20,12 +20,12 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
   const { setTheme, removeTheme } = useTheme(graph, MARQUEE_CONSTANTS.THEME_ID);
 
   const hideNodeAnchors = () => {
-    setTheme("nodeAnchorColor", colors.TRANSPARENT);
-    setTheme("nodeAnchorColorWhenParentFocused", colors.TRANSPARENT);
+    setTheme('nodeAnchorColor', colors.TRANSPARENT);
+    setTheme('nodeAnchorColorWhenParentFocused', colors.TRANSPARENT);
   };
   const showNodeAnchors = () => {
-    removeTheme("nodeAnchorColor");
-    removeTheme("nodeAnchorColorWhenParentFocused");
+    removeTheme('nodeAnchorColor');
+    removeTheme('nodeAnchorColorWhenParentFocused');
   };
 
   const getSurfaceArea = (box: BoundingBox) => {
@@ -43,14 +43,14 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
   }: GraphMouseEvent) => {
     if (event.button !== MOUSE_BUTTONS.left) return;
     const topItem = items.at(-1);
-    if (topItem?.graphType !== "encapsulated-node-box") showNodeAnchors();
+    if (topItem?.graphType !== 'encapsulated-node-box') showNodeAnchors();
     if (!topItem) engageMarqueeBox(coords);
   };
 
   const groupDrag = ({ items, coords }: GraphMouseEvent) => {
     if (!groupDragCoordinates.value) return;
     const topItem = items.at(-1);
-    if (topItem?.graphType !== "encapsulated-node-box") return;
+    if (topItem?.graphType !== 'encapsulated-node-box') return;
     const dx = coords.x - groupDragCoordinates.value.x;
     const dy = coords.y - groupDragCoordinates.value.y;
     groupDragCoordinates.value = coords;
@@ -67,15 +67,15 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
     if (event.button !== MOUSE_BUTTONS.left) return;
     if (marqueeBox.value) return;
     const topItem = items.at(-1);
-    if (topItem?.graphType !== "encapsulated-node-box") return;
+    if (topItem?.graphType !== 'encapsulated-node-box') return;
     groupDragCoordinates.value = coords;
-    graph.emit("onGroupDragStart", graph.focus.focusedNodes.value, coords);
+    graph.emit('onGroupDragStart', graph.focus.focusedNodes.value, coords);
   };
 
   const groupDrop = () => {
     if (!groupDragCoordinates.value) return;
     graph.emit(
-      "onGroupDrop",
+      'onGroupDrop',
       graph.focus.focusedNodes.value,
       groupDragCoordinates.value,
     );
@@ -90,7 +90,7 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
       width: 0,
       height: 0,
     };
-    graph.emit("onMarqueeBeginSelection", startingCoords);
+    graph.emit('onMarqueeBeginSelection', startingCoords);
   };
 
   const disengageMarqueeBox = () => {
@@ -99,7 +99,7 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
     marqueeBox.value = undefined;
     graph.graphCursorDisabled.value = false;
     showNodeAnchors();
-    graph.emit("onMarqueeEndSelection", finalMarqueeBox);
+    graph.emit('onMarqueeEndSelection', finalMarqueeBox);
   };
 
   const updateMarqueeSelectedItems = (box: BoundingBox) => {
@@ -188,40 +188,40 @@ export const useMarquee = (graph: BaseGraph & GraphFocusPlugin) => {
   graph.updateAggregator.push(addMarqueeBoxToAggregator);
 
   const activate = () => {
-    graph.subscribe("onFocusChange", updateEncapsulatedNodeBox);
+    graph.subscribe('onFocusChange', updateEncapsulatedNodeBox);
 
-    graph.subscribe("onMouseDown", handleMarqueeEngagement);
-    graph.subscribe("onMouseUp", disengageMarqueeBox);
-    graph.subscribe("onContextMenu", disengageMarqueeBox);
-    graph.subscribe("onMouseMove", setMarqueeBoxDimensions);
+    graph.subscribe('onMouseDown', handleMarqueeEngagement);
+    graph.subscribe('onMouseUp', disengageMarqueeBox);
+    graph.subscribe('onContextMenu', disengageMarqueeBox);
+    graph.subscribe('onMouseMove', setMarqueeBoxDimensions);
 
-    graph.subscribe("onMouseDown", beginGroupDrag);
-    graph.subscribe("onMouseUp", groupDrop);
-    graph.subscribe("onMouseMove", groupDrag);
+    graph.subscribe('onMouseDown', beginGroupDrag);
+    graph.subscribe('onMouseUp', groupDrop);
+    graph.subscribe('onMouseMove', groupDrag);
 
-    graph.subscribe("onUndo", updateEncapsulatedNodeBox);
-    graph.subscribe("onRedo", updateEncapsulatedNodeBox);
+    graph.subscribe('onUndo', updateEncapsulatedNodeBox);
+    graph.subscribe('onRedo', updateEncapsulatedNodeBox);
   };
 
   const deactivate = () => {
-    graph.unsubscribe("onFocusChange", updateEncapsulatedNodeBox);
+    graph.unsubscribe('onFocusChange', updateEncapsulatedNodeBox);
 
-    graph.unsubscribe("onMouseDown", handleMarqueeEngagement);
-    graph.unsubscribe("onMouseUp", disengageMarqueeBox);
-    graph.unsubscribe("onContextMenu", disengageMarqueeBox);
-    graph.unsubscribe("onMouseMove", setMarqueeBoxDimensions);
+    graph.unsubscribe('onMouseDown', handleMarqueeEngagement);
+    graph.unsubscribe('onMouseUp', disengageMarqueeBox);
+    graph.unsubscribe('onContextMenu', disengageMarqueeBox);
+    graph.unsubscribe('onMouseMove', setMarqueeBoxDimensions);
 
-    graph.unsubscribe("onMouseDown", beginGroupDrag);
-    graph.unsubscribe("onMouseUp", groupDrop);
-    graph.unsubscribe("onMouseMove", groupDrag);
+    graph.unsubscribe('onMouseDown', beginGroupDrag);
+    graph.unsubscribe('onMouseUp', groupDrop);
+    graph.unsubscribe('onMouseMove', groupDrag);
 
-    graph.unsubscribe("onUndo", updateEncapsulatedNodeBox);
-    graph.unsubscribe("onRedo", updateEncapsulatedNodeBox);
+    graph.unsubscribe('onUndo', updateEncapsulatedNodeBox);
+    graph.unsubscribe('onRedo', updateEncapsulatedNodeBox);
 
     if (marqueeBox.value) disengageMarqueeBox();
   };
 
-  graph.subscribe("onSettingsChange", (diff) => {
+  graph.subscribe('onSettingsChange', (diff) => {
     if (diff.marquee === true) activate();
     else if (diff.marquee === false) deactivate();
   });

@@ -1,4 +1,3 @@
-
 /**
  * clones an object while preserving the references of non-primitive values
  *
@@ -6,11 +5,11 @@
  * @returns the cloned object
  */
 export const clone = (obj: Record<any, any>) => {
-  const cloned = { ...obj }
+  const cloned = { ...obj };
   for (const key in cloned) {
     if (typeof cloned[key] === 'object') {
-      cloned[key] = clone(cloned[key])
+      cloned[key] = clone(cloned[key]);
     }
   }
-  return cloned
-}
+  return cloned;
+};

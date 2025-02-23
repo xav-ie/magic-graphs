@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import type { GNode } from "@graph/types";
-  import { nonNullGraph as graph } from "@graph/global";
-  import GWell from "@ui/graph/GWell.vue";
-  import type { MarkovChain } from "../markov/useMarkovChain";
-  import MarkovClassNodes from "./MarkovClassNodes.vue";
+  import { computed } from 'vue';
+  import type { GNode } from '@graph/types';
+  import { nonNullGraph as graph } from '@graph/global';
+  import GWell from '@ui/graph/GWell.vue';
+  import type { MarkovChain } from '../markov/useMarkovChain';
+  import MarkovClassNodes from './MarkovClassNodes.vue';
 
   const props = defineProps<{
     markov: MarkovChain;
@@ -13,7 +13,7 @@
   /**
    * goes through classes and replaces node ids with full nodes
    */
-  const populateClasses = (classes: Set<GNode["id"]>[]) =>
+  const populateClasses = (classes: Set<GNode['id']>[]) =>
     classes.map((nodeId) => {
       return Array.from(nodeId).map((nodeId) => {
         return graph.value.getNode(nodeId)!;

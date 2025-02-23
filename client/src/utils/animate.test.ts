@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { interpolateCoordinates } from "./animate";
+import { describe, it, expect } from 'vitest';
+import { interpolateCoordinates } from './animate';
 
-describe("pointInterpolation", () => {
+describe('pointInterpolation', () => {
   const startPosition = { x: 0, y: 0 };
   const endPosition = { x: 10, y: 10 };
 
@@ -10,8 +10,8 @@ describe("pointInterpolation", () => {
       start: startPosition,
       end: endPosition,
       numberOfSteps: 5,
-      easeFn: "linear",
-    })
+      easeFn: 'linear',
+    });
 
     expect(result.length).toBe(5);
   });
@@ -21,8 +21,8 @@ describe("pointInterpolation", () => {
       start: startPosition,
       end: endPosition,
       numberOfSteps: 4,
-      easeFn: "linear",
-    })
+      easeFn: 'linear',
+    });
     expect(result).toEqual([
       { x: 3, y: 3 },
       { x: 5, y: 5 },
@@ -36,8 +36,8 @@ describe("pointInterpolation", () => {
       start: startPosition,
       end: endPosition,
       numberOfSteps: 3,
-      easeFn: "in",
-    })
+      easeFn: 'in',
+    });
 
     expect(result).toEqual([
       { x: 1, y: 1 },
@@ -51,8 +51,8 @@ describe("pointInterpolation", () => {
       start: startPosition,
       end: endPosition,
       numberOfSteps: 3,
-      easeFn: "out",
-    })
+      easeFn: 'out',
+    });
 
     expect(result).toEqual([
       { x: 6, y: 6 },
@@ -66,8 +66,8 @@ describe("pointInterpolation", () => {
       start: startPosition,
       end: endPosition,
       numberOfSteps: 4,
-      easeFn: "in-out",
-    })
+      easeFn: 'in-out',
+    });
 
     expect(result).toEqual([
       { x: 1, y: 1 },
@@ -77,13 +77,13 @@ describe("pointInterpolation", () => {
     ]);
   });
 
-  it("interpolates correctly with custom easing function", () => {
+  it('interpolates correctly with custom easing function', () => {
     const result = interpolateCoordinates({
       start: startPosition,
       end: endPosition,
       numberOfSteps: 3,
-      easeFn: n => n ** 3,
-    })
+      easeFn: (n) => n ** 3,
+    });
 
     expect(result).toEqual([
       { x: 0, y: 0 },
@@ -92,32 +92,34 @@ describe("pointInterpolation", () => {
     ]);
   });
 
-  it("handles edge case: numberOfSteps = 1", () => {
+  it('handles edge case: numberOfSteps = 1', () => {
     const result = interpolateCoordinates({
       start: startPosition,
       end: endPosition,
       numberOfSteps: 1,
-      easeFn: "linear",
-    })
+      easeFn: 'linear',
+    });
 
     expect(result).toEqual([{ x: 10, y: 10 }]);
   });
 
-  it("handles edge case: start = end", () => {
+  it('handles edge case: start = end', () => {
     const result = interpolateCoordinates({
       start: { x: 5, y: 5 },
       end: { x: 5, y: 5 },
       numberOfSteps: 3,
-    })
+    });
 
     expect(result).toEqual(Array(3).fill({ x: 5, y: 5 }));
   });
 
-  it("throws if numberOfSteps is not an integer", () => {
-    expect(() => interpolateCoordinates({
-      start: startPosition,
-      end: endPosition,
-      numberOfSteps: 1.5,
-    })).toThrow();
+  it('throws if numberOfSteps is not an integer', () => {
+    expect(() =>
+      interpolateCoordinates({
+        start: startPosition,
+        end: endPosition,
+        numberOfSteps: 1.5,
+      }),
+    ).toThrow();
   });
 });

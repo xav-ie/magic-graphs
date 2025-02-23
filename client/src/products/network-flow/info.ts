@@ -1,8 +1,8 @@
-import type { ProductInfo } from 'src/types'
-import type { Graph } from '@graph/types'
-import state from './state'
-import { useSimulationRunner } from './sim/runner'
-import { canRunFordFulkerson } from './sim/guard'
+import type { ProductInfo } from 'src/types';
+import type { Graph } from '@graph/types';
+import state from './state';
+import { useSimulationRunner } from './sim/runner';
+import { canRunFordFulkerson } from './sim/guard';
 
 const info: ProductInfo = {
   route: {
@@ -18,16 +18,17 @@ const info: ProductInfo = {
     thumbnail: '/products/thumbnails/network-flow.png',
     category: 'algorithms',
   },
-  simulations: (graph: Graph) => ([
+  simulations: (graph: Graph) => [
     {
       name: 'Ford Fulkerson',
-      description: 'Iteratively find augmenting paths until the residual graph is revealed',
+      description:
+        'Iteratively find augmenting paths until the residual graph is revealed',
       thumbnail: '/products/thumbnails/network-flow.png',
       canRun: canRunFordFulkerson(graph),
       runner: useSimulationRunner(graph),
-    }
-  ]),
+    },
+  ],
   state,
-}
+};
 
-export default info
+export default info;

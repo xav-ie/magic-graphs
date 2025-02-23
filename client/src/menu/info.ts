@@ -1,4 +1,4 @@
-import type { ProductInfo } from 'src/types'
+import type { ProductInfo } from 'src/types';
 
 const info: ProductInfo = {
   route: {
@@ -8,6 +8,6 @@ const info: ProductInfo = {
   name: 'Main Page',
   description: 'The main page of the application.',
   productId: 'main',
-}
+};
 
-export default info
+export default info;

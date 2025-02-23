@@ -1,9 +1,9 @@
-import type { DeepRequired } from "ts-essentials";
-import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from "@shape/types";
-import type { Coordinate, TextArea, TextAreaNoLocation } from "@shape/types";
-import { rect } from "./rect";
-import { useTextDimensionOnCanvas } from "./useTextDimensionsOnCanvas";
-import { useMemoize } from "@vueuse/core";
+import type { DeepRequired } from 'ts-essentials';
+import { TEXT_DEFAULTS, TEXTAREA_DEFAULTS } from '@shape/types';
+import type { Coordinate, TextArea, TextAreaNoLocation } from '@shape/types';
+import { rect } from './rect';
+import { useTextDimensionOnCanvas } from './useTextDimensionsOnCanvas';
+import { useMemoize } from '@vueuse/core';
 
 const { getTextDimensionsOnCanvas } = useTextDimensionOnCanvas();
 
@@ -48,8 +48,8 @@ export const drawTextWithTextArea =
 
     ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
     ctx.fillStyle = color;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
 
     const { width, descent, height } = getTextAreaDimension({
       ...textArea,

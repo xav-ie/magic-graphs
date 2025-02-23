@@ -2,53 +2,52 @@ import type {
   TextAreaNoLocation,
   Stroke,
   Coordinate,
-  Shape
-} from "@shape/types"
-import { rectHitbox, rectEfficientHitbox, getRectBoundingBox } from "./hitbox"
-import { drawRectWithCtx } from "./draw"
+  Shape,
+} from '@shape/types';
+import { rectHitbox, rectEfficientHitbox, getRectBoundingBox } from './hitbox';
+import { drawRectWithCtx } from './draw';
 import {
   rectTextHitbox,
   drawTextAreaOnRect,
   drawTextAreaMatteOnRect,
   drawTextOnRect,
-  getTextAreaLocationOnRect
-} from './text'
-import { generateId } from "@utils/id";
-import { getFullTextArea } from "@shape/text";
-import { engageTextarea } from "@shape/textarea";
+  getTextAreaLocationOnRect,
+} from './text';
+import { generateId } from '@utils/id';
+import { getFullTextArea } from '@shape/text';
+import { engageTextarea } from '@shape/textarea';
 
 export type Rect = {
-  id?: string
-  at: Coordinate
-  width: number
-  height: number
-  color?: string
-  stroke?: Stroke
-  textArea?: TextAreaNoLocation
-  borderRadius?: number
-  rotation?: number
-}
+  id?: string;
+  at: Coordinate;
+  width: number;
+  height: number;
+  color?: string;
+  stroke?: Stroke;
+  textArea?: TextAreaNoLocation;
+  borderRadius?: number;
+  rotation?: number;
+};
 
 export const RECT_DEFAULTS = {
   color: 'black',
   borderRadius: 0,
   rotation: 0,
-} as const
+} as const;
 
 export const rect = (options: Rect): Shape => {
-
   if (options.borderRadius && options.borderRadius < 0) {
-    throw new Error('borderRadius must be positive')
+    throw new Error('borderRadius must be positive');
   }
 
   const drawShape = drawRectWithCtx(options);
 
   const shapeHitbox = rectHitbox(options);
   const textHitbox = rectTextHitbox(options);
-  const efficientHitbox = rectEfficientHitbox(options)
+  const efficientHitbox = rectEfficientHitbox(options);
   const hitbox = (point: Coordinate) => {
-    return textHitbox?.(point) || shapeHitbox(point)
-  }
+    return textHitbox?.(point) || shapeHitbox(point);
+  };
 
   const getBoundingBox = getRectBoundingBox(options);
 
@@ -60,14 +59,17 @@ export const rect = (options: Rect): Shape => {
   const draw = (ctx: CanvasRenderingContext2D) => {
     drawShape(ctx);
     drawTextArea?.(ctx);
-  }
+  };
 
-  const activateTextArea = (ctx: CanvasRenderingContext2D, handler: (str: string) => void) => {
+  const activateTextArea = (
+    ctx: CanvasRenderingContext2D,
+    handler: (str: string) => void,
+  ) => {
     if (!options.textArea) return;
     const location = getTextAreaLocationOnRect(options);
     const fullTextArea = getFullTextArea(options.textArea, location);
     engageTextarea(ctx, fullTextArea, handler);
-  }
+  };
 
   return {
     id: options.id ?? generateId(),
@@ -87,5 +89,5 @@ export const rect = (options: Rect): Shape => {
     getBoundingBox,
 
     activateTextArea,
-  }
-}
+  };
+};

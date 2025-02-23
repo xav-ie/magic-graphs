@@ -1,62 +1,60 @@
-import { ref, watch } from "vue";
-import type { Ref } from "vue";
-import type { GraphEventMap } from "@graph/events";
-import type { Graph } from "@graph/types";
-import type { GraphSocket } from "./types";
+import { ref, watch } from 'vue';
+import type { Ref } from 'vue';
+import type { GraphEventMap } from '@graph/events';
+import type { Graph } from '@graph/types';
+import type { GraphSocket } from './types';
 
-export const graphEmitters = (
-  socket: GraphSocket,
-): Partial<GraphEventMap> => ({
+export const graphEmitters = (socket: GraphSocket): Partial<GraphEventMap> => ({
   onNodeAdded: (node, { broadcast }) => {
-    if (!broadcast) return
-    socket.emit('nodeAdded', node)
+    if (!broadcast) return;
+    socket.emit('nodeAdded', node);
   },
   onBulkEdgeAdded: (edges, { broadcast }) => {
-    if (!broadcast) return
+    if (!broadcast) return;
     for (const edge of edges) {
-      socket.emit('edgeAdded', edge)
+      socket.emit('edgeAdded', edge);
     }
   },
   onNodeRemoved: (node, _, { broadcast }) => {
-    if (!broadcast) return
-    socket.emit('nodeRemoved', node.id)
+    if (!broadcast) return;
+    socket.emit('nodeRemoved', node.id);
   },
   onBulkNodeRemoved: (nodes, edges, { broadcast }) => {
-    if (!broadcast) return
+    if (!broadcast) return;
     for (const node of nodes) {
-      socket.emit('nodeRemoved', node.id)
+      socket.emit('nodeRemoved', node.id);
     }
     for (const edge of edges) {
-      socket.emit('edgeRemoved', edge.id)
+      socket.emit('edgeRemoved', edge.id);
     }
   },
   onBulkEdgeRemoved: (edges, { broadcast }) => {
-    if (!broadcast) return
+    if (!broadcast) return;
     for (const edge of edges) {
-      socket.emit('edgeRemoved', edge.id)
+      socket.emit('edgeRemoved', edge.id);
     }
   },
   onNodeMoved: (node, { broadcast }) => {
-    if (!broadcast) return
-    socket.emit('nodeMoved', node)
+    if (!broadcast) return;
+    socket.emit('nodeMoved', node);
   },
   onEdgeAdded: (edge, { broadcast }) => {
-    if (!broadcast) return
-    socket.emit('edgeAdded', edge)
+    if (!broadcast) return;
+    socket.emit('edgeAdded', edge);
   },
   onEdgeRemoved: (edge, { broadcast }) => {
-    if (!broadcast) return
-    socket.emit('edgeRemoved', edge.id)
+    if (!broadcast) return;
+    socket.emit('edgeRemoved', edge.id);
   },
   onEdgeLabelEdited: (edge, _, { broadcast }) => {
-    if (!broadcast) return
-    socket.emit('edgeLabelEdited', edge.id, edge.label)
+    if (!broadcast) return;
+    socket.emit('edgeLabelEdited', edge.id, edge.label);
   },
   onMouseMove: ({ coords }) => {
-    if (!socket.id) throw new Error('socket id not found')
-    socket.emit('collaboratorMoved', { ...coords, id: socket.id })
+    if (!socket.id) throw new Error('socket id not found');
+    socket.emit('collaboratorMoved', { ...coords, id: socket.id });
   },
-})
+});
 
 /**
  * takes events triggered from client, ie graph events for
@@ -65,31 +63,31 @@ export const graphEmitters = (
  */
 export const useSocketEmitters = (
   socket: Ref<GraphSocket | undefined>,
-  graph: Ref<Graph | undefined>
+  graph: Ref<Graph | undefined>,
 ) => {
-  const eventHandlers = ref<Partial<GraphEventMap>>({})
+  const eventHandlers = ref<Partial<GraphEventMap>>({});
 
   const startEmitting = () => {
     for (const [event, handler] of Object.entries(eventHandlers.value)) {
       // @ts-ignore ts cant handle Object.entries return type
-      graph.value?.subscribe(event, handler)
+      graph.value?.subscribe(event, handler);
     }
-  }
+  };
 
   const stopEmitting = () => {
     for (const [event, handler] of Object.entries(eventHandlers.value)) {
       // @ts-ignore ts cant handle Object.entries return type
-      graph.value?.unsubscribe(event, handler)
+      graph.value?.unsubscribe(event, handler);
     }
-  }
+  };
 
   const handleStateChange = () => {
-    stopEmitting()
+    stopEmitting();
     if (socket.value) {
-      eventHandlers.value = graphEmitters(socket.value)
-      startEmitting()
+      eventHandlers.value = graphEmitters(socket.value);
+      startEmitting();
     }
-  }
+  };
 
-  watch(socket, handleStateChange)
-}
+  watch(socket, handleStateChange);
+};

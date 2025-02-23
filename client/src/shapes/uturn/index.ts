@@ -1,26 +1,26 @@
-import { generateId } from "@utils/id";
+import { generateId } from '@utils/id';
 import type {
   Coordinate,
   GradientStop,
   Shape,
   TextAreaNoLocation,
-} from "@shape/types";
-import { drawUTurnWithCtx } from "./draw";
+} from '@shape/types';
+import { drawUTurnWithCtx } from './draw';
 import {
   uturnHitbox,
   uturnEfficientHitbox,
   getUturnBoundingBox,
-} from "./hitbox";
+} from './hitbox';
 import {
   drawTextAreaMatteOnUTurn,
   drawTextAreaOnUTurn,
   drawTextOnUTurn,
   getTextAreaLocationOnUTurn,
   uturnTextHitbox,
-} from "./text";
-import { getFullTextArea } from "@shape/text";
-import { engageTextarea } from "@shape/textarea";
-import { getArrowHeadSize } from "@shape/helpers";
+} from './text';
+import { getFullTextArea } from '@shape/text';
+import { engageTextarea } from '@shape/textarea';
+import { getArrowHeadSize } from '@shape/helpers';
 
 export type UTurn = {
   id?: string;
@@ -41,18 +41,18 @@ export type UTurn = {
 };
 
 export const UTURN_DEFAULTS = {
-  color: "black",
+  color: 'black',
   arrowHeadSize: getArrowHeadSize,
   gradientStops: [] as GradientStop[],
 } as const;
 
 export const uturn = (options: UTurn): Shape => {
   if (options.downDistance < 0) {
-    throw new Error("downDistance must be positive");
+    throw new Error('downDistance must be positive');
   }
 
   if (options.upDistance < 0) {
-    throw new Error("upDistance must be positive");
+    throw new Error('upDistance must be positive');
   }
 
   const drawShape = drawUTurnWithCtx(options);
@@ -88,7 +88,7 @@ export const uturn = (options: UTurn): Shape => {
 
   return {
     id: options.id ?? generateId(),
-    name: "uturn",
+    name: 'uturn',
 
     draw,
 

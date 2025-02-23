@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import { computed, ref, toRef } from "vue";
-  import CIcon from "@ui/core/Icon.vue";
-  import { useTinycolor } from "@ui/useTinycolor";
-  import colors from "@utils/colors";
+  import { computed, ref, toRef } from 'vue';
+  import CIcon from '@ui/core/Icon.vue';
+  import { useTinycolor } from '@ui/useTinycolor';
+  import colors from '@utils/colors';
 
   const props = withDefaults(
     defineProps<{
@@ -16,11 +16,11 @@
       color: colors.GRAY_800,
       active: false,
       disabled: false,
-      icon: "",
-    }
+      icon: '',
+    },
   );
 
-  const colorRef = toRef(props, "color");
+  const colorRef = toRef(props, 'color');
   const color = useTinycolor(colorRef);
 
   const hoverColor = computed(() => {
@@ -43,7 +43,7 @@
     const standardTextColor = color.value.isDark()
       ? colors.WHITE
       : colors.BLACK;
-    if (props.disabled) return standardTextColor + "80";
+    if (props.disabled) return standardTextColor + '80';
     return standardTextColor;
   });
 
@@ -51,19 +51,19 @@
     return {
       color: textColor.value,
       backgroundColor: bgColor.value,
-      cursor: props.disabled ? "not-allowed" : "pointer",
+      cursor: props.disabled ? 'not-allowed' : 'pointer',
     };
   });
 
   const classes = [
-    "p-1",
-    "rounded-md",
-    "grid",
-    "place-items-center",
-    "w-10",
-    "h-10",
-    "outline-none",
-  ]
+    'p-1',
+    'rounded-md',
+    'grid',
+    'place-items-center',
+    'w-10',
+    'h-10',
+    'outline-none',
+  ];
 
   const hovered = ref(false);
 </script>

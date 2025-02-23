@@ -1,7 +1,7 @@
-import type { Coordinate, BoundingBox } from "@shape/types";
-import { LINE_DEFAULTS } from ".";
-import type { Line } from ".";
-import { rectEfficientHitbox } from "@shape/rect/hitbox";
+import type { Coordinate, BoundingBox } from '@shape/types';
+import { LINE_DEFAULTS } from '.';
+import type { Line } from '.';
+import { rectEfficientHitbox } from '@shape/rect/hitbox';
 
 /**
  * @param point - the point to check if it is in the line

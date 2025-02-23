@@ -1,12 +1,12 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import type { SimulationDeclaration } from "src/types";
-  import GButton from "@ui/graph/button/GButton.vue";
-  import CPopover from "@ui/core/Popover.vue";
-  import CIcon from "@ui/core/Icon.vue";
-  import GWell from "@ui/graph/GWell.vue";
-  import SelectSimGuard from "./SelectSimGuard.vue";
-  import SimCard from "./SimCard.vue";
+  import { computed } from 'vue';
+  import type { SimulationDeclaration } from 'src/types';
+  import GButton from '@ui/graph/button/GButton.vue';
+  import CPopover from '@ui/core/Popover.vue';
+  import CIcon from '@ui/core/Icon.vue';
+  import GWell from '@ui/graph/GWell.vue';
+  import SelectSimGuard from './SelectSimGuard.vue';
+  import SimCard from './SimCard.vue';
 
   const props = defineProps<{
     simulations: SimulationDeclaration[];
@@ -14,7 +14,7 @@
   }>();
 
   const emits = defineEmits<{
-    (e: "simulation-selected", simulation: SimulationDeclaration): void;
+    (e: 'simulation-selected', simulation: SimulationDeclaration): void;
   }>();
 
   const displayedSimulations = computed(() => {
@@ -33,7 +33,10 @@
         :disabled="disabled"
         class="h-14 w-14 rounded-full"
       >
-        <CIcon class="text-3xl" icon="play" />
+        <CIcon
+          class="text-3xl"
+          icon="play"
+        />
       </GButton>
     </template>
 

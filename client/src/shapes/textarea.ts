@@ -1,12 +1,12 @@
-import type { DeepRequired } from "ts-essentials";
-import type { TextArea } from "@shape/types";
-import { getCanvasScale } from "@utils/components/useCanvasCoord";
-import { rectHitbox } from "./rect/hitbox";
+import type { DeepRequired } from 'ts-essentials';
+import type { TextArea } from '@shape/types';
+import { getCanvasScale } from '@utils/components/useCanvasCoord';
+import { rectHitbox } from './rect/hitbox';
 
 export const engageTextarea = (
   ctx: CanvasRenderingContext2D,
   textArea: DeepRequired<TextArea>,
-  handler: (str: string) => void
+  handler: (str: string) => void,
 ) => {
   const { at, text, activeColor: bgColor } = textArea;
 
@@ -26,35 +26,35 @@ export const engageTextarea = (
     Math.max(fontSize * 2, fontSize * 0.6 * content.length) * scale;
   const inputHeight = fontSize * 2 * scale;
 
-  const input = document.createElement("textarea");
+  const input = document.createElement('textarea');
 
-  input.style.position = "absolute";
+  input.style.position = 'absolute';
   input.style.left = `${Math.round(transformedX)}px`;
   input.style.top = `${Math.round(transformedY)}px`;
   input.style.width = `${Math.round(inputWidth)}px`;
   input.style.height = `${Math.round(inputHeight)}px`;
-  input.style.zIndex = "1000";
+  input.style.zIndex = '1000';
 
-  input.style.resize = "none";
+  input.style.resize = 'none';
 
-  input.style.overflow = "hidden";
-  input.style.border = "none";
-  input.style.padding = "0";
+  input.style.overflow = 'hidden';
+  input.style.border = 'none';
+  input.style.padding = '0';
 
   input.style.paddingTop = `${topPadding}px`;
 
-  input.style.margin = "0";
+  input.style.margin = '0';
   input.style.fontSize = `${fontSize * scale}px`;
   input.style.color = textColor;
   input.style.backgroundColor = bgColor;
-  input.style.fontFamily = "Arial";
-  input.style.textAlign = "center";
+  input.style.fontFamily = 'Arial';
+  input.style.textAlign = 'center';
   input.style.fontWeight = fontWeight;
-  input.style.outline = "none";
-  input.style.boxSizing = "border-box";
+  input.style.outline = 'none';
+  input.style.boxSizing = 'border-box';
 
   // no text wrapping
-  input.style.whiteSpace = "nowrap";
+  input.style.whiteSpace = 'nowrap';
 
   const adjustSize = () => {
     const currentWidth = parseFloat(input.style.width);
@@ -87,8 +87,8 @@ export const engageTextarea = (
   const removeInput = () => {
     input.onblur = null;
     handler(input.value);
-    document.removeEventListener("mousedown", handleMouseDown);
-    document.removeEventListener("wheel", removeInput);
+    document.removeEventListener('mousedown', handleMouseDown);
+    document.removeEventListener('wheel', removeInput);
 
     setTimeout(() => {
       // setTimeout to allow canvas time to update
@@ -100,7 +100,7 @@ export const engageTextarea = (
 
   input.onkeydown = (ev) => {
     ev.stopPropagation();
-    if (ev.key === "Enter") {
+    if (ev.key === 'Enter') {
       ev.preventDefault();
       removeInput();
     }
@@ -108,16 +108,16 @@ export const engageTextarea = (
 
   const handleMouseDown = (event: MouseEvent) => {
     if (isClickOutsideInput(input, event)) removeInput();
-  }
+  };
 
-  document.addEventListener("mousedown", handleMouseDown);
-  document.addEventListener("wheel", removeInput, { passive: true });
+  document.addEventListener('mousedown', handleMouseDown);
+  document.addEventListener('wheel', removeInput, { passive: true });
 
   const responsiveCanvas = document.getElementById(
-    "responsive-canvas-container"
+    'responsive-canvas-container',
   );
   if (!responsiveCanvas)
-    throw new Error("responsive canvas container not found");
+    throw new Error('responsive canvas container not found');
   responsiveCanvas.appendChild(input);
   setTimeout(() => {
     input.focus();

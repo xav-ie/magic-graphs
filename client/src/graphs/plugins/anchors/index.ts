@@ -1,13 +1,14 @@
-import { ref, readonly } from "vue";
-import { prioritizeNode } from "@graph/helpers";
-import type { BaseGraph } from "@graph/base";
-import type { GraphMouseEvent } from "@graph/base/types";
-import type { SchemaItem, GNode } from "@graph/types";
-import type { GraphFocusPlugin } from "@graph/plugins/focus";
-import type { NodeAnchor } from "@graph/plugins/anchors/types";
-import { generateId } from "@utils/id";
-import { circle, line } from "@shapes";
+import { ref, readonly } from 'vue';
+import { prioritizeNode } from '@graph/helpers';
+import type { BaseGraph } from '@graph/base';
+import type { GraphMouseEvent } from '@graph/base/types';
+import type { SchemaItem, GNode } from '@graph/types';
+import type { GraphFocusPlugin } from '@graph/plugins/focus';
+import type { NodeAnchor } from '@graph/plugins/anchors/types';
+import { generateId } from '@utils/id';
+import { circle, line } from '@shapes';
 import { MOUSE_BUTTONS } from "@graph/global";
+
 
 /**
  * node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
@@ -28,10 +29,10 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
    */
   const currentDraggingAnchor = ref<NodeAnchor | undefined>();
 
-  const setParentNode = (nodeId: GNode["id"]) => {
+  const setParentNode = (nodeId: GNode['id']) => {
     if (graph.settings.value.nodeAnchors === false) return;
     const node = graph.getNode(nodeId);
-    if (!node) throw new Error("node not found");
+    if (!node) throw new Error('node not found');
     if (graph.animationController.isAnimating(node.id)) return;
     parentNode.value = node;
     updateNodeAnchors(node);
@@ -42,7 +43,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     currentDraggingAnchor.value = undefined;
   };
 
-  const hoveredNodeAnchorId = ref<NodeAnchor["id"]>();
+  const hoveredNodeAnchorId = ref<NodeAnchor['id']>();
 
   const updateHoveredNodeAnchorId = ({ items }: GraphMouseEvent) => {
     const topItem = items.at(-1);
@@ -54,9 +55,9 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   const getAnchorSchemas = (node: GNode) => {
     const { getTheme } = graph;
 
-    const color = getTheme("nodeAnchorColor", node);
-    const focusColor = getTheme("nodeAnchorColorWhenParentFocused", node);
-    const radius = getTheme("nodeAnchorRadius", node);
+    const color = getTheme('nodeAnchorColor', node);
+    const focusColor = getTheme('nodeAnchorColorWhenParentFocused', node);
+    const radius = getTheme('nodeAnchorRadius', node);
 
     const anchorSchemas: SchemaItem[] = [];
     for (const anchor of nodeAnchors.value) {
@@ -108,9 +109,9 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     if (!node) return (nodeAnchors.value = []);
     const { getTheme } = graph;
 
-    const anchorRadius = getTheme("nodeAnchorRadius", node);
-    const nodeSize = getTheme("nodeSize", node);
-    const nodeBorderWidth = getTheme("nodeBorderWidth", node);
+    const anchorRadius = getTheme('nodeAnchorRadius', node);
+    const nodeSize = getTheme('nodeSize', node);
+    const nodeBorderWidth = getTheme('nodeBorderWidth', node);
 
     const offset = nodeSize - anchorRadius / 3 + nodeBorderWidth / 2;
     nodeAnchors.value = (
@@ -118,22 +119,22 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
         {
           x: node.x,
           y: node.y - offset,
-          direction: "north",
+          direction: 'north',
         },
         {
           x: node.x + offset,
           y: node.y,
-          direction: "east",
+          direction: 'east',
         },
         {
           x: node.x,
           y: node.y + offset,
-          direction: "south",
+          direction: 'south',
         },
         {
           x: node.x - offset,
           y: node.y,
-          direction: "west",
+          direction: 'west',
         },
       ] as const
     ).map((anchor) => ({ ...anchor, id: generateId() }));
@@ -145,7 +146,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   const getAnchor = ({ items, event }: GraphMouseEvent) => {
     if (event.button !== MOUSE_BUTTONS.left) return;
     const topItem = items.at(-1);
-    if (!topItem || topItem.graphType !== "node-anchor") return;
+    if (!topItem || topItem.graphType !== 'node-anchor') return;
     const { id: anchorId } = topItem;
     return nodeAnchors.value.find((anchor) => anchor.id === anchorId);
   };
@@ -158,12 +159,12 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     const { getTheme } = graph;
 
     const color = getTheme(
-      "linkPreviewColor",
+      'linkPreviewColor',
       parentNode.value,
       currentDraggingAnchor.value,
     );
     const width = getTheme(
-      "linkPreviewWidth",
+      'linkPreviewWidth',
       parentNode.value,
       currentDraggingAnchor.value,
     );
@@ -192,7 +193,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
 
     const topItem = items.at(-1);
     if (!topItem) return resetParentNode();
-    if (topItem.graphType !== "node") return;
+    if (topItem.graphType !== 'node') return;
 
     /**
      * TODO try making this simpler by making a rule that if there is more than 1
@@ -202,7 +203,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
 
     const perspectiveNode = graph.getNode(topItem.id);
     if (!perspectiveNode)
-      throw new Error("node in aggregator but not in graph");
+      throw new Error('node in aggregator but not in graph');
 
     const perspectiveNodeFocused = graph.focus.isFocused(perspectiveNode.id);
     const moreThanOneNodeFocused = graph.focus.focusedNodes.value.length > 1;
@@ -223,7 +224,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
     const anchor = getAnchor(ev);
     if (!anchor) return;
     currentDraggingAnchor.value = anchor;
-    graph.emit("onNodeAnchorDragStart", parentNode.value, anchor);
+    graph.emit('onNodeAnchorDragStart', parentNode.value, anchor);
   };
 
   const updateCurrentlyDraggingAnchorPosition = ({
@@ -241,9 +242,9 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   const dropAnchor = () => {
     if (!currentDraggingAnchor.value) return;
     else if (!parentNode.value)
-      throw new Error("active anchor without parent node");
+      throw new Error('active anchor without parent node');
     graph.emit(
-      "onNodeAnchorDrop",
+      'onNodeAnchorDrop',
       parentNode.value,
       currentDraggingAnchor.value,
     );
@@ -298,34 +299,34 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   };
 
   const activate = () => {
-    graph.subscribe("onNodeRemoved", resetParentNodeIfRemoved);
-    graph.subscribe("onNodeMoved", resetParentNode);
-    graph.subscribe("onNodeDrop", updateNodeAnchors);
-    graph.subscribe("onMouseMove", updateParentNode);
-    graph.subscribe("onMouseMove", updateCurrentlyDraggingAnchorPosition);
-    graph.subscribe("onMouseMove", updateHoveredNodeAnchorId);
-    graph.subscribe("onMouseDown", setCurrentlyDraggingAnchor);
-    graph.subscribe("onMouseUp", dropAnchor);
-    graph.subscribe("onFocusChange", disallowNodesInFocusGroupFromBeingParents);
+    graph.subscribe('onNodeRemoved', resetParentNodeIfRemoved);
+    graph.subscribe('onNodeMoved', resetParentNode);
+    graph.subscribe('onNodeDrop', updateNodeAnchors);
+    graph.subscribe('onMouseMove', updateParentNode);
+    graph.subscribe('onMouseMove', updateCurrentlyDraggingAnchorPosition);
+    graph.subscribe('onMouseMove', updateHoveredNodeAnchorId);
+    graph.subscribe('onMouseDown', setCurrentlyDraggingAnchor);
+    graph.subscribe('onMouseUp', dropAnchor);
+    graph.subscribe('onFocusChange', disallowNodesInFocusGroupFromBeingParents);
   };
 
   const deactivate = () => {
-    graph.unsubscribe("onNodeRemoved", resetParentNodeIfRemoved);
-    graph.unsubscribe("onNodeMoved", resetParentNode);
-    graph.unsubscribe("onNodeDrop", updateNodeAnchors);
-    graph.unsubscribe("onMouseMove", updateParentNode);
-    graph.unsubscribe("onMouseMove", updateCurrentlyDraggingAnchorPosition);
-    graph.unsubscribe("onMouseMove", updateHoveredNodeAnchorId);
-    graph.unsubscribe("onMouseDown", setCurrentlyDraggingAnchor);
-    graph.unsubscribe("onMouseUp", dropAnchor);
+    graph.unsubscribe('onNodeRemoved', resetParentNodeIfRemoved);
+    graph.unsubscribe('onNodeMoved', resetParentNode);
+    graph.unsubscribe('onNodeDrop', updateNodeAnchors);
+    graph.unsubscribe('onMouseMove', updateParentNode);
+    graph.unsubscribe('onMouseMove', updateCurrentlyDraggingAnchorPosition);
+    graph.unsubscribe('onMouseMove', updateHoveredNodeAnchorId);
+    graph.unsubscribe('onMouseDown', setCurrentlyDraggingAnchor);
+    graph.unsubscribe('onMouseUp', dropAnchor);
     graph.unsubscribe(
-      "onFocusChange",
+      'onFocusChange',
       disallowNodesInFocusGroupFromBeingParents,
     );
     resetParentNode();
   };
 
-  graph.subscribe("onSettingsChange", (diff) => {
+  graph.subscribe('onSettingsChange', (diff) => {
     if (diff.nodeAnchors === true) activate();
     else if (diff.nodeAnchors === false) deactivate();
   });

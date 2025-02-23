@@ -1,7 +1,7 @@
-import type { GNode, Graph } from "@graph/types";
-import type { NodeDepth } from "@product/search-visualizer/useNodeDepth";
-import type { Coordinate } from "@shape/types";
-import { roundToInt } from "@utils/math";
+import type { GNode, Graph } from '@graph/types';
+import type { NodeDepth } from '@product/search-visualizer/useNodeDepth';
+import type { Coordinate } from '@shape/types';
+import { roundToInt } from '@utils/math';
 
 /**
  * an array which maps a tree index (root = 0, left child = 1, right child = 2, etc)
@@ -16,10 +16,10 @@ export const getTreeIndexToPosition = ({
   yOffset,
   treeDepth,
 }: {
-  rootCoordinate: Coordinate,
-  xOffset: number,
-  yOffset: number,
-  treeDepth: number,
+  rootCoordinate: Coordinate;
+  xOffset: number;
+  yOffset: number;
+  treeDepth: number;
 }) => {
   const treeIndexToPositionArr: Coordinate[] = [rootCoordinate];
   const totalWidth = Math.pow(2, treeDepth) * xOffset;
@@ -45,9 +45,9 @@ export const getTreeIndexToPosition = ({
 
   return treeIndexToPositionArr.map(({ x, y }) => ({
     x: roundToInt(x),
-    y: roundToInt(y)
+    y: roundToInt(y),
   }));
-}
+};
 
 type MaybeNodeId = GNode['id'] | undefined;
 
@@ -67,9 +67,9 @@ export const getTreeIndexToNodeId = ({
   root,
   treeDepth,
 }: {
-  graph: Graph,
-  root: GNode,
-  treeDepth: number,
+  graph: Graph;
+  root: GNode;
+  treeDepth: number;
 }) => {
   const treeIndexToNodeId: MaybeNodeId[] = [];
 
@@ -83,7 +83,7 @@ export const getTreeIndexToNodeId = ({
       if (!maybeNodeId) {
         nodesAtNextDepth.push(undefined);
         nodesAtNextDepth.push(undefined);
-        continue
+        continue;
       }
       const children = getChildrenOfNode(maybeNodeId);
       nodesAtNextDepth.push(children[0]?.id);
@@ -93,13 +93,13 @@ export const getTreeIndexToNodeId = ({
   }
 
   return treeIndexToNodeId;
-}
+};
 
 export const getTreeBinaryPos = (
   graph: Graph,
   root: GNode,
   nodeDepths: NodeDepth,
-  treeOffset: { xOffset: number, yOffset: number }
+  treeOffset: { xOffset: number; yOffset: number },
 ) => {
   const { xOffset, yOffset } = treeOffset;
   const { depth: treeDepth } = nodeDepths;
@@ -126,4 +126,4 @@ export const getTreeBinaryPos = (
   }
 
   return newNodePositions;
-}
+};

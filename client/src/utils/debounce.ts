@@ -1,4 +1,3 @@
-
 /**
  * a function that will only be called after a certain amount
  * of time has passed since the last time it was called

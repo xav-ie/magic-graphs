@@ -1,4 +1,4 @@
-import type { TransitionMatrix } from "@graph/useTransitionMatrix";
+import type { TransitionMatrix } from '@graph/useTransitionMatrix';
 
 export type DijkstrasResult = number[];
 
@@ -7,13 +7,13 @@ export type DijkstrasResult = number[];
  * nodes in graph.nodes
  */
 export type DijkstrasMatrixTrace = {
-  queue: {node: number, distance: number}[];
+  queue: { node: number; distance: number }[];
   currentNode?: number;
   distances: number[];
 }[];
 
 class PriorityQueue {
-  private heap: {node: number, distance: number}[] = [];
+  private heap: { node: number; distance: number }[] = [];
 
   constructor() {}
 
@@ -22,7 +22,7 @@ class PriorityQueue {
     this.bubbleUp(this.heap.length - 1);
   }
 
-  dequeue(): {node: number, distance: number} | undefined {
+  dequeue(): { node: number; distance: number } | undefined {
     if (this.heap.length === 0) return undefined;
 
     const min = this.heap[0];
@@ -71,7 +71,8 @@ class PriorityQueue {
         const rightChild = this.heap[rightChildIndex];
         if (
           (swap === null && rightChild.distance < element.distance) ||
-          (swap !== null && rightChild.distance < this.heap[leftChildIndex].distance)
+          (swap !== null &&
+            rightChild.distance < this.heap[leftChildIndex].distance)
         ) {
           swap = rightChildIndex;
         }
@@ -89,11 +90,11 @@ class PriorityQueue {
     return this.heap.length === 0;
   }
 
-  peek(): {node: number, distance: number} | undefined {
+  peek(): { node: number; distance: number } | undefined {
     return this.heap[0];
   }
 
-  getHeap(): Array<{node: number, distance: number}> {
+  getHeap(): Array<{ node: number; distance: number }> {
     return [...this.heap];
   }
 }
@@ -105,7 +106,9 @@ export const dijkstras = (graph: TransitionMatrix, source: number) => {
     const nodeCount = graph.length;
 
     // Distances array to store shortest distances from source
-    const distances: number[] = new Array(nodeCount).fill(Number.POSITIVE_INFINITY);
+    const distances: number[] = new Array(nodeCount).fill(
+      Number.POSITIVE_INFINITY,
+    );
 
     // Previous node to reconstruct path
     const previousNode: (number | null)[] = new Array(nodeCount).fill(null);
@@ -161,7 +164,7 @@ export const dijkstras = (graph: TransitionMatrix, source: number) => {
       distances: distances.slice(),
     });
 
-    return distances
+    return distances;
   };
 
   const res = runDijkstras(graph, source);

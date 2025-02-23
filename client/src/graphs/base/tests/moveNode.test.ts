@@ -1,18 +1,18 @@
-import { describe, test, expect } from "vitest";
-import { useBaseGraph } from "..";
-import { ref } from "vue";
+import { describe, test, expect } from 'vitest';
+import { useBaseGraph } from '..';
+import { ref } from 'vue';
 
-describe("base graph - moveNode", () => {
+describe('base graph - moveNode', () => {
   const graph = useBaseGraph(ref());
 
-  test("move node", () => {
-    graph.nodes.value = []
+  test('move node', () => {
+    graph.nodes.value = [];
 
     const node1 = graph.addNode({ x: 0, y: 0 });
     const node2 = graph.addNode({ x: 1, y: 1 });
 
     if (!node1 || !node2) {
-      throw new Error("nodes not added");
+      throw new Error('nodes not added');
     }
 
     graph.moveNode(node1.id, { x: 2, y: 2 });
@@ -22,20 +22,20 @@ describe("base graph - moveNode", () => {
       { x: 2, y: 2 },
       { x: 3, y: 3 },
     ]);
-  })
+  });
 
-  test("move node with invalid id", () => {
-    graph.nodes.value = []
+  test('move node with invalid id', () => {
+    graph.nodes.value = [];
     const node = graph.addNode({ x: 1, y: 1 });
 
     if (!node) {
-      throw new Error("node not added");
+      throw new Error('node not added');
     }
 
-    graph.moveNode("invalid-id", { x: 2, y: 2 });
+    graph.moveNode('invalid-id', { x: 2, y: 2 });
 
     expect(node.x).toEqual(1);
     expect(node.y).toEqual(1);
     expect(graph.nodes.value).toMatchObject([node]);
-  })
-})
+  });
+});

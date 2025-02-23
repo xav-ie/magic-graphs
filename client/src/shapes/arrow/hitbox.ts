@@ -1,16 +1,16 @@
-import type { Coordinate, BoundingBox } from "@shape/types";
+import type { Coordinate, BoundingBox } from '@shape/types';
 import {
   lineHitbox,
   lineEfficientHitbox,
   getLineBoundingBox,
-} from "@shape/line/hitbox";
-import { type Arrow } from ".";
-import { ARROW_DEFAULTS } from ".";
+} from '@shape/line/hitbox';
+import { type Arrow } from '.';
+import { ARROW_DEFAULTS } from '.';
 import {
   triangleEfficientHitbox,
   triangleHitbox,
-} from "@shape/triangle/hitbox";
-import { calculateArrowHeadCorners } from "@shape/helpers";
+} from '@shape/triangle/hitbox';
+import { calculateArrowHeadCorners } from '@shape/helpers';
 
 export const arrowHitbox = (arrow: Arrow) => {
   const { start, end, width, arrowHeadSize, arrowHeadShape } = {

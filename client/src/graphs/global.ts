@@ -6,7 +6,7 @@ export const graph = shallowRef<Graph>();
 
 export const nonNullGraph = computed(() => {
   if (!graph.value) {
-    throw new Error("global graph state is undefined");
+    throw new Error('global graph state is undefined');
   }
 
   return graph.value;

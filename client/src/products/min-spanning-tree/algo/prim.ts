@@ -1,4 +1,4 @@
-import type { GEdge, Graph } from "@graph/types";
+import type { GEdge, Graph } from '@graph/types';
 
 export const prim = (graph: Graph) => {
   const { nodes, edges } = graph;
@@ -49,4 +49,4 @@ export const prim = (graph: Graph) => {
   };
 
   return run();
-}
+};

@@ -1,8 +1,10 @@
-import type { Ref } from "vue";
-import type { Graph } from "./types";
+import type { Ref } from 'vue';
+import type { Graph } from './types';
 
-export const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-export const NUMBERS = Array.from({ length: 999 }, (_, i) => (i + 1).toString());
+export const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+export const NUMBERS = Array.from({ length: 999 }, (_, i) =>
+  (i + 1).toString(),
+);
 
 export type LabelledItem = { label: string };
 
@@ -21,36 +23,34 @@ export type LabelledItem = { label: string };
  *  // remove "A" from the list of labelled items
  *  console.log(newLabel); // 'A'
  */
-export const graphLabelGetter = (
-  labelledItems: Ref<LabelledItem[]>,
-  sequence: string[]
-) => () => {
-  let labels = labelledItems.value.map(({ label }) => label);
+export const graphLabelGetter =
+  (labelledItems: Ref<LabelledItem[]>, sequence: string[]) => () => {
+    let labels = labelledItems.value.map(({ label }) => label);
 
-  let timesAround = 0;
-  let index = 0;
-  let newLabel;
+    let timesAround = 0;
+    let index = 0;
+    let newLabel;
 
-  const getPrefix = () => {
-    if (timesAround === 0) return "";
-    return sequence[(timesAround - 1) % sequence.length];
-  }
+    const getPrefix = () => {
+      if (timesAround === 0) return '';
+      return sequence[(timesAround - 1) % sequence.length];
+    };
 
-  while (!newLabel) {
-    const indexOutOfBounds = index >= sequence.length;
-    if (indexOutOfBounds) {
-      labels = labels.slice(sequence.length);
-      index = 0;
-      timesAround++;
+    while (!newLabel) {
+      const indexOutOfBounds = index >= sequence.length;
+      if (indexOutOfBounds) {
+        labels = labels.slice(sequence.length);
+        index = 0;
+        timesAround++;
+      }
+      const potentialLabel = getPrefix() + sequence[index];
+      const labelExists = labels.includes(potentialLabel);
+      if (!labelExists) newLabel = potentialLabel;
+      index++;
     }
-    const potentialLabel = getPrefix() + sequence[index];
-    const labelExists = labels.includes(potentialLabel);
-    if (!labelExists) newLabel = potentialLabel;
-    index++;
-  }
 
-  return newLabel;
-};
+    return newLabel;
+  };
 
 /**
  * takes a graph and gives a function that will return the next available letter label (A-Z)
@@ -76,7 +76,7 @@ export const nodeNumberLabelGetter = (graph: Pick<Graph, 'nodes'>) => {
 
 export const edgeLetterLabelGetter = (graph: Pick<Graph, 'edges'>) => {
   return graphLabelGetter(graph.edges, LETTERS);
-}
+};
 
 export const edgeNumberLabelGetter = (graph: Pick<Graph, 'edges'>) => {
   return graphLabelGetter(graph.edges, NUMBERS);

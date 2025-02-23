@@ -1,6 +1,6 @@
-import { computed, ref } from "vue";
-import type { Graph } from "@graph/types";
-import { prim } from "./prim";
+import { computed, ref } from 'vue';
+import type { Graph } from '@graph/types';
+import { prim } from './prim';
 
 export const usePrim = (graph: Graph) => {
   /**
@@ -8,14 +8,14 @@ export const usePrim = (graph: Graph) => {
    */
   const trace = ref(prim(graph));
 
-  const update = () => trace.value = prim(graph);
+  const update = () => (trace.value = prim(graph));
 
-  graph.subscribe("onStructureChange", update);
+  graph.subscribe('onStructureChange', update);
 
   return {
     output: {
       mst: computed(() => trace.value.at(-1)),
     },
     trace: computed(() => trace.value),
-  }
+  };
 };

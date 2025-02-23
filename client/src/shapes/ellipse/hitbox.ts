@@ -1,7 +1,7 @@
-import type { Coordinate, BoundingBox } from "@shape/types";
-import type { Ellipse } from "@shape/ellipse";
-import { STROKE_DEFAULTS } from "@shape/types";
-import { rectEfficientHitbox } from "@shape/rect/hitbox";
+import type { Coordinate, BoundingBox } from '@shape/types';
+import type { Ellipse } from '@shape/ellipse';
+import { STROKE_DEFAULTS } from '@shape/types';
+import { rectEfficientHitbox } from '@shape/rect/hitbox';
 
 export const ellipseHitbox = (ellipse: Ellipse) => (point: Coordinate) => {
   const dx = point.x - ellipse.at.x;

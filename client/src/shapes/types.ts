@@ -1,9 +1,9 @@
 /*
   types for shapes
 */
-import type { Rect } from "@shape/rect";
+import type { Rect } from '@shape/rect';
 
-export type BoundingBox = Pick<Rect, "at" | "width" | "height">;
+export type BoundingBox = Pick<Rect, 'at' | 'width' | 'height'>;
 
 export type BoundingBoxCorners = {
   topLeft: Coordinate;
@@ -11,16 +11,16 @@ export type BoundingBoxCorners = {
 };
 
 export type ShapeName =
-  | "circle"
-  | "line"
-  | "square"
-  | "rect"
-  | "triangle"
-  | "arrow"
-  | "uturn"
-  | "cross"
-  | "scribble"
-  | "ellipse";
+  | 'circle'
+  | 'line'
+  | 'square'
+  | 'rect'
+  | 'triangle'
+  | 'arrow'
+  | 'uturn'
+  | 'cross'
+  | 'scribble'
+  | 'ellipse';
 
 export type Shape = {
   /**
@@ -118,16 +118,16 @@ export type TextAreaNoLocation = {
 };
 
 export const TEXTAREA_DEFAULTS = {
-  color: "white",
+  color: 'white',
   // TODO - make active color depend on the color of the text area
-  activeColor: "white",
+  activeColor: 'white',
 } as const;
 
 export type TextArea = {
   at: Coordinate;
 } & TextAreaNoLocation;
 
-export type TextFontWeight = "lighter" | "normal" | "bold" | "bolder";
+export type TextFontWeight = 'lighter' | 'normal' | 'bold' | 'bolder';
 
 // the text displayed in the text area
 export type Text = {
@@ -140,9 +140,9 @@ export type Text = {
 
 export const TEXT_DEFAULTS = {
   fontSize: 12,
-  fontWeight: "normal",
-  color: "black",
-  fontFamily: "Arial",
+  fontWeight: 'normal',
+  color: 'black',
+  fontFamily: 'Arial',
 } as const;
 
 export type Stroke = {
@@ -160,7 +160,7 @@ export type Stroke = {
 };
 
 export const STROKE_DEFAULTS = {
-  color: "black",
+  color: 'black',
   width: 0,
 };
 

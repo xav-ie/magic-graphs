@@ -1,36 +1,35 @@
-import { computed, onUnmounted, ref } from "vue"
+import { computed, onUnmounted, ref } from 'vue';
 
 export const useShortcutPressed = (caseSensitive = false) => {
   const getKeyMapping = (e: KeyboardEvent) => {
-    if (e.key === ' ') return 'Space'
-    const isSpecial = e.key.length > 1
-    if (isSpecial) return e.key
-    return caseSensitive ? e.key : e.key.toUpperCase()
-  }
+    if (e.key === ' ') return 'Space';
+    const isSpecial = e.key.length > 1;
+    if (isSpecial) return e.key;
+    return caseSensitive ? e.key : e.key.toUpperCase();
+  };
 
-  const currentKeyString = ref('')
+  const currentKeyString = ref('');
 
   const compareString = computed(() => {
     let filter: string;
     return currentKeyString.value
       .split('+')
       .filter((k) => {
-        const shouldRemove = k === filter
-        filter = k
-        return !shouldRemove
+        const shouldRemove = k === filter;
+        filter = k;
+        return !shouldRemove;
       })
-      .join('+')
-  })
-
+      .join('+');
+  });
 
   const trackKeyDown = (e: KeyboardEvent) => {
-    if (currentKeyString.value.length > 0) currentKeyString.value += '+'
-    currentKeyString.value += getKeyMapping(e)
-  }
+    if (currentKeyString.value.length > 0) currentKeyString.value += '+';
+    currentKeyString.value += getKeyMapping(e);
+  };
 
   const trackKeyUp = () => {
-    currentKeyString.value = ''
-  }
+    currentKeyString.value = '';
+  };
 
   /**
    * check if a key is pressed or a combination of keys is pressed
@@ -40,18 +39,18 @@ export const useShortcutPressed = (caseSensitive = false) => {
    * @example isPressed('a') // true if 'a' is pressed down
    * @example isPressed('a+b') // true if 'a' and 'b' are pressed down
    */
-  const isPressed = (keyStr: string) => compareString.value === keyStr
+  const isPressed = (keyStr: string) => compareString.value === keyStr;
 
-  document.addEventListener('keydown', trackKeyDown)
-  document.addEventListener('keyup', trackKeyUp)
+  document.addEventListener('keydown', trackKeyDown);
+  document.addEventListener('keyup', trackKeyUp);
 
   onUnmounted(() => {
-    document.removeEventListener('keydown', trackKeyDown)
-    document.removeEventListener('keyup', trackKeyUp)
-  })
+    document.removeEventListener('keydown', trackKeyDown);
+    document.removeEventListener('keyup', trackKeyUp);
+  });
 
   return {
     isPressed,
     currentKeyString,
-  }
-}
+  };
+};

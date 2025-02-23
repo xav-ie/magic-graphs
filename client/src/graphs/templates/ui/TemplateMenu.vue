@@ -1,13 +1,13 @@
 <script setup lang="ts">
-  import { computed } from "vue";
-  import { nonNullGraph as graph } from "@graph/global";
-  import CPopover from "@ui/core/Popover.vue";
-  import GWell from "@ui/graph/GWell.vue";
-  import { useGraphTemplate } from "../useGraphTemplate";
-  import GButton from "@ui/graph/button/GButton.vue";
-  import TemplateItem from "./TemplateItem.vue";
-  import AutoGenerate from "../autoGenerate/AutoGenerate.vue";
-  
+  import { computed } from 'vue';
+  import { nonNullGraph as graph } from '@graph/global';
+  import CPopover from '@ui/core/Popover.vue';
+  import GWell from '@ui/graph/GWell.vue';
+  import { useGraphTemplate } from '../useGraphTemplate';
+  import GButton from '@ui/graph/button/GButton.vue';
+  import TemplateItem from './TemplateItem.vue';
+  import AutoGenerate from '../autoGenerate/AutoGenerate.vue';
+
   const {
     templates,
     userTemplates,
@@ -28,7 +28,6 @@
     <GWell
       class="flex flex-col text-xl font-bold p-3 w-[400px] max-h-[500px] rounded-lg gap-2"
     >
-    
       <h1 class="text-2xl">Templates</h1>
       <AutoGenerate />
       <hr class="my-2" />
@@ -38,7 +37,10 @@
       >
         Add a template!
       </p>
-      <div v-else class="max-h-[600px] overflow-auto">
+      <div
+        v-else
+        class="max-h-[600px] overflow-auto"
+      >
         <div
           v-for="template in templates"
           :key="template.id"
@@ -60,12 +62,13 @@
         <GButton
           @click="add"
           :disabled="graph.nodes.value.length === 0"
-        >Save Current</GButton>
+          >Save Current</GButton
+        >
         <GButton
           @click="clearUserTemplates"
           :disabled="userTemplates.length === 0"
-        >Clear All</GButton>
-
+          >Clear All</GButton
+        >
       </div>
     </GWell>
   </CPopover>

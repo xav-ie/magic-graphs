@@ -1,7 +1,7 @@
-import type { GNode } from "@graph/types";
-import type { BaseGraph } from "@graph/base";
-import type { GraphMouseEvent } from "@graph/base/types";
-import type { NodeAnchor } from "@graph/plugins/anchors/types";
+import type { GNode } from '@graph/types';
+import type { BaseGraph } from '@graph/base';
+import type { GraphMouseEvent } from '@graph/base/types';
+import type { NodeAnchor } from '@graph/plugins/anchors/types';
 
 /**
  * interactive allows users to create, edit and delete nodes and edges
@@ -38,7 +38,7 @@ export const useInteractive = (graph: BaseGraph) => {
   const handleEdgeCreation = (fromNode: GNode, anchor: NodeAnchor) => {
     const itemStack = graph.getSchemaItemsByCoordinates(anchor);
     const toNodeSchema = itemStack.findLast(
-      (item) => item.graphType === "node",
+      (item) => item.graphType === 'node',
     );
     if (!toNodeSchema) return;
     const toNode = graph.getNode(toNodeSchema.id);
@@ -55,15 +55,15 @@ export const useInteractive = (graph: BaseGraph) => {
   };
 
   const activate = () => {
-    graph.subscribe("onDblClick", handleNodeCreation);
-    graph.subscribe("onNodeAnchorDrop", handleEdgeCreation);
+    graph.subscribe('onDblClick', handleNodeCreation);
+    graph.subscribe('onNodeAnchorDrop', handleEdgeCreation);
     graph.settings.value.nodeAnchors = true;
     graph.settings.value.edgeLabelsEditable = true;
   };
 
   const deactivate = () => {
-    graph.unsubscribe("onDblClick", handleNodeCreation);
-    graph.unsubscribe("onNodeAnchorDrop", handleEdgeCreation);
+    graph.unsubscribe('onDblClick', handleNodeCreation);
+    graph.unsubscribe('onNodeAnchorDrop', handleEdgeCreation);
     graph.settings.value.nodeAnchors = false;
     graph.settings.value.edgeLabelsEditable = false;
   };
@@ -71,7 +71,7 @@ export const useInteractive = (graph: BaseGraph) => {
   if (graph.settings.value.interactive) activate();
   if (!graph.settings.value.interactive) deactivate();
 
-  graph.subscribe("onSettingsChange", (diff) => {
+  graph.subscribe('onSettingsChange', (diff) => {
     if (diff.interactive === true) activate();
     else if (diff.interactive === false) deactivate();
   });

@@ -1,12 +1,12 @@
-import { toRef, watch } from 'vue'
-import type { MaybeRef } from 'vue'
+import { toRef, watch } from 'vue';
+import type { MaybeRef } from 'vue';
 
 type TextTipEls = {
-  outerDiv: HTMLDivElement
-  innerDiv: HTMLDivElement
-}
+  outerDiv: HTMLDivElement;
+  innerDiv: HTMLDivElement;
+};
 
-const TRANSITION_DURATION = 300
+const TRANSITION_DURATION = 300;
 
 const outerDivClasslist = [
   'absolute',
@@ -17,8 +17,8 @@ const outerDivClasslist = [
   'items-center',
   'transition-opacity',
   'duration-[300ms]',
-  'pointer-events-none'
-]
+  'pointer-events-none',
+];
 
 const innerDivClasslist = [
   'text-white',
@@ -26,60 +26,60 @@ const innerDivClasslist = [
   'bg-gray-800',
   'p-3',
   'px-10',
-  'rounded-xl'
-]
+  'rounded-xl',
+];
 
 const createTextTipEls: () => TextTipEls = () => {
-  const outerDiv = document.createElement('div')
-  const innerDiv = document.createElement('div')
+  const outerDiv = document.createElement('div');
+  const innerDiv = document.createElement('div');
 
-  outerDiv.classList.add(...outerDivClasslist)
-  innerDiv.classList.add(...innerDivClasslist)
+  outerDiv.classList.add(...outerDivClasslist);
+  innerDiv.classList.add(...innerDivClasslist);
 
-  return { outerDiv, innerDiv }
-}
+  return { outerDiv, innerDiv };
+};
 
 export const useTextTip = (textInput?: MaybeRef<string>) => {
-  const text = toRef(textInput)
-  const { outerDiv, innerDiv } = createTextTipEls()
+  const text = toRef(textInput);
+  const { outerDiv, innerDiv } = createTextTipEls();
 
   const mountTextTip = () => {
-    outerDiv.appendChild(innerDiv)
-    document.body.appendChild(outerDiv)
-  }
+    outerDiv.appendChild(innerDiv);
+    document.body.appendChild(outerDiv);
+  };
 
   const unmountTextTip = () => {
-    outerDiv.remove()
-  }
+    outerDiv.remove();
+  };
 
-  if (text.value) innerDiv.textContent = text.value
+  if (text.value) innerDiv.textContent = text.value;
 
   const showText = async () => {
-    if (outerDiv.isConnected) return
+    if (outerDiv.isConnected) return;
 
-    mountTextTip()
-    outerDiv.style.opacity = '0'
-    await new Promise((res) => setTimeout(res, 0))
-    outerDiv.style.opacity = '1'
-    await new Promise((res) => setTimeout(res, TRANSITION_DURATION))
-  }
+    mountTextTip();
+    outerDiv.style.opacity = '0';
+    await new Promise((res) => setTimeout(res, 0));
+    outerDiv.style.opacity = '1';
+    await new Promise((res) => setTimeout(res, TRANSITION_DURATION));
+  };
 
   const hideText = async () => {
-    if (!outerDiv.isConnected) return
+    if (!outerDiv.isConnected) return;
 
-    outerDiv.style.opacity = '0'
-    await new Promise((res) => setTimeout(res, TRANSITION_DURATION))
-    unmountTextTip()
-  }
+    outerDiv.style.opacity = '0';
+    await new Promise((res) => setTimeout(res, TRANSITION_DURATION));
+    unmountTextTip();
+  };
 
   const transitionTextContent = async (newText: string | undefined) => {
-    await hideText()
-    if (!newText) return
-    innerDiv.textContent = newText
-    await showText()
-  }
+    await hideText();
+    if (!newText) return;
+    innerDiv.textContent = newText;
+    await showText();
+  };
 
-  watch(text, transitionTextContent)
+  watch(text, transitionTextContent);
 
   return {
     showText,
@@ -91,7 +91,7 @@ export const useTextTip = (textInput?: MaybeRef<string>) => {
      */
     els: {
       outerDiv,
-      innerDiv
-    }
-  }
-}
+      innerDiv,
+    },
+  };
+};

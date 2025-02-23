@@ -1,25 +1,25 @@
-import type { GNode, GEdge } from "@graph/types";
-import type { GraphEvent } from "@graph/events";
-import type { BaseGraph } from "@graph/base";
+import type { GNode, GEdge } from '@graph/types';
+import type { GraphEvent } from '@graph/events';
+import type { BaseGraph } from '@graph/base';
 
 export const usePersistent = (graph: BaseGraph) => {
   const nodeStorage = {
     get: () =>
       JSON.parse(
         localStorage.getItem(
-          graph.settings.value.persistentStorageKey + "-nodes"
-        ) ?? "[]"
+          graph.settings.value.persistentStorageKey + '-nodes',
+        ) ?? '[]',
       ),
     set: (nodes: GNode[]) => {
       const nodesToAdd = nodes.filter((node) => {
         const nodeInBlacklist = graph.settings.value.persistentBlacklist.has(
-          node.id
+          node.id,
         );
         return !nodeInBlacklist;
       });
       localStorage.setItem(
-        graph.settings.value.persistentStorageKey + "-nodes",
-        JSON.stringify(nodesToAdd)
+        graph.settings.value.persistentStorageKey + '-nodes',
+        JSON.stringify(nodesToAdd),
       );
     },
   };
@@ -28,19 +28,19 @@ export const usePersistent = (graph: BaseGraph) => {
     get: () =>
       JSON.parse(
         localStorage.getItem(
-          graph.settings.value.persistentStorageKey + "-edges"
-        ) ?? "[]"
+          graph.settings.value.persistentStorageKey + '-edges',
+        ) ?? '[]',
       ),
     set: (edges: GEdge[]) => {
       const edgesToAdd = edges.filter((edge) => {
         const edgeInBlacklist = graph.settings.value.persistentBlacklist.has(
-          edge.id
+          edge.id,
         );
         return !edgeInBlacklist;
       });
       localStorage.setItem(
-        graph.settings.value.persistentStorageKey + "-edges",
-        JSON.stringify(edgesToAdd)
+        graph.settings.value.persistentStorageKey + '-edges',
+        JSON.stringify(edgesToAdd),
       );
     },
   };
@@ -59,32 +59,32 @@ export const usePersistent = (graph: BaseGraph) => {
     });
 
   const trackChangeEvents: GraphEvent[] = [
-    "onStructureChange",
-    "onNodeDrop",
-    "onGroupDrop",
+    'onStructureChange',
+    'onNodeDrop',
+    'onGroupDrop',
   ];
 
   const listenForGraphStateEvents = () => {
     trackChangeEvents.forEach((event) =>
-      graph.subscribe(event, trackGraphState)
+      graph.subscribe(event, trackGraphState),
     );
   };
 
   const stopListeningForGraphStateEvents = () => {
     trackChangeEvents.forEach((event) =>
-      graph.unsubscribe(event, trackGraphState)
+      graph.unsubscribe(event, trackGraphState),
     );
   };
 
-  graph.subscribe("onSettingsChange", (diff) => {
+  graph.subscribe('onSettingsChange', (diff) => {
     stopListeningForGraphStateEvents();
 
     // persistent was true, but now it is false
-    const persistenceTurnedOff = "persistent" in diff && !diff.persistent;
+    const persistenceTurnedOff = 'persistent' in diff && !diff.persistent;
     if (persistenceTurnedOff) return;
 
     // persistent was false, but now it is true
-    const persistenceTurnedOn = "persistent" in diff && diff.persistent;
+    const persistenceTurnedOn = 'persistent' in diff && diff.persistent;
     if (persistenceTurnedOn) {
       load();
       listenForGraphStateEvents();
@@ -93,7 +93,7 @@ export const usePersistent = (graph: BaseGraph) => {
     }
 
     // from here on out, persistent was true, but it was not in the diff
-    if ("persistentStorageKey" in diff) {
+    if ('persistentStorageKey' in diff) {
       load();
     }
 

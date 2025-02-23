@@ -1,5 +1,5 @@
-import { computed } from "vue";
-import type { AdjacencyList, AdjacencyLists } from "@graph/useAdjacencyList";
+import { computed } from 'vue';
+import type { AdjacencyList, AdjacencyLists } from '@graph/useAdjacencyList';
 
 export const useConnected = ({
   adjacencyList: adjList,
@@ -7,7 +7,7 @@ export const useConnected = ({
 }: Pick<AdjacencyLists, 'adjacencyList' | 'undirectedAdjacencyList'>) => {
   const runBFS = (adjList: AdjacencyList, startNode: string) => {
     const visited = new Set<string>();
-    const q = []
+    const q = [];
 
     q.push(startNode);
 
@@ -16,33 +16,34 @@ export const useConnected = ({
       if (!node) break;
       visited.add(node);
       const neighbors = adjList[node];
-      neighbors.forEach(neighbor => {
+      neighbors.forEach((neighbor) => {
         if (!visited.has(neighbor)) {
           q.push(neighbor);
         }
-      })
+      });
     }
 
     return visited;
-  }
+  };
 
-  const getIsConnectedWithAdjList = (adjList: AdjacencyList) => Object.keys(adjList).every(nodeId => {
-    const visited = runBFS(adjList, nodeId);
-    return visited.size === Object.keys(adjList).length;
-  })
+  const getIsConnectedWithAdjList = (adjList: AdjacencyList) =>
+    Object.keys(adjList).every((nodeId) => {
+      const visited = runBFS(adjList, nodeId);
+      return visited.size === Object.keys(adjList).length;
+    });
 
   const isConnected = computed(() => {
-    return getIsConnectedWithAdjList(adjList.value)
+    return getIsConnectedWithAdjList(adjList.value);
   });
 
   const isWeaklyConnected = computed(() => {
-    return getIsConnectedWithAdjList(undirectedAdjList.value)
+    return getIsConnectedWithAdjList(undirectedAdjList.value);
   });
 
   return {
     isConnected,
     isWeaklyConnected,
-  }
-}
+  };
+};
 
 export type CharacteristicConnected = ReturnType<typeof useConnected>;

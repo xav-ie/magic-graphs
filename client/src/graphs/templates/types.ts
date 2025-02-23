@@ -1,14 +1,13 @@
-import type { GEdge, GNode } from "@graph/types";
+import type { GEdge, GNode } from '@graph/types';
 
 export type GraphTemplate = {
-  id: string
-  isUserAdded?: boolean
-  thumbnail?: string
-  title: string
-  description: string
+  id: string;
+  isUserAdded?: boolean;
+  thumbnail?: string;
+  title: string;
+  description: string;
   graphState: {
-    nodes: GNode[]
-    edges: GEdge[]
-  }
+    nodes: GNode[];
+    edges: GEdge[];
+  };
 };
-

@@ -1,10 +1,10 @@
-import { ref, computed, readonly } from "vue";
-import type { SchemaItem } from "@graph/types";
-import type { FocusOption, GraphMouseEvent } from "@graph/base/types";
-import type { BaseGraph } from "@graph/base";
-import { useTheme } from "@graph/themes/useTheme";
-import { getCtx } from "@utils/ctx";
-import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from "./constants";
+import { ref, computed, readonly } from 'vue';
+import type { SchemaItem } from '@graph/types';
+import type { FocusOption, GraphMouseEvent } from '@graph/base/types';
+import type { BaseGraph } from '@graph/base';
+import { useTheme } from '@graph/themes/useTheme';
+import { getCtx } from '@utils/ctx';
+import { FOCUS_THEME_ID, FOCUSABLE_GRAPH_TYPES } from './constants';
 import { MOUSE_BUTTONS } from "@graph/global";
 
 export const useFocus = (graph: BaseGraph) => {
@@ -27,7 +27,7 @@ export const useFocus = (graph: BaseGraph) => {
     const oldIds = new Set([...focusedItemIds.value]);
     focusedItemIds.value = new Set(nonBlacklistedIds);
 
-    graph.emit("onFocusChange", focusedItemIds.value, oldIds);
+    graph.emit('onFocusChange', focusedItemIds.value, oldIds);
   };
 
   const addToFocus = (id: string) => {
@@ -39,15 +39,14 @@ export const useFocus = (graph: BaseGraph) => {
 
     const oldIds = new Set([...focusedItemIds.value]);
     focusedItemIds.value.add(id);
-
-    graph.emit("onFocusChange", focusedItemIds.value, oldIds);
+    graph.emit('onFocusChange', focusedItemIds.value, oldIds);
   };
 
   const handleTextArea = (schemaItem: SchemaItem) => {
     const ctx = getCtx(graph.canvas);
     schemaItem.shape.activateTextArea?.(ctx, (str: string) => {
       const edge = graph.getEdge(schemaItem.id);
-      if (!edge) throw new Error("textarea only implemented for edges");
+      if (!edge) throw new Error('textarea only implemented for edges');
       const newLabel = graph.settings.value.edgeInputToLabel(str);
       if (newLabel === undefined || edge.label === newLabel) return;
       graph.editEdgeLabel(edge.id, newLabel);
@@ -65,7 +64,6 @@ export const useFocus = (graph: BaseGraph) => {
 
   const handleFocusChange = ({ items, coords, event }: GraphMouseEvent) => {
     if (event.button !== MOUSE_BUTTONS.left) return;
-
     const topItem = items.at(-1);
     if (!topItem) return shiftKeyHeldDown.value ? undefined : resetFocus();
 
@@ -74,7 +72,7 @@ export const useFocus = (graph: BaseGraph) => {
     const canEdit =
       inATextArea &&
       graph.settings.value.edgeLabelsEditable &&
-      topItem.graphType === "edge";
+      topItem.graphType === 'edge';
 
     if (canEdit) {
       resetFocus();
@@ -106,64 +104,64 @@ export const useFocus = (graph: BaseGraph) => {
 
   const isFocused = (id: string) => focusedItemIds.value.has(id);
 
-  setTheme("nodeColor", (node) => {
+  setTheme('nodeColor', (node) => {
     if (!isFocused(node.id)) return;
-    return graph.getTheme("nodeFocusColor", node);
+    return graph.getTheme('nodeFocusColor', node);
   });
 
-  setTheme("nodeBorderColor", (node) => {
+  setTheme('nodeBorderColor', (node) => {
     if (!isFocused(node.id)) return;
-    return graph.getTheme("nodeFocusBorderColor", node);
+    return graph.getTheme('nodeFocusBorderColor', node);
   });
 
-  setTheme("nodeTextColor", (node) => {
+  setTheme('nodeTextColor', (node) => {
     if (!isFocused(node.id)) return;
-    return graph.getTheme("nodeFocusTextColor", node);
+    return graph.getTheme('nodeFocusTextColor', node);
   });
 
-  setTheme("edgeColor", (edge) => {
+  setTheme('edgeColor', (edge) => {
     if (!isFocused(edge.id)) return;
-    return graph.getTheme("edgeFocusColor", edge);
+    return graph.getTheme('edgeFocusColor', edge);
   });
 
-  setTheme("edgeTextColor", (edge) => {
+  setTheme('edgeTextColor', (edge) => {
     if (!isFocused(edge.id)) return;
-    return graph.getTheme("edgeFocusTextColor", edge);
+    return graph.getTheme('edgeFocusTextColor', edge);
   });
 
-  setTheme("nodeAnchorColor", (node) => {
+  setTheme('nodeAnchorColor', (node) => {
     if (!isFocused(node.id)) return;
-    return graph.getTheme("nodeAnchorColorWhenParentFocused", node);
+    return graph.getTheme('nodeAnchorColorWhenParentFocused', node);
   });
 
   const handleKeyDown = (ev: KeyboardEvent) => {
-    if (ev.key === "Shift") shiftKeyHeldDown.value = true;
+    if (ev.key === 'Shift') shiftKeyHeldDown.value = true;
   };
 
   const handleKeyUp = (ev: KeyboardEvent) => {
-    if (ev.key === "Shift") shiftKeyHeldDown.value = false;
+    if (ev.key === 'Shift') shiftKeyHeldDown.value = false;
   };
 
   const activate = () => {
-    graph.subscribe("onNodeAdded", setFocusToAddedItem);
-    graph.subscribe("onEdgeAdded", setFocusToAddedItem);
-    graph.subscribe("onMouseDown", handleFocusChange);
-    graph.subscribe("onKeyDown", handleKeyDown);
-    graph.subscribe("onKeyUp", handleKeyUp);
-    graph.subscribe("onStructureChange", clearOutDeletedItemsFromFocus);
+    graph.subscribe('onNodeAdded', setFocusToAddedItem);
+    graph.subscribe('onEdgeAdded', setFocusToAddedItem);
+    graph.subscribe('onMouseDown', handleFocusChange);
+    graph.subscribe('onKeyDown', handleKeyDown);
+    graph.subscribe('onKeyUp', handleKeyUp);
+    graph.subscribe('onStructureChange', clearOutDeletedItemsFromFocus);
   };
 
   const deactivate = () => {
-    graph.unsubscribe("onNodeAdded", setFocusToAddedItem);
-    graph.unsubscribe("onEdgeAdded", setFocusToAddedItem);
-    graph.unsubscribe("onMouseDown", handleFocusChange);
-    graph.unsubscribe("onKeyDown", handleKeyDown);
-    graph.unsubscribe("onKeyUp", handleKeyUp);
-    graph.unsubscribe("onStructureChange", clearOutDeletedItemsFromFocus);
+    graph.unsubscribe('onNodeAdded', setFocusToAddedItem);
+    graph.unsubscribe('onEdgeAdded', setFocusToAddedItem);
+    graph.unsubscribe('onMouseDown', handleFocusChange);
+    graph.unsubscribe('onKeyDown', handleKeyDown);
+    graph.unsubscribe('onKeyUp', handleKeyUp);
+    graph.unsubscribe('onStructureChange', clearOutDeletedItemsFromFocus);
     resetFocus();
   };
 
-  graph.subscribe("onSettingsChange", (diff) => {
+  graph.subscribe('onSettingsChange', (diff) => {
     if (diff.focusable === false) deactivate();
     else if (diff.focusable === true) activate();
   });

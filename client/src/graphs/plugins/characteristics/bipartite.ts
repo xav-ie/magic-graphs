@@ -1,8 +1,10 @@
-import type { AdjacencyList } from "@graph/useAdjacencyList";
-import { computed, type Ref } from "vue";
+import type { AdjacencyList } from '@graph/useAdjacencyList';
+import { computed, type Ref } from 'vue';
 
 type BipartitePartition = [string[], string[]];
-type GetBipartitePartition = (adjList: Readonly<AdjacencyList>) => BipartitePartition | undefined;
+type GetBipartitePartition = (
+  adjList: Readonly<AdjacencyList>,
+) => BipartitePartition | undefined;
 
 export type NodeIdToBipartiteSet = Map<string, 0 | 1>;
 
@@ -13,7 +15,7 @@ export const getBipartitePartition: GetBipartitePartition = (adjList) => {
   const completeGraph: AdjacencyList = { ...adjList };
 
   // Ensure all nodes are in the graph
-  Object.keys(adjList).forEach(node => {
+  Object.keys(adjList).forEach((node) => {
     if (!completeGraph[node]) {
       completeGraph[node] = [];
     }
@@ -22,7 +24,7 @@ export const getBipartitePartition: GetBipartitePartition = (adjList) => {
   // Build a reverse adjacency list to check incoming edges
   const reverseGraph: AdjacencyList = {};
   Object.entries(completeGraph).forEach(([node, neighbors]) => {
-    neighbors.forEach(neighbor => {
+    neighbors.forEach((neighbor) => {
       if (!reverseGraph[neighbor]) {
         reverseGraph[neighbor] = [];
       }
@@ -44,7 +46,9 @@ export const getBipartitePartition: GetBipartitePartition = (adjList) => {
       // Check both outgoing and incoming edges
       const outgoingNeighbors = completeGraph[currentNode] || [];
       const incomingNeighbors = reverseGraph[currentNode] || [];
-      const allNeighbors = [...new Set([...outgoingNeighbors, ...incomingNeighbors])];
+      const allNeighbors = [
+        ...new Set([...outgoingNeighbors, ...incomingNeighbors]),
+      ];
 
       for (const neighbor of allNeighbors) {
         // If neighbor hasn't been colored yet
@@ -75,25 +79,27 @@ export const getBipartitePartition: GetBipartitePartition = (adjList) => {
 };
 
 export const useBipartite = (adjList: Ref<AdjacencyList>) => {
-  const bipartitePartition = computed(() => getBipartitePartition(adjList.value))
+  const bipartitePartition = computed(() =>
+    getBipartitePartition(adjList.value),
+  );
 
   const nodeIdToBipartitePartition = computed(() => {
-    const partition = bipartitePartition.value
-    const map: NodeIdToBipartiteSet = new Map()
-    if (!partition) return map
-    const [left, right] = partition
-    for (const nodeId of left) map.set(nodeId, 0)
-    for (const nodeId of right) map.set(nodeId, 1)
-    return map
-  })
+    const partition = bipartitePartition.value;
+    const map: NodeIdToBipartiteSet = new Map();
+    if (!partition) return map;
+    const [left, right] = partition;
+    for (const nodeId of left) map.set(nodeId, 0);
+    for (const nodeId of right) map.set(nodeId, 1);
+    return map;
+  });
 
-  const isBipartite = computed(() => bipartitePartition.value !== undefined)
+  const isBipartite = computed(() => bipartitePartition.value !== undefined);
 
   return {
     bipartitePartition,
     nodeIdToBipartitePartition,
     isBipartite,
-  }
-}
+  };
+};
 
 export type CharacteristicBipartite = ReturnType<typeof useBipartite>;

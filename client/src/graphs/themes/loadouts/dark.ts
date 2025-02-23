@@ -1,8 +1,8 @@
-import colors from "@colors";
-import { NON_COLOR_THEMES } from "./universal";
-import type { GraphThemeRaw } from "../types";
+import colors from '@colors';
+import { NON_COLOR_THEMES } from './universal';
+import type { GraphThemeRaw } from '../types';
 
-const REDDISH_GRAY = 'rgb(100, 60, 70)'
+const REDDISH_GRAY = 'rgb(100, 60, 70)';
 
 export const DARK_THEME: GraphThemeRaw = {
   nodeBorderColor: colors.BLACK,
@@ -29,4 +29,4 @@ export const DARK_THEME: GraphThemeRaw = {
   marqueeEncapsulatedNodeBoxColor: colors.RED_700 + '20',
 
   ...NON_COLOR_THEMES,
-}
+};

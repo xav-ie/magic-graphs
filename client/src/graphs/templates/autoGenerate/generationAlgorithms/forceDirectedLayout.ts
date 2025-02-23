@@ -1,4 +1,4 @@
-import type { GEdge, GNode } from "@graph/types";
+import type { GEdge, GNode } from '@graph/types';
 
 type ForceDirectedLayoutOptions = {
   width: number;
@@ -24,7 +24,7 @@ const FORCE_DIRECTED_LAYOUT_OPTIONS_DEFAULTS = {
 export const forceDirectedLayout = (
   nodes: GNode[],
   edges: GEdge[],
-  options: PartialForceDirectedLayoutOptions = {}
+  options: PartialForceDirectedLayoutOptions = {},
 ) => {
   const { width, height, iterations } = {
     ...FORCE_DIRECTED_LAYOUT_OPTIONS_DEFAULTS,

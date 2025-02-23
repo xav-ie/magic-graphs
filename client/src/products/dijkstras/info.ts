@@ -1,9 +1,9 @@
-import type { ProductInfo } from 'src/types'
-import type { Graph } from '@graph/types'
-import { useSimulationRunner } from './sim/runner'
-import state from './state'
-import { canRunDijkstras } from './sim/guard'
-import templates from './templates'
+import type { ProductInfo } from 'src/types';
+import type { Graph } from '@graph/types';
+import { useSimulationRunner } from './sim/runner';
+import state from './state';
+import { canRunDijkstras } from './sim/guard';
+import templates from './templates';
 
 const info: ProductInfo = {
   route: {
@@ -19,15 +19,18 @@ const info: ProductInfo = {
     thumbnail: '/products/thumbnails/dijkstras.png',
     category: 'algorithms',
   },
-  simulations: (graph: Graph) => [{
-    name: 'Dijkstras Algorithm',
-    description: 'Finds the shortest path from a source node to all other nodes in a graph',
-    thumbnail: '/products/thumbnails/dijkstras.png',
-    canRun: canRunDijkstras(graph),
-    runner: useSimulationRunner(graph),
-  }],
+  simulations: (graph: Graph) => [
+    {
+      name: 'Dijkstras Algorithm',
+      description:
+        'Finds the shortest path from a source node to all other nodes in a graph',
+      thumbnail: '/products/thumbnails/dijkstras.png',
+      canRun: canRunDijkstras(graph),
+      runner: useSimulationRunner(graph),
+    },
+  ],
   state,
   templates,
-}
+};
 
-export default info
+export default info;

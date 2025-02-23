@@ -1,15 +1,15 @@
-import { uturn } from "@shapes";
-import type { UTurn } from "@shape/uturn";
-import gsap from "gsap";
-import { EASING_FUNCTIONS } from "@utils/animate";
-import { DURATION_MS } from "@graph/animationController";
-import type { ShapeResolverOptions } from "./types";
-import { SEQ } from "./uturnSeq";
-import { getMapper, inRange } from "./utils";
-import { animateInTextArea, animateOutTextArea } from "./edgeTextArea";
+import { uturn } from '@shapes';
+import type { UTurn } from '@shape/uturn';
+import gsap from 'gsap';
+import { EASING_FUNCTIONS } from '@utils/animate';
+import { DURATION_MS } from '@graph/animationController';
+import type { ShapeResolverOptions } from './types';
+import { SEQ } from './uturnSeq';
+import { getMapper, inRange } from './utils';
+import { animateInTextArea, animateOutTextArea } from './edgeTextArea';
 
 const { interpolate, normalize } = gsap.utils;
-const EASING = EASING_FUNCTIONS["in-out"];
+const EASING = EASING_FUNCTIONS['in-out'];
 
 const animateInUTurnBody =
   (progress: number) =>

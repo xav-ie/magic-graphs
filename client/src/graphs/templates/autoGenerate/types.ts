@@ -5,7 +5,8 @@ type GenerateClusterNodesOptions = {
   clusterSpread: number;
 };
 
-export type PartialGenerateClusterNodesOptions = Partial<GenerateClusterNodesOptions>;
+export type PartialGenerateClusterNodesOptions =
+  Partial<GenerateClusterNodesOptions>;
 
 export const GENERATE_CLUSTER_GRAPH_DEFAULTS = {
   clusterCount: 1,
@@ -24,22 +25,21 @@ type GenerateCohesiveEdgesOptions = {
   allowBidirectionalEdges: boolean;
 };
 
-export type PartialGenerateCohesiveEdgesOptions = Partial<GenerateCohesiveEdgesOptions>;
+export type PartialGenerateCohesiveEdgesOptions =
+  Partial<GenerateCohesiveEdgesOptions>;
 
 export const GENERATE_COHESIVE_EDGES_DEFAULTS = {
   maxEdgesPerNode: 10,
   connectionProbability: 0.8,
   maxNeighbors: 4,
   minAngleBetweenEdges: Math.PI / 6,
-  edgeLabel: "1",
+  edgeLabel: '1',
   allowUTurnEdges: false,
   allowBidirectionalEdges: false,
 } as const;
 
-export type AutoGenerateGraphOptions = 
-  PartialGenerateClusterNodesOptions &
-  PartialGenerateCohesiveEdgesOptions & {
-  };
+export type AutoGenerateGraphOptions = PartialGenerateClusterNodesOptions &
+  PartialGenerateCohesiveEdgesOptions & {};
 
 export const AUTO_GENERATE_GRAPH_DEFAULTS = {
   ...GENERATE_COHESIVE_EDGES_DEFAULTS,

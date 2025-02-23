@@ -1,10 +1,13 @@
-import { computed } from "vue";
-import type { GEdge, Graph } from "@graph/types";
-import { useSimulationControls } from "@ui/product/sim/useSimulationControls";
-import type { SimulationControls, SimulationRunner } from "@ui/product/sim/types";
-import { useKruskal } from "../algo/useKruskal";
-import { usePrim } from "../algo/usePrim";
-import { useSimulationTheme } from "./theme";
+import { computed } from 'vue';
+import type { GEdge, Graph } from '@graph/types';
+import { useSimulationControls } from '@ui/product/sim/useSimulationControls';
+import type {
+  SimulationControls,
+  SimulationRunner,
+} from '@ui/product/sim/types';
+import { useKruskal } from '../algo/useKruskal';
+import { usePrim } from '../algo/usePrim';
+import { useSimulationTheme } from './theme';
 
 export type MSTTrace = GEdge;
 export type MSTSimulationControls = SimulationControls<MSTTrace>;
@@ -12,7 +15,7 @@ export type MSTSimulationRunner = SimulationRunner<MSTTrace>;
 
 export const useMSTSimulationRunner = (
   graph: Graph,
-  trace: MSTSimulationControls['trace']
+  trace: MSTSimulationControls['trace'],
 ): MSTSimulationRunner => {
   const lastStep = computed(() => trace.value.length);
   const simControls = useSimulationControls(trace, { lastStep });
@@ -28,15 +31,15 @@ export const useMSTSimulationRunner = (
       deactivate();
       simControls.stop();
     },
-  }
-}
+  };
+};
 
 export const usePrimSimulationRunner = (graph: Graph) => {
   const { trace } = usePrim(graph);
   return useMSTSimulationRunner(graph, trace);
-}
+};
 
 export const useKruskalSimulationRunner = (graph: Graph) => {
   const { trace } = useKruskal(graph);
   return useMSTSimulationRunner(graph, trace);
-}
+};

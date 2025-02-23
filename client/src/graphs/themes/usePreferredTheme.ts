@@ -1,13 +1,13 @@
-import { watch } from "vue"
-import { useDark } from "@vueuse/core"
-import type { BaseGraph } from "@graph/base"
-import { useLocalStorage } from "@vueuse/core"
-import type { GraphThemeName } from "."
-import type { Graph } from "@graph/types"
+import { watch } from 'vue';
+import { useDark } from '@vueuse/core';
+import type { BaseGraph } from '@graph/base';
+import { useLocalStorage } from '@vueuse/core';
+import type { GraphThemeName } from '.';
+import type { Graph } from '@graph/types';
 
-export type PreferredGraphTheme = GraphThemeName | 'auto'
+export type PreferredGraphTheme = GraphThemeName | 'auto';
 
-const DEFAULT_THEME: PreferredGraphTheme = 'auto'
+const DEFAULT_THEME: PreferredGraphTheme = 'auto';
 
 /**
  * creates a `ref` that when changed updates the {@link Graph.themeName | graph theme} and saves the preference
@@ -17,23 +17,34 @@ const DEFAULT_THEME: PreferredGraphTheme = 'auto'
  * @param graph the graph instance
  */
 export const usePreferredTheme = (graph: BaseGraph) => {
-  const isDark = useDark()
-  const preferredTheme = useLocalStorage<PreferredGraphTheme>('preferred-theme', DEFAULT_THEME)
+  const isDark = useDark();
+  const preferredTheme = useLocalStorage<PreferredGraphTheme>(
+    'preferred-theme',
+    DEFAULT_THEME,
+  );
 
-  watch(isDark, () => {
-    if (preferredTheme.value !== 'auto') return
-    graph.themeName.value = isDark.value ? 'dark' : 'light'
-  }, { immediate: true })
+  watch(
+    isDark,
+    () => {
+      if (preferredTheme.value !== 'auto') return;
+      graph.themeName.value = isDark.value ? 'dark' : 'light';
+    },
+    { immediate: true },
+  );
 
-  watch(preferredTheme, () => {
-    if (preferredTheme.value === 'auto') {
-      graph.themeName.value = isDark.value ? 'dark' : 'light'
-    } else {
-      graph.themeName.value = preferredTheme.value
-    }
-  }, { immediate: true })
+  watch(
+    preferredTheme,
+    () => {
+      if (preferredTheme.value === 'auto') {
+        graph.themeName.value = isDark.value ? 'dark' : 'light';
+      } else {
+        graph.themeName.value = preferredTheme.value;
+      }
+    },
+    { immediate: true },
+  );
 
   return {
     preferredTheme,
-  }
-}
+  };
+};

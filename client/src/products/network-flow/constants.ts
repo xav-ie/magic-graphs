@@ -1,4 +1,3 @@
-
 /**
  * node text label of source and sink nodes
  */

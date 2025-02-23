@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import type { TutorialControls } from "@graph/tutorials/types";
-  import ToolbarHint from "./ToolbarHint.vue";
-  import colors from "@utils/colors";
+  import type { TutorialControls } from '@graph/tutorials/types';
+  import ToolbarHint from './ToolbarHint.vue';
+  import colors from '@utils/colors';
 
   withDefaults(
     defineProps<{
@@ -11,7 +11,7 @@
     {
       color: colors.GRAY_800,
       hint: undefined,
-    }
+    },
   );
 </script>
 

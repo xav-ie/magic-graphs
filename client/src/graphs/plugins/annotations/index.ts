@@ -1,17 +1,17 @@
-import { ref, watch } from "vue";
-import type { Aggregator } from "@graph/types";
-import type { BaseGraph } from "@graph/base";
-import type { GraphMouseEvent } from "@graph/base/types";
-import type { Coordinate } from "@shape/types";
-import { generateId } from "@utils/id";
-import { shapes } from "@shapes";
-import colors from "@utils/colors";
-import type { Color } from "@utils/colors";
-import { BRUSH_WEIGHTS, COLORS } from "./constants";
-import { useAnnotationHistory } from "./history";
-import type { Annotation } from "./types";
-import { useNonNullGraphColors } from "@graph/themes/useGraphColors";
-import { getCircleBoundingBox } from "@shape/circle/hitbox";
+import { ref, watch } from 'vue';
+import type { Aggregator } from '@graph/types';
+import type { BaseGraph } from '@graph/base';
+import type { GraphMouseEvent } from '@graph/base/types';
+import type { Coordinate } from '@shape/types';
+import { generateId } from '@utils/id';
+import { shapes } from '@shapes';
+import colors from '@utils/colors';
+import type { Color } from '@utils/colors';
+import { BRUSH_WEIGHTS, COLORS } from './constants';
+import { useAnnotationHistory } from './history';
+import type { Annotation } from './types';
+import { useNonNullGraphColors } from '@graph/themes/useGraphColors';
+import { getCircleBoundingBox } from '@shape/circle/hitbox';
 import { MOUSE_BUTTONS } from "@graph/global";
 
 const ERASER_BRUSH_RADIUS = 10;
@@ -37,7 +37,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     if (scribbles.value.length === 0) return;
 
     history.addToUndoStack({
-      action: "remove",
+      action: 'remove',
       annotations: scribbles.value,
     });
 
@@ -98,7 +98,7 @@ export const useAnnotations = (graph: BaseGraph) => {
       });
 
       history.addToUndoStack({
-        action: "remove",
+        action: 'remove',
         annotations: erasedScribbles,
       });
 
@@ -111,7 +111,7 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     const scribble = {
       id: generateId(),
-      type: "draw",
+      type: 'draw',
       points: batch.value,
       color: selectedColor.value,
       brushWeight: selectedBrushWeight.value,
@@ -120,7 +120,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     scribbles.value.push(scribble);
 
     history.addToUndoStack({
-      action: "add",
+      action: 'add',
       annotations: [scribble],
     });
 
@@ -129,7 +129,7 @@ export const useAnnotations = (graph: BaseGraph) => {
 
   watch(erasing, () => {
     if (!graph.canvas.value) return;
-    graph.canvas.value.style.cursor = erasing.value ? "none" : "crosshair";
+    graph.canvas.value.style.cursor = erasing.value ? 'none' : 'crosshair';
   });
 
   const addScribblesToAggregator = (aggregator: Aggregator) => {
@@ -147,21 +147,21 @@ export const useAnnotations = (graph: BaseGraph) => {
       });
 
       aggregator.push({
-        graphType: "annotation",
+        graphType: 'annotation',
         id: eraserCursor.id,
         shape: eraserCursor,
         priority: 5050,
       });
     } else if (batch.value.length > 0 && isDrawing.value) {
       const incompleteScribble = shapes.scribble({
-        type: "draw",
+        type: 'draw',
         points: batch.value,
         color: selectedColor.value,
         brushWeight: selectedBrushWeight.value,
       });
 
       aggregator.push({
-        graphType: "annotation",
+        graphType: 'annotation',
         id: incompleteScribble.id,
         shape: incompleteScribble,
         priority: 5001,
@@ -171,11 +171,11 @@ export const useAnnotations = (graph: BaseGraph) => {
     for (const scribble of scribbles.value) {
       const isErased = erasedScribbleIds.value.has(scribble.id);
       aggregator.push({
-        graphType: "annotation",
+        graphType: 'annotation',
         id: scribble.id,
         shape: shapes.scribble({
           ...scribble,
-          color: scribble.color + (isErased ? "50" : ""),
+          color: scribble.color + (isErased ? '50' : ''),
         }),
         priority: 5000,
       });
@@ -198,11 +198,11 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     graph.graphCursorDisabled.value = true;
 
-    graph.canvas.value.style.cursor = "crosshair";
+    graph.canvas.value.style.cursor = 'crosshair';
 
-    graph.subscribe("onMouseDown", startDrawing);
-    graph.subscribe("onMouseMove", drawLine);
-    graph.subscribe("onMouseUp", stopDrawing);
+    graph.subscribe('onMouseDown', startDrawing);
+    graph.subscribe('onMouseMove', drawLine);
+    graph.subscribe('onMouseUp', stopDrawing);
   };
 
   const deactivate = () => {
@@ -218,11 +218,11 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     graph.graphCursorDisabled.value = false;
 
-    graph.canvas.value.style.cursor = "default";
+    graph.canvas.value.style.cursor = 'default';
 
-    graph.unsubscribe("onMouseDown", startDrawing);
-    graph.unsubscribe("onMouseMove", drawLine);
-    graph.unsubscribe("onMouseUp", stopDrawing);
+    graph.unsubscribe('onMouseDown', startDrawing);
+    graph.unsubscribe('onMouseMove', drawLine);
+    graph.unsubscribe('onMouseUp', stopDrawing);
   };
 
   const load = (annotations: Annotation[]) => {

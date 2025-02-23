@@ -26,7 +26,7 @@ export type ProgressOptions = {
    * a css easing function used to transition the progress bar.
    * @default "ease-in-out"
    */
-  transitionEasing?: "linear" | "ease-in-out";
+  transitionEasing?: 'linear' | 'ease-in-out';
   /**
    * the color of the progress bar.
    * @default colors.GRAY_200 // tailwind gray-200
@@ -36,11 +36,11 @@ export type ProgressOptions = {
    * called when the user clicks on the progress bar to set the progress.
    * @param progress the new progress value.
    */
-  onProgressSet?: (progress: number) => void
-  onHover?: (progress: number) => void
+  onProgressSet?: (progress: number) => void;
+  onHover?: (progress: number) => void;
 };
 
 export const PROGRESS_DEFAULTS = {
   transitionTimeMs: 250,
-  transitionEasing: "ease-in-out",
+  transitionEasing: 'ease-in-out',
 } as const;

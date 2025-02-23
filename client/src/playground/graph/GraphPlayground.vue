@@ -1,18 +1,18 @@
 <script setup lang="ts">
-  import { ref, watch } from "vue";
-  import { useLocalStorage } from "@vueuse/core";
-  import { useGraph } from "@graph/useGraph";
-  import { useBasicsTutorial } from "@graph/tutorials/useTutorial";
-  import TutorialControls from "@graph/tutorials/TutorialControls.vue";
-  import TutorialHint from "@graph/tutorials/TutorialHint.vue";
-  import { useGraphBtns } from "@graph/buttons/useGraphBtns";
-  import GraphBtns from "@graph/buttons/GraphBtns.vue";
-  import Graph from "@graph/Graph.vue";
-  import ThemeControls from "./ThemeControls.vue";
-  import type { GraphPlaygroundControls as Controls } from "./types";
-  import GraphPlaygroundControls from "./GraphPlaygroundControls.vue";
-  import { isFraction } from "@utils/fracDecConverter";
-  import SettingsControls from "./SettingsControls.vue";
+  import { ref, watch } from 'vue';
+  import { useLocalStorage } from '@vueuse/core';
+  import { useGraph } from '@graph/useGraph';
+  import { useBasicsTutorial } from '@graph/tutorials/useTutorial';
+  import TutorialControls from '@graph/tutorials/TutorialControls.vue';
+  import TutorialHint from '@graph/tutorials/TutorialHint.vue';
+  import { useGraphBtns } from '@graph/buttons/useGraphBtns';
+  import GraphBtns from '@graph/buttons/GraphBtns.vue';
+  import Graph from '@graph/Graph.vue';
+  import ThemeControls from './ThemeControls.vue';
+  import type { GraphPlaygroundControls as Controls } from './types';
+  import GraphPlaygroundControls from './GraphPlaygroundControls.vue';
+  import { isFraction } from '@utils/fracDecConverter';
+  import SettingsControls from './SettingsControls.vue';
 
   const graphElement = ref<HTMLCanvasElement>();
 
@@ -27,7 +27,7 @@
 
   const { btnArr } = useGraphBtns(graph);
 
-  const controls = useLocalStorage<Controls>("graph-playground-controls", {
+  const controls = useLocalStorage<Controls>('graph-playground-controls', {
     tutorial: true,
     theme: true,
     settings: true,
@@ -43,7 +43,7 @@
         tutorialControls.stop();
       }
     },
-    { immediate: true, deep: true }
+    { immediate: true, deep: true },
   );
 </script>
 

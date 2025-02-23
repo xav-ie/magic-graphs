@@ -1,17 +1,16 @@
 <script setup lang="ts">
-  import { ref, watch, computed, onUnmounted } from "vue";
-  import { useElementSize } from "@vueuse/core";
-  import { debounce } from "@utils/debounce";
-  import { useClassAttrs } from "@ui/useClassAttrs";
-  import { cross } from "@shapes";
-  import type { Color } from "@colors";
-  import { getCtx } from "@utils/ctx";
-  import CoordinateIndicator from "./CoordinateIndicator.vue";
-  import { useCanvasCoords } from "./useCanvasCoord";
-  import { usePinchToZoom } from "./usePinchToZoom";
-  import { useStorePanZoomState } from "./useStorePanZoomState";
-  import { useCanvasCamera } from "./useCanvasCamera";
-  import { onMounted } from "vue";
+  import { ref, watch, computed, onUnmounted, onMounted } from 'vue';
+  import { useElementSize } from '@vueuse/core';
+  import { debounce } from '@utils/debounce';
+  import { useClassAttrs } from '@ui/useClassAttrs';
+  import { cross } from '@shapes';
+  import type { Color } from '@colors';
+  import { getCtx } from '@utils/ctx';
+  import CoordinateIndicator from './CoordinateIndicator.vue';
+  import { useCanvasCoords } from './useCanvasCoord';
+  import { usePinchToZoom } from './usePinchToZoom';
+  import { useStorePanZoomState } from './useStorePanZoomState';
+  import { useCanvasCamera } from './useCanvasCamera';
 
   const canvasWidth = ref(0);
   const canvasHeight = ref(0);
@@ -38,16 +37,16 @@
   const heightProp = computed(() => props?.canvasHeight ?? 3_000);
 
   const emit = defineEmits<{
-    (e: "canvasRef", value: HTMLCanvasElement | undefined): void;
-    (e: "widthChange", value: number): void;
-    (e: "heightChange", value: number): void;
+    (e: 'canvasRef', value: HTMLCanvasElement | undefined): void;
+    (e: 'widthChange', value: number): void;
+    (e: 'heightChange', value: number): void;
   }>();
 
   const DEFAULT_PARENT_CLASSES = [
-    "w-full",
-    "h-full",
-    "relative",
-    "overflow-auto",
+    'w-full',
+    'h-full',
+    'relative',
+    'overflow-auto',
   ];
 
   const callerClasses = useClassAttrs();
@@ -58,7 +57,7 @@
 
   const emitRef = (el: HTMLCanvasElement | undefined) => {
     mainCanvasRef.value = el;
-    emit("canvasRef", el);
+    emit('canvasRef', el);
   };
 
   const parentEl = ref<HTMLDivElement>();
@@ -132,20 +131,20 @@
   watch(parentWidth, () => {
     setCanvasSize();
     drawBackgroundPattern();
-    emit("widthChange", canvasWidth.value);
+    emit('widthChange', canvasWidth.value);
   });
 
   watch(parentHeight, () => {
     setCanvasSize();
     drawBackgroundPattern();
-    emit("heightChange", canvasHeight.value);
+    emit('heightChange', canvasHeight.value);
   });
 
   watch([widthProp, heightProp], () => {
     setCanvasSize();
     drawBackgroundPattern();
-    emit("widthChange", canvasWidth.value);
-    emit("heightChange", canvasHeight.value);
+    emit('widthChange', canvasWidth.value);
+    emit('heightChange', canvasHeight.value);
   });
 
   watch(() => props.patternColor, drawBackgroundPattern);

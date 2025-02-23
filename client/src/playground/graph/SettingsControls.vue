@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import type { Graph } from "@graph/types";
-import InputCheckbox from "@ui/InputCheckbox.vue";
-  import InputColor from "@ui/InputColor.vue";
-  import InputRange from "@ui/InputRange.vue";
-  import InputText from "@ui/InputText.vue";
-  import { camelCaseToTitleCase } from "@utils/string";
+  import type { Graph } from '@graph/types';
+  import InputCheckbox from '@ui/InputCheckbox.vue';
+  import InputColor from '@ui/InputColor.vue';
+  import InputRange from '@ui/InputRange.vue';
+  import InputText from '@ui/InputText.vue';
+  import { camelCaseToTitleCase } from '@utils/string';
 
   defineProps<{
     graph: Graph;
@@ -28,20 +28,21 @@ import InputCheckbox from "@ui/InputCheckbox.vue";
 
     <InputColor
       v-if="
-        typeof setting === 'string' && settingKey.toLowerCase().includes('color')
+        typeof setting === 'string' &&
+        settingKey.toLowerCase().includes('color')
       "
-      v-model="(graph.settings.value[settingKey] as string)"
+      v-model="graph.settings.value[settingKey] as string"
       style="width: 100px; height: 30px"
     />
 
     <InputText
       v-else-if="typeof setting === 'string'"
-      v-model="(graph.settings.value[settingKey] as string)"
+      v-model="graph.settings.value[settingKey] as string"
     />
 
     <InputCheckbox
       v-else-if="typeof setting === 'boolean'"
-      v-model="(graph.settings.value[settingKey] as boolean)"
+      v-model="graph.settings.value[settingKey] as boolean"
       class="h-6 w-6 rounded-xl cursor-pointer"
     />
 

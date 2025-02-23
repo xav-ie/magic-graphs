@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { CanvasCoords } from './useCanvasCoord';
+  import { computed } from 'vue';
+  import type { CanvasCoords } from './useCanvasCoord';
 
-const props = defineProps<{
-  coords: CanvasCoords
-}>();
+  const props = defineProps<{
+    coords: CanvasCoords;
+  }>();
 
-const humanCoords = computed(() => props.coords.humanCoords.value);
-const canvasCoords = computed(() => props.coords.canvasCoords.value);
+  const humanCoords = computed(() => props.coords.humanCoords.value);
+  const canvasCoords = computed(() => props.coords.canvasCoords.value);
 </script>
 
 <template>

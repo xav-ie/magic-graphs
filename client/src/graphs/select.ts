@@ -1,5 +1,5 @@
-import type { GraphMouseEvent } from "./base/types";
-import type { Graph, SchemaItem } from "./types";
+import type { GraphMouseEvent } from './base/types';
+import type { Graph, SchemaItem } from './types';
 
 /**
  * selects schema items only of graph type 'node'
@@ -10,7 +10,7 @@ import type { Graph, SchemaItem } from "./types";
  */
 export const selectNode = (graph: Graph) => {
   const { selectedItemPromise, cancelSelection } = selectFromGraph(graph, {
-    predicate: item => item.graphType === 'node',
+    predicate: (item) => item.graphType === 'node',
   });
 
   return {
@@ -19,8 +19,8 @@ export const selectNode = (graph: Graph) => {
       return selectedItem ? graph.getNode(selectedItem.id) : undefined;
     },
     cancelSelection,
-  }
-}
+  };
+};
 
 /**
  * selects schema items only of graph type 'edge'
@@ -31,7 +31,7 @@ export const selectNode = (graph: Graph) => {
  */
 export const selectEdge = (graph: Graph) => {
   const { selectedItemPromise, cancelSelection } = selectFromGraph(graph, {
-    predicate: item => item.graphType === 'edge',
+    predicate: (item) => item.graphType === 'edge',
   });
 
   return {
@@ -40,8 +40,8 @@ export const selectEdge = (graph: Graph) => {
       return selectedItem ? graph.getEdge(selectedItem.id) : undefined;
     },
     cancelSelection,
-  }
-}
+  };
+};
 
 export type SelectFromGraphOptions = {
   /**
@@ -69,18 +69,23 @@ const DEFAULT_PREDICATE = () => true;
  * if (!selectedItem) return; // selection was cancelled
  * // selection resolved. do something with the selected item
  */
-export const selectFromGraph = (graph: Graph, {
-  predicate = DEFAULT_PREDICATE,
-}: Partial<SelectFromGraphOptions> = {}) => {
-  let resolver: (value: SchemaItem | PromiseLike<SchemaItem> | undefined) => void;
+export const selectFromGraph = (
+  graph: Graph,
+  { predicate = DEFAULT_PREDICATE }: Partial<SelectFromGraphOptions> = {},
+) => {
+  let resolver: (
+    value: SchemaItem | PromiseLike<SchemaItem> | undefined,
+  ) => void;
 
-  const selectedItemPromise = new Promise<SchemaItem | undefined>((res) => resolver = res);
+  const selectedItemPromise = new Promise<SchemaItem | undefined>(
+    (res) => (resolver = res),
+  );
 
   const onClick = ({ items }: GraphMouseEvent) => {
     const topItem = items.at(-1);
     if (!topItem || !predicate(topItem)) return;
     resolve(topItem);
-  }
+  };
 
   const initialInteractive = graph.settings.value.interactive;
   const initialFocusable = graph.settings.value.focusable;
@@ -92,9 +97,12 @@ export const selectFromGraph = (graph: Graph, {
     graph.subscribe('onClick', onClick);
     graph.settings.value.interactive = false;
     graph.settings.value.focusable = false;
-    const cursorPredicate = predicate === DEFAULT_PREDICATE ? ((item: SchemaItem) => !!item) : predicate;
+    const cursorPredicate =
+      predicate === DEFAULT_PREDICATE
+        ? (item: SchemaItem) => !!item
+        : predicate;
     graph.activateCursorSelectMode(cursorPredicate);
-  }
+  };
 
   /**
    * cleans up the selection process
@@ -104,7 +112,7 @@ export const selectFromGraph = (graph: Graph, {
     graph.settings.value.interactive = initialInteractive;
     graph.settings.value.focusable = initialFocusable;
     graph.deactivateCursorSelectMode();
-  }
+  };
 
   /**
    * resolves the selection process and returns the selected item from the promise
@@ -112,7 +120,7 @@ export const selectFromGraph = (graph: Graph, {
   const resolve = (item: SchemaItem) => {
     cleanup();
     resolver(item);
-  }
+  };
 
   /**
    * cancels the selection process and returns undefined from the promise (public)
@@ -120,7 +128,7 @@ export const selectFromGraph = (graph: Graph, {
   const cancelSelection = () => {
     cleanup();
     resolver(undefined);
-  }
+  };
 
   init();
 

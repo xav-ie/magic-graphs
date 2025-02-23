@@ -1,48 +1,45 @@
-import { TEXT_DEFAULTS } from "@shape/types";
-import type { Coordinate } from "@shape/types";
+import { TEXT_DEFAULTS } from '@shape/types';
+import type { Coordinate } from '@shape/types';
 import {
   drawTextWithTextArea,
   drawTextMatteWithTextArea,
   getFullTextArea,
-  getTextAreaDimension
-} from "@shape/text";
-import { rotatePoint } from "@shape/helpers";
-import { rectHitbox } from "@shape/rect/hitbox";
-import { UTURN_DEFAULTS } from ".";
-import type { UTurn } from ".";
+  getTextAreaDimension,
+} from '@shape/text';
+import { rotatePoint } from '@shape/helpers';
+import { rectHitbox } from '@shape/rect/hitbox';
+import { UTURN_DEFAULTS } from '.';
+import type { UTurn } from '.';
 
 export const getTextAreaLocationOnUTurn = (uturn: UTurn) => {
-  const {
-    at,
-    upDistance,
-    rotation,
-    textArea,
-    spacing,
-    lineWidth
-  } = {
+  const { at, upDistance, rotation, textArea, spacing, lineWidth } = {
     ...UTURN_DEFAULTS,
-    ...uturn
+    ...uturn,
   };
 
-  if (!textArea) throw new Error('no text area provided')
+  if (!textArea) throw new Error('no text area provided');
 
-  const { text } = textArea
+  const { text } = textArea;
 
   const { fontSize } = {
     ...TEXT_DEFAULTS,
     ...text,
-  }
+  };
 
-  const endPoint = rotatePoint({
-    x: at.x + upDistance + spacing + lineWidth / 2,
-    y: at.y
-  }, at, rotation)
+  const endPoint = rotatePoint(
+    {
+      x: at.x + upDistance + spacing + lineWidth / 2,
+      y: at.y,
+    },
+    at,
+    rotation,
+  );
 
   return {
     x: endPoint.x - fontSize + Math.cos(rotation) * 15,
-    y: endPoint.y - fontSize + Math.sin(rotation) * 15
-  }
-}
+    y: endPoint.y - fontSize + Math.sin(rotation) * 15,
+  };
+};
 
 export const uturnTextHitbox = (uturn: UTurn) => {
   if (!uturn.textArea) return;
@@ -55,11 +52,11 @@ export const uturnTextHitbox = (uturn: UTurn) => {
   const isInTextHitbox = rectHitbox({
     at: fullTextArea.at,
     width,
-    height
-  })
+    height,
+  });
 
   return (point: Coordinate) => isInTextHitbox(point);
-}
+};
 
 export const drawTextAreaMatteOnUTurn = (uturn: UTurn) => {
   if (!uturn.textArea) return;
@@ -71,7 +68,6 @@ export const drawTextAreaMatteOnUTurn = (uturn: UTurn) => {
   return (ctx: CanvasRenderingContext2D) => drawMatte(ctx);
 };
 
-
 export const drawTextOnUTurn = (uturn: UTurn) => {
   if (!uturn.textArea) return;
 
@@ -80,7 +76,7 @@ export const drawTextOnUTurn = (uturn: UTurn) => {
 
   const drawText = drawTextWithTextArea(fullTextArea);
   return (ctx: CanvasRenderingContext2D) => drawText(ctx);
-}
+};
 
 export const drawTextAreaOnUTurn = (uturn: UTurn) => {
   const drawMatte = drawTextAreaMatteOnUTurn(uturn);
@@ -91,5 +87,5 @@ export const drawTextAreaOnUTurn = (uturn: UTurn) => {
   return (ctx: CanvasRenderingContext2D) => {
     drawMatte(ctx);
     drawText(ctx);
-  }
-}
+  };
+};

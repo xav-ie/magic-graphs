@@ -5,12 +5,14 @@ import { getCtx } from '@utils/ctx';
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 5;
 
-export function usePinchToZoom(canvasRef: Ref<HTMLCanvasElement | undefined | null>) {
+export function usePinchToZoom(
+  canvasRef: Ref<HTMLCanvasElement | undefined | null>,
+) {
   const scale = ref(1);
   const zoomOrigin = ref({ x: 0, y: 0 });
 
   const handleWheel = (ev: WheelEvent) => {
-    if (!ev.ctrlKey) return
+    if (!ev.ctrlKey) return;
     ev.preventDefault();
     const canvas = canvasRef.value;
     if (!canvas) return;
@@ -20,10 +22,15 @@ export function usePinchToZoom(canvasRef: Ref<HTMLCanvasElement | undefined | nu
     const cursorY = ev.clientY - rect.top;
 
     const scaleChange = ev.deltaY < 0 ? 1.03 : 0.97;
-    const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale.value * scaleChange));
+    const newScale = Math.min(
+      MAX_SCALE,
+      Math.max(MIN_SCALE, scale.value * scaleChange),
+    );
 
-    zoomOrigin.value.x = cursorX - (cursorX - zoomOrigin.value.x) * (newScale / scale.value);
-    zoomOrigin.value.y = cursorY - (cursorY - zoomOrigin.value.y) * (newScale / scale.value);
+    zoomOrigin.value.x =
+      cursorX - (cursorX - zoomOrigin.value.x) * (newScale / scale.value);
+    zoomOrigin.value.y =
+      cursorY - (cursorY - zoomOrigin.value.y) * (newScale / scale.value);
 
     scale.value = newScale;
     applyZoom();

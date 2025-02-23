@@ -1,21 +1,24 @@
-import type { GEdge, GNode, Graph } from "@graph/types";
-import type { AutoGenerateGraphOptions } from "./types";
-import { ref } from "vue";
+import type { GEdge, GNode, Graph } from '@graph/types';
+import type { AutoGenerateGraphOptions } from './types';
+import { ref } from 'vue';
 import {
   centerNodesOnOriginCoordinates,
   getAverageCoordinates,
-} from "../helpers";
+} from '../helpers';
 import {
   generateClusterNodes,
   generateCohesiveEdges,
-} from "./generationAlgorithms/randomGeneration";
-import { AUTO_GENERATE_GRAPH_DEFAULTS } from "./types";
-import { useLocalStorage } from "@vueuse/core";
+} from './generationAlgorithms/randomGeneration';
+import { AUTO_GENERATE_GRAPH_DEFAULTS } from './types';
+import { useLocalStorage } from '@vueuse/core';
 
 export const useAutoGenerate = (graph: Graph) => {
-  const options = useLocalStorage<AutoGenerateGraphOptions>("autoGenerateOptions", {
-    ...AUTO_GENERATE_GRAPH_DEFAULTS,
-  });
+  const options = useLocalStorage<AutoGenerateGraphOptions>(
+    'autoGenerateOptions',
+    {
+      ...AUTO_GENERATE_GRAPH_DEFAULTS,
+    },
+  );
 
   const nodes = ref<GNode[]>([]);
   const edges = ref<GEdge[]>([]);
@@ -25,7 +28,7 @@ export const useAutoGenerate = (graph: Graph) => {
     const origin = getAverageCoordinates(graph.nodes.value);
     const centeredNodes = centerNodesOnOriginCoordinates(
       generatedNodes,
-      origin
+      origin,
     );
     edges.value = generateCohesiveEdges(centeredNodes, options.value);
     nodes.value = centeredNodes;
@@ -34,7 +37,7 @@ export const useAutoGenerate = (graph: Graph) => {
 
   return {
     generate,
-    
+
     options,
     nodes,
     edges,

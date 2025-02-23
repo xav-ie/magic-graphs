@@ -1,15 +1,15 @@
 <script setup lang="ts">
-  import type { PreferredGraphTheme } from "@graph/themes/usePreferredTheme";
-  import GToolbar from "@ui/graph/toolbar/GToolbarBase.vue";
-  import GToolbarButton from "@ui/graph/toolbar/GToolbarButton.vue";
-  import { nonNullGraph as graph } from "@graph/global";
-  import ToolbarButtonGroup from "@ui/core/toolbar/ToolbarButtonGroup.vue";
+  import type { PreferredGraphTheme } from '@graph/themes/usePreferredTheme';
+  import GToolbar from '@ui/graph/toolbar/GToolbarBase.vue';
+  import GToolbarButton from '@ui/graph/toolbar/GToolbarButton.vue';
+  import { nonNullGraph as graph } from '@graph/global';
+  import ToolbarButtonGroup from '@ui/core/toolbar/ToolbarButtonGroup.vue';
 
   const themeNameToIcon: Record<PreferredGraphTheme, string> = {
-    auto: "cog-outline",
-    light: "weather-sunny",
-    dark: "weather-night",
-    girl: "human-female",
+    auto: 'cog-outline',
+    light: 'weather-sunny',
+    dark: 'weather-night',
+    girl: 'human-female',
   };
 </script>
 

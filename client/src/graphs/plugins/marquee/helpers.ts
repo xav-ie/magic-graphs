@@ -1,23 +1,28 @@
-import type { BaseGraph } from "@graph/base";
-import type { GNode } from "@graph/types";
-import type { BoundingBox } from "@shape/types";
+import type { BaseGraph } from '@graph/base';
+import type { GNode } from '@graph/types';
+import type { BoundingBox } from '@shape/types';
 
-export const getEncapsulatedNodeBox = (nodes: GNode[], graph: BaseGraph): BoundingBox => {
+export const getEncapsulatedNodeBox = (
+  nodes: GNode[],
+  graph: BaseGraph,
+): BoundingBox => {
   const encapsulatedNodeBox = {
     at: { x: Infinity, y: Infinity },
     width: 0,
     height: 0,
-  }
+  };
 
-  if (nodes.length < 2) return encapsulatedNodeBox
+  if (nodes.length < 2) return encapsulatedNodeBox;
 
-  let minX = Infinity, minY = Infinity;
-  let maxX = -Infinity, maxY = -Infinity;
+  let minX = Infinity,
+    minY = Infinity;
+  let maxX = -Infinity,
+    maxY = -Infinity;
 
   for (const node of nodes) {
     const nodeRadius = graph.getTheme('nodeSize', node);
     const nodeBorderWidth = graph.getTheme('nodeBorderWidth', node);
-    const nodeArea = nodeRadius + (nodeBorderWidth / 2);
+    const nodeArea = nodeRadius + nodeBorderWidth / 2;
     const { x, y } = node;
 
     minX = Math.min(minX, x - nodeArea);
@@ -26,7 +31,12 @@ export const getEncapsulatedNodeBox = (nodes: GNode[], graph: BaseGraph): Boundi
     maxY = Math.max(maxY, y + nodeArea);
   }
 
-  if (minX < Infinity && minY < Infinity && maxX > -Infinity && maxY > -Infinity) {
+  if (
+    minX < Infinity &&
+    minY < Infinity &&
+    maxX > -Infinity &&
+    maxY > -Infinity
+  ) {
     encapsulatedNodeBox.at.x = minX;
     encapsulatedNodeBox.at.y = minY;
     encapsulatedNodeBox.width = maxX - minX;
@@ -36,5 +46,5 @@ export const getEncapsulatedNodeBox = (nodes: GNode[], graph: BaseGraph): Boundi
     encapsulatedNodeBox.height = 0;
   }
 
-  return encapsulatedNodeBox
+  return encapsulatedNodeBox;
 };

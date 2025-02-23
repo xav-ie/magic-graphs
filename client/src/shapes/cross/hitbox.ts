@@ -1,7 +1,7 @@
-import { CROSS_DEFAULTS } from ".";
-import type { Cross } from ".";
-import { rectHitbox, rectEfficientHitbox } from "@shape/rect/hitbox";
-import type { Coordinate, BoundingBox } from "@shape/types";
+import { CROSS_DEFAULTS } from '.';
+import type { Cross } from '.';
+import { rectHitbox, rectEfficientHitbox } from '@shape/rect/hitbox';
+import type { Coordinate, BoundingBox } from '@shape/types';
 
 /**
  * @param point - the point to check if it is in the cross
