@@ -15,12 +15,10 @@
       ...nameToBindingKeys.value,
       Fullscreen: 'F',
       'Pause/Play Simulation': 'Space',
-      'Simulation Step Forward': 'ArrowRight',
-      'Simulation Step Backward': 'ArrowLeft',
+      'Simulation Step Forward': 'mdi-arrow-right',
+      'Simulation Step Backward': 'mdi-arrow-left',
     };
   });
-
-  // TODO: add categories
 
   const convertKeyStringToKeys = (keyString: string) => {
     const keys = keyString
@@ -86,10 +84,17 @@
               'rounded-md',
               'px-2',
               'mx-[1px]',
-              'text-[10px]',
+              'text-xs',
             ]"
           >
-            {{ keyBinding }}
+            <CIcon
+              v-if="keyBinding.startsWith('mdi-')"
+              :icon="keyBinding.slice(4)"
+              class="text-xs"
+            />
+            <p v-else>
+              {{ keyBinding }}
+            </p>
           </GWell>
         </div>
       </div>
