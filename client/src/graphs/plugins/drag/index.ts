@@ -3,12 +3,14 @@ import type { GraphMouseEvent } from '@graph/base/types';
 import type { ActiveDragNode } from './types';
 import type { BaseGraph } from '@graph/base';
 import type { NodeAnchorPlugin } from '../anchors';
+import { MOUSE_BUTTONS } from "@graph/global";
 
 export const useNodeDrag = (graph: BaseGraph & NodeAnchorPlugin) => {
   const currentlyDraggingNode = ref<ActiveDragNode | undefined>();
   const { hold, release } = graph.pluginHoldController('node-drag');
 
-  const beginDrag = ({ items, coords }: GraphMouseEvent) => {
+  const beginDrag = ({ items, coords, event }: GraphMouseEvent) => {
+    if (event.button !== MOUSE_BUTTONS.left) return;
     const topItem = items.at(-1);
     if (!topItem || topItem.graphType !== 'node') return;
 

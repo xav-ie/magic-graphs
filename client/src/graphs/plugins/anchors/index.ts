@@ -7,6 +7,8 @@ import type { GraphFocusPlugin } from '@graph/plugins/focus';
 import type { NodeAnchor } from '@graph/plugins/anchors/types';
 import { generateId } from '@utils/id';
 import { circle, line } from '@shapes';
+import { MOUSE_BUTTONS } from "@graph/global";
+
 
 /**
  * node anchors provide an additional layer of interaction by allowing nodes to spawn draggable anchors
@@ -83,7 +85,7 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
 
       anchorSchemas.push({
         id: anchor.id,
-        graphType: 'node-anchor',
+        graphType: "node-anchor",
         shape: nodeAnchorShape,
         priority: Infinity,
       });
@@ -141,7 +143,8 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
   /**
    * the anchor at the given event location
    */
-  const getAnchor = ({ items }: GraphMouseEvent) => {
+  const getAnchor = ({ items, event }: GraphMouseEvent) => {
+    if (event.button !== MOUSE_BUTTONS.left) return;
     const topItem = items.at(-1);
     if (!topItem || topItem.graphType !== 'node-anchor') return;
     const { id: anchorId } = topItem;
@@ -173,9 +176,9 @@ export const useNodeAnchors = (graph: BaseGraph & GraphFocusPlugin) => {
       width,
     });
 
-    const schema: Omit<SchemaItem, 'priority'> = {
-      id: 'link-preview',
-      graphType: 'link-preview',
+    const schema: Omit<SchemaItem, "priority"> = {
+      id: "link-preview",
+      graphType: "link-preview",
       shape,
     };
 

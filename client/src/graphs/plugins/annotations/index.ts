@@ -12,6 +12,7 @@ import { useAnnotationHistory } from './history';
 import type { Annotation } from './types';
 import { useNonNullGraphColors } from '@graph/themes/useGraphColors';
 import { getCircleBoundingBox } from '@shape/circle/hitbox';
+import { MOUSE_BUTTONS } from "@graph/global";
 
 const ERASER_BRUSH_RADIUS = 10;
 
@@ -46,7 +47,9 @@ export const useAnnotations = (graph: BaseGraph) => {
   /**
    * starts drawing from the current mouse position
    */
-  const startDrawing = ({ coords }: GraphMouseEvent) => {
+  const startDrawing = ({ coords, event }: GraphMouseEvent) => {
+    if (event.button !== MOUSE_BUTTONS.left) return;
+
     isDrawing.value = true;
     lastPoint.value = coords;
     batch.value = [coords];
