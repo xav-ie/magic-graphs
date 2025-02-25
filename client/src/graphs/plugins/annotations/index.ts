@@ -91,7 +91,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     lastPoint.value = coords;
     batch.value.push(coords);
 
-    if (isLaserPointing.value && batch.value.length > 30) {
+    if (isLaserPointing.value && batch.value.length > 40) {
       batch.value.shift();
     }
 
@@ -185,6 +185,19 @@ export const useAnnotations = (graph: BaseGraph) => {
         id: incompleteScribble.id,
         shape: incompleteScribble,
         priority: 5001,
+      });
+    } else if (isLaserPointing.value) {
+      const laserPointerCursor = shapes.circle({
+        at: graph.graphAtMousePosition.value.coords,
+        radius: selectedBrushWeight.value,
+        color: selectedColor.value,
+      });
+
+      aggregator.push({
+        graphType: 'annotation',
+        id: laserPointerCursor.id,
+        shape: laserPointerCursor,
+        priority: 5050,
       });
     }
 
