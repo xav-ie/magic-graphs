@@ -13,8 +13,6 @@ import type { Annotation } from './types';
 import { useNonNullGraphColors } from '@graph/themes/useGraphColors';
 import { getCircleBoundingBox } from '@shape/circle/hitbox';
 import { MOUSE_BUTTONS } from '@graph/global';
-import { nodeCircle } from '@graph/schematics/nodeCircle';
-import { useAnimationController } from '@graph/animationController';
 
 const ERASER_BRUSH_RADIUS = 10;
 
@@ -25,7 +23,6 @@ export const useAnnotations = (graph: BaseGraph) => {
   const selectedBrushWeight = ref(BRUSH_WEIGHTS[1]);
   const erasing = ref(false);
   const laserPointing = ref(false);
-  const laserPointerTrail = ref<Shape[]>([]);
   const erasedScribbleIds = ref(new Set<string>());
 
   const batch = ref<Coordinate[]>([]);
@@ -36,7 +33,6 @@ export const useAnnotations = (graph: BaseGraph) => {
   const isActive = ref(false);
 
   const history = useAnnotationHistory(scribbles);
-  const animationController = useAnimationController();
 
   const clear = () => {
     if (scribbles.value.length === 0) return;
