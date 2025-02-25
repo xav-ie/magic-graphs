@@ -2,7 +2,7 @@ import { computed, ref, watch } from 'vue';
 import type { Aggregator } from '@graph/types';
 import type { BaseGraph } from '@graph/base';
 import type { GraphMouseEvent } from '@graph/base/types';
-import type { Coordinate, Shape } from '@shape/types';
+import type { Coordinate } from '@shape/types';
 import { generateId } from '@utils/id';
 import { shapes } from '@shapes';
 import colors from '@utils/colors';
@@ -21,8 +21,9 @@ const graphColor = useNonNullGraphColors();
 export const useAnnotations = (graph: BaseGraph) => {
   const selectedColor = ref<Color>(COLORS[0]);
   const selectedBrushWeight = ref(BRUSH_WEIGHTS[1]);
-  const erasing = ref(false);
-  const laserPointing = ref(false);
+  const isErasing = ref(false);
+  const isLaserPointing = ref(false);
+  const laserDecayInterval = ref<NodeJS.Timeout>();
   const erasedScribbleIds = ref(new Set<string>());
 
   const batch = ref<Coordinate[]>([]);
@@ -54,6 +55,11 @@ export const useAnnotations = (graph: BaseGraph) => {
     isDrawing.value = true;
     lastPoint.value = coords;
     batch.value = [coords];
+
+    if (isLaserPointing.value && laserDecayInterval.value) {
+      clearInterval(laserDecayInterval.value);
+      laserDecayInterval.value = undefined;
+    }
   };
 
   /**
@@ -63,10 +69,9 @@ export const useAnnotations = (graph: BaseGraph) => {
    */
   const drawLine = ({ coords }: GraphMouseEvent) => {
     if (!isDrawing.value || !lastPoint.value) return;
-
     if (batch.value.length === 0) return;
 
-    if (erasing.value) {
+    if (isErasing.value) {
       const eraserBoundingBox = getCircleBoundingBox({
         at: coords,
         radius: ERASER_BRUSH_RADIUS,
@@ -85,6 +90,14 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     lastPoint.value = coords;
     batch.value.push(coords);
+
+    if (isLaserPointing.value && batch.value.length > 30) {
+      batch.value.shift();
+    }
+
+    if (isLaserPointing.value) {
+      // we want to decay the batch here
+    }
   };
 
   const stopDrawing = () => {
@@ -93,7 +106,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     isDrawing.value = false;
     lastPoint.value = undefined;
 
-    if (erasing.value) {
+    if (isErasing.value) {
       const erasedScribbles = scribbles.value.filter((scribble) => {
         return erasedScribbleIds.value.has(scribble.id);
       });
@@ -107,6 +120,10 @@ export const useAnnotations = (graph: BaseGraph) => {
         return !erasedScribbleIds.value.has(scribble.id);
       });
       erasedScribbleIds.value.clear();
+      return;
+    }
+
+    if (isLaserPointing.value) {
       return;
     }
 
@@ -128,7 +145,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     batch.value = [];
   };
 
-  const hideCursor = computed(() => erasing.value || laserPointing.value);
+  const hideCursor = computed(() => isErasing.value || isLaserPointing.value);
 
   watch(hideCursor, () => {
     if (!graph.canvas.value) return;
@@ -138,7 +155,7 @@ export const useAnnotations = (graph: BaseGraph) => {
   const addScribblesToAggregator = (aggregator: Aggregator) => {
     if (!isActive.value) return aggregator;
 
-    if (erasing.value) {
+    if (isErasing.value) {
       const eraserCursor = shapes.circle({
         at: graph.graphAtMousePosition.value.coords,
         radius: ERASER_BRUSH_RADIUS,
@@ -212,7 +229,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     if (!graph.canvas.value) return;
 
     isActive.value = false;
-    erasing.value = false;
+    isErasing.value = false;
 
     graph.settings.value.interactive = true;
     graph.settings.value.marquee = true;
@@ -238,8 +255,8 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     annotations: scribbles,
 
-    laserPointing,
-    erasing,
+    isLaserPointing,
+    isErasing,
     color: selectedColor,
     brushWeight: selectedBrushWeight,
 
