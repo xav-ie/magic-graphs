@@ -1,8 +1,8 @@
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { Aggregator } from '@graph/types';
 import type { BaseGraph } from '@graph/base';
 import type { GraphMouseEvent } from '@graph/base/types';
-import type { Coordinate } from '@shape/types';
+import type { Coordinate, Shape } from '@shape/types';
 import { generateId } from '@utils/id';
 import { shapes } from '@shapes';
 import colors from '@utils/colors';
@@ -12,7 +12,9 @@ import { useAnnotationHistory } from './history';
 import type { Annotation } from './types';
 import { useNonNullGraphColors } from '@graph/themes/useGraphColors';
 import { getCircleBoundingBox } from '@shape/circle/hitbox';
-import { MOUSE_BUTTONS } from "@graph/global";
+import { MOUSE_BUTTONS } from '@graph/global';
+import { nodeCircle } from '@graph/schematics/nodeCircle';
+import { useAnimationController } from '@graph/animationController';
 
 const ERASER_BRUSH_RADIUS = 10;
 
@@ -22,6 +24,8 @@ export const useAnnotations = (graph: BaseGraph) => {
   const selectedColor = ref<Color>(COLORS[0]);
   const selectedBrushWeight = ref(BRUSH_WEIGHTS[1]);
   const erasing = ref(false);
+  const laserPointing = ref(false);
+  const laserPointerTrail = ref<Shape[]>([]);
   const erasedScribbleIds = ref(new Set<string>());
 
   const batch = ref<Coordinate[]>([]);
@@ -32,6 +36,7 @@ export const useAnnotations = (graph: BaseGraph) => {
   const isActive = ref(false);
 
   const history = useAnnotationHistory(scribbles);
+  const animationController = useAnimationController();
 
   const clear = () => {
     if (scribbles.value.length === 0) return;
@@ -127,9 +132,11 @@ export const useAnnotations = (graph: BaseGraph) => {
     batch.value = [];
   };
 
-  watch(erasing, () => {
+  const hideCursor = computed(() => erasing.value || laserPointing.value);
+
+  watch(hideCursor, () => {
     if (!graph.canvas.value) return;
-    graph.canvas.value.style.cursor = erasing.value ? 'none' : 'crosshair';
+    graph.canvas.value.style.cursor = hideCursor.value ? 'none' : 'crosshair';
   });
 
   const addScribblesToAggregator = (aggregator: Aggregator) => {
@@ -235,7 +242,8 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     annotations: scribbles,
 
-    erasing: erasing,
+    laserPointing,
+    erasing,
     color: selectedColor,
     brushWeight: selectedBrushWeight,
 
