@@ -24,6 +24,7 @@ export const useAnnotations = (graph: BaseGraph) => {
   const isErasing = ref(false);
   const isLaserPointing = ref(false);
   const laserDecayInterval = ref<NodeJS.Timeout>();
+  const lastMoveTime = ref(Date.now());
   const erasedScribbleIds = ref(new Set<string>());
 
   const batch = ref<Coordinate[]>([]);
@@ -46,6 +47,17 @@ export const useAnnotations = (graph: BaseGraph) => {
     scribbles.value = [];
   };
 
+  const startDecayTimer = () => {
+    if (laserDecayInterval.value) return;
+
+    laserDecayInterval.value = setInterval(() => {
+      const inactivityTime = Date.now() - lastMoveTime.value;
+      const shouldErase =
+        inactivityTime > 50 && isLaserPointing.value && batch.value.length >= 2;
+      if (shouldErase) batch.value.shift();
+    }, 50);
+  };
+
   /**
    * starts drawing from the current mouse position
    */
@@ -55,11 +67,6 @@ export const useAnnotations = (graph: BaseGraph) => {
     isDrawing.value = true;
     lastPoint.value = coords;
     batch.value = [coords];
-
-    if (isLaserPointing.value && laserDecayInterval.value) {
-      clearInterval(laserDecayInterval.value);
-      laserDecayInterval.value = undefined;
-    }
   };
 
   /**
@@ -91,13 +98,15 @@ export const useAnnotations = (graph: BaseGraph) => {
     lastPoint.value = coords;
     batch.value.push(coords);
 
-    if (isLaserPointing.value && batch.value.length > 40) {
+    if (isLaserPointing.value && batch.value.length > 10) {
       batch.value.shift();
     }
 
     if (isLaserPointing.value) {
-      // we want to decay the batch here
+      startDecayTimer();
     }
+
+    lastMoveTime.value = Date.now();
   };
 
   const stopDrawing = () => {
