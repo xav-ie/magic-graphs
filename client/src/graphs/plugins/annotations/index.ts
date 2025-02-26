@@ -133,6 +133,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     }
 
     if (isLaserPointing.value) {
+      laserDecayInterval.value = undefined;
       return;
     }
 
