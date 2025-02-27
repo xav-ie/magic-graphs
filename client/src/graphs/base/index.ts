@@ -1,6 +1,6 @@
 import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue';
 import type { Ref } from 'vue';
-import { onClickOutside } from '@vueuse/core';
+import { onClickOutside, useElementHover } from '@vueuse/core';
 import type { GNode, GEdge, SchemaItem, Aggregator } from '@graph/types';
 import { prioritizeNode } from '@graph/helpers';
 import { getNodeSchematic } from '@graph/schematics/node';
@@ -59,6 +59,8 @@ export const useBaseGraph = (
   subscribe('onMouseDown', () => {
     canvasFocused.value = true;
   });
+
+  const canvasHovered = useElementHover(canvas);
 
   const nodes = ref<GNode[]>([]);
   const edges = ref<GEdge[]>([]);
@@ -363,6 +365,10 @@ export const useBaseGraph = (
      * whether the canvas is currently focused in the browser
      */
     canvasFocused,
+    /**
+     * whether the canvas is currently hovered by the mouse
+     */
+    canvasHovered: computed(() => canvasHovered.value),
 
     graphAtMousePosition,
     updateGraphAtMousePosition,

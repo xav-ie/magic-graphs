@@ -165,7 +165,7 @@ export const useAnnotations = (graph: BaseGraph) => {
   const addScribblesToAggregator = (aggregator: Aggregator) => {
     if (!isActive.value) return aggregator;
 
-    if (isErasing.value) {
+    if (isErasing.value && graph.canvasHovered.value) {
       const eraserCursor = shapes.circle({
         at: graph.graphAtMousePosition.value.coords,
         radius: ERASER_BRUSH_RADIUS,
@@ -196,7 +196,7 @@ export const useAnnotations = (graph: BaseGraph) => {
         shape: incompleteScribble,
         priority: 5001,
       });
-    } else if (isLaserPointing.value) {
+    } else if (isLaserPointing.value && graph.canvasHovered.value) {
       const laserPointerCursor = shapes.circle({
         at: graph.graphAtMousePosition.value.coords,
         radius: selectedBrushWeight.value,
