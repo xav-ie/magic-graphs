@@ -19,7 +19,7 @@
   <CPopover>
     <template #activator="{ toggle }">
       <GButton @click="toggle">
-        <CIcon icon="settings" />
+        <CIcon icon="cog" />
       </GButton>
     </template>
 
