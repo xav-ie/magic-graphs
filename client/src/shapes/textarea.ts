@@ -22,7 +22,7 @@ export const engageTextarea = (
   // prevent text jumping after click as much as possible (sometimes jumps 1 pixel)
   const topPadding = scale === 1 ? 5 : Math.round(scale * 5);
 
-  const inputWidth =
+  const inputWidth = // this should use the getTextSizeOnCanvas api!!
     Math.max(fontSize * 2, fontSize * 0.6 * content.length) * scale;
   const inputHeight = fontSize * 2 * scale;
 
@@ -58,7 +58,7 @@ export const engageTextarea = (
 
   const adjustSize = () => {
     const currentWidth = parseFloat(input.style.width);
-    const newWidth = Math.max(input.scrollWidth, fontSize * 2);
+    const newWidth = Math.max(input.scrollWidth, fontSize * 2 * scale);
 
     const deltaWidth = newWidth - currentWidth;
     input.style.left = `${parseFloat(input.style.left) - deltaWidth / 2}px`;
