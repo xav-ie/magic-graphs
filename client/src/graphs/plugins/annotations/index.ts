@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { Aggregator } from '@graph/types';
 import type { BaseGraph } from '@graph/base';
 import type { GraphMouseEvent } from '@graph/base/types';
@@ -12,7 +12,7 @@ import { useAnnotationHistory } from './history';
 import type { Annotation } from './types';
 import { useNonNullGraphColors } from '@graph/themes/useGraphColors';
 import { getCircleBoundingBox } from '@shape/circle/hitbox';
-import { MOUSE_BUTTONS } from "@graph/global";
+import { MOUSE_BUTTONS } from '@graph/global';
 
 const ERASER_BRUSH_RADIUS = 10;
 
@@ -21,7 +21,10 @@ const graphColor = useNonNullGraphColors();
 export const useAnnotations = (graph: BaseGraph) => {
   const selectedColor = ref<Color>(COLORS[0]);
   const selectedBrushWeight = ref(BRUSH_WEIGHTS[1]);
-  const erasing = ref(false);
+  const isErasing = ref(false);
+  const isLaserPointing = ref(false);
+  const laserDecayInterval = ref<NodeJS.Timeout>();
+  const lastMoveTime = ref(Date.now());
   const erasedScribbleIds = ref(new Set<string>());
 
   const batch = ref<Coordinate[]>([]);
@@ -44,6 +47,17 @@ export const useAnnotations = (graph: BaseGraph) => {
     scribbles.value = [];
   };
 
+  const startDecayTimer = () => {
+    if (laserDecayInterval.value) return;
+
+    laserDecayInterval.value = setInterval(() => {
+      const inactivityTime = Date.now() - lastMoveTime.value;
+      const shouldErase =
+        inactivityTime > 50 && isLaserPointing.value && batch.value.length >= 2;
+      if (shouldErase) batch.value.shift();
+    }, 50);
+  };
+
   /**
    * starts drawing from the current mouse position
    */
@@ -62,10 +76,9 @@ export const useAnnotations = (graph: BaseGraph) => {
    */
   const drawLine = ({ coords }: GraphMouseEvent) => {
     if (!isDrawing.value || !lastPoint.value) return;
-
     if (batch.value.length === 0) return;
 
-    if (erasing.value) {
+    if (isErasing.value) {
       const eraserBoundingBox = getCircleBoundingBox({
         at: coords,
         radius: ERASER_BRUSH_RADIUS,
@@ -84,6 +97,16 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     lastPoint.value = coords;
     batch.value.push(coords);
+
+    if (isLaserPointing.value && batch.value.length > 10) {
+      batch.value.shift();
+    }
+
+    if (isLaserPointing.value) {
+      startDecayTimer();
+    }
+
+    lastMoveTime.value = Date.now();
   };
 
   const stopDrawing = () => {
@@ -92,7 +115,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     isDrawing.value = false;
     lastPoint.value = undefined;
 
-    if (erasing.value) {
+    if (isErasing.value) {
       const erasedScribbles = scribbles.value.filter((scribble) => {
         return erasedScribbleIds.value.has(scribble.id);
       });
@@ -106,6 +129,11 @@ export const useAnnotations = (graph: BaseGraph) => {
         return !erasedScribbleIds.value.has(scribble.id);
       });
       erasedScribbleIds.value.clear();
+      return;
+    }
+
+    if (isLaserPointing.value) {
+      laserDecayInterval.value = undefined;
       return;
     }
 
@@ -127,15 +155,17 @@ export const useAnnotations = (graph: BaseGraph) => {
     batch.value = [];
   };
 
-  watch(erasing, () => {
+  const hideCursor = computed(() => isErasing.value || isLaserPointing.value);
+
+  watch(hideCursor, () => {
     if (!graph.canvas.value) return;
-    graph.canvas.value.style.cursor = erasing.value ? 'none' : 'crosshair';
+    graph.canvas.value.style.cursor = hideCursor.value ? 'none' : 'crosshair';
   });
 
   const addScribblesToAggregator = (aggregator: Aggregator) => {
     if (!isActive.value) return aggregator;
 
-    if (erasing.value) {
+    if (isErasing.value) {
       const eraserCursor = shapes.circle({
         at: graph.graphAtMousePosition.value.coords,
         radius: ERASER_BRUSH_RADIUS,
@@ -165,6 +195,19 @@ export const useAnnotations = (graph: BaseGraph) => {
         id: incompleteScribble.id,
         shape: incompleteScribble,
         priority: 5001,
+      });
+    } else if (isLaserPointing.value) {
+      const laserPointerCursor = shapes.circle({
+        at: graph.graphAtMousePosition.value.coords,
+        radius: selectedBrushWeight.value,
+        color: selectedColor.value,
+      });
+
+      aggregator.push({
+        graphType: 'annotation',
+        id: laserPointerCursor.id,
+        shape: laserPointerCursor,
+        priority: 5050,
       });
     }
 
@@ -209,7 +252,7 @@ export const useAnnotations = (graph: BaseGraph) => {
     if (!graph.canvas.value) return;
 
     isActive.value = false;
-    erasing.value = false;
+    isErasing.value = false;
 
     graph.settings.value.interactive = true;
     graph.settings.value.marquee = true;
@@ -235,7 +278,8 @@ export const useAnnotations = (graph: BaseGraph) => {
 
     annotations: scribbles,
 
-    erasing: erasing,
+    isLaserPointing,
+    isErasing,
     color: selectedColor,
     brushWeight: selectedBrushWeight,
 

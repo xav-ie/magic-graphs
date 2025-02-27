@@ -7,30 +7,39 @@
   import GToolbarButtonDivider from '@ui/graph/toolbar/GToolbarDivider.vue';
   import ToolbarButtonGroup from '@ui/core/toolbar/ToolbarButtonGroup.vue';
 
-  const { clear, brushWeight, erasing, color } = graph.value.annotation;
+  const { clear, brushWeight, isErasing, color, isLaserPointing } =
+    graph.value.annotation;
 
   const selectColor = (newColor: Color) => {
     color.value = newColor;
-    erasing.value = false;
+    isErasing.value = false;
+    isLaserPointing.value = false;
   };
 
   const selectBrushWeight = (newBrushWeight: number) => {
     brushWeight.value = newBrushWeight;
-    erasing.value = false;
+    isErasing.value = false;
+    isLaserPointing.value = false;
   };
 
   const isColorActive = (newColor: Color) => {
-    if (erasing.value) return false;
+    if (isErasing.value || isLaserPointing.value) return false;
     return color.value === newColor;
   };
 
   const isBrushWeightActive = (newBrushWeight: number) => {
-    if (erasing.value) return false;
+    if (isErasing.value) return false;
     return brushWeight.value === newBrushWeight;
   };
 
   const toggleErasing = () => {
-    erasing.value = !erasing.value;
+    isErasing.value = !isErasing.value;
+    isLaserPointing.value = false;
+  };
+
+  const toggleLaserPointing = () => {
+    isLaserPointing.value = !isLaserPointing.value;
+    isErasing.value = false;
   };
 </script>
 
@@ -72,8 +81,13 @@
 
     <ToolbarButtonGroup>
       <GToolbarButton
+        @click="toggleLaserPointing"
+        :active="isLaserPointing"
+        icon="laser-pointer"
+      />
+      <GToolbarButton
         @click="toggleErasing"
-        :active="erasing"
+        :active="isErasing"
         icon="eraser"
       />
 
