@@ -44,12 +44,11 @@ export const engageTextarea = (
   input.style.overflow = 'hidden';
   input.style.border = 'none';
 
-  input.style.padding = '0px';
-  input.style.margin = '0px';
+  input.style.padding = '0';
+  input.style.margin = '0';
 
   input.style.paddingTop = `${Math.round(descent * scale)}px`;
 
-  input.style.margin = '0';
   input.style.fontSize = `${fontSize * scale}px`;
   input.style.color = textColor;
   input.style.backgroundColor = bgColor;
@@ -74,9 +73,7 @@ export const engageTextarea = (
     input.style.width = `${newWidth}px`;
   };
 
-  input.oninput = () => {
-    adjustSize();
-  };
+  input.oninput = adjustSize;
 
   const isClickOutsideInput = (input: HTMLElement, event: MouseEvent) => {
     const { x, y, width, height } = input.getBoundingClientRect();
