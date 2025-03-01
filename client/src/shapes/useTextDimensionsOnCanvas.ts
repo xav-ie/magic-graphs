@@ -1,9 +1,10 @@
 import { getCtx } from '@utils/ctx';
 import { TEXT_DEFAULTS, type Text } from './types';
 
+const canvas = document.createElement('canvas');
+const ctx = getCtx(canvas);
+
 export const useTextDimensionOnCanvas = () => {
-  const canvas = document.createElement('canvas');
-  const ctx = getCtx(canvas);
   canvas.width = 1;
   canvas.height = 1;
 
