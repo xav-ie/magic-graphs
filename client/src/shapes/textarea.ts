@@ -24,16 +24,14 @@ export const engageTextarea = (
 
   const { color: textColor, content, fontSize, fontWeight } = text;
 
-  // prevent text jumping after click as much as possible (sometimes jumps 1 pixel)
-
-  const inputWidth = Math.max(fontSize * 2, width) * scale;
+  const inputWidth = Math.max(fontSize * 2, width + 20);
   const inputHeight = fontSize * 2 * scale;
 
   const input = document.createElement('textarea');
 
   input.style.position = 'absolute';
   input.style.left = `${Math.round(transformedX)}px`;
-  input.style.top = `${Math.round(transformedY - ascent * scale)}px`;
+  input.style.top = `${Math.round(transformedY)}px`;
   input.style.width = `${Math.round(inputWidth)}px`;
   input.style.height = `${Math.round(inputHeight)}px`;
   input.style.zIndex = '1000';
@@ -44,7 +42,9 @@ export const engageTextarea = (
   input.style.border = 'none';
 
   input.style.padding = '0px';
-  input.style.paddingTop = `${Math.round(ascent * scale * 1.7)}px`;
+  input.style.margin = '0px';
+
+  input.style.paddingTop = `${Math.round(descent * scale)}px`;
   input.style.backgroundColor = 'red';
 
   input.style.margin = '0';
@@ -55,7 +55,7 @@ export const engageTextarea = (
   input.style.textAlign = 'center';
   input.style.fontWeight = fontWeight;
   input.style.outline = 'none';
-  input.style.boxSizing = 'content-box';
+  input.style.boxSizing = 'border-box';
 
   // no text wrapping
   input.style.whiteSpace = 'nowrap';
@@ -76,9 +76,7 @@ export const engageTextarea = (
     adjustSize();
   };
 
-  input.onfocus = () => {
-    adjustSize();
-  };
+  input.onfocus = () => {};
 
   const isClickOutsideInput = (input: HTMLElement, event: MouseEvent) => {
     const { x, y, width, height } = input.getBoundingClientRect();
