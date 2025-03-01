@@ -20,7 +20,8 @@ export type ShapeName =
   | 'uturn'
   | 'cross'
   | 'scribble'
-  | 'ellipse';
+  | 'ellipse'
+  | 'star';
 
 export type Shape = {
   /**

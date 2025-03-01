@@ -8,6 +8,7 @@ import { uturn as uturnAPI } from './uturn';
 import { cross as crossAPI } from './cross';
 import { scribble as scribbleAPI } from './scribble';
 import { ellipse as ellipseAPI } from './ellipse';
+import { star as starAPI } from './star';
 
 export const line = lineAPI;
 export const arrow = arrowAPI;
@@ -19,6 +20,7 @@ export const uturn = uturnAPI;
 export const cross = crossAPI;
 export const scribble = scribbleAPI;
 export const ellipse = ellipseAPI;
+export const star = starAPI;
 
 export const shapes = {
   arrow,
@@ -31,4 +33,5 @@ export const shapes = {
   cross,
   scribble,
   ellipse,
+  star,
 };
