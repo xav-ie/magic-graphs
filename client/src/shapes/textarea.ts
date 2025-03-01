@@ -3,6 +3,7 @@ import type { TextArea } from '@shape/types';
 import { getCanvasScale } from '@utils/components/useCanvasCoord';
 import { rectHitbox } from './rect/hitbox';
 import { useTextDimensionOnCanvas } from './useTextDimensionsOnCanvas';
+import { HORIZONTAL_TEXT_PADDING } from './text';
 
 export const engageTextarea = (
   ctx: CanvasRenderingContext2D,
@@ -13,7 +14,7 @@ export const engageTextarea = (
 
   const { getTextDimensionsOnCanvas } = useTextDimensionOnCanvas();
 
-  const { width, height, ascent, descent } = getTextDimensionsOnCanvas(text);
+  const { width, descent } = getTextDimensionsOnCanvas(text);
 
   const scale = getCanvasScale(ctx);
   const transform = ctx.getTransform();
@@ -24,8 +25,10 @@ export const engageTextarea = (
 
   const { color: textColor, content, fontSize, fontWeight } = text;
 
-  const inputWidth = Math.max(fontSize * 2, width + 20);
-  const inputHeight = fontSize * 2 * scale;
+  const inputWidth = Math.round(
+    Math.max(fontSize * 2, width + HORIZONTAL_TEXT_PADDING) * scale,
+  );
+  const inputHeight = Math.round(fontSize * 2 * scale);
 
   const input = document.createElement('textarea');
 
@@ -45,12 +48,11 @@ export const engageTextarea = (
   input.style.margin = '0px';
 
   input.style.paddingTop = `${Math.round(descent * scale)}px`;
-  input.style.backgroundColor = 'red';
 
   input.style.margin = '0';
   input.style.fontSize = `${fontSize * scale}px`;
   input.style.color = textColor;
-  // input.style.backgroundColor = bgColor;
+  input.style.backgroundColor = bgColor;
   input.style.fontFamily = 'Arial';
   input.style.textAlign = 'center';
   input.style.fontWeight = fontWeight;
@@ -76,8 +78,6 @@ export const engageTextarea = (
     adjustSize();
   };
 
-  input.onfocus = () => {};
-
   const isClickOutsideInput = (input: HTMLElement, event: MouseEvent) => {
     const { x, y, width, height } = input.getBoundingClientRect();
 
@@ -100,7 +100,7 @@ export const engageTextarea = (
     setTimeout(() => {
       // setTimeout to allow canvas time to update
       input.remove();
-    }, 5);
+    }, 50);
   };
 
   input.onblur = removeInput;
