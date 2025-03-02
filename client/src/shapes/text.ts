@@ -6,10 +6,10 @@ import { useTextDimensionOnCanvas } from './useTextDimensionsOnCanvas';
 import { useMemoize } from '@vueuse/core';
 
 const { getTextDimensionsOnCanvas } = useTextDimensionOnCanvas();
+export const HORIZONTAL_TEXT_PADDING = 20;
 
 export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => {
-  const paddingHorizontal = 20;
-  const paddingVertical = paddingHorizontal;
+  const paddingVertical = HORIZONTAL_TEXT_PADDING;
 
   const { width, height, ascent, descent } = useMemoize(() =>
     getTextDimensionsOnCanvas(textArea.text),
@@ -17,7 +17,7 @@ export const getTextAreaDimension = (textArea: DeepRequired<TextArea>) => {
 
   return {
     width: Math.max(
-      width + paddingHorizontal,
+      width + HORIZONTAL_TEXT_PADDING,
       textArea.text.fontSize * 2, // default is square background
     ),
     height: Math.max(

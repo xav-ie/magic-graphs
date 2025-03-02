@@ -2,6 +2,8 @@ import type { DeepRequired } from 'ts-essentials';
 import type { TextArea } from '@shape/types';
 import { getCanvasScale } from '@utils/components/useCanvasCoord';
 import { rectHitbox } from './rect/hitbox';
+import { useTextDimensionOnCanvas } from './useTextDimensionsOnCanvas';
+import { HORIZONTAL_TEXT_PADDING } from './text';
 
 export const engageTextarea = (
   ctx: CanvasRenderingContext2D,
@@ -9,6 +11,10 @@ export const engageTextarea = (
   handler: (str: string) => void,
 ) => {
   const { at, text, activeColor: bgColor } = textArea;
+
+  const { getTextDimensionsOnCanvas } = useTextDimensionOnCanvas();
+
+  const { width, descent } = getTextDimensionsOnCanvas(text);
 
   const scale = getCanvasScale(ctx);
   const transform = ctx.getTransform();
@@ -19,12 +25,10 @@ export const engageTextarea = (
 
   const { color: textColor, content, fontSize, fontWeight } = text;
 
-  // prevent text jumping after click as much as possible (sometimes jumps 1 pixel)
-  const topPadding = scale === 1 ? 5 : Math.round(scale * 5);
-
-  const inputWidth = // this should use the getTextSizeOnCanvas api!!
-    Math.max(fontSize * 2, fontSize * 0.6 * content.length) * scale;
-  const inputHeight = fontSize * 2 * scale;
+  const inputWidth = Math.round(
+    Math.max(fontSize * 2, width + HORIZONTAL_TEXT_PADDING) * scale,
+  );
+  const inputHeight = Math.round(fontSize * 2 * scale);
 
   const input = document.createElement('textarea');
 
@@ -39,11 +43,12 @@ export const engageTextarea = (
 
   input.style.overflow = 'hidden';
   input.style.border = 'none';
+
   input.style.padding = '0';
-
-  input.style.paddingTop = `${topPadding}px`;
-
   input.style.margin = '0';
+
+  input.style.paddingTop = `${Math.round(descent * scale)}px`;
+
   input.style.fontSize = `${fontSize * scale}px`;
   input.style.color = textColor;
   input.style.backgroundColor = bgColor;
@@ -56,9 +61,11 @@ export const engageTextarea = (
   // no text wrapping
   input.style.whiteSpace = 'nowrap';
 
+  input.value = content;
+
   const adjustSize = () => {
     const currentWidth = parseFloat(input.style.width);
-    const newWidth = Math.max(input.scrollWidth, fontSize * 2 * scale);
+    const newWidth = Math.max(input.scrollWidth, fontSize * 2);
 
     const deltaWidth = newWidth - currentWidth;
     input.style.left = `${parseFloat(input.style.left) - deltaWidth / 2}px`;
@@ -66,10 +73,7 @@ export const engageTextarea = (
     input.style.width = `${newWidth}px`;
   };
 
-  input.onfocus = adjustSize;
   input.oninput = adjustSize;
-
-  input.value = content;
 
   const isClickOutsideInput = (input: HTMLElement, event: MouseEvent) => {
     const { x, y, width, height } = input.getBoundingClientRect();
@@ -93,7 +97,7 @@ export const engageTextarea = (
     setTimeout(() => {
       // setTimeout to allow canvas time to update
       input.remove();
-    }, 5);
+    }, 50);
   };
 
   input.onblur = removeInput;
