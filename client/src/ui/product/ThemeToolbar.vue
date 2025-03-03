@@ -9,7 +9,7 @@
     auto: 'cog-outline',
     light: 'weather-sunny',
     dark: 'weather-night',
-    girl: 'human-female',
+    girl: 'flower-tulip-outline',
   };
 </script>
 
