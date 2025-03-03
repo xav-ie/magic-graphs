@@ -1,5 +1,6 @@
 import { getCtx } from '@utils/ctx';
 import { TEXT_DEFAULTS, type Text } from './types';
+import { onUnmounted } from 'vue';
 
 const canvas = document.createElement('canvas');
 const ctx = getCtx(canvas);
@@ -32,9 +33,9 @@ export const useTextDimensionOnCanvas = () => {
     };
   };
 
-  canvas.remove();
-
   return {
     getTextDimensionsOnCanvas,
   };
 };
+
+onUnmounted(() => canvas.remove());
