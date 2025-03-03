@@ -24,7 +24,8 @@
   const draw = () => {
     const ctx = getCtx(canvas);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    const { uturn, cross, ellipse, square, triangle, scribble, line } = shapes;
+    const { uturn, cross, ellipse, square, triangle, scribble, line, star } =
+      shapes;
 
     items.value.push(
       ellipse({
@@ -157,6 +158,35 @@
           { x: 535, y: 612 },
         ],
       }),
+    );
+
+    items.value.push(
+      ...[
+        {
+          at: { x: 700, y: 300 },
+          color: colors.YELLOW_500,
+          innerRadius: 8,
+          outerRadius: 20,
+          points: 5,
+          rotation: Math.PI / 4,
+        },
+        {
+          at: { x: 730, y: 280 },
+          color: colors.YELLOW_400,
+          innerRadius: 6,
+          outerRadius: 15,
+          points: 6,
+          rotation: Math.PI / 4,
+        },
+        {
+          at: { x: 670, y: 290 },
+          color: colors.YELLOW_600,
+          innerRadius: 4,
+          outerRadius: 12,
+          points: 7,
+          rotation: Math.PI / 6,
+        },
+      ].map(star),
     );
 
     items.value.forEach((item) => item.draw(ctx));
