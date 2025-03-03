@@ -2,6 +2,8 @@
   "cSpell.words": [
     "gsap",
     "preorder",
+    "toastservice",
     "unlabel"
   ],
+  "editor.formatOnSave": true,
 }

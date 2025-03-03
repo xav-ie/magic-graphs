@@ -4,7 +4,7 @@
   import InputRange from '@ui/InputRange.vue';
   import InputText from '@ui/InputText.vue';
   import { camelCaseToTitleCase } from '@utils/string';
-  import { THEMES } from '@graph/themes';
+  import { THEMES, type GraphThemeName } from '@graph/themes';
   import CButton from '@ui/core/button/Button.vue';
   import { useTheme } from '@graph/themes/useTheme';
   import { ref, watch } from 'vue';
@@ -20,9 +20,14 @@
   const adjustThemes = () => {
     const themeEntries = Object.entries(themes.value);
     for (const [key, value] of themeEntries) {
-      // @ts-ignore
+      // @ts-expect-error imprecise typing when using Object.entries
       setTheme(key, value);
     }
+  };
+
+  const setThemeName = (newThemeName: GraphThemeName) => {
+    const { themeName } = props.graph;
+    themeName.value = newThemeName;
   };
 
   watch(themes, adjustThemes, { deep: true });
@@ -39,17 +44,19 @@
       </div>
       <div class="flex flex-wrap gap-3">
         <div
-          v-for="(_, key) in THEMES"
-          @click="graph.themeName.value = key"
+          v-for="(_, themeName) in THEMES"
+          :key="themeName"
+          @click="setThemeName(themeName)"
         >
           <CButton style="width: 120px; text-align: center">
-            {{ camelCaseToTitleCase(key) }}
+            {{ camelCaseToTitleCase(themeName) }}
           </CButton>
         </div>
       </div>
     </div>
     <div
       v-for="(theme, themeKey) in THEMES[graph.themeName.value]"
+      :key="themeKey"
       class="my-2"
     >
       <div class="text-white mb-2">

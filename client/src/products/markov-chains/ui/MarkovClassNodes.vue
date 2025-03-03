@@ -17,7 +17,10 @@
       secondary
       class="p-2 rounded-md flex gap-3"
     >
-      <div v-for="nodes in classes">
+      <div
+        v-for="nodes in classes"
+        :key="nodes[0].id"
+      >
         <div class="flex flex-row gap-1">
           <div
             v-for="node in nodes"

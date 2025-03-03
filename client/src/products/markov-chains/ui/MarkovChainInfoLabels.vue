@@ -67,7 +67,7 @@
       @mouseleave="unlabelSteadyState"
       :tooltip="definitions.steadyState"
     >
-      Unique Steady State? {{ markov.steadyState.value ? 'Yes' : 'No' }}
+      Steady State (Coming Soon)
     </GHoverInfoTop>
   </GWell>
 </template>
