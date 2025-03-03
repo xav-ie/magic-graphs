@@ -1,7 +1,6 @@
 import { computed } from 'vue';
 import type { Graph } from '@graph/types';
 import { reduceSet } from '@utils/sets';
-import { useComponentAdjacencyMap } from './useComponentAdjacencyMap';
 import { useMarkovClasses } from './useMarkovClasses';
 import { useMarkovPeriodicity } from './useMarkovPeriodicity';
 import { useMarkovSteadyState } from './useMarkovSteadyState';
@@ -41,10 +40,7 @@ export const useMarkovChain = (graph: Graph) => {
   const { nodeIdToOutgoingWeight, illegalNodeIds } =
     useMarkovNodeWeights(graph);
 
-  const steadyState = useMarkovSteadyState(graph, {
-    recurrentClasses,
-    illegalNodeIds,
-  });
+  const steadyState = useMarkovSteadyState();
 
   return {
     communicatingClasses,
@@ -61,6 +57,7 @@ export const useMarkovChain = (graph: Graph) => {
     isPeriodic,
     isAbsorbing,
 
+    // TODO implement a correct version of steady state
     steadyState,
 
     nodeIdToOutgoingWeight,

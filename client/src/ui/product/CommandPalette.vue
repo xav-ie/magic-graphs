@@ -31,6 +31,8 @@
   const redirect = (route: string) => {
     window.open(route, '_blank');
   };
+
+  const GH_REPO_LINK = 'https://github.com/Yonava/magic-graphs';
 </script>
 
 <template>
@@ -49,7 +51,7 @@
       <GButton
         @click="
           redirect(
-            'https://github.com/Yonava/magic-graphs/issues/new?template=Blank%20issue',
+            `${GH_REPO_LINK}/issues/new?template=Blank%20issue`,
           )
         "
         class="flex justify-center mb-1"
@@ -59,7 +61,7 @@
         Find an Issue?
       </GButton>
       <GButton
-        @click="redirect('https://github.com/Yonava/magic-graphs')"
+        @click="redirect(GH_REPO_LINK)"
         secondary
         class="flex justify-center"
       >
