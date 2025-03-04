@@ -145,6 +145,10 @@ export const useShortcuts = (
         name: 'Delete',
         shortcut: shortcutDelete.value,
       },
+      ['Delete']: {
+        name: 'Delete',
+        shortcut: shortcutDelete.value,
+      },
       ['Control+A']: {
         name: 'Select All',
         shortcut: shortcutSelectAll.value,
