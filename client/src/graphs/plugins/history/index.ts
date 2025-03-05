@@ -133,7 +133,7 @@ export const useHistory = (graph: BaseGraph) => {
       if (!history) return;
 
       pendingNodeRemovals.value.push(...removedNodes);
-      pendingEdgeRemovals.value.push(...removedEdges); // These edges are already part of node deletion
+      pendingEdgeRemovals.value.push(...removedEdges);
 
       if (!removalTimeout.value) {
         removalTimeout.value = setTimeout(processRemovals, 0);
