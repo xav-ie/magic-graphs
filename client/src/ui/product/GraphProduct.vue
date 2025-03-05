@@ -47,6 +47,7 @@
   };
 
   const setActiveSimulation = (simulation: SimulationDeclaration) => {
+    props.graph.annotation.deactivate();
     activeSimulation.value = simulation;
     startSimulation();
   };
@@ -172,7 +173,6 @@
         <SelectSimulation
           @simulation-selected="setActiveSimulation"
           :simulations="simulations"
-          :disabled="graph.annotation.isActive.value"
         />
       </slot>
     </template>
