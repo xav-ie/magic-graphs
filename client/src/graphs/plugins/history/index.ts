@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import type { BaseGraph } from '@graph/base';
-import type { GNode } from '@graph/types';
+import type { GNode, GEdge } from '@graph/types';
 import {
   DEFAULT_REDO_HISTORY_OPTIONS,
   DEFAULT_UNDO_HISTORY_OPTIONS,
@@ -10,6 +10,8 @@ import type {
   RedoHistoryOptions,
   UndoHistoryOptions,
   GNodeMoveRecord,
+  GNodeRecord,
+  GEdgeRecord,
 } from './types';
 import type { Coordinate } from '@shape/types';
 
@@ -40,6 +42,42 @@ export const useHistory = (graph: BaseGraph) => {
     if (redoStack.value.length > MAX_HISTORY) {
       redoStack.value.shift();
     }
+  };
+
+  const pendingNodeRemovals = ref<GNode[]>([]);
+  const pendingEdgeRemovals = ref<GEdge[]>([]);
+  const removalTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+
+  const processRemovals = () => {
+    if (
+      pendingNodeRemovals.value.length === 0 &&
+      pendingEdgeRemovals.value.length === 0
+    )
+      return;
+
+    addToUndoStack({
+      action: 'remove',
+      affectedItems: [
+        ...pendingNodeRemovals.value.map(
+          (node) =>
+            ({
+              graphType: 'node',
+              data: node,
+            }) as GNodeRecord,
+        ),
+        ...pendingEdgeRemovals.value.map(
+          (edge) =>
+            ({
+              graphType: 'edge',
+              data: edge,
+            }) as GEdgeRecord,
+        ),
+      ],
+    });
+
+    pendingNodeRemovals.value = [];
+    pendingEdgeRemovals.value = [];
+    removalTimeout.value = null;
   };
 
   graph.subscribe('onNodeAdded', (node, { history }) => {
@@ -94,26 +132,12 @@ export const useHistory = (graph: BaseGraph) => {
     (removedNodes, removedEdges, { history }) => {
       if (!history) return;
 
-      const nodeRecords = removedNodes.map(
-        (node) =>
-          ({
-            graphType: 'node',
-            data: node,
-          }) as const,
-      );
+      pendingNodeRemovals.value.push(...removedNodes);
+      pendingEdgeRemovals.value.push(...removedEdges); // These edges are already part of node deletion
 
-      const edgeRecords = removedEdges.map(
-        (edge) =>
-          ({
-            graphType: 'edge',
-            data: edge,
-          }) as const,
-      );
-
-      addToUndoStack({
-        action: 'remove',
-        affectedItems: [...nodeRecords, ...edgeRecords],
-      });
+      if (!removalTimeout.value) {
+        removalTimeout.value = setTimeout(processRemovals, 0);
+      }
     },
   );
 
@@ -173,13 +197,11 @@ export const useHistory = (graph: BaseGraph) => {
 
   graph.subscribe('onBulkEdgeRemoved', (edges, { history }) => {
     if (!history) return;
-    addToUndoStack({
-      action: 'remove',
-      affectedItems: edges.map((edge) => ({
-        graphType: 'edge',
-        data: edge,
-      })),
-    });
+    pendingEdgeRemovals.value.push(...edges);
+
+    if (!removalTimeout.value) {
+      removalTimeout.value = setTimeout(processRemovals, 0);
+    }
   });
 
   const groupDrag = ref<{
