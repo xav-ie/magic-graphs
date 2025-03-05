@@ -1,14 +1,14 @@
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import type { Ref } from 'vue';
 import { getCtx } from '@utils/ctx';
 
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 5;
+export const scale = ref(1);
 
 export function usePinchToZoom(
   canvasRef: Ref<HTMLCanvasElement | undefined | null>,
 ) {
-  const scale = ref(1);
   const zoomOrigin = ref({ x: 0, y: 0 });
 
   const handleWheel = (ev: WheelEvent) => {
@@ -16,16 +16,12 @@ export function usePinchToZoom(
     ev.preventDefault();
     const canvas = canvasRef.value;
     if (!canvas) return;
-
     const rect = canvas.getBoundingClientRect();
     const cursorX = ev.clientX - rect.left;
     const cursorY = ev.clientY - rect.top;
 
     const scaleChange = ev.deltaY < 0 ? 1.03 : 0.97;
-    const newScale = Math.min(
-      MAX_SCALE,
-      Math.max(MIN_SCALE, scale.value * scaleChange),
-    );
+    const newScale = scale.value * scaleChange;
 
     zoomOrigin.value.x =
       cursorX - (cursorX - zoomOrigin.value.x) * (newScale / scale.value);
@@ -33,7 +29,6 @@ export function usePinchToZoom(
       cursorY - (cursorY - zoomOrigin.value.y) * (newScale / scale.value);
 
     scale.value = newScale;
-    applyZoom();
   };
 
   const applyZoom = () => {
@@ -53,6 +48,11 @@ export function usePinchToZoom(
     const canvas = canvasRef.value;
     if (!canvas) return;
     canvas.removeEventListener('wheel', handleWheel);
+  });
+
+  watch(scale, () => {
+    scale.value = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale.value));
+    applyZoom();
   });
 
   return {
