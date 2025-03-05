@@ -20,6 +20,8 @@
     graph: Graph;
   }>();
 
+  const wasAnnotationActive = ref(false);
+
   const emit = defineEmits<{
     (e: 'graph-ref', value: HTMLCanvasElement | undefined): void;
     (e: 'simulation-started', value: UnwrapRef<SimulationDeclaration>): void;
@@ -44,10 +46,15 @@
     await simRunner.value.stop();
     runningSimulation.value = false;
     emit('simulation-stopped');
+
+    if (wasAnnotationActive.value) props.graph.annotation.activate();
+    wasAnnotationActive.value = false;
   };
 
   const setActiveSimulation = (simulation: SimulationDeclaration) => {
+    wasAnnotationActive.value = props.graph.annotation.isActive.value;
     props.graph.annotation.deactivate();
+
     activeSimulation.value = simulation;
     startSimulation();
   };
