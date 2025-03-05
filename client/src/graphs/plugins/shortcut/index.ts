@@ -141,10 +141,6 @@ export const useShortcuts = (
         name: 'Redo',
         shortcut: shortcutRedo.value,
       },
-      ['Backspace']: {
-        name: 'Delete',
-        shortcut: shortcutDelete.value,
-      },
       ['Delete']: {
         name: 'Delete',
         shortcut: shortcutDelete.value,
