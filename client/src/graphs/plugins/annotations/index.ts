@@ -64,6 +64,22 @@ export const useAnnotations = (graph: BaseGraph) => {
   const startDrawing = ({ coords, event }: GraphMouseEvent) => {
     if (event.button !== MOUSE_BUTTONS.left) return;
 
+    if (isErasing.value) {
+      const eraserBoundingBox = getCircleBoundingBox({
+        at: coords,
+        radius: ERASER_BRUSH_RADIUS,
+      })();
+
+      const erasedScribbles = scribbles.value.filter((scribble) => {
+        const shape = shapes.scribble(scribble);
+        return shape.efficientHitbox(eraserBoundingBox);
+      });
+
+      for (const erasedScribble of erasedScribbles) {
+        erasedScribbleIds.value.add(erasedScribble.id);
+      }
+    }
+
     isDrawing.value = true;
     lastPoint.value = coords;
     batch.value = [coords];
