@@ -2,8 +2,8 @@ import { ref, onMounted, onUnmounted, watch } from 'vue';
 import type { Ref } from 'vue';
 import { getCtx } from '@utils/ctx';
 
-const MIN_SCALE = 0.5;
-const MAX_SCALE = 5;
+export const MIN_SCALE = 0.5;
+export const MAX_SCALE = 5;
 export const scale = ref(1);
 
 export function usePinchToZoom(
@@ -25,7 +25,11 @@ export function usePinchToZoom(
     const cursorY = ev.clientY - rect.top;
 
     const scaleChange = ev.deltaY < 0 ? 1.03 : 0.97;
-    const newScale = scale.value * scaleChange;
+    const newScale = Math.min(
+      MAX_SCALE,
+      Math.max(MIN_SCALE, scale.value * scaleChange),
+    );
+    if (newScale <= MIN_SCALE || newScale >= MAX_SCALE) return;
 
     zoomOrigin.value.x =
       cursorX - (cursorX - zoomOrigin.value.x) * (newScale / scale.value);
@@ -55,8 +59,6 @@ export function usePinchToZoom(
   });
 
   watch(scale, (newScale, oldScale) => {
-    scale.value = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
-
     const canvas = canvasRef.value;
     if (!canvas) return;
 
