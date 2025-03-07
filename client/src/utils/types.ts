@@ -9,7 +9,7 @@ export type PartiallyPartial<T, K extends keyof T> = Omit<T, K> &
  * takes `any[]` out of a union of arrays
  * @example RemoveAnyArray<number[] | any[]> // number[]
  */
-export type RemoveAnyArray<T extends any[]> = Exclude<
+export type RemoveAnyArray<T extends unknown[]> = Exclude<
   T,
   ['!!!-@-NOT-A-TYPE-@-!!!'][]
 >;
@@ -38,3 +38,6 @@ export type KeyboardEventEntries = [
   keyof KeyboardEventMap,
   (ev: KeyboardEvent) => void,
 ][];
+
+export type TimeoutHandler = ReturnType<typeof setTimeout>;
+export type IntervalHandler = ReturnType<typeof setInterval>;
