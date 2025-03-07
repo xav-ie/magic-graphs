@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import type { BaseGraph } from '@graph/base';
-import type { GNode } from '@graph/types';
+import type { GNode, GEdge } from '@graph/types';
 import {
   DEFAULT_REDO_HISTORY_OPTIONS,
   DEFAULT_UNDO_HISTORY_OPTIONS,
@@ -12,6 +12,7 @@ import type {
   GNodeMoveRecord,
 } from './types';
 import type { Coordinate } from '@shape/types';
+import { debounce } from '@utils/debounce';
 
 /**
  * the max number of history records to keep in the undo and redo stacks
@@ -41,6 +42,44 @@ export const useHistory = (graph: BaseGraph) => {
       redoStack.value.shift();
     }
   };
+
+  const nodesPendingRemoval = ref<GNode[]>([]);
+  const edgesPendingRemoval = ref<GEdge[]>([]);
+
+  const processRemovals = () => {
+    if (
+      nodesPendingRemoval.value.length === 0 &&
+      edgesPendingRemoval.value.length === 0
+    )
+      return;
+
+    const nodeRecords = nodesPendingRemoval.value.map(
+      (node) => ({
+        graphType: 'node' as const,
+        data: node,
+      })
+    );
+
+    const edgeRecords = edgesPendingRemoval.value.map(
+      (edge) => ({
+        graphType: 'edge' as const,
+        data: edge,
+      })
+    );
+
+    addToUndoStack({
+      action: 'remove',
+      affectedItems: [
+        ...nodeRecords,
+        ...edgeRecords,
+      ],
+    });
+
+    nodesPendingRemoval.value = [];
+    edgesPendingRemoval.value = [];
+  };
+
+  const debouncedProcessRemovals = debounce(processRemovals, 250);
 
   graph.subscribe('onNodeAdded', (node, { history }) => {
     if (!history) return;
@@ -94,26 +133,10 @@ export const useHistory = (graph: BaseGraph) => {
     (removedNodes, removedEdges, { history }) => {
       if (!history) return;
 
-      const nodeRecords = removedNodes.map(
-        (node) =>
-          ({
-            graphType: 'node',
-            data: node,
-          }) as const,
-      );
+      nodesPendingRemoval.value.push(...removedNodes);
+      edgesPendingRemoval.value.push(...removedEdges);
 
-      const edgeRecords = removedEdges.map(
-        (edge) =>
-          ({
-            graphType: 'edge',
-            data: edge,
-          }) as const,
-      );
-
-      addToUndoStack({
-        action: 'remove',
-        affectedItems: [...nodeRecords, ...edgeRecords],
-      });
+      debouncedProcessRemovals();
     },
   );
 
@@ -173,13 +196,9 @@ export const useHistory = (graph: BaseGraph) => {
 
   graph.subscribe('onBulkEdgeRemoved', (edges, { history }) => {
     if (!history) return;
-    addToUndoStack({
-      action: 'remove',
-      affectedItems: edges.map((edge) => ({
-        graphType: 'edge',
-        data: edge,
-      })),
-    });
+    edgesPendingRemoval.value.push(...edges);
+
+    debouncedProcessRemovals();
   });
 
   const groupDrag = ref<{

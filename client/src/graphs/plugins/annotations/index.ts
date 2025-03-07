@@ -13,6 +13,7 @@ import type { Annotation } from './types';
 import { useNonNullGraphColors } from '@graph/themes/useGraphColors';
 import { getCircleBoundingBox } from '@shape/circle/hitbox';
 import { MOUSE_BUTTONS } from '@graph/global';
+import type { IntervalHandler } from '@utils/types';
 
 const ERASER_BRUSH_RADIUS = 10;
 
@@ -23,7 +24,7 @@ export const useAnnotations = (graph: BaseGraph) => {
   const selectedBrushWeight = ref(BRUSH_WEIGHTS[1]);
   const isErasing = ref(false);
   const isLaserPointing = ref(false);
-  const laserDecayInterval = ref<NodeJS.Timeout>();
+  const laserDecayInterval = ref<IntervalHandler>();
   const lastMoveTime = ref(Date.now());
   const erasedScribbleIds = ref(new Set<string>());
 
