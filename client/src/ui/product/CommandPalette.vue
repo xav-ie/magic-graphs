@@ -38,7 +38,7 @@
 <template>
   <GButton
     @click="showDialog = !showDialog"
-    class="aspect-square"
+    class="aspect-square w-[45px]"
   >
     <CIcon icon="help"></CIcon>
   </GButton>
@@ -49,11 +49,7 @@
   >
     <GWell class="mb-6">
       <GButton
-        @click="
-          redirect(
-            `${GH_REPO_LINK}/issues/new?template=Blank%20issue`,
-          )
-        "
+        @click="redirect(`${GH_REPO_LINK}/issues/new?template=Blank%20issue`)"
         class="flex justify-center mb-1"
         secondary
       >

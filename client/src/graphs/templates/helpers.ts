@@ -1,13 +1,31 @@
 import type { BoundingBox, Coordinate } from '@shape/types';
 import { getCtx } from '@utils/ctx';
 import { average } from '@utils/math';
+import { getCanvasCoords } from '@utils/components/useCanvasCoord';
+import { nonNullGraph as graph } from '@graph/global';
 
 export const getAverageCoordinates = (coords: Coordinate[]) => {
-  const x = coords.map((coord) => coord.x);
-  const y = coords.map((coord) => coord.y);
+  const { canvas } = graph.value;
+  const ctx = getCtx(canvas);
+
+  const rect = canvas.value?.getBoundingClientRect();
+  const screenCenter = {
+    x: window.innerWidth / 2 - (rect?.left || 0),
+    y: window.innerHeight / 2 - (rect?.top || 0),
+  };
+
+  const mouseEvent = new MouseEvent('mousemove', {
+    clientX: screenCenter.x,
+    clientY: screenCenter.y,
+  });
+
+  const { x: defaultX, y: defaultY } = getCanvasCoords(mouseEvent, ctx);
+
+  if (coords.length === 0) return { x: defaultX, y: defaultY };
+
   return {
-    x: average(x),
-    y: average(y),
+    x: average(coords.map((coord) => coord.x)),
+    y: average(coords.map((coord) => coord.y)),
   };
 };
 
