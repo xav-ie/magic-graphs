@@ -40,7 +40,7 @@
   <div class="relative w-full h-full">
     <codemirror
       v-model="code"
-      :tabSize="2"
+      :tab-size="2"
       :extensions="extensions"
     />
 

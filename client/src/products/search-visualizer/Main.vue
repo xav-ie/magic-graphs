@@ -112,8 +112,8 @@
       >
         <button
           v-for="(algo, algoName) in algos"
-          @click="decoratedAlgorithm = getDecoratedAlgorithm(algo)"
           :key="algoName"
+          @click="decoratedAlgorithm = getDecoratedAlgorithm(algo)"
           :class="[
             'text-white',
             'bg-gray-800',
