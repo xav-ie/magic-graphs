@@ -89,18 +89,18 @@
       <div class="flex flex-col gap-2">
         <h2 class="font-bold text-lg">Shape</h2>
         <GButton
+          @click="setShape('standard')"
           :secondary="options.shape === 'standard'"
           :tertiary="options.shape !== 'standard'"
           :disabled="options.shape === 'standard'"
-          @click="setShape('standard')"
         >
           Standard
         </GButton>
         <GButton
+          @click="setShape('binary')"
           :secondary="options.shape === 'binary'"
           :tertiary="options.shape !== 'binary'"
           :disabled="options.shape === 'binary'"
-          @click="setShape('binary')"
         >
           Binary
         </GButton>

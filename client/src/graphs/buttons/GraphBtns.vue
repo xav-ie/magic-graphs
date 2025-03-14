@@ -10,13 +10,16 @@
 </script>
 
 <template>
-  <div v-for="btn in btns">
+  <div
+    v-for="btn in btns"
+    :key="btn.id"
+  >
     <CButton
       v-if="showBtn(btn.cond)"
       @click.stop="btn.action"
+      :id="btn.id"
       :color="btn.color()"
       text-color="white"
-      :id="btn.id"
     >
       <span class="select-none">
         {{ btn.label() }}

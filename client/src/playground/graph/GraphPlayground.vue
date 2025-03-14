@@ -96,7 +96,7 @@
     <div
       class="absolute w-[150px] top-1/4 overflow-auto bg-gray-800 bg-opacity-80 rounded-r-xl"
     >
-      <GraphPlaygroundControls :playgroundControls="controls" />
+      <GraphPlaygroundControls :playground-controls="controls" />
     </div>
   </div>
 </template>

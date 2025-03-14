@@ -31,8 +31,8 @@
       <IslandMarkup
         v-show="!graph.annotation.isActive.value"
         :graph="graph"
-        :sizeMap="sizeMap"
-        :colorMap="colorMap"
+        :size-map="sizeMap"
+        :color-map="colorMap"
       />
     </template>
   </GraphProduct>

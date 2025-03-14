@@ -11,8 +11,8 @@
   <ButtonGroup>
     <GRadioButton
       v-for="color in MARKUP_COLORS"
-      @click="activeColor = color"
       :key="color"
+      @click="activeColor = color"
       :active="activeColor === color"
       :color="color"
     ></GRadioButton>

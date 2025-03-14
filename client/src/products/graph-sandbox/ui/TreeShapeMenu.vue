@@ -60,8 +60,8 @@
         >
           <GraphNode
             v-for="node in graph.nodes.value"
-            @click="nodeSelected(node)"
             :key="node.id"
+            @click="nodeSelected(node)"
             :node="node"
             :size="55"
           />
@@ -88,8 +88,8 @@
           </div>
           <div>
             <GWell
-              secondary
               v-if="isActive && rootNode"
+              secondary
               class="rounded-md px-2 py-1 font-bold text-xs animate-pulse"
             >
               <h2>Tracking Node {{ rootNode.label }}</h2>

@@ -11,8 +11,8 @@
   <ButtonGroup>
     <GRadioButton
       v-for="size in MARKUP_SIZES"
-      @click="activeSize = size"
       :key="size"
+      @click="activeSize = size"
       :active="activeSize === size"
     >
       {{ size }}

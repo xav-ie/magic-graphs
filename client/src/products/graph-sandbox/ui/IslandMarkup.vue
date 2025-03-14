@@ -18,14 +18,14 @@
     <GWell class="p-2 rounded-xl">
       <NodeEdgeColorInput
         :graph="props.graph"
-        :colorMap="colorMap"
+        :color-map="colorMap"
       />
     </GWell>
 
     <GWell class="p-2 rounded-xl">
       <NodeEdgeSizeInput
         :graph="props.graph"
-        :sizeMap="sizeMap"
+        :size-map="sizeMap"
       />
     </GWell>
   </div>

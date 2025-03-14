@@ -28,13 +28,13 @@
   <slot
     name="activator"
     :toggle="toggle"
-    :isOpen="isOpen"
+    :is-open="isOpen"
   ></slot>
   <Popover
-    unstyled
     ref="op"
     @show="isOpen = true"
     @hide="isOpen = false"
+    unstyled
   >
     <div :style="{ transform: `translateY(${offset}px)` }">
       <slot></slot>
