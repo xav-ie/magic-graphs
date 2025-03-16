@@ -6,13 +6,12 @@ import { prioritizeNode } from '@graph/helpers';
 import { getNodeSchematic } from '@graph/schematics/node';
 import { getEdgeSchematic } from '@graph/schematics/edge';
 import { THEMES } from '@graph/themes';
-import type { GraphTheme, GraphThemeName } from '@graph/themes';
+import type { GraphThemeName } from '@graph/themes';
 import { getInitialThemeMap } from '@graph/themes/types';
 import { delta } from '@utils/deepDelta';
 import { clone } from '@utils/clone';
 import { getInitialEventBus, generateSubscriber } from '@graph/events';
 import type {
-  PartiallyPartial,
   MouseEventMap,
   KeyboardEventMap,
   MouseEventEntries,

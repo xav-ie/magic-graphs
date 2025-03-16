@@ -32,7 +32,9 @@ export type ProductDropdownInfo = {
 };
 
 /**
- * options for exposing a simulation to other products
+ * options for exposing a products simulation so it can be consumed by other products
+ *
+ * ie allows Dijkstras graph simulation to run in the main graph sandbox
  */
 export type SimulationDeclaration = {
   /**
