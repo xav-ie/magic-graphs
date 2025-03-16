@@ -53,7 +53,7 @@ export const useShortcuts = (
 
   const defaultShortcutSave = () => {
     const saveMessages = [
-      'Magic Graphs saves for you automagically ⚡',
+      'Magic Graphs saves for you auto-magically ⚡',
       'Don’t worry, We’ve been saving while you weren’t looking. 😎',
       'Magic Graphs syncs with your browser automatically. ✨',
       `Pressing ${USER_PLATFORM === 'Mac' ? '⌘' : 'Ctrl'} + S again? Okay, We saved it twice... just kidding! 😂`,
@@ -73,7 +73,7 @@ export const useShortcuts = (
    * get the function to run based on the keyboard shortcut setting
    */
   const getFn = (defaultFn: () => void, setting: boolean | (() => void)) => {
-    if (setting === false) return () => {};
+    if (setting === false) return () => { };
     if (typeof setting === 'function') return setting;
     return defaultFn;
   };
@@ -203,12 +203,13 @@ export const useShortcuts = (
 
   return {
     /**
-     * a map shortut names and their corresponding bindings in string form based on the platform you are on. Example: { 'Undo', ['Ctrl+Z'] }
+     * maps shortcut names to their corresponding bindings in string form based on the platform you are on.
+     * @example { 'Undo': 'Ctrl+Z' } // for windows or { 'Undo': 'Meta+Z' } for mac
      */
     nameToBindingKeys,
     /**
      * functions computed to mirror the actions of the keyboard shortcuts.
-     * invoking these are the API equivalent of pressing the keyboard shortcuts
+     * invoking these are the API equivalent to pressing the keyboard shortcuts
      */
     trigger: {
       delete: shortcutDelete,

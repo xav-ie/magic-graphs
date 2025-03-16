@@ -13,8 +13,8 @@
   import StopSimButton from './StopSimButton.vue';
   import FullscreenButton from './FullscreenButton.vue';
   import ThemeToolbar from './ThemeToolbar.vue';
-  import CommandPalette from './CommandPalette.vue';
   import ZoomButtons from './ZoomButtons.vue';
+  import HelpMenu from './HelpMenu.vue';
 
   const props = defineProps<{
     graph: Graph;
@@ -223,9 +223,10 @@
       computedGraphPointerEvents,
     ]"
   >
-    <CommandPalette />
+    <HelpMenu />
     <ZoomButtons />
   </div>
+
   <div
     :class="[
       'absolute',
