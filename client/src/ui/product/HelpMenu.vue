@@ -26,10 +26,7 @@
     <CIcon icon="help"></CIcon>
   </GButton>
 
-  <GDialog
-    v-model:visible="showDialog"
-    :closable="false"
-  >
+  <GDialog v-model:visible="showDialog">
     <div ref="dialogContent">
       <HelpContent />
     </div>

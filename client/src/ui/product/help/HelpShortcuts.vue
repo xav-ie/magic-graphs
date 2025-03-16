@@ -26,18 +26,20 @@
 
 <template>
   <HelpSection title="Useful Shortcuts">
-    <div
-      v-for="(shortcutKeyboardKeys, shortcutName) in keybindings"
-      :key="shortcutName"
-      class="flex justify-between items-center"
-    >
-      {{ shortcutName }}
-      <div class="flex">
-        <div
-          v-for="keyboardKey in getKeysFromKeyBindStr(shortcutKeyboardKeys)"
-          :key="keyboardKey"
-        >
-          <HelpShortcutKey :keyboard-key="keyboardKey" />
+    <div class="flex flex-col gap-1">
+      <div
+        v-for="(shortcutKeyboardKeys, shortcutName) in keybindings"
+        :key="shortcutName"
+        class="flex justify-between items-center"
+      >
+        {{ shortcutName }}
+        <div class="flex">
+          <div
+            v-for="keyboardKey in getKeysFromKeyBindStr(shortcutKeyboardKeys)"
+            :key="keyboardKey"
+          >
+            <HelpShortcutKey :keyboard-key="keyboardKey" />
+          </div>
         </div>
       </div>
     </div>

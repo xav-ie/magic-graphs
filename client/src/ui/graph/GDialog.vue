@@ -49,7 +49,6 @@
       borderColor: colors.text,
     }"
     pt:root:class="!border-0"
-    pt:mask:class="backdrop-blur-sm"
   >
     <slot name="header"></slot>
     <slot></slot>
