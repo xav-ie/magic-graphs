@@ -165,6 +165,10 @@ export const useShortcuts = (
     },
   }));
 
+  /**
+   * @description
+   * converts the bindings to the format that the ctrl-keys library expects
+   */
   const convertToHandlerFormat = (bindings: KeyBindings) => {
     Object.keys(bindings).forEach((platform) => {
       const platformBindings = bindings[platform as keyof KeyBindings];
@@ -211,7 +215,6 @@ export const useShortcuts = (
     else if (diff.shortcuts === false) deactivate();
   });
 
-  console.log('hi');
   return {
     /**
      * a map shortut names and their corresponding bindings in string form based on the platform you are on. Example: { 'Undo', ['Ctrl+Z'] }
