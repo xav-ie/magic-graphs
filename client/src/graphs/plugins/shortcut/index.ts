@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import type { BaseGraph } from '@graph/base';
 import type { GraphHistoryPlugin } from '../history';
 import type { GraphFocusPlugin } from '../focus';
@@ -16,8 +16,6 @@ import type { KeyBindings } from './types';
 const USER_PLATFORM = window.navigator.userAgent.includes('Mac')
   ? 'Mac'
   : 'Windows';
-
-const handleAlreadyHappened = ref(false);
 
 /**
  * a plugin that allows users to use keyboard shortcuts to interact with the graph
@@ -44,7 +42,10 @@ export const useShortcuts = (
   };
 
   const defaultShortcutRedo = () => {
-    if (graph.annotation.isActive.value) graph.annotation.redo();
+    if (graph.annotation.isActive.value) {
+      graph.annotation.redo();
+      return;
+    }
     if (settings.value.interactive) {
       const action = graph.history.redo();
       if (!action) return;
@@ -107,10 +108,6 @@ export const useShortcuts = (
         name: 'Undo',
         shortcut: shortcutUndo.value,
       },
-      ['Shift+Meta+Z']: {
-        name: 'Redo',
-        shortcut: shortcutRedo.value,
-      },
       ['Meta+Shift+Z']: {
         name: 'Redo',
         shortcut: shortcutRedo.value,
@@ -140,10 +137,6 @@ export const useShortcuts = (
       ['Control+Z']: {
         name: 'Undo',
         shortcut: shortcutUndo.value,
-      },
-      ['Shift+Control+Z']: {
-        name: 'Redo',
-        shortcut: shortcutRedo.value,
       },
       ['Control+Shift+Z']: {
         name: 'Redo',
@@ -203,10 +196,7 @@ export const useShortcuts = (
   });
 
   const activate = () => {
-    if (!handleAlreadyHappened.value) {
-      convertToHandlerFormat(bindings.value);
-      handleAlreadyHappened.value = true;
-    }
+    convertToHandlerFormat(bindings.value);
     graph.subscribe('onKeyDown', handler.handle);
   };
 
