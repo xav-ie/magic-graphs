@@ -1,15 +1,23 @@
-import { computed, onUnmounted } from 'vue';
+import { computed, ref } from 'vue';
 import type { BaseGraph } from '@graph/base';
-import { useShortcutPressed } from './useShortcutPressed';
 import type { GraphHistoryPlugin } from '../history';
 import type { GraphFocusPlugin } from '../focus';
 import type { GraphAnnotationPlugin } from '../annotations';
-import { useToast } from 'primevue/usetoast';
-import { scale, DEFAULT_SCALE_JUMP } from '@utils/components/usePinchToZoom';
+import {
+  scale,
+  DEFAULT_SCALE_JUMP,
+  MIN_SCALE,
+  MAX_SCALE,
+} from '@utils/components/usePinchToZoom';
+import keys from 'ctrl-keys';
+import type { Key } from 'ctrl-keys';
+import type { KeyBindings } from './types';
 
 const USER_PLATFORM = window.navigator.userAgent.includes('Mac')
   ? 'Mac'
   : 'Windows';
+
+const handleAlreadyHappened = ref(false);
 
 /**
  * a plugin that allows users to use keyboard shortcuts to interact with the graph
@@ -22,7 +30,7 @@ export const useShortcuts = (
 ) => {
   const { settings } = graph;
 
-  const toast = useToast();
+  const handler = keys();
 
   const defaultShortcutUndo = () => {
     if (graph.annotation.isActive.value) graph.annotation.undo();
@@ -52,26 +60,15 @@ export const useShortcuts = (
     graph.bulkRemoveEdge([...graph.focus.focusedItemIds.value]);
   };
 
-  const defaultShortcutSave = () => {
-    const saveMessages = [
-      'Magic Graphs saves for you automagically ⚡',
-      'Don’t worry, We’ve been saving while you weren’t looking. 😎',
-      'Magic Graphs syncs with your browser automatically. ✨',
-      `Pressing ${USER_PLATFORM === 'Mac' ? '⌘' : 'Ctrl'} + S again? Okay, We saved it twice... just kidding! 😂`,
-      'Saved automatically — like magic, but better because it’s real. 🌟',
-      'Magic Graphs keeps your data saved so you don’t have to worry 😅',
-      'Saving? Already done. You’re fast, but we’re faster. 🏃‍♂️💨',
-    ];
-
-    toast.add({
-      severity: 'secondary',
-      life: 3000,
-      detail: saveMessages[Math.floor(Math.random() * saveMessages.length)],
-    });
+  const setScale = (scaleChange: number) => {
+    scale.value = Math.max(
+      Math.min(Math.round((scale.value + scaleChange) * 10) / 10, MAX_SCALE),
+      MIN_SCALE,
+    );
   };
 
-  const defaultShortcutZoomIn = () => (scale.value += DEFAULT_SCALE_JUMP);
-  const defaultShortcutZoomOut = () => (scale.value -= DEFAULT_SCALE_JUMP);
+  const defaultShortcutZoomIn = () => setScale(DEFAULT_SCALE_JUMP);
+  const defaultShortcutZoomOut = () => setScale(-DEFAULT_SCALE_JUMP);
 
   /**
    * get the function to run based on the keyboard shortcut setting
@@ -96,9 +93,6 @@ export const useShortcuts = (
   );
   const shortcutDelete = computed(() =>
     getFn(defaultShortcutDelete, settings.value.shortcutDelete),
-  );
-  const shortcutSave = computed(() =>
-    getFn(defaultShortcutSave, settings.value.shortcutSave),
   );
   const shortcutZoomIn = computed(() =>
     getFn(defaultShortcutZoomIn, settings.value.shortcutZoomIn),
@@ -132,10 +126,6 @@ export const useShortcuts = (
       ['Escape']: {
         name: 'Deselect',
         shortcut: shortcutEscape.value,
-      },
-      ['Meta+S']: {
-        name: 'Save',
-        shortcut: shortcutSave.value,
       },
       ['Meta+=']: {
         name: 'Zoom In',
@@ -171,10 +161,6 @@ export const useShortcuts = (
         name: 'Deselect',
         shortcut: shortcutEscape.value,
       },
-      ['Control+S']: {
-        name: 'Save',
-        shortcut: shortcutSave.value,
-      },
       ['Control+=']: {
         name: 'Zoom In',
         shortcut: shortcutZoomIn.value,
@@ -185,6 +171,25 @@ export const useShortcuts = (
       },
     },
   }));
+
+  const convertToHandlerFormat = (bindings: KeyBindings) => {
+    Object.keys(bindings).forEach((platform) => {
+      const platformBindings = bindings[platform as keyof KeyBindings];
+
+      Object.keys(platformBindings).forEach((keyCombination) => {
+        const binding = platformBindings[keyCombination];
+
+        const formattedKeyCombination = keyCombination
+          .replace('Control', 'ctrl')
+          .toLowerCase();
+
+        handler.add(formattedKeyCombination as Key, (e) => {
+          e?.preventDefault();
+          binding.shortcut();
+        });
+      });
+    });
+  };
 
   const nameToBindingKeys = computed(() => {
     const platformBindings = bindings.value[USER_PLATFORM];
@@ -197,25 +202,16 @@ export const useShortcuts = (
     return nameToBindingKeys;
   });
 
-  const { isPressed } = useShortcutPressed();
-
-  const handleKeyboardEvents = (ev: KeyboardEvent) => {
-    if (graph.canvasFocused.value === false) return;
-    const binding = bindings.value[USER_PLATFORM];
-    for (const key in binding) {
-      if (!isPressed(key)) continue;
-      ev.preventDefault();
-      binding[key as keyof typeof binding].shortcut();
-      return;
-    }
-  };
-
   const activate = () => {
-    graph.subscribe('onKeyDown', handleKeyboardEvents);
+    if (!handleAlreadyHappened.value) {
+      convertToHandlerFormat(bindings.value);
+      handleAlreadyHappened.value = true;
+    }
+    graph.subscribe('onKeyDown', handler.handle);
   };
 
   const deactivate = () => {
-    graph.unsubscribe('onKeyDown', handleKeyboardEvents);
+    graph.unsubscribe('onKeyDown', handler.handle);
   };
 
   if (settings.value.shortcuts) activate();
@@ -225,8 +221,7 @@ export const useShortcuts = (
     else if (diff.shortcuts === false) deactivate();
   });
 
-  onUnmounted(() => toast.removeAllGroups());
-
+  console.log('hi');
   return {
     /**
      * a map shortut names and their corresponding bindings in string form based on the platform you are on. Example: { 'Undo', ['Ctrl+Z'] }
