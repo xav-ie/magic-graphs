@@ -9,6 +9,8 @@ export const useShortcutPressed = (caseSensitive = false) => {
   };
 
   const currentKeyString = ref('');
+  const metaKeyPressed = ref(false); // Track if the Meta key is pressed
+  const activeMetaKey = ref(false); // Track if Meta key was pressed when another key is down
 
   const compareString = computed(() => {
     let filter: string;
@@ -23,12 +25,33 @@ export const useShortcutPressed = (caseSensitive = false) => {
   });
 
   const trackKeyDown = (e: KeyboardEvent) => {
-    if (currentKeyString.value.length > 0) currentKeyString.value += '+';
-    currentKeyString.value += getKeyMapping(e);
+    // If Meta key is pressed, mark it
+    if (e.metaKey) {
+      metaKeyPressed.value = true;
+    }
+
+    // If any key is pressed while Meta key is held down, log the combination
+    if (metaKeyPressed.value) {
+      if (currentKeyString.value.length > 0) currentKeyString.value += '+';
+      currentKeyString.value += getKeyMapping(e);
+      activeMetaKey.value = true;
+    }
   };
 
-  const trackKeyUp = () => {
-    currentKeyString.value = '';
+  const trackKeyUp = (e: KeyboardEvent) => {
+    if (metaKeyPressed.value && activeMetaKey.value) {
+      // Log the current key combination
+      console.log(`Meta key was held, and ${e.key} was released.`);
+      currentKeyString.value = '';
+      activeMetaKey.value = false;
+    }
+
+    // Reset the Meta key state when it's released
+    if (e.metaKey) {
+      metaKeyPressed.value = false;
+    }
+
+    console.log(currentKeyString.value);
   };
 
   /**

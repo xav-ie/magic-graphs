@@ -5,6 +5,7 @@ import { getCtx } from '@utils/ctx';
 export const MIN_SCALE = 0.5;
 export const MAX_SCALE = 5;
 export const scale = ref(1);
+export const DEFAULT_SCALE_JUMP = 0.1;
 
 export function usePinchToZoom(
   canvasRef: Ref<HTMLCanvasElement | undefined | null>,

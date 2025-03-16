@@ -5,6 +5,7 @@ import type { GraphHistoryPlugin } from '../history';
 import type { GraphFocusPlugin } from '../focus';
 import type { GraphAnnotationPlugin } from '../annotations';
 import { useToast } from 'primevue/usetoast';
+import { scale, DEFAULT_SCALE_JUMP } from '@utils/components/usePinchToZoom';
 
 const USER_PLATFORM = window.navigator.userAgent.includes('Mac')
   ? 'Mac'
@@ -69,6 +70,9 @@ export const useShortcuts = (
     });
   };
 
+  const defaultShortcutZoomIn = () => (scale.value += DEFAULT_SCALE_JUMP);
+  const defaultShortcutZoomOut = () => (scale.value -= DEFAULT_SCALE_JUMP);
+
   /**
    * get the function to run based on the keyboard shortcut setting
    */
@@ -95,6 +99,12 @@ export const useShortcuts = (
   );
   const shortcutSave = computed(() =>
     getFn(defaultShortcutSave, settings.value.shortcutSave),
+  );
+  const shortcutZoomIn = computed(() =>
+    getFn(defaultShortcutZoomIn, settings.value.shortcutZoomIn),
+  );
+  const shortcutZoomOut = computed(() =>
+    getFn(defaultShortcutZoomOut, settings.value.shortcutZoomOut),
   );
 
   const bindings = computed(() => ({
@@ -127,6 +137,14 @@ export const useShortcuts = (
         name: 'Save',
         shortcut: shortcutSave.value,
       },
+      ['Meta+=']: {
+        name: 'Zoom In',
+        shortcut: shortcutZoomIn.value,
+      },
+      ['Meta+-']: {
+        name: 'Zoom Out',
+        shortcut: shortcutZoomOut.value,
+      },
     },
     Windows: {
       ['Control+Z']: {
@@ -157,6 +175,14 @@ export const useShortcuts = (
         name: 'Save',
         shortcut: shortcutSave.value,
       },
+      ['Control+=']: {
+        name: 'Zoom In',
+        shortcut: shortcutZoomIn.value,
+      },
+      ['Control+-']: {
+        name: 'Zoom Out',
+        shortcut: shortcutZoomOut.value,
+      },
     },
   }));
 
@@ -178,8 +204,8 @@ export const useShortcuts = (
     const binding = bindings.value[USER_PLATFORM];
     for (const key in binding) {
       if (!isPressed(key)) continue;
-      binding[key as keyof typeof binding].shortcut();
       ev.preventDefault();
+      binding[key as keyof typeof binding].shortcut();
       return;
     }
   };

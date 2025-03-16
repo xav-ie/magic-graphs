@@ -243,6 +243,24 @@ export type ShortcutGraphSettings = {
    * @default true
    */
   shortcutSave: boolean | (() => void);
+
+  /**
+   * BINDING: Mac: Meta++, Windows: Control++
+   *
+   * if false, the zoom in shortcut will be disabled, if set to a function,
+   * the function will be called when the zoom in shortcut is pressed
+   * @default true
+   */
+  shortcutZoomIn: boolean | (() => void);
+
+  /**
+   * BINDING: Mac: Meta+-, Windows: Control+-
+   *
+   * if false, the zoom out shortcut will be disabled, if set to a function,
+   * the function will be called when the zoom out shortcut is pressed
+   * @default true
+   */
+  shortcutZoomOut: boolean | (() => void);
 };
 
 export const DEFAULT_SHORTCUT_SETTINGS: ShortcutGraphSettings = {
@@ -253,6 +271,8 @@ export const DEFAULT_SHORTCUT_SETTINGS: ShortcutGraphSettings = {
   shortcutDelete: true,
   shortcutEscape: true,
   shortcutSave: true,
+  shortcutZoomIn: true,
+  shortcutZoomOut: true,
 };
 
 /**
