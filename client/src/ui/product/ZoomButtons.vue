@@ -23,7 +23,7 @@
         icon="plus"
       ></GToolbarButton>
       <GWell>
-        <p class="text-sm w-[2rem] text-center">
+        <p class="text-sm w-[2.5rem] text-center">
           {{ (scale * 100).toFixed(0) }}%
         </p>
       </GWell>
