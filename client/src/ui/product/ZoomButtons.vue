@@ -18,9 +18,9 @@
   <GToolbarBase>
     <ToolbarButtonGroup>
       <GToolbarButton
-        @click="setScale(0.1)"
-        :disabled="scale >= MAX_SCALE"
-        icon="plus"
+        @click="setScale(-0.1)"
+        :disabled="scale <= MIN_SCALE"
+        icon="minus"
       ></GToolbarButton>
       <GWell>
         <p class="text-sm w-[2rem] text-center">
@@ -28,9 +28,9 @@
         </p>
       </GWell>
       <GToolbarButton
-        @click="setScale(-0.1)"
-        :disabled="scale <= MIN_SCALE"
-        icon="minus"
+        @click="setScale(0.1)"
+        :disabled="scale >= MAX_SCALE"
+        icon="plus"
       ></GToolbarButton>
     </ToolbarButtonGroup>
   </GToolbarBase>
