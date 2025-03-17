@@ -6,7 +6,7 @@
  * @example { name: 'Undo', shortcut: shortcutUndo }
  *
  */
-export type KeyBinding = {
+type KeyBinding = {
   name: string;
   shortcut: () => void;
 };
@@ -14,7 +14,7 @@ export type KeyBinding = {
 /**
  * @example 'Control+Z': { name: 'Undo', shortcut: shortcutUndo }
  */
-export type PlatformBindings = {
+type PlatformBindings = {
   [key: string]: KeyBinding;
 };
 

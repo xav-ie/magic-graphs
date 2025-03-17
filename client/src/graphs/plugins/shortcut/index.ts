@@ -63,13 +63,19 @@ export const useShortcuts = (
 
   const setScale = (scaleChange: number) => {
     scale.value = Math.max(
-      Math.min(Math.round((scale.value + scaleChange) * 10) / 10, MAX_SCALE),
+      Math.min(
+        Math.round((scale.value + scaleChange) * 1000) / 1000,
+        MAX_SCALE,
+      ),
       MIN_SCALE,
     );
   };
 
-  const defaultShortcutZoomIn = () => setScale(DEFAULT_SCALE_JUMP);
-  const defaultShortcutZoomOut = () => setScale(-DEFAULT_SCALE_JUMP);
+  // for some reason the zoom in and out functions get called 4 times.
+  // this is a temporary fix to make the zoom in and out functions work as expected
+  // this issue is likely due to overlaps inside of the ctrl-keys library and the items we are feeding it
+  const defaultShortcutZoomIn = () => setScale(DEFAULT_SCALE_JUMP / 4);
+  const defaultShortcutZoomOut = () => setScale(-(DEFAULT_SCALE_JUMP / 4));
 
   /**
    * get the function to run based on the keyboard shortcut setting
@@ -124,11 +130,11 @@ export const useShortcuts = (
         name: 'Deselect',
         shortcut: shortcutEscape.value,
       },
-      ['Meta+=']: {
+      ['=']: {
         name: 'Zoom In',
         shortcut: shortcutZoomIn.value,
       },
-      ['Meta+-']: {
+      ['-']: {
         name: 'Zoom Out',
         shortcut: shortcutZoomOut.value,
       },
@@ -154,11 +160,11 @@ export const useShortcuts = (
         name: 'Deselect',
         shortcut: shortcutEscape.value,
       },
-      ['Control+=']: {
+      ['=']: {
         name: 'Zoom In',
         shortcut: shortcutZoomIn.value,
       },
-      ['Control+-']: {
+      ['-']: {
         name: 'Zoom Out',
         shortcut: shortcutZoomOut.value,
       },
@@ -188,6 +194,8 @@ export const useShortcuts = (
     });
   };
 
+  convertToHandlerFormat(bindings.value);
+
   const nameToBindingKeys = computed(() => {
     const platformBindings = bindings.value[USER_PLATFORM];
     const nameToBindingKeys: Record<string, string> = {};
@@ -200,7 +208,6 @@ export const useShortcuts = (
   });
 
   const activate = () => {
-    convertToHandlerFormat(bindings.value);
     graph.subscribe('onKeyDown', handler.handle);
   };
 
