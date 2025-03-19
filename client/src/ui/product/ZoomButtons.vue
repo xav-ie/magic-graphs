@@ -6,19 +6,17 @@
     scale,
     MAX_SCALE,
     MIN_SCALE,
+    setScale,
+    DEFAULT_SCALE_JUMP,
   } from '@utils/components/usePinchToZoom';
   import GWell from '@ui/graph/GWell.vue';
-
-  const setScale = (scaleChange: number) => {
-    scale.value = Math.round((scale.value + scaleChange) * 10) / 10;
-  };
 </script>
 
 <template>
   <GToolbarBase>
     <ToolbarButtonGroup>
       <GToolbarButton
-        @click="setScale(-0.1)"
+        @click="setScale(-DEFAULT_SCALE_JUMP)"
         :disabled="scale <= MIN_SCALE"
         icon="minus"
       ></GToolbarButton>
@@ -28,7 +26,7 @@
         </p>
       </GWell>
       <GToolbarButton
-        @click="setScale(0.1)"
+        @click="setScale(DEFAULT_SCALE_JUMP)"
         :disabled="scale >= MAX_SCALE"
         icon="plus"
       ></GToolbarButton>

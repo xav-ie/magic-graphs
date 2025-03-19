@@ -7,9 +7,16 @@ export const MAX_SCALE = 5;
 export const scale = ref(1);
 export const DEFAULT_SCALE_JUMP = 0.1;
 
-export function usePinchToZoom(
+export const setScale = (scaleChange: number = DEFAULT_SCALE_JUMP) => {
+  scale.value = Math.max(
+    Math.min(Math.round((scale.value + scaleChange) * 1000) / 1000, MAX_SCALE),
+    MIN_SCALE,
+  );
+};
+
+export const usePinchToZoom = (
   canvasRef: Ref<HTMLCanvasElement | undefined | null>,
-) {
+) => {
   const zoomOrigin = ref({ x: 0, y: 0 });
   let isScrolling = false;
 
@@ -86,4 +93,4 @@ export function usePinchToZoom(
     scale,
     origin: zoomOrigin,
   };
-}
+};
