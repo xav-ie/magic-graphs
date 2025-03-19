@@ -1,27 +1,34 @@
 import type { GEdge, GNode } from '@graph/types';
 
-type DefaultGraphTemplate = {
+/**
+ * a blueprint for building a graph. templates come both built-in and user provided
+ */
+export type GraphTemplate = {
+  /**
+   * the id for the template
+   */
+  id: string;
+  /**
+   * true if a user has created this template and therefore isn't built in (therefore allowing it to be deleted)
+   */
+  isUserAdded?: boolean;
+  /**
+   * a thumbnail of the graph for preview
+   */
   thumbnail?: string;
+  /**
+   * title of template shown to users
+   */
   title: string;
+  /**
+   * additional info about the template shown to users
+   */
   description: string;
+  /**
+   * the nodes and edges composing the graph this template blueprints
+   */
   graphState: {
     nodes: GNode[];
     edges: GEdge[];
   };
 };
-
-/**
- * @description
- * GraphTemplate is a type that represents a template for a graph.
- * It contains the following properties:
- * - id: the id for the template
- * - isUserAdded: whether this is a default template or a user-added template
- * - thumbnail: string that can be used to display a thumbnail of the graph
- * - title: text displayed along with the template in the UI
- * - description: text displayed along with the template in the UI
- * - graphState: the state of the graph
- */
-export type GraphTemplate = {
-  id: string;
-  isUserAdded?: boolean;
-} & DefaultGraphTemplate;
