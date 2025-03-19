@@ -3,25 +3,25 @@
  */
 
 /**
- * @example { name: 'Undo', shortcut: shortcutUndo }
+ * @example { binding: 'ctrl+z', shortcut: shortcutUndo }
  *
  */
 type KeyBinding = {
-  name: string;
+  binding: string;
   shortcut: () => void;
 };
 
 /**
- * @example 'Control+Z': { name: 'Undo', shortcut: shortcutUndo }
+ * @example 'Undo': { binding: 'ctrl+z', shortcut: shortcutUndo }
  */
 type PlatformBindings = {
-  [key: string]: KeyBinding;
+  [name: string]: KeyBinding;
 };
 
 /**
  * @example {
- *  Mac: { 'Meta+Z': { name: 'Undo', shortcut: shortcutUndo } },
- *  Windows: { 'Control+Z': { name: 'Undo', shortcut: shortcutUndo } }
+ *  Mac: 'Undo': { binding: 'meta+z', shortcut: shortcutUndo },
+ *  Windows: 'Undo': { binding: 'ctrl+z', shortcut: shortcutUndo }
  * }
  */
 export type KeyBindings = {

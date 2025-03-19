@@ -8,24 +8,44 @@
 
   const showDialog = ref(false);
 
-  const { nameToBindingKeys } = graph.value.shortcut;
+  const { platformBindings } = graph.value.shortcut;
+
+  const bindings = computed(() => {
+    const result: Record<string, string> = {};
+    const bindingNames = Object.entries(platformBindings);
+    for (const [name, bindingInfo] of bindingNames) {
+      result[name] = bindingInfo.binding;
+    }
+    return result;
+  });
+
+  const keyToNameMap: Record<string, string> = {
+    meta: 'Command',
+    ctrl: 'Control',
+  };
+
+  const keyToIconMap: Record<string, string> = {
+    rightArrow: 'arrow-right',
+    leftArrow: 'arrow-left',
+  };
 
   const keybindings = computed<Record<string, string>>(() => {
     return {
-      ...nameToBindingKeys.value,
-      Fullscreen: 'F',
-      'Pause/Play Simulation': 'Space',
-      'Simulation Step Forward': 'mdi-arrow-right',
-      'Simulation Step Backward': 'mdi-arrow-left',
+      ...bindings.value,
+      Fullscreen: 'f',
+      'Pause/Play Simulation': 'space',
+      'Simulation Step Forward': 'rightArrow',
+      'Simulation Step Backward': 'leftArrow',
     };
   });
 
+  const keyBindingNames = computed(() => Object.keys(keybindings.value));
+
   const convertKeyStringToKeys = (keyString: string) => {
-    const keys = keyString
+    return keyString
       .split('+')
-      .map((key) => key.trim())
+      .map((key) => keyToNameMap[key.trim()] ?? key.trim())
       .filter((key) => key !== '');
-    return keys;
   };
 
   const redirect = (route: string) => {
@@ -68,7 +88,7 @@
     <h1 class="font-bold text-md">Commands</h1>
     <GWell class="flex-col w-[500px]">
       <div
-        v-for="command in Object.keys(keybindings)"
+        v-for="command in keyBindingNames"
         :key="command"
         class="flex justify-between py-1 items-center"
       >
@@ -86,12 +106,13 @@
             ]"
           >
             <CIcon
-              v-if="keyBinding.startsWith('mdi-')"
-              :icon="keyBinding.slice(4)"
+              v-if="keyToIconMap[keyBinding]"
+              :icon="keyToIconMap[keyBinding]"
               class="text-xs"
             />
+
             <p v-else>
-              {{ keyBinding }}
+              {{ keyBinding.toUpperCase() }}
             </p>
           </GWell>
         </div>

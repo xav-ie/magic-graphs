@@ -11,7 +11,6 @@ import {
 } from '@utils/components/usePinchToZoom';
 import keys from 'ctrl-keys';
 import type { Key } from 'ctrl-keys';
-import type { KeyBindings } from './types';
 
 const USER_PLATFORM = window.navigator.userAgent.includes('Mac')
   ? 'Mac'
@@ -28,7 +27,7 @@ export const useShortcuts = (
 ) => {
   const { settings } = graph;
 
-  const handler = keys();
+  const ctrlKeysHandler = keys();
 
   const defaultShortcutUndo = () => {
     if (graph.annotation.isActive.value) graph.annotation.undo();
@@ -110,109 +109,82 @@ export const useShortcuts = (
 
   const bindings = computed(() => ({
     Mac: {
-      ['Meta+Z']: {
-        name: 'Undo',
+      Undo: {
+        binding: 'meta+z',
         shortcut: shortcutUndo.value,
       },
-      ['Meta+Shift+Z']: {
-        name: 'Redo',
+      Redo: {
+        binding: 'meta+shift+z',
         shortcut: shortcutRedo.value,
       },
-      ['Backspace']: {
-        name: 'Delete',
+      Delete: {
+        binding: 'backspace',
         shortcut: shortcutDelete.value,
       },
-      ['Meta+A']: {
-        name: 'Select All',
+      'Select All': {
+        binding: 'meta+a',
         shortcut: shortcutSelectAll.value,
       },
-      ['Escape']: {
-        name: 'Deselect',
+      Deselect: {
+        binding: 'escape',
         shortcut: shortcutEscape.value,
       },
-      ['=']: {
-        name: 'Zoom In',
+      'Zoom In': {
+        binding: '=',
         shortcut: shortcutZoomIn.value,
       },
-      ['-']: {
-        name: 'Zoom Out',
+      'Zoom Out': {
+        binding: '-',
         shortcut: shortcutZoomOut.value,
       },
     },
     Windows: {
-      ['Control+Z']: {
-        name: 'Undo',
+      Undo: {
+        binding: 'ctrl+Z',
         shortcut: shortcutUndo.value,
       },
-      ['Control+Shift+Z']: {
-        name: 'Redo',
+      Redo: {
+        binding: 'ctrl+shift+Z',
         shortcut: shortcutRedo.value,
       },
-      ['Delete']: {
-        name: 'Delete',
+      Delete: {
+        binding: 'delete',
         shortcut: shortcutDelete.value,
       },
-      ['Control+A']: {
-        name: 'Select All',
+      'Select All': {
+        binding: 'ctrl+a',
         shortcut: shortcutSelectAll.value,
       },
-      ['Escape']: {
-        name: 'Deselect',
+      Deselect: {
+        binding: 'escape',
         shortcut: shortcutEscape.value,
       },
-      ['=']: {
-        name: 'Zoom In',
+      'Zoom In': {
+        binding: '=',
         shortcut: shortcutZoomIn.value,
       },
-      ['-']: {
-        name: 'Zoom Out',
+      'Zoom Out': {
+        binding: '-',
         shortcut: shortcutZoomOut.value,
       },
     },
   }));
 
-  /**
-   * @description
-   * converts the bindings to the format that the ctrl-keys library expects
-   */
-  const convertToHandlerFormat = (bindings: KeyBindings) => {
-    Object.keys(bindings).forEach((platform) => {
-      const platformBindings = bindings[platform as keyof KeyBindings];
-
-      Object.keys(platformBindings).forEach((keyCombination) => {
-        const binding = platformBindings[keyCombination];
-
-        const formattedKeyCombination = keyCombination
-          .replace('Control', 'ctrl')
-          .toLowerCase();
-
-        handler.add(formattedKeyCombination as Key, (e) => {
-          e?.preventDefault();
-          binding.shortcut();
-        });
-      });
+  const bindingValues = Object.values(bindings.value[USER_PLATFORM]);
+  for (const keyboardShortcuts of bindingValues) {
+    const typedShortcut = keyboardShortcuts.binding as Key;
+    ctrlKeysHandler.add(typedShortcut, (e) => {
+      e?.preventDefault();
+      keyboardShortcuts.shortcut();
     });
-  };
-
-  convertToHandlerFormat(bindings.value);
-
-  const nameToBindingKeys = computed(() => {
-    const platformBindings = bindings.value[USER_PLATFORM];
-    const nameToBindingKeys: Record<string, string> = {};
-    for (const key in platformBindings) {
-      nameToBindingKeys[
-        platformBindings[key as keyof typeof platformBindings].name
-      ] = key;
-    }
-    return nameToBindingKeys;
-  });
+  }
 
   const activate = () => {
-    graph.subscribe('onKeyDown', handler.handle);
+    graph.subscribe('onKeyDown', ctrlKeysHandler.handle);
   };
 
   const deactivate = () => {
-    graph.unsubscribe('onKeyDown', handler.handle);
+    graph.unsubscribe('onKeyDown', ctrlKeysHandler.handle);
   };
 
   if (settings.value.shortcuts) activate();
@@ -224,9 +196,9 @@ export const useShortcuts = (
 
   return {
     /**
-     * a map shortut names and their corresponding bindings in string form based on the platform you are on. Example: { 'Undo', ['Ctrl+Z'] }
+     * a map shorcut names and their corresponding bindings in string form based on the platform you are on. Example: { 'Undo': binding: ['ctrl+z'], shortcut: shortcutUndo }
      */
-    nameToBindingKeys,
+    platformBindings: bindings.value[USER_PLATFORM],
     /**
      * functions computed to mirror the actions of the keyboard shortcuts.
      * invoking these are the API equivalent of pressing the keyboard shortcuts
