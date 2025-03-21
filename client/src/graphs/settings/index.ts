@@ -235,7 +235,7 @@ export type ShortcutGraphSettings = {
    */
   shortcutEscape: boolean | (() => void);
   /**
-   * BINDING: Mac: Meta+=, Windows: Control+=
+   * BINDING: Mac: =, Windows: =
    *
    * if false, the zoom in shortcut will be disabled, if set to a function,
    * the function will be called when the zoom in shortcut is pressed
@@ -244,7 +244,7 @@ export type ShortcutGraphSettings = {
   shortcutZoomIn: boolean | (() => void);
 
   /**
-   * BINDING: Mac: Meta+-, Windows: Control+-
+   * BINDING: Mac: -, Windows: -
    *
    * if false, the zoom out shortcut will be disabled, if set to a function,
    * the function will be called when the zoom out shortcut is pressed

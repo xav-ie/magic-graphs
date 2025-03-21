@@ -3,28 +3,26 @@
  */
 
 /**
- * @example { binding: 'ctrl+z', shortcut: shortcutUndo }
+ * @example { binding: 'ctrl+z', trigger: triggerUndo }
  *
  */
-type KeyBinding = {
+type Shortcut = {
   binding: string;
-  shortcut: () => void;
+  trigger: () => void;
 };
 
 /**
- * @example 'Undo': { binding: 'ctrl+z', shortcut: shortcutUndo }
+ * @example 'Undo': { binding: 'ctrl+z', trigger: triggerUndo }
  */
-type PlatformBindings = {
-  [name: string]: KeyBinding;
-};
+type PlatformShortcuts = Record<string, Shortcut>;
 
 /**
  * @example {
- *  Mac: 'Undo': { binding: 'meta+z', shortcut: shortcutUndo },
- *  Windows: 'Undo': { binding: 'ctrl+z', shortcut: shortcutUndo }
+ *  Mac: 'Undo': { binding: 'meta+z', trigger: triggerUndo },
+ *  Windows: 'Undo': { binding: 'ctrl+z', trigger: triggerUndo }
  * }
  */
-export type KeyBindings = {
-  Mac: PlatformBindings;
-  Windows: PlatformBindings;
+export type Shortcuts = {
+  Mac: PlatformShortcuts;
+  Windows: PlatformShortcuts;
 };
