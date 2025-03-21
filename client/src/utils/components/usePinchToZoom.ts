@@ -7,6 +7,11 @@ export const MAX_SCALE = 5;
 export const scale = ref(1);
 export const DEFAULT_SCALE_JUMP = 0.1;
 
+/**
+ *
+ * @param scaleChange
+ * @default DEFAULT_SCALE_JUMP
+ */
 export const setScale = (scaleChange: number = DEFAULT_SCALE_JUMP) => {
   scale.value = Math.max(
     Math.min(Math.round((scale.value + scaleChange) * 1000) / 1000, MAX_SCALE),
