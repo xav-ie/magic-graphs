@@ -6,6 +6,16 @@
   import GWell from '@ui/graph/GWell.vue';
   import { nonNullGraph as graph } from '@graph/global';
 
+  const KEYBOARD_KEY_TO_USER_STRING: Record<string, string> = {
+    meta: 'Command',
+    ctrl: 'Control',
+  };
+
+  const KEYBOARD_KEY_TO_ICON: Record<string, string> = {
+    rightArrow: 'arrow-right',
+    leftArrow: 'arrow-left',
+  };
+
   const showDialog = ref(false);
 
   const { platformBindings } = graph.value.shortcut;
@@ -18,16 +28,6 @@
     }
     return result;
   });
-
-  const keyToNameMap: Record<string, string> = {
-    meta: 'Command',
-    ctrl: 'Control',
-  };
-
-  const keyToIconMap: Record<string, string> = {
-    rightArrow: 'arrow-right',
-    leftArrow: 'arrow-left',
-  };
 
   const keybindings = computed<Record<string, string>>(() => {
     return {
@@ -44,7 +44,7 @@
   const convertKeyStringToKeys = (keyString: string) => {
     return keyString
       .split('+')
-      .map((key) => keyToNameMap[key.trim()] ?? key.trim())
+      .map((key) => KEYBOARD_KEY_TO_USER_STRING[key.trim()] ?? key.trim())
       .filter((key) => key !== '');
   };
 
@@ -106,8 +106,8 @@
             ]"
           >
             <CIcon
-              v-if="keyToIconMap[keyBinding]"
-              :icon="keyToIconMap[keyBinding]"
+              v-if="KEYBOARD_KEY_TO_ICON[keyBinding]"
+              :icon="KEYBOARD_KEY_TO_ICON[keyBinding]"
               class="text-xs"
             />
 
