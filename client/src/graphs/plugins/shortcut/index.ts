@@ -25,7 +25,7 @@ export const useShortcuts = (
 
   const ctrlKeysHandler = keys();
 
-  const defaultTriggerUndo = () => {
+  const defaultShortcutTriggerUndo = () => {
     if (graph.annotation.isActive.value) graph.annotation.undo();
     if (settings.value.interactive) {
       const action = graph.history.undo();
@@ -36,7 +36,7 @@ export const useShortcuts = (
     }
   };
 
-  const defaultTriggerRedo = () => {
+  const defaultShortcutTriggerRedo = () => {
     if (graph.annotation.isActive.value) {
       graph.annotation.redo();
       return;
@@ -48,9 +48,9 @@ export const useShortcuts = (
     }
   };
 
-  const defaultTriggerEscape = () => graph.focus.reset();
-  const defaultTriggerSelectAll = () => graph.focus.all();
-  const defaultTriggerDelete = () => {
+  const defaultShortcutTriggerEscape = () => graph.focus.reset();
+  const defaultShortcutTriggerSelectAll = () => graph.focus.all();
+  const defaultShortcutTriggerDelete = () => {
     if (settings.value.interactive === false) return;
     graph.bulkRemoveNode([...graph.focus.focusedItemIds.value]);
     graph.bulkRemoveEdge([...graph.focus.focusedItemIds.value]);
@@ -59,8 +59,9 @@ export const useShortcuts = (
   // for some reason the zoom in and out functions get called 2 times.
   // this is a temporary fix to make the zoom in and out functions work as expected
   // this issue is likely due to overlaps inside of the ctrl-keys library and the items we are feeding it
-  const defaultTriggerZoomIn = () => setScale(DEFAULT_SCALE_JUMP / 2);
-  const defaultTriggerZoomOut = () => setScale(-(DEFAULT_SCALE_JUMP / 2));
+  const defaultShortcutTriggerZoomIn = () => setScale(DEFAULT_SCALE_JUMP / 2);
+  const defaultShortcutTriggerZoomOut = () =>
+    setScale(-(DEFAULT_SCALE_JUMP / 2));
 
   /**
    * get the function to run based on the keyboard shortcut setting
@@ -72,25 +73,25 @@ export const useShortcuts = (
   };
 
   const triggerRedo = computed(() =>
-    getFn(defaultTriggerRedo, settings.value.shortcutRedo),
+    getFn(defaultShortcutTriggerRedo, settings.value.shortcutRedo),
   );
   const triggerUndo = computed(() =>
-    getFn(defaultTriggerUndo, settings.value.shortcutUndo),
+    getFn(defaultShortcutTriggerUndo, settings.value.shortcutUndo),
   );
   const triggerEscape = computed(() =>
-    getFn(defaultTriggerEscape, settings.value.shortcutEscape),
+    getFn(defaultShortcutTriggerEscape, settings.value.shortcutEscape),
   );
   const triggerSelectAll = computed(() =>
-    getFn(defaultTriggerSelectAll, settings.value.shortcutSelectAll),
+    getFn(defaultShortcutTriggerSelectAll, settings.value.shortcutSelectAll),
   );
   const triggerDelete = computed(() =>
-    getFn(defaultTriggerDelete, settings.value.shortcutDelete),
+    getFn(defaultShortcutTriggerDelete, settings.value.shortcutDelete),
   );
   const triggerZoomIn = computed(() =>
-    getFn(defaultTriggerZoomIn, settings.value.shortcutZoomIn),
+    getFn(defaultShortcutTriggerZoomIn, settings.value.shortcutZoomIn),
   );
   const triggerZoomOut = computed(() =>
-    getFn(defaultTriggerZoomOut, settings.value.shortcutZoomOut),
+    getFn(defaultShortcutTriggerZoomOut, settings.value.shortcutZoomOut),
   );
 
   const bindings = computed<Shortcuts>(() => ({
