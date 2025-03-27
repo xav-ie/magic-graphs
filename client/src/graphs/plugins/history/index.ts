@@ -199,34 +199,33 @@ export const useHistory = (graph: BaseGraph) => {
   graph.subscribe(
     'onGraphLoaded',
     (previousState: GraphState, { history }: HistoryOption) => {
-      if (history) {
-        const previousNodes = previousState.nodes.map((node) => ({
-          graphType: 'node' as const,
-          data: node,
-        }));
-        const previousEdges = previousState.edges.map((edge) => ({
-          graphType: 'edge' as const,
-          data: edge,
-        }));
+      if (!history) return;
+      const previousNodes = previousState.nodes.map((node) => ({
+        graphType: 'node' as const,
+        data: node,
+      }));
+      const previousEdges = previousState.edges.map((edge) => ({
+        graphType: 'edge' as const,
+        data: edge,
+      }));
 
-        addToUndoStack({
-          action: 'load',
-          affectedItems: [
-            ...graph.nodes.value.map((node) => ({
-              graphType: 'node' as const,
-              data: node,
-            })),
-            ...graph.edges.value.map((edge) => ({
-              graphType: 'edge' as const,
-              data: edge,
-            })),
-          ],
-          previousState: {
-            nodes: previousNodes,
-            edges: previousEdges,
-          },
-        });
-      }
+      addToUndoStack({
+        action: 'load',
+        affectedItems: [
+          ...graph.nodes.value.map((node) => ({
+            graphType: 'node' as const,
+            data: node,
+          })),
+          ...graph.edges.value.map((edge) => ({
+            graphType: 'edge' as const,
+            data: edge,
+          })),
+        ],
+        previousState: {
+          nodes: previousNodes,
+          edges: previousEdges,
+        },
+      });
     },
   );
 
