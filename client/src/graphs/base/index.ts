@@ -24,16 +24,12 @@ import { useNodeEdgeMap } from './useNodeEdgeMap';
 import { useAggregator } from './useAggregator';
 import { useGraphCRUD } from './useGraphCRUD';
 import { getCtx } from '@utils/ctx';
-import {
-  LOAD_GRAPH_OPTIONS_DEFAULTS,
-  type GraphAtMousePosition,
-  type HistoryOption,
-} from './types';
+import { LOAD_GRAPH_OPTIONS_DEFAULTS } from './types';
+import type { GraphAtMousePosition, HistoryOption } from './types';
 import { useGraphCursor } from './useGraphCursor';
 import { getCanvasCoords } from '@utils/components/useCanvasCoord';
 import { useAnimationController } from '@graph/animationController';
 import { usePluginHoldController } from './usePluginHold';
-
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   startupSettings: Partial<GraphSettings> = {},
@@ -277,7 +273,6 @@ export const useBaseGraph = (
     graphState: { nodes: GNode[]; edges: GEdge[] },
     options?: HistoryOption,
   ) => {
-    // save current state
     const previousState = {
       nodes: nodes.value,
       edges: edges.value,
