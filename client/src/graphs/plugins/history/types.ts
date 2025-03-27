@@ -81,7 +81,7 @@ export type EditRecord = {
 };
 
 /**
- * a record indicating the entire graph state was loaded
+ * a record indicating the graph state was loaded
  */
 export type LoadRecord = {
   /**
@@ -89,12 +89,11 @@ export type LoadRecord = {
    */
   action: 'load';
   /**
-   * the items that were present in the graph when loaded.
+   * the items that were loaded in.
    */
   affectedItems: (GNodeRecord | GEdgeRecord)[];
   /**
-   * the previous state of the graph before loading
-   * without this is won't know what was there before
+   * the state of the graph before loading
    */
   previousState: {
     nodes: GNodeRecord[];
