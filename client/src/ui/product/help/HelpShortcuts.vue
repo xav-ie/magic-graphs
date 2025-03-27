@@ -13,10 +13,10 @@
       .map((key) => key.trim())
       .filter((key) => key !== '');
 
-  const { nameToBindingKeys } = graph.value.shortcut;
+  const { platformBindings } = graph.value.shortcut;
 
   const keybindings = computed<Record<string, string>>(() => ({
-    ...nameToBindingKeys.value,
+    ...platformBindings.value,
     Fullscreen: 'F',
     'Pause/Play Simulation': 'Space',
     'Simulation Step Forward': 'mdi-arrow-right',

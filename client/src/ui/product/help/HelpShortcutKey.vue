@@ -1,19 +1,45 @@
 <script setup lang="ts">
   import CIcon from '@ui/core/Icon.vue';
+  import { computed } from 'vue';
 
-  defineProps<{
+  const props = defineProps<{
     keyboardKey: string;
   }>();
+
+  const KEYBOARD_KEY_TO_USER_STRING: Record<string, string> = {
+    meta: 'Command',
+    ctrl: 'Control',
+  };
+
+  const KEYS_WITH_USER_STRING = Object.keys(KEYBOARD_KEY_TO_USER_STRING);
+
+  const KEYBOARD_KEY_TO_ICON: Record<string, string> = {
+    rightArrow: 'arrow-right',
+    leftArrow: 'arrow-left',
+  };
+
+  const KEYS_WITH_ICONS = Object.keys(KEYBOARD_KEY_TO_ICON);
+
+  const hasIconDepiction = computed(() => {
+    return KEYS_WITH_ICONS.includes(props.keyboardKey);
+  });
+
+  const hasUserStringDepiction = computed(() => {
+    return KEYS_WITH_USER_STRING.includes(props.keyboardKey);
+  });
 </script>
 
 <template>
   <div :class="['border-[1px]', 'rounded-md', 'px-2', 'mx-[1px]', 'text-xs']">
     <CIcon
-      v-if="keyboardKey.startsWith('mdi-')"
-      :icon="keyboardKey.slice(4)"
+      v-if="hasIconDepiction"
+      :icon="KEYBOARD_KEY_TO_ICON[keyboardKey]"
       class="text-xs"
     />
-    <p v-else>
+    <p v-else-if="hasUserStringDepiction">
+      {{ KEYBOARD_KEY_TO_USER_STRING[keyboardKey] }}
+    </p>
+    <p>
       {{ keyboardKey }}
     </p>
   </div>
