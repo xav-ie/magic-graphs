@@ -19,6 +19,13 @@ export const setScale = (scaleChange: number = DEFAULT_SCALE_JUMP) => {
   );
 };
 
+export const setZoomByPercentage = (zoomPercent: number) => {
+  scale.value = Math.min(
+    MAX_SCALE,
+    Math.max(MIN_SCALE, zoomPercent / 100),
+  );
+}
+
 export const usePinchToZoom = (
   canvasRef: Ref<HTMLCanvasElement | undefined | null>,
 ) => {

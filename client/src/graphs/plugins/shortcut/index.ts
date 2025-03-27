@@ -67,7 +67,7 @@ export const useShortcuts = (
    * get the function to run based on the keyboard shortcut setting
    */
   const getFn = (defaultFn: () => void, setting: boolean | (() => void)) => {
-    if (setting === false) return () => {};
+    if (setting === false) return () => { };
     if (typeof setting === 'function') return setting;
     return defaultFn;
   };
@@ -184,12 +184,12 @@ export const useShortcuts = (
 
   return {
     /**
-     * a map shorcut names and their corresponding bindings in string form based on the platform you are on. Example: { 'Undo': binding: ['ctrl+z'], shortcut: shortcutUndo }
+     * a map shortcut names and their corresponding bindings in string form based on the platform you are on. Example: { 'Undo': binding: ['ctrl+z'], shortcut: shortcutUndo }
      */
     platformBindings: bindings.value[USER_PLATFORM],
     /**
      * functions computed to mirror the actions of the keyboard shortcuts.
-     * invoking these are the API equivalent of pressing the keyboard shortcuts
+     * invoking these are the API equivalent to pressing the keyboard shortcuts
      */
     trigger: {
       delete: triggerDelete,
