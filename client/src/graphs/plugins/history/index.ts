@@ -13,6 +13,8 @@ import type {
 } from './types';
 import type { Coordinate } from '@shape/types';
 import { debounce } from '@utils/debounce';
+import type { HistoryOption } from '@graph/base/types';
+import type { GraphState } from '@graph/collab/types';
 
 /**
  * the max number of history records to keep in the undo and redo stacks
@@ -31,6 +33,7 @@ export const useHistory = (graph: BaseGraph) => {
 
   const addToUndoStack = (record: HistoryRecord) => {
     undoStack.value.push(record);
+    console.log(undoStack.value);
     if (undoStack.value.length > MAX_HISTORY) {
       undoStack.value.shift();
     }
@@ -53,26 +56,19 @@ export const useHistory = (graph: BaseGraph) => {
     )
       return;
 
-    const nodeRecords = nodesPendingRemoval.value.map(
-      (node) => ({
-        graphType: 'node' as const,
-        data: node,
-      })
-    );
+    const nodeRecords = nodesPendingRemoval.value.map((node) => ({
+      graphType: 'node' as const,
+      data: node,
+    }));
 
-    const edgeRecords = edgesPendingRemoval.value.map(
-      (edge) => ({
-        graphType: 'edge' as const,
-        data: edge,
-      })
-    );
+    const edgeRecords = edgesPendingRemoval.value.map((edge) => ({
+      graphType: 'edge' as const,
+      data: edge,
+    }));
 
     addToUndoStack({
       action: 'remove',
-      affectedItems: [
-        ...nodeRecords,
-        ...edgeRecords,
-      ],
+      affectedItems: [...nodeRecords, ...edgeRecords],
     });
 
     nodesPendingRemoval.value = [];
@@ -200,6 +196,31 @@ export const useHistory = (graph: BaseGraph) => {
 
     debouncedProcessRemovals();
   });
+
+  graph.subscribe(
+    'onGraphLoaded',
+    (previousState: GraphState, { history }: HistoryOption) => {
+      if (history) {
+        addToUndoStack({
+          action: 'add',
+          affectedItems: [
+            ...graph.nodes.value.map((node) => {
+              return {
+                graphType: 'node',
+                data: node,
+              } as const;
+            }),
+            ...graph.edges.value.map((edge) => {
+              return {
+                graphType: 'edge',
+                data: edge,
+              } as const;
+            }),
+          ],
+        });
+      }
+    },
+  );
 
   const groupDrag = ref<{
     startingCoordinates: Coordinate;
