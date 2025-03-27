@@ -81,10 +81,36 @@ export type EditRecord = {
 };
 
 /**
+ * a record indicating the entire graph state was loaded
+ */
+export type LoadRecord = {
+  /**
+   * the action that was taken in order to create this record.
+   */
+  action: 'load';
+  /**
+   * the items that were present in the graph when loaded.
+   */
+  affectedItems: (GNodeRecord | GEdgeRecord)[];
+  /**
+   * the previous state of the graph before loading
+   * without this is won't know what was there before
+   */
+  previousState: {
+    nodes: GNodeRecord[];
+    edges: GEdgeRecord[];
+  };
+};
+
+/**
  * a record of an event stored in the history stack of a graph.
  * provides for undo/redo functionality
  */
-export type HistoryRecord = AddRemoveRecord | MoveRecord | EditRecord;
+export type HistoryRecord =
+  | AddRemoveRecord
+  | MoveRecord
+  | EditRecord
+  | LoadRecord;
 
 export type UndoHistoryOptions = FocusOption;
 

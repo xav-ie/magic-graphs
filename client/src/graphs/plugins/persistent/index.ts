@@ -53,10 +53,13 @@ export const usePersistent = (graph: BaseGraph) => {
   };
 
   const load = () =>
-    graph.load({
-      nodes: nodeStorage.get(),
-      edges: edgeStorage.get(),
-    });
+    graph.load(
+      {
+        nodes: nodeStorage.get(),
+        edges: edgeStorage.get(),
+      },
+      { history: false },
+    );
 
   const trackChangeEvents: GraphEvent[] = [
     'onStructureChange',

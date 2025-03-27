@@ -33,7 +33,6 @@ export const useHistory = (graph: BaseGraph) => {
 
   const addToUndoStack = (record: HistoryRecord) => {
     undoStack.value.push(record);
-    console.log(undoStack.value);
     if (undoStack.value.length > MAX_HISTORY) {
       undoStack.value.shift();
     }
@@ -201,22 +200,31 @@ export const useHistory = (graph: BaseGraph) => {
     'onGraphLoaded',
     (previousState: GraphState, { history }: HistoryOption) => {
       if (history) {
+        const previousNodes = previousState.nodes.map((node) => ({
+          graphType: 'node' as const,
+          data: node,
+        }));
+        const previousEdges = previousState.edges.map((edge) => ({
+          graphType: 'edge' as const,
+          data: edge,
+        }));
+
         addToUndoStack({
-          action: 'add',
+          action: 'load',
           affectedItems: [
-            ...graph.nodes.value.map((node) => {
-              return {
-                graphType: 'node',
-                data: node,
-              } as const;
-            }),
-            ...graph.edges.value.map((edge) => {
-              return {
-                graphType: 'edge',
-                data: edge,
-              } as const;
-            }),
+            ...graph.nodes.value.map((node) => ({
+              graphType: 'node' as const,
+              data: node,
+            })),
+            ...graph.edges.value.map((edge) => ({
+              graphType: 'edge' as const,
+              data: edge,
+            })),
           ],
+          previousState: {
+            nodes: previousNodes,
+            edges: previousEdges,
+          },
         });
       }
     },
@@ -321,7 +329,15 @@ export const useHistory = (graph: BaseGraph) => {
   };
 
   const undoHistoryRecord = (record: HistoryRecord) => {
-    if (record.action === 'add') {
+    if (record.action === 'load') {
+      graph.load(
+        {
+          nodes: record.previousState.nodes.map((item) => item.data),
+          edges: record.previousState.edges.map((item) => item.data),
+        },
+        { history: false },
+      );
+    } else if (record.action === 'add') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
           graph.removeNode(item.data.id, { history: false });
@@ -355,7 +371,19 @@ export const useHistory = (graph: BaseGraph) => {
   };
 
   const redoHistoryRecord = (record: HistoryRecord) => {
-    if (record.action === 'add') {
+    if (record.action === 'load') {
+      graph.load(
+        {
+          nodes: record.affectedItems
+            .filter((item) => item.graphType === 'node')
+            .map((item) => item.data),
+          edges: record.affectedItems
+            .filter((item) => item.graphType === 'edge')
+            .map((item) => item.data),
+        },
+        { history: false },
+      );
+    } else if (record.action === 'add') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
           graph.addNode(item.data, { history: false, focus: false });
