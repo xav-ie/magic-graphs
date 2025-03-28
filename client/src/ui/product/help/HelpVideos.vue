@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <HelpSection title="Still Hungry For More? Watch Our Tutorials">
+  <HelpSection title="Hungry For More? Watch Our Tutorials">
     <iframe
       width="560"
       height="315"

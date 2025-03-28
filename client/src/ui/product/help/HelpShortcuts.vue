@@ -3,39 +3,43 @@
   import { computed } from 'vue';
   import { nonNullGraph as graph } from '@graph/global';
   import HelpShortcutKey from './HelpShortcutKey.vue';
+  import type { Shortcut } from '@graph/plugins/shortcut/types';
 
   /**
    * @example 'Control+Shift+Z' -> ['Control', 'Shift', 'Z']
    */
-  const getKeysFromKeyBindStr = (keyBindStr: string) =>
+  const getKeysFromKeyBindStr = (keyBindStr: Shortcut['binding']) =>
     keyBindStr
       .split('+')
       .map((key) => key.trim())
       .filter((key) => key !== '');
 
-  const { nameToBindingKeys } = graph.value.shortcut;
+  const { activeShortcuts } = graph.value.shortcut;
 
-  const keybindings = computed<Record<string, string>>(() => ({
-    ...nameToBindingKeys.value,
-    Fullscreen: 'F',
-    'Pause/Play Simulation': 'Space',
-    'Simulation Step Forward': 'mdi-arrow-right',
-    'Simulation Step Backward': 'mdi-arrow-left',
-  }));
+  const ADDITIONAL_SHORTCUTS = {
+    Fullscreen: { binding: 'F' },
+    'Pause/Play Simulation': { binding: 'Space' },
+    'Simulation Step Forward': { binding: 'rightArrow' },
+    'Simulation Step Backward': { binding: 'leftArrow' },
+  };
+
+  const shortcuts = computed(() =>
+    Object.assign(activeShortcuts, ADDITIONAL_SHORTCUTS),
+  );
 </script>
 
 <template>
   <HelpSection title="Useful Shortcuts">
     <div class="flex flex-col gap-1">
       <div
-        v-for="(shortcutKeyboardKeys, shortcutName) in keybindings"
+        v-for="(shortcut, shortcutName) in shortcuts"
         :key="shortcutName"
         class="flex justify-between items-center"
       >
         {{ shortcutName }}
         <div class="flex">
           <div
-            v-for="keyboardKey in getKeysFromKeyBindStr(shortcutKeyboardKeys)"
+            v-for="keyboardKey in getKeysFromKeyBindStr(shortcut.binding)"
             :key="keyboardKey"
           >
             <HelpShortcutKey :keyboard-key="keyboardKey" />
