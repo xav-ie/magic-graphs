@@ -1,28 +1,29 @@
-/**
- * shortcut graph types
- */
 
 /**
- * @example { binding: 'ctrl+z', trigger: triggerUndo }
- *
+ * a keyboard shortcut
  */
 type Shortcut = {
+  /**
+   * a string of characters that defines the sequence of the shortcut
+   * @example 'meta+shift+z'
+   */
   binding: string;
+  /**
+   * a function that fires when the shortcut is activated
+   */
   trigger: () => void;
 };
 
 /**
- * @example 'Undo': { binding: 'ctrl+z', trigger: triggerUndo }
+ * maps the names of shortcuts to a corresponding shortcut definition
  */
-type PlatformShortcuts = Record<string, Shortcut>;
+type Shortcuts = Record<string, Shortcut>;
 
 /**
- * @example {
- *  Mac: 'Undo': { binding: 'meta+z', trigger: triggerUndo },
- *  Windows: 'Undo': { binding: 'ctrl+z', trigger: triggerUndo }
- * }
+ * splits up the shortcuts by platform as many shortcuts
+ * are platform specific
  */
-export type Shortcuts = {
-  Mac: PlatformShortcuts;
-  Windows: PlatformShortcuts;
+export type PlatformShortcuts = {
+  Mac: Shortcuts;
+  Windows: Shortcuts;
 };

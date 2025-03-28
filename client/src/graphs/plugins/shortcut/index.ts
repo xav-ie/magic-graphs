@@ -6,7 +6,7 @@ import type { GraphAnnotationPlugin } from '../annotations';
 import { setScale, DEFAULT_SCALE_JUMP } from '@utils/components/usePinchToZoom';
 import keys from 'ctrl-keys';
 import type { Key } from 'ctrl-keys';
-import type { Shortcuts } from './types';
+import type { PlatformShortcuts } from './types';
 
 const USER_PLATFORM = window.navigator.userAgent.includes('Mac')
   ? 'Mac'
@@ -94,7 +94,7 @@ export const useShortcuts = (
     getFn(defaultShortcutTriggerZoomOut, settings.value.shortcutZoomOut),
   );
 
-  const bindings = computed<Shortcuts>(() => ({
+  const allShortcuts = computed<PlatformShortcuts>(() => ({
     Mac: {
       Undo: {
         binding: 'meta+z',
@@ -158,7 +158,7 @@ export const useShortcuts = (
   }));
 
   // adds the keyboard shortcuts to the ctrlKeysHandler
-  const shortcutValues = Object.values(bindings.value[USER_PLATFORM]);
+  const shortcutValues = Object.values(allShortcuts.value[USER_PLATFORM]);
   for (const keyboardShortcut of shortcutValues) {
     const typedBinding = keyboardShortcut.binding as Key;
     ctrlKeysHandler.add(typedBinding, (e) => {
@@ -184,11 +184,12 @@ export const useShortcuts = (
 
   return {
     /**
-     * a map shortcut names and their corresponding bindings in string form based on the platform you are on. Example: { 'Undo': binding: ['ctrl+z'], shortcut: shortcutUndo }
+     * shortcuts computed based on the platform (mac/windows) the user
+     * is currently on
      */
-    platformBindings: bindings.value[USER_PLATFORM],
+    activeShortcuts: allShortcuts.value[USER_PLATFORM],
     /**
-     * functions computed to mirror the actions of the keyboard shortcuts.
+     * trigger functions computed to mirror the keyboard shortcuts.
      * invoking these are the API equivalent to pressing the keyboard shortcuts
      */
     trigger: {

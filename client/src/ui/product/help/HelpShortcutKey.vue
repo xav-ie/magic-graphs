@@ -7,8 +7,7 @@
   }>();
 
   const KEYBOARD_KEY_TO_USER_STRING: Record<string, string> = {
-    meta: 'Command',
-    ctrl: 'Control',
+    meta: '⌘',
   };
 
   const KEYS_WITH_USER_STRING = Object.keys(KEYBOARD_KEY_TO_USER_STRING);
@@ -30,7 +29,16 @@
 </script>
 
 <template>
-  <div :class="['border-[1px]', 'rounded-md', 'px-2', 'mx-[1px]', 'text-xs']">
+  <div
+    :class="[
+      'border-[1px]',
+      'rounded-md',
+      'px-2',
+      'mx-[1px]',
+      'text-xs',
+      'capitalize',
+    ]"
+  >
     <CIcon
       v-if="hasIconDepiction"
       :icon="KEYBOARD_KEY_TO_ICON[keyboardKey]"
@@ -39,7 +47,7 @@
     <p v-else-if="hasUserStringDepiction">
       {{ KEYBOARD_KEY_TO_USER_STRING[keyboardKey] }}
     </p>
-    <p>
+    <p v-else>
       {{ keyboardKey }}
     </p>
   </div>

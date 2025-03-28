@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import HelpSection from './HelpSection.vue';
-  import { computed } from 'vue';
+  // import { computed } from 'vue';
   import { nonNullGraph as graph } from '@graph/global';
   import HelpShortcutKey from './HelpShortcutKey.vue';
 
@@ -13,14 +13,14 @@
       .map((key) => key.trim())
       .filter((key) => key !== '');
 
-  const { platformBindings } = graph.value.shortcut;
+  const { activeShortcuts: platformBindings } = graph.value.shortcut;
 
-  const keybindings = computed<Record<string, string>>(() => ({
+  const platform = computed<Record<string, string>>(() => ({
     ...platformBindings.value,
     Fullscreen: 'F',
     'Pause/Play Simulation': 'Space',
-    'Simulation Step Forward': 'mdi-arrow-right',
-    'Simulation Step Backward': 'mdi-arrow-left',
+    'Simulation Step Forward': 'rightArrow',
+    'Simulation Step Backward': 'leftArrow',
   }));
 </script>
 
@@ -28,14 +28,14 @@
   <HelpSection title="Useful Shortcuts">
     <div class="flex flex-col gap-1">
       <div
-        v-for="(shortcutKeyboardKeys, shortcutName) in keybindings"
+        v-for="(shortcut, shortcutName) in platformBindings"
         :key="shortcutName"
         class="flex justify-between items-center"
       >
         {{ shortcutName }}
         <div class="flex">
           <div
-            v-for="keyboardKey in getKeysFromKeyBindStr(shortcutKeyboardKeys)"
+            v-for="keyboardKey in getKeysFromKeyBindStr(shortcut.binding)"
             :key="keyboardKey"
           >
             <HelpShortcutKey :keyboard-key="keyboardKey" />
