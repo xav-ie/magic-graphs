@@ -91,7 +91,7 @@ export type LoadRecord = {
   /**
    * the items that were loaded in.
    */
-  newState: (GNodeRecord | GEdgeRecord)[];
+  affectedItems: (GNodeRecord | GEdgeRecord)[];
   /**
    * the state of the graph before loading
    */
