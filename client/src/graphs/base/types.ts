@@ -88,6 +88,10 @@ export const BULK_ADD_EDGE_OPTIONS_DEFAULTS: AddEdgeOptions = {
   animate: true,
 };
 
+export const LOAD_GRAPH_OPTIONS_DEFAULTS: HistoryOption = {
+  history: true,
+};
+
 export type RemoveEdgeOptions = BroadcastOption & HistoryOption & AnimateOption;
 
 export const REMOVE_EDGE_OPTIONS_DEFAULTS: RemoveEdgeOptions = {

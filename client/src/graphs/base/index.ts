@@ -24,12 +24,12 @@ import { useNodeEdgeMap } from './useNodeEdgeMap';
 import { useAggregator } from './useAggregator';
 import { useGraphCRUD } from './useGraphCRUD';
 import { getCtx } from '@utils/ctx';
-import type { GraphAtMousePosition } from './types';
+import { LOAD_GRAPH_OPTIONS_DEFAULTS } from './types';
+import type { GraphAtMousePosition, HistoryOption } from './types';
 import { useGraphCursor } from './useGraphCursor';
 import { getCanvasCoords } from '@utils/components/useCanvasCoord';
 import { useAnimationController } from '@graph/animationController';
 import { usePluginHoldController } from './usePluginHold';
-
 export const useBaseGraph = (
   canvas: Ref<HTMLCanvasElement | undefined | null>,
   startupSettings: Partial<GraphSettings> = {},
@@ -269,10 +269,24 @@ export const useBaseGraph = (
    * load a graph state into the graph
    * @param graphState - the graph state to load (nodes and edges)
    */
-  const load = (graphState: { nodes: GNode[]; edges: GEdge[] }) => {
+  const load = (
+    graphState: { nodes: GNode[]; edges: GEdge[] },
+    options?: HistoryOption,
+  ) => {
+    const previousState = {
+      nodes: nodes.value,
+      edges: edges.value,
+    };
+
     nodes.value = graphState.nodes;
     edges.value = graphState.edges;
-    emit('onGraphLoaded');
+
+    const historyOptions = {
+      ...LOAD_GRAPH_OPTIONS_DEFAULTS,
+      ...options,
+    };
+
+    emit('onGraphLoaded', previousState, historyOptions);
     emit('onStructureChange');
   };
 

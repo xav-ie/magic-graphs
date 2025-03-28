@@ -13,6 +13,8 @@ import type {
 } from './types';
 import type { Coordinate } from '@shape/types';
 import { debounce } from '@utils/debounce';
+import type { HistoryOption } from '@graph/base/types';
+import type { GraphState } from '@graph/collab/types';
 
 /**
  * the max number of history records to keep in the undo and redo stacks
@@ -53,26 +55,19 @@ export const useHistory = (graph: BaseGraph) => {
     )
       return;
 
-    const nodeRecords = nodesPendingRemoval.value.map(
-      (node) => ({
-        graphType: 'node' as const,
-        data: node,
-      })
-    );
+    const nodeRecords = nodesPendingRemoval.value.map((node) => ({
+      graphType: 'node' as const,
+      data: node,
+    }));
 
-    const edgeRecords = edgesPendingRemoval.value.map(
-      (edge) => ({
-        graphType: 'edge' as const,
-        data: edge,
-      })
-    );
+    const edgeRecords = edgesPendingRemoval.value.map((edge) => ({
+      graphType: 'edge' as const,
+      data: edge,
+    }));
 
     addToUndoStack({
       action: 'remove',
-      affectedItems: [
-        ...nodeRecords,
-        ...edgeRecords,
-      ],
+      affectedItems: [...nodeRecords, ...edgeRecords],
     });
 
     nodesPendingRemoval.value = [];
@@ -201,6 +196,39 @@ export const useHistory = (graph: BaseGraph) => {
     debouncedProcessRemovals();
   });
 
+  graph.subscribe(
+    'onGraphLoaded',
+    (previousState: GraphState, { history }: HistoryOption) => {
+      if (!history) return;
+      const previousNodes = previousState.nodes.map((node) => ({
+        graphType: 'node' as const,
+        data: node,
+      }));
+      const previousEdges = previousState.edges.map((edge) => ({
+        graphType: 'edge' as const,
+        data: edge,
+      }));
+
+      addToUndoStack({
+        action: 'load',
+        affectedItems: [
+          ...graph.nodes.value.map((node) => ({
+            graphType: 'node' as const,
+            data: node,
+          })),
+          ...graph.edges.value.map((edge) => ({
+            graphType: 'edge' as const,
+            data: edge,
+          })),
+        ],
+        previousState: {
+          nodes: previousNodes,
+          edges: previousEdges,
+        },
+      });
+    },
+  );
+
   const groupDrag = ref<{
     startingCoordinates: Coordinate;
     nodes: Readonly<GNode[]>;
@@ -300,7 +328,15 @@ export const useHistory = (graph: BaseGraph) => {
   };
 
   const undoHistoryRecord = (record: HistoryRecord) => {
-    if (record.action === 'add') {
+    if (record.action === 'load') {
+      graph.load(
+        {
+          nodes: record.previousState.nodes.map((item) => item.data),
+          edges: record.previousState.edges.map((item) => item.data),
+        },
+        { history: false },
+      );
+    } else if (record.action === 'add') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
           graph.removeNode(item.data.id, { history: false });
@@ -334,7 +370,19 @@ export const useHistory = (graph: BaseGraph) => {
   };
 
   const redoHistoryRecord = (record: HistoryRecord) => {
-    if (record.action === 'add') {
+    if (record.action === 'load') {
+      graph.load(
+        {
+          nodes: record.affectedItems
+            .filter((item) => item.graphType === 'node')
+            .map((item) => item.data),
+          edges: record.affectedItems
+            .filter((item) => item.graphType === 'edge')
+            .map((item) => item.data),
+        },
+        { history: false },
+      );
+    } else if (record.action === 'add') {
       for (const item of record.affectedItems) {
         if (item.graphType === 'node') {
           graph.addNode(item.data, { history: false, focus: false });

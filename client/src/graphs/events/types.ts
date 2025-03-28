@@ -8,6 +8,7 @@ import type {
   AddEdgeOptions,
   RemoveEdgeOptions,
   EditEdgeLabelOptions,
+  HistoryOption,
 } from '@graph/base/types';
 import type { NodeAnchor } from '@graph/plugins/anchors/types';
 import type { GraphThemeName } from '@graph/themes';
@@ -18,6 +19,7 @@ import type {
 } from '@graph/plugins/history/types';
 import type { BoundingBox, Coordinate } from '@shape/types';
 import type { GraphMouseEvent } from '@graph/base/types';
+import type { GraphState } from '@graph/collab/types';
 
 export type BaseGraphEventMap = {
   /**
@@ -118,7 +120,10 @@ export type BaseGraphEventMap = {
   /**
    * when the graph is {@link Graph.load | loaded} with new nodes and edges.
    */
-  onGraphLoaded: () => void;
+  onGraphLoaded: (
+    previousState: GraphState,
+    historyOptions: HistoryOption,
+  ) => void;
   /**
    * when the graph has {@link Graph.reset | reset} and all nodes and edges have been removed
    */
