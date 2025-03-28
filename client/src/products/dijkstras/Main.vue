@@ -4,6 +4,7 @@
   import GraphProduct from '@ui/product/GraphProduct.vue';
   import CostDisplay from './ui/CostDisplay.vue';
   import { DIJKSTRAS_GRAPH_SETTINGS } from './settings';
+  import { isRunning } from './sim/runner';
 
   const graphEl = ref<HTMLCanvasElement>();
   const graph = useGraph(graphEl, DIJKSTRAS_GRAPH_SETTINGS);
@@ -20,7 +21,7 @@
 
     <template #center-right-sim>
       <div class="bg-gray-800 bg-opacity-80 p-2 rounded-xl overflow-auto">
-        <CostDisplay />
+        <CostDisplay :is-running="isRunning" />
       </div>
     </template>
   </GraphProduct>
