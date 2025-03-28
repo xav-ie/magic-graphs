@@ -3,11 +3,12 @@
   import { computed } from 'vue';
   import { nonNullGraph as graph } from '@graph/global';
   import HelpShortcutKey from './HelpShortcutKey.vue';
+  import type { Shortcut } from '@graph/plugins/shortcut/types';
 
   /**
    * @example 'Control+Shift+Z' -> ['Control', 'Shift', 'Z']
    */
-  const getKeysFromKeyBindStr = (keyBindStr: string) =>
+  const getKeysFromKeyBindStr = (keyBindStr: Shortcut['binding']) =>
     keyBindStr
       .split('+')
       .map((key) => key.trim())

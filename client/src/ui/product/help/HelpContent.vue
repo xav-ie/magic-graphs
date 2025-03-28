@@ -8,7 +8,7 @@
   <div>
     <h1 class="text-2xl font-bold mb-3 mt-4">Here's Some Help 👇</h1>
 
-    <div class="flex flex-col gap-2 h-[500px] overflow-auto">
+    <div class="flex flex-col gap-4 h-[500px] overflow-auto">
       <HelpShortcuts />
       <HelpLinks />
       <HelpVideos />

@@ -2,7 +2,7 @@
 /**
  * a keyboard shortcut
  */
-type Shortcut = {
+export type Shortcut = {
   /**
    * a string of characters that defines the sequence of the shortcut
    * @example 'meta+shift+z'
@@ -17,7 +17,7 @@ type Shortcut = {
 /**
  * maps the names of shortcuts to a corresponding shortcut definition
  */
-type Shortcuts = Record<string, Shortcut>;
+export type Shortcuts = Record<string, Shortcut>;
 
 /**
  * splits up the shortcuts by platform as many shortcuts
