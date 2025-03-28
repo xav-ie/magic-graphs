@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import HelpSection from './HelpSection.vue';
-  // import { computed } from 'vue';
+  import { computed } from 'vue';
   import { nonNullGraph as graph } from '@graph/global';
   import HelpShortcutKey from './HelpShortcutKey.vue';
 
@@ -13,22 +13,25 @@
       .map((key) => key.trim())
       .filter((key) => key !== '');
 
-  const { activeShortcuts: platformBindings } = graph.value.shortcut;
+  const { activeShortcuts } = graph.value.shortcut;
 
-  const platform = computed<Record<string, string>>(() => ({
-    ...platformBindings.value,
-    Fullscreen: 'F',
-    'Pause/Play Simulation': 'Space',
-    'Simulation Step Forward': 'rightArrow',
-    'Simulation Step Backward': 'leftArrow',
-  }));
+  const ADDITIONAL_SHORTCUTS = {
+    Fullscreen: { binding: 'F' },
+    'Pause/Play Simulation': { binding: 'Space' },
+    'Simulation Step Forward': { binding: 'rightArrow' },
+    'Simulation Step Backward': { binding: 'leftArrow' },
+  };
+
+  const shortcuts = computed(() =>
+    Object.assign(activeShortcuts, ADDITIONAL_SHORTCUTS),
+  );
 </script>
 
 <template>
   <HelpSection title="Useful Shortcuts">
     <div class="flex flex-col gap-1">
       <div
-        v-for="(shortcut, shortcutName) in platformBindings"
+        v-for="(shortcut, shortcutName) in shortcuts"
         :key="shortcutName"
         class="flex justify-between items-center"
       >
