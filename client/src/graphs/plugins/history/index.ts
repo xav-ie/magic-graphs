@@ -211,7 +211,7 @@ export const useHistory = (graph: BaseGraph) => {
 
       addToUndoStack({
         action: 'load',
-        affectedItems: [
+        newState: [
           ...graph.nodes.value.map((node) => ({
             graphType: 'node' as const,
             data: node,
@@ -373,10 +373,10 @@ export const useHistory = (graph: BaseGraph) => {
     if (record.action === 'load') {
       graph.load(
         {
-          nodes: record.affectedItems
+          nodes: record.newState
             .filter((item) => item.graphType === 'node')
             .map((item) => item.data),
-          edges: record.affectedItems
+          edges: record.newState
             .filter((item) => item.graphType === 'edge')
             .map((item) => item.data),
         },
