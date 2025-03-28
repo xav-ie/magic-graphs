@@ -81,7 +81,7 @@ export type EditRecord = {
 };
 
 /**
- * a record indicating the graph state was loaded
+ * a record indicating the graph state was *REPLACED* with a new state
  */
 export type LoadRecord = {
   /**
@@ -89,11 +89,11 @@ export type LoadRecord = {
    */
   action: 'load';
   /**
-   * the items that were loaded in.
+   * state that replaced the current state. Also known as new state
    */
   affectedItems: (GNodeRecord | GEdgeRecord)[];
   /**
-   * the state of the graph before loading
+   * the state of the graph before replacement
    */
   previousState: {
     nodes: GNodeRecord[];
