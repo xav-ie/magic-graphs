@@ -1,4 +1,3 @@
-import type { Coordinate } from '@shape/types';
 import type { Image } from '.';
 import {
   drawTextAreaOnRect,
