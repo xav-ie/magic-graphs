@@ -21,7 +21,8 @@ export type ShapeName =
   | 'cross'
   | 'scribble'
   | 'ellipse'
-  | 'star';
+  | 'star'
+  | 'image';
 
 export type Shape = {
   /**

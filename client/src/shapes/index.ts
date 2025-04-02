@@ -9,6 +9,7 @@ import { cross as crossAPI } from './cross';
 import { scribble as scribbleAPI } from './scribble';
 import { ellipse as ellipseAPI } from './ellipse';
 import { star as starAPI } from './star';
+import { image as imageAPI } from './image';
 
 export const line = lineAPI;
 export const arrow = arrowAPI;
@@ -21,6 +22,7 @@ export const cross = crossAPI;
 export const scribble = scribbleAPI;
 export const ellipse = ellipseAPI;
 export const star = starAPI;
+export const image = imageAPI;
 
 export const shapes = {
   arrow,
@@ -34,4 +36,5 @@ export const shapes = {
   scribble,
   ellipse,
   star,
+  image,
 };
