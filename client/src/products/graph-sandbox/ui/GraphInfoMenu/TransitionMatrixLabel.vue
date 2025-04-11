@@ -38,7 +38,7 @@
           />
           <CIcon
             class="text-2xl"
-            icon="arrow_right"
+            icon="arrow-right"
           />
           <GraphNode
             :node="fromNode"
