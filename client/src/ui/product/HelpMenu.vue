@@ -1,10 +1,11 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { ref, onUnmounted } from 'vue';
   import GButton from '@ui/graph/button/GButton.vue';
   import CIcon from '@ui/core/Icon.vue';
   import GDialog from '@ui/graph/GDialog.vue';
   import { onClickOutside } from '@vueuse/core';
   import HelpContent from './help/HelpContent.vue';
+  import { keys } from 'ctrl-keys';
 
   const showDialog = ref(false);
   const dialogContent = ref();
@@ -16,6 +17,20 @@
   const toggleDialog = () => {
     showDialog.value = !showDialog.value;
   };
+
+  const ctrlKeysHandler = keys();
+  ctrlKeysHandler.add('h', () => {
+    toggleDialog();
+  });
+  ctrlKeysHandler.add('escape', () => {
+    showDialog.value = false;
+  });
+
+  window.addEventListener('keydown', ctrlKeysHandler.handle);
+
+  onUnmounted(() => {
+    window.removeEventListener('keydown', ctrlKeysHandler.handle);
+  });
 </script>
 
 <template>
