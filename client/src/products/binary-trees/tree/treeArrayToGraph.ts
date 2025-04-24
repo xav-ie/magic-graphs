@@ -8,7 +8,7 @@ const newEdge = (from: number, to: number) => ({
   from: from.toString(),
   to: to.toString(),
   id: `${from}-${to}`,
-  label: '',
+  label: '1',
 });
 
 const edgesInTree = (treeArray: TreeNodeKeyArray) => {
