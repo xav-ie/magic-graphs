@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import type { Trace } from '../types';
   defineProps<{
-    trace: Trace;
+    trace?: Trace;
     error: string;
   }>();
 </script>
@@ -16,6 +16,12 @@
     >
       {{ error }}
     </h1>
+    <div
+      v-else-if="!trace"
+      class="text-yellow-500 text-2xl font-bold animate-pulse"
+    >
+      Please wait...
+    </div>
     <div
       v-else
       class="text-2xl font-bold flex"
