@@ -15,8 +15,6 @@ describe('circleHitbox', () => {
     stroke: { width: 4, color: 'black' },
   };
 
-  // TODO: update tests to match new bounding box
-
   const hitbox = circleHitbox(testCircle);
 
   it('should return true for a point clearly inside the circle', () => {
@@ -50,8 +48,9 @@ describe('getCircleBoundingBox', () => {
   it('should calculate the correct bounding box for the circle', () => {
     const boundingBox = getCircleBoundingBox(testCircle)();
     expect(boundingBox).toEqual({
-      topLeft: { x: 28, y: 28 },
-      bottomRight: { x: 72, y: 72 },
+      at: { x: 28, y: 28 },
+      width: 44,
+      height: 44,
     });
   });
 });
