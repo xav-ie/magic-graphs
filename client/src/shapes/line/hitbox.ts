@@ -111,6 +111,7 @@ export const lineEfficientHitbox = (line: Line) => {
         height: segHeight,
       });
     });
+
     return segmentHitboxes.some((hitbox) => hitbox(boxToCheck));
   };
 };
