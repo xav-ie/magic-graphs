@@ -1,6 +1,3 @@
-/*
-  types for shapes
-*/
 import type { Rect } from '@shape/rect';
 
 export type BoundingBox = Pick<Rect, 'at' | 'width' | 'height'>;
