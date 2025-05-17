@@ -23,7 +23,7 @@ export default typescriptEslint.config(
     },
     rules: {
       "@typescript-eslint/no-empty-object-type": "off", // allows type MyType = {}
-      
+      "@typescript-eslint/no-explicit-any": "off",
       "vue/attributes-order": [
         "error",
         {
