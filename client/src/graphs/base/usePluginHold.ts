@@ -11,7 +11,7 @@ export const usePluginHoldController = (settings: Ref<GraphSettings>) => {
    */
   const holdCountMap: Map<BoolSettingsKeys, number> = new Map();
   /**
-   * couples together the hold id with a setting. ensures idepotency
+   * couples together the hold id with a setting. ensures idempotency
    * when invoking hold on a particular setting
    */
   const holdIdSet: Set<`${string}-${BoolSettingsKeys}`> = new Set();
@@ -20,6 +20,14 @@ export const usePluginHoldController = (settings: Ref<GraphSettings>) => {
    */
   const holdState: Map<BoolSettingsKeys, boolean> = new Map();
 
+  /**
+   * temporarily disable (set to `false`) boolean graph settings.
+   *
+   * after a hold is released, the setting returns to its previous state
+   * before the hold
+   *
+   * @param holdId - a unique identifier for each consumer of `usePluginHoldController`
+   */
   const usePluginHold = (holdId: string) => {
     const hold = (setting: BoolSettingsKeys) => {
       const holdAlreadyActive = holdIdSet.has(`${holdId}-${setting}`);

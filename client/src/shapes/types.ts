@@ -1,6 +1,3 @@
-/*
-  types for shapes
-*/
 import type { Rect } from '@shape/rect';
 
 export type BoundingBox = Pick<Rect, 'at' | 'width' | 'height'>;
@@ -72,6 +69,11 @@ export type Shape = {
   shapeHitbox: (point: Coordinate) => boolean;
 
   /**
+   * returns true if the point is within the text area of the shape
+   */
+  textHitbox?: (point: Coordinate) => boolean;
+
+  /**
    * returns true if the point is within the rectangular bounding box of the shape
    */
   efficientHitbox: (boxToCheck: BoundingBox) => boolean;
@@ -82,11 +84,6 @@ export type Shape = {
   getBoundingBox: () => BoundingBox;
 
   /**
-   * returns true if the point is within the text area of the shape
-   */
-  textHitbox?: (point: Coordinate) => boolean;
-
-  /**
    * activates the text area of the shape
    */
   activateTextArea?: (
@@ -95,13 +92,18 @@ export type Shape = {
   ) => void;
 };
 
+/**
+ * a coordinate pair used to position
+ * content on the canvas for rendering
+ */
 export type Coordinate = {
   x: number;
   y: number;
 };
 
 /**
- * an area that wraps some text
+ * an area that wraps some text without
+ * canvas coordinates for rendering
  */
 export type TextAreaNoLocation = {
   /**
@@ -129,9 +131,14 @@ export type TextArea = {
   at: Coordinate;
 } & TextAreaNoLocation;
 
+/**
+ * all font weights supported by html canvas
+ */
 export type TextFontWeight = 'lighter' | 'normal' | 'bold' | 'bolder';
 
-// the text displayed in the text area
+/**
+ * the text displayed in `TextArea`
+ */
 export type Text = {
   content: string;
   fontSize?: number;
@@ -151,12 +158,7 @@ export type Stroke = {
   color: string;
   width: number;
   /**
-   * For dashed border
-   *
-   * @params
-   *
-   * dash: [dashLength, gapLength]
-   *
+   * for dashed border: [dashLength, gapLength]
    */
   dash?: [number, number];
 };
@@ -168,5 +170,8 @@ export const STROKE_DEFAULTS = {
 
 export type GradientStop = {
   offset: number;
-  color: string; // Can be in any format supported by tinycolor
+  /**
+   * parsed by the tinycolor library
+   */
+  color: string;
 };

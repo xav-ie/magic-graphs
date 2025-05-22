@@ -12,6 +12,8 @@ export const useLabelSteadyState = (graph: Graph, markov: MarkovChain) => {
     if (!steadyState.value) return;
     if (graph.focus.isFocused(node.id)) return;
     const index = graph.nodeIdToIndex.value.get(node.id);
+    return 'undefined'
+    // @ts-expect-error steady state must be reimplemented
     return steadyState.value[index ?? -1].toFixed(2);
   };
 

@@ -60,7 +60,7 @@ export const drawScribbleWithCtx =
       ctx.globalCompositeOperation = 'source-over';
     };
 
-    type === 'draw' ? draw() : erase();
+    (type === 'draw' ? draw : erase)();
 
     ctx.lineCap = 'butt';
     ctx.lineJoin = 'miter';

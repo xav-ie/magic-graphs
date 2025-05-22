@@ -1,7 +1,6 @@
 import type { GNode, Graph } from '@graph/types';
 import type { NodeDepth } from '@product/search-visualizer/useNodeDepth';
 import type { Coordinate } from '@shape/types';
-import { roundToInt } from '@utils/math';
 
 /**
  * an array which maps a tree index (root = 0, left child = 1, right child = 2, etc)
@@ -44,8 +43,8 @@ export const getTreeIndexToPosition = ({
   }
 
   return treeIndexToPositionArr.map(({ x, y }) => ({
-    x: roundToInt(x),
-    y: roundToInt(y),
+    x: Math.round(x),
+    y: Math.round(y),
   }));
 };
 

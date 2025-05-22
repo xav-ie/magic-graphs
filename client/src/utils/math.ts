@@ -19,14 +19,6 @@ export const roundToNearestN = (nearest: number) => (n: number) => {
 };
 
 /**
- * rounds a number to the nearest integer
- * @param n the number to round
- * @returns the rounded number
- * @example roundToNearestInt(1.5) // 2
- */
-export const roundToInt = roundToNearestN(1);
-
-/**
  * get the prime factors of a number
  *
  * @param num the number to get the prime factors of
@@ -56,8 +48,8 @@ export const getPrimeFactors = (num: number) => {
  * @param num the number to get the lowest prime factor of
  * @returns the lowest prime factor of the number
  * @example
- * lowestInPrimeFactorization(12) // 12 = 2 * 2 * 3, min(2, 2, 3) = 2
- * lowestInPrimeFactorization(15) // 15 = 3 * 5, min(3, 5) = 3
+ * lowestPrimeFactor(12) // 12 = 2 * 2 * 3, min(2, 2, 3) = 2
+ * lowestPrimeFactor(15) // 15 = 3 * 5, min(3, 5) = 3
  */
 export const lowestPrimeFactor = (num: number) => {
   if (num === 1) return 1; // 1 has no prime factors
@@ -72,8 +64,8 @@ export const lowestPrimeFactor = (num: number) => {
  * @param a the first number
  * @param b the second number
  * @returns the greatest common divisor of the two numbers
- * @example greatestCommonDivisor(12, 15) // 3
- * greatestCommonDivisor(12, 18) // 6
+ * @example gcd(12, 15) // 3
+ * gcd(12, 18) // 6
  */
 export const gcd = (a: number, b: number): number => {
   if (b === 0) return a;
