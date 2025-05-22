@@ -43,7 +43,7 @@
       <img
         v-if="imageSrc"
         :src="imageSrc"
-        class="object-cover aspect-square rounded-md"
+        class="rounded-md object-cover w-full h-full"
       />
     </div>
     <div class="flex flex-col gap-1">
